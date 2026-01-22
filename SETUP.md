@@ -41,7 +41,7 @@ A professional study planner built with **Angular 18.2.0**, **MongoDB**, **Expre
 ## MongoDB Database
 ```
 Database: edufocus
-Connection: mongodb+srv://rayenmestiri08:pvcqCj4rviav7e1U@cluster0.9gjaw.mongodb.net/edufocus
+Connection: mongodb+srv://USERNAME:PASSWORD@cluster0.XXXXX.mongodb.net/edufocus
 ```
 
 ### Collections:
@@ -70,15 +70,15 @@ App runs on: `http://localhost:4201`
 
 ## Environment Variables (.env)
 ```
-MONGO_URI=mongodb+srv://rayenmestiri08:pvcqCj4rviav7e1U@cluster0.9gjaw.mongodb.net/edufocus
-JWT_SECRET=edufocus_premium_secret_key_2026_secure_token
+MONGO_URI=mongodb+srv://USERNAME:PASSWORD@cluster0.XXXXX.mongodb.net/edufocus
+JWT_SECRET=your_secure_jwt_secret_key_here
 JWT_EXPIRE=30d
 PORT=5000
 
 # Cloudinary (For avatar upload - future feature)
-CLOUDINARY_CLOUD_NAME=dmdhy6rj8
-CLOUDINARY_API_KEY=398584552674536
-CLOUDINARY_API_SECRET=nEeIiIcbaQQbjZe8wg8_QAo5KrQ
+CLOUDINARY_CLOUD_NAME=your_cloudinary_name
+CLOUDINARY_API_KEY=your_api_key
+CLOUDINARY_API_SECRET=your_api_secret
 ```
 
 ## Project Structure
