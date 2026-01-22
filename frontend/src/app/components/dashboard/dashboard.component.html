@@ -1,0 +1,573 @@
+<div class="min-h-screen bg-black text-white">
+  <!-- Premium Header -->
+  <header class="sticky top-0 z-50 bg-black/80 backdrop-blur-xl border-b border-yellow-500/20 shadow-2xl shadow-yellow-500/10">
+    <div class="container mx-auto px-4 py-4">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-4">
+          <div class="w-12 h-12 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-xl flex items-center justify-center shadow-lg shadow-yellow-500/50">
+            <span class="text-2xl">🎓</span>
+          </div>
+          <div>
+            <h1 class="text-3xl font-bold bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 bg-clip-text text-transparent">EduFocus</h1>
+            <p class="text-xs text-yellow-500/60">Premium Study Planner</p>
+          </div>
+        </div>
+        
+        <div class="flex items-center gap-4">
+          <button (click)="goToPlanner()" class="px-4 py-2 bg-yellow-500/20 hover:bg-yellow-500/30 border border-yellow-500/30 rounded-xl text-yellow-400 transition-all duration-300 flex items-center gap-2">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+            Planning
+          </button>
+          
+          <!-- Points Display -->
+          <div class="px-4 py-2 bg-gradient-to-r from-yellow-500/20 to-yellow-600/20 border border-yellow-500/30 rounded-xl flex items-center gap-2">
+            <span class="text-2xl">🏆</span>
+            <div class="flex flex-col">
+              <span class="text-xs text-yellow-500/60">Points</span>
+              <span class="text-lg font-bold text-yellow-400">{{ currentUser()?.stats?.points || 0 }}</span>
+            </div>
+          </div>
+          
+          <div class="flex items-center gap-2">
+            <div class="w-10 h-10 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-full flex items-center justify-center text-black font-bold">
+              {{ currentUser()?.name ? currentUser()!.name.charAt(0).toUpperCase() : 'U' }}
+            </div>
+            <span class="text-yellow-400 font-semibold">{{ currentUser()?.name }}</span>
+          </div>
+          <button (click)="logout()" class="px-4 py-2 bg-gray-800 hover:bg-gray-700 rounded-xl text-white transition-all duration-300 flex items-center gap-2">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+            </svg>
+            Déconnexion
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="container mx-auto px-4 py-8">
+    <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+      
+      <!-- Sidebar - Subjects -->
+      <aside class="lg:col-span-1">
+        <div class="bg-gradient-to-br from-gray-900 to-black border border-yellow-500/20 rounded-2xl p-6 shadow-2xl shadow-yellow-500/5 sticky top-24">
+          <h2 class="text-xl font-bold bg-gradient-to-r from-yellow-400 to-yellow-600 bg-clip-text text-transparent mb-4 flex items-center gap-2">
+            <span>📚</span>
+            Matières
+          </h2>
+          
+          <!-- Add Subject Button -->
+          <button (click)="openSubjectModal()" class="w-full py-3 bg-yellow-500/10 hover:bg-yellow-500/20 border border-yellow-500/30 rounded-xl text-yellow-500 font-medium transition-all duration-300 mb-4 flex items-center justify-center gap-2 hover:scale-105">
+            <span class="text-xl">+</span>
+            Ajouter une matière
+          </button>
+          
+          <!-- Subject List -->
+          <div class="space-y-3">
+            @for (subject of subjects(); track subject._id) {
+              <div [style.background]="'linear-gradient(to right, ' + subject.color + '10, ' + subject.color + '20)'" 
+                   [style.border-color]="subject.color + '40'"
+                   class="p-4 border rounded-xl hover:scale-105 transition-all duration-300 cursor-pointer group">
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-3 flex-1">
+                    <span class="text-2xl">{{ subject.icon }}</span>
+                    <div class="flex-1">
+                      <div [style.color]="subject.color" class="font-semibold">{{ subject.name }}</div>
+                    </div>
+                  </div>
+                  <div class="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <button (click)="openSubjectModal(subject)" class="p-1 hover:bg-white/10 rounded">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                      </svg>
+                    </button>
+                    <button (click)="deleteSubject(subject)" class="p-1 hover:bg-red-500/20 rounded text-red-400">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            } @empty {
+              <p class="text-gray-500 text-center py-8">Aucune matière</p>
+            }
+          </div>
+        </div>
+      </aside>
+
+      <!-- Main Dashboard -->
+      <div class="lg:col-span-3 space-y-6">
+        
+        <!-- Quick Access Card - Planning -->
+        <div class="bg-gradient-to-br from-yellow-500/10 to-yellow-600/10 border border-yellow-500/30 rounded-2xl p-6 hover:border-yellow-500/50 transition-all duration-300 group cursor-pointer" (click)="goToPlanner()">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-4">
+              <div class="w-16 h-16 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-xl flex items-center justify-center shadow-lg shadow-yellow-500/50 group-hover:scale-110 transition-all duration-300">
+                <span class="text-3xl">📅</span>
+              </div>
+              <div>
+                <h3 class="text-2xl font-bold bg-gradient-to-r from-yellow-400 to-yellow-600 bg-clip-text text-transparent">Planning Journalier</h3>
+                <p class="text-sm text-gray-400">Organisez vos sessions d'étude avec un calendrier interactif</p>
+              </div>
+            </div>
+            <svg class="w-8 h-8 text-yellow-400 group-hover:translate-x-2 transition-all duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+            </svg>
+          </div>
+        </div>
+        
+        <!-- Stats Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <!-- Today's Progress -->
+          <div class="relative overflow-hidden bg-gradient-to-br from-yellow-500/10 to-yellow-600/10 border border-yellow-500/30 rounded-2xl p-6 hover:border-yellow-500/50 transition-all duration-300 group cursor-pointer" (click)="openPlanModal()">
+            <div class="absolute top-0 right-0 w-32 h-32 bg-yellow-500/10 rounded-full blur-3xl group-hover:bg-yellow-500/20 transition-all duration-500"></div>
+            <div class="relative">
+              <div class="text-5xl font-bold bg-gradient-to-r from-yellow-400 to-yellow-600 bg-clip-text text-transparent mb-2">{{ progressPercentage() }}%</div>
+              <div class="text-sm text-gray-400">Objectif du jour</div>
+              <div class="mt-3 h-2 bg-black rounded-full overflow-hidden">
+                <div class="h-full bg-gradient-to-r from-yellow-500 to-yellow-600 rounded-full transition-all duration-500" 
+                     [style.width.%]="progressPercentage()"></div>
+              </div>
+              <div class="mt-2 text-xs text-yellow-400">Cliquez pour planifier</div>
+            </div>
+          </div>
+          
+          <!-- Studied Time -->
+          <div class="relative overflow-hidden bg-gradient-to-br from-green-500/10 to-green-600/10 border border-green-500/30 rounded-2xl p-6 hover:border-green-500/50 transition-all duration-300 group">
+            <div class="absolute top-0 right-0 w-32 h-32 bg-green-500/10 rounded-full blur-3xl group-hover:bg-green-500/20 transition-all duration-500"></div>
+            <div class="relative">
+              <div class="text-5xl font-bold bg-gradient-to-r from-green-400 to-green-600 bg-clip-text text-transparent mb-2">{{ formatTime(totalStudiedMinutes()) }}</div>
+              <div class="text-sm text-gray-400">Temps étudié</div>
+              <div class="mt-2 text-xs text-green-400">Sur {{ formatTime(totalGoalMinutes()) }} planifié</div>
+            </div>
+          </div>
+          
+          <!-- Tasks -->
+          <div class="relative overflow-hidden bg-gradient-to-br from-blue-500/10 to-blue-600/10 border border-blue-500/30 rounded-2xl p-6 hover:border-blue-500/50 transition-all duration-300 group">
+            <div class="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 rounded-full blur-3xl group-hover:bg-blue-500/20 transition-all duration-500"></div>
+            <div class="relative">
+              <div class="text-5xl font-bold bg-gradient-to-r from-blue-400 to-blue-600 bg-clip-text text-transparent mb-2">{{ completedTodos() }}/{{ totalTodos() }}</div>
+              <div class="text-sm text-gray-400">Tâches complétées</div>
+              <div class="mt-2 text-xs text-blue-400">{{ totalTodos() - completedTodos() }} restantes</div>
+            </div>
+          </div>
+
+          <!-- Study Streak -->
+          <div class="relative overflow-hidden bg-gradient-to-br from-purple-500/10 to-purple-600/10 border border-purple-500/30 rounded-2xl p-6 hover:border-purple-500/50 transition-all duration-300 group cursor-pointer" (click)="openStatsModal()">
+            <div class="absolute top-0 right-0 w-32 h-32 bg-purple-500/10 rounded-full blur-3xl group-hover:bg-purple-500/20 transition-all duration-500"></div>
+            <div class="relative">
+              <div class="text-5xl font-bold bg-gradient-to-r from-purple-400 to-purple-600 bg-clip-text text-transparent mb-2 flex items-center gap-2">
+                🔥 {{ studyStreak() }}
+              </div>
+              <div class="text-sm text-gray-400">Jours consécutifs</div>
+              <div class="mt-2 text-xs text-purple-400">Cliquez pour statistiques</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Timer Section -->
+        <div class="bg-gradient-to-br from-gray-900 to-black border border-yellow-500/20 rounded-2xl p-6 shadow-2xl shadow-yellow-500/5">
+          <h2 class="text-2xl font-bold bg-gradient-to-r from-yellow-400 to-yellow-600 bg-clip-text text-transparent mb-6 flex items-center gap-2">
+            <span>⏱️</span>
+            Timer Pomodoro
+          </h2>
+          
+          <div class="flex flex-col items-center justify-center py-8">
+            <div class="relative w-64 h-64 mb-6">
+              <!-- Circle Progress -->
+              <svg class="transform -rotate-90 w-full h-full">
+                <circle cx="128" cy="128" r="120" stroke="currentColor" stroke-width="8" fill="none" class="text-gray-800" />
+                <circle cx="128" cy="128" r="120" 
+                        stroke="url(#goldGradient)" 
+                        stroke-width="8" 
+                        fill="none" 
+                        stroke-linecap="round" 
+                        class="transition-all duration-1000"
+                        [attr.stroke-dasharray]="754"
+                        [attr.stroke-dashoffset]="754 * (1 - ((timerMinutes() * 60 + timerSeconds()) / (initialTimerMinutes() * 60)))" />
+                <defs>
+                  <linearGradient id="goldGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" style="stop-color:#ffd700;stop-opacity:1" />
+                    <stop offset="100%" style="stop-color:#ffb300;stop-opacity:1" />
+                  </linearGradient>
+                </defs>
+              </svg>
+              <div class="absolute inset-0 flex flex-col items-center justify-center">
+                <div class="text-6xl font-bold bg-gradient-to-r from-yellow-400 to-yellow-600 bg-clip-text text-transparent">
+                  {{ timerMinutes().toString().padStart(2, '0') }}:{{ timerSeconds().toString().padStart(2, '0') }}
+                </div>
+                @if (selectedSubjectForTimer()) {
+                  <div class="text-sm text-gray-400 mt-2">{{ selectedSubjectForTimer()!.name }}</div>
+                }
+              </div>
+            </div>
+            
+            @if (!isTimerRunning() && !selectedSubjectForTimer()) {
+              <div class="text-center">
+                <!-- Timer Duration Adjuster -->
+                <div class="flex items-center justify-center gap-3 mb-6">
+                  <button (click)="adjustTimer(-1)" 
+                          class="w-10 h-10 bg-gray-800 hover:bg-gray-700 rounded-lg flex items-center justify-center text-white transition-all duration-300 hover:scale-110">
+                    <span class="text-xl">−</span>
+                  </button>
+                  <div class="px-6 py-3 bg-gray-800 rounded-xl">
+                    <span class="text-2xl font-bold text-yellow-400">{{ initialTimerMinutes() }} min</span>
+                  </div>
+                  <button (click)="adjustTimer(1)" 
+                          class="w-10 h-10 bg-gray-800 hover:bg-gray-700 rounded-lg flex items-center justify-center text-white transition-all duration-300 hover:scale-110">
+                    <span class="text-xl">+</span>
+                  </button>
+                </div>
+                
+                <p class="text-gray-400 mb-4">Sélectionnez une matière pour commencer</p>
+                <div class="flex flex-wrap gap-2 justify-center">
+                  @for (subject of subjects(); track subject._id) {
+                    <button (click)="startTimer(subject)" 
+                            [style.background]="'linear-gradient(to right, ' + subject.color + ', ' + subject.color + 'dd)'"
+                            class="px-4 py-2 rounded-xl text-black font-semibold hover:scale-105 transition-all duration-300 shadow-lg">
+                      {{ subject.icon }} {{ subject.name }}
+                    </button>
+                  }
+                </div>
+              </div>
+            } @else {
+              <div class="flex items-center gap-4">
+                @if (isTimerRunning()) {
+                  <button (click)="pauseTimer()" class="w-16 h-16 bg-gray-800 hover:bg-gray-700 rounded-full flex items-center justify-center text-2xl text-white shadow-lg transition-all duration-300 hover:scale-110">
+                    ⏸
+                  </button>
+                } @else {
+                  <button (click)="startTimer(selectedSubjectForTimer()!)" class="w-16 h-16 bg-gradient-to-br from-yellow-500 to-yellow-600 hover:from-yellow-400 hover:to-yellow-500 rounded-full flex items-center justify-center text-2xl text-black shadow-lg shadow-yellow-500/50 transition-all duration-300 hover:scale-110">
+                    ▶
+                  </button>
+                }
+                <button (click)="stopTimer()" class="w-12 h-12 bg-red-600 hover:bg-red-500 rounded-full flex items-center justify-center text-white transition-all duration-300">
+                  ⏹
+                </button>
+              </div>
+            }
+          </div>
+        </div>
+
+        <!-- To-Do List -->
+        <div class="bg-gradient-to-br from-gray-900 to-black border border-yellow-500/20 rounded-2xl p-6 shadow-2xl shadow-yellow-500/5">
+          <div class="flex items-center justify-between mb-6">
+            <h2 class="text-2xl font-bold bg-gradient-to-r from-yellow-400 to-yellow-600 bg-clip-text text-transparent flex items-center gap-2">
+              <span>✓</span>
+              To-Do List
+            </h2>
+            <button (click)="openTodoModal()" class="px-4 py-2 bg-yellow-500/20 hover:bg-yellow-500/30 border border-yellow-500/30 rounded-lg text-yellow-500 font-medium transition-all duration-300 hover:scale-105">
+              + Ajouter
+            </button>
+          </div>
+          
+          <div class="space-y-3">
+            @for (todo of todos(); track todo._id) {
+              <div class="p-4 bg-gray-800/50 border border-gray-700 rounded-xl flex items-center gap-3 hover:border-yellow-500/30 transition-all duration-300 group"
+                   [class.opacity-60]="todo.done"
+                   [class.border-green-500]="todo.done">
+                <input type="checkbox" 
+                       [(ngModel)]="todo.done"
+                       (ngModelChange)="toggleTodo(todo)"
+                       class="w-5 h-5 rounded border-yellow-500 text-yellow-500 focus:ring-2 focus:ring-yellow-500 cursor-pointer" />
+                <div class="flex-1">
+                  <div [class.line-through]="todo.done" 
+                       [class.text-gray-500]="todo.done"
+                       class="text-white group-hover:text-yellow-400 transition-colors">
+                    {{ todo.title }}
+                  </div>
+                  <div class="text-xs text-gray-500">Priorité: {{ todo.priority }}</div>
+                </div>
+                @if (todo.priority === 'urgent') {
+                  <span class="px-3 py-1 text-xs font-semibold rounded-full bg-purple-500/20 text-purple-400 animate-pulse">🔥 Urgent</span>
+                } @else if (todo.priority === 'high') {
+                  <span class="px-3 py-1 text-xs font-semibold rounded-full bg-red-500/20 text-red-400">Haute</span>
+                } @else if (todo.priority === 'medium') {
+                  <span class="px-3 py-1 text-xs font-semibold rounded-full bg-yellow-500/20 text-yellow-400">Moyenne</span>
+                } @else {
+                  <span class="px-3 py-1 text-xs font-semibold rounded-full bg-green-500/20 text-green-400">Basse</span>
+                }
+                <div class="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-all">
+                  <button (click)="editTodo(todo)" class="p-2 hover:bg-yellow-500/20 rounded text-yellow-400 transition-all">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                    </svg>
+                  </button>
+                  <button (click)="deleteTodo(todo)" class="p-2 hover:bg-red-500/20 rounded text-red-400 transition-all">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            } @empty {
+              <p class="text-gray-500 text-center py-8">Aucune tâche pour aujourd'hui</p>
+            }
+          </div>
+        </div>
+
+      </div>
+      
+    </div>
+  </main>
+
+  <!-- Subject Modal -->
+  @if (showSubjectModal()) {
+    <div class="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4" (click)="showSubjectModal.set(false)">
+      <div class="bg-gradient-to-br from-gray-900 to-black border border-yellow-500/20 rounded-2xl p-8 max-w-md w-full shadow-2xl" (click)="$event.stopPropagation()">
+        <h3 class="text-2xl font-bold bg-gradient-to-r from-yellow-400 to-yellow-600 bg-clip-text text-transparent mb-6">
+          {{ editingSubject() ? 'Modifier' : 'Ajouter' }} une matière
+        </h3>
+        
+        <div class="space-y-4">
+          <div>
+            <label class="text-sm font-semibold text-gray-300 block mb-2">Nom</label>
+            <input type="text" 
+                   [(ngModel)]="subjectForm.name"
+                   placeholder="Ex: Mathématiques"
+                   class="w-full px-4 py-3 bg-black/50 border border-yellow-500/30 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-yellow-500" />
+          </div>
+          
+          <div>
+            <label class="text-sm font-semibold text-gray-300 block mb-2">Icône</label>
+            <div class="grid grid-cols-6 gap-2">
+              @for (icon of icons; track icon) {
+                <button type="button"
+                        (click)="subjectForm.icon = icon"
+                        [class.ring-2]="subjectForm.icon === icon"
+                        [class.ring-yellow-500]="subjectForm.icon === icon"
+                        class="text-3xl p-2 bg-gray-800 hover:bg-gray-700 rounded-lg transition-all">
+                  {{ icon }}
+                </button>
+              }
+            </div>
+          </div>
+          
+          <div>
+            <label class="text-sm font-semibold text-gray-300 block mb-2">Couleur</label>
+            <div class="grid grid-cols-4 gap-2">
+              @for (color of colors; track color) {
+                <button type="button"
+                        (click)="subjectForm.color = color"
+                        [class.ring-2]="subjectForm.color === color"
+                        [class.ring-white]="subjectForm.color === color"
+                        class="w-full h-12 rounded-lg transition-all hover:scale-110"
+                        [style.background]="color">
+                </button>
+              }
+            </div>
+          </div>
+        </div>
+        
+        <div class="flex gap-3 mt-6">
+          <button (click)="showSubjectModal.set(false)" class="flex-1 py-3 bg-gray-800 hover:bg-gray-700 rounded-xl text-white font-semibold transition-all">
+            Annuler
+          </button>
+          <button (click)="saveSubject()" class="flex-1 py-3 bg-gradient-to-r from-yellow-400 to-yellow-600 hover:from-yellow-500 hover:to-yellow-700 rounded-xl text-black font-semibold transition-all">
+            Enregistrer
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Todo Modal -->
+  @if (showTodoModal()) {
+    <div class="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4" (click)="showTodoModal.set(false)">
+      <div class="bg-gradient-to-br from-gray-900 to-black border border-yellow-500/20 rounded-2xl p-8 max-w-md w-full shadow-2xl" (click)="$event.stopPropagation()">
+        <h3 class="text-2xl font-bold bg-gradient-to-r from-yellow-400 to-yellow-600 bg-clip-text text-transparent mb-6">
+          {{ editingTodo() ? 'Modifier la tâche' : 'Ajouter une tâche' }}
+        </h3>
+        
+        <div class="space-y-4">
+          <div>
+            <label class="text-sm font-semibold text-gray-300 block mb-2">Titre</label>
+            <input type="text" 
+                   [(ngModel)]="todoForm.title"
+                   placeholder="Ex: Réviser chapitre 3"
+                   class="w-full px-4 py-3 bg-black/50 border border-yellow-500/30 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-yellow-500" />
+          </div>
+          
+          <div>
+            <label class="text-sm font-semibold text-gray-300 block mb-2">Priorité</label>
+            <select [(ngModel)]="todoForm.priority" 
+                    class="w-full px-4 py-3 bg-black/50 border border-yellow-500/30 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-yellow-500">
+              <option value="low">Basse</option>
+              <option value="medium">Moyenne</option>
+              <option value="high">Haute</option>
+              <option value="urgent">Urgente</option>
+            </select>
+          </div>
+          
+          <div>
+            <label class="text-sm font-semibold text-gray-300 block mb-2">Matière (optionnel)</label>
+            <select [(ngModel)]="todoForm.subjectId" 
+                    class="w-full px-4 py-3 bg-black/50 border border-yellow-500/30 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-yellow-500">
+              <option value="">Aucune</option>
+              @for (subject of subjects(); track subject._id) {
+                <option [value]="subject._id">{{ subject.icon }} {{ subject.name }}</option>
+              }
+            </select>
+          </div>
+        </div>
+        
+        <div class="flex gap-3 mt-6">
+          <button (click)="showTodoModal.set(false)" class="flex-1 py-3 bg-gray-800 hover:bg-gray-700 rounded-xl text-white font-semibold transition-all">
+            Annuler
+          </button>
+          <button (click)="saveTodo()" class="flex-1 py-3 bg-gradient-to-r from-yellow-400 to-yellow-600 hover:from-yellow-500 hover:to-yellow-700 rounded-xl text-black font-semibold transition-all">
+            {{ editingTodo() ? 'Modifier' : 'Ajouter' }}
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Day Plan Modal -->
+  @if (showPlanModal()) {
+    <div class="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4" (click)="showPlanModal.set(false)">
+      <div class="bg-gradient-to-br from-gray-900 to-black border border-yellow-500/20 rounded-2xl p-8 max-w-2xl w-full shadow-2xl max-h-[80vh] overflow-y-auto" (click)="$event.stopPropagation()">
+        <h3 class="text-2xl font-bold bg-gradient-to-r from-yellow-400 to-yellow-600 bg-clip-text text-transparent mb-6">
+          📅 Planifier ma journée
+        </h3>
+        
+        <p class="text-gray-400 mb-6">Définissez vos objectifs d'étude pour chaque matière (en minutes)</p>
+        
+        <div class="space-y-4">
+          @for (subject of subjects(); track subject._id) {
+            <div class="p-4 bg-gray-800/50 border border-gray-700 rounded-xl">
+              <div class="flex items-center gap-4">
+                <div class="flex items-center gap-3 flex-1">
+                  <span class="text-3xl">{{ subject.icon }}</span>
+                  <div>
+                    <div [style.color]="subject.color" class="font-semibold">{{ subject.name }}</div>
+                    <div class="text-xs text-gray-500">Objectif en minutes</div>
+                  </div>
+                </div>
+                <div class="flex items-center gap-2">
+                  <button type="button" 
+                          (click)="decrementPlan(subject._id!)"
+                          class="w-10 h-10 bg-gray-700 hover:bg-gray-600 rounded-lg text-white font-bold transition-all">
+                    -
+                  </button>
+                  <input type="number" 
+                         [(ngModel)]="planForm[subject._id!]"
+                         min="0"
+                         step="15"
+                         class="w-20 px-3 py-2 bg-black/50 border border-yellow-500/30 rounded-lg text-white text-center focus:outline-none focus:ring-2 focus:ring-yellow-500" />
+                  <button type="button"
+                          (click)="incrementPlan(subject._id!)"
+                          class="w-10 h-10 bg-yellow-500 hover:bg-yellow-600 rounded-lg text-black font-bold transition-all">
+                    +
+                  </button>
+                  <span class="text-sm text-gray-400 w-16">{{ formatTime(planForm[subject._id!] || 0) }}</span>
+                </div>
+              </div>
+            </div>
+          }
+          
+          @if (subjects().length === 0) {
+            <p class="text-gray-500 text-center py-8">Ajoutez d'abord des matières</p>
+          }
+        </div>
+        
+        <div class="mt-6 p-4 bg-yellow-500/10 border border-yellow-500/30 rounded-xl">
+          <div class="flex items-center justify-between">
+            <span class="text-yellow-400 font-semibold">Total prévu:</span>
+            <span class="text-2xl font-bold bg-gradient-to-r from-yellow-400 to-yellow-600 bg-clip-text text-transparent">
+              {{ formatTime(getTotalPlanMinutes()) }}
+            </span>
+          </div>
+        </div>
+        
+        <div class="flex gap-3 mt-6">
+          <button (click)="showPlanModal.set(false)" class="flex-1 py-3 bg-gray-800 hover:bg-gray-700 rounded-xl text-white font-semibold transition-all">
+            Annuler
+          </button>
+          <button (click)="saveDayPlan()" class="flex-1 py-3 bg-gradient-to-r from-yellow-400 to-yellow-600 hover:from-yellow-500 hover:to-yellow-700 rounded-xl text-black font-semibold transition-all">
+            💾 Enregistrer le plan
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Statistics Modal -->
+  @if (showStatsModal()) {
+    <div class="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4" (click)="showStatsModal.set(false)">
+      <div class="bg-gradient-to-br from-gray-900 to-black border border-yellow-500/20 rounded-2xl p-8 max-w-4xl w-full shadow-2xl" (click)="$event.stopPropagation()">
+        <h3 class="text-2xl font-bold bg-gradient-to-r from-yellow-400 to-yellow-600 bg-clip-text text-transparent mb-6 flex items-center gap-2">
+          📊 Statistiques de la semaine
+        </h3>
+        
+        <!-- Week Chart -->
+        <div class="mb-8">
+          <div class="flex items-end justify-between gap-2 h-64 bg-gray-800/30 rounded-xl p-4">
+            @for (stat of weekStats(); track stat.date) {
+              <div class="flex-1 flex flex-col items-center gap-2">
+                <div class="w-full bg-gray-800 rounded-lg overflow-hidden relative" style="height: 200px">
+                  <div class="absolute bottom-0 w-full bg-gradient-to-t from-yellow-500 to-yellow-600 transition-all duration-500 rounded-t-lg"
+                       [style.height.%]="(stat.minutes / getMaxWeekMinutes()) * 100">
+                  </div>
+                </div>
+                <div class="text-center">
+                  <div class="text-xs text-gray-400">{{ stat.day }}</div>
+                  <div class="text-sm font-semibold text-yellow-400">{{ formatTime(stat.minutes) }}</div>
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+
+        <!-- Subject Breakdown -->
+        <div class="space-y-3">
+          <h4 class="text-lg font-semibold text-yellow-400 mb-4">Répartition par matière aujourd'hui</h4>
+          @for (subjectTime of dayPlan()?.subjects || []; track $index) {
+            @if (getSubjectById(getSubjectIdString(subjectTime.subjectId)); as subject) {
+              <div class="p-4 bg-gray-800/50 border border-gray-700 rounded-xl">
+                <div class="flex items-center justify-between mb-2">
+                  <div class="flex items-center gap-3">
+                    <span class="text-2xl">{{ subject.icon }}</span>
+                    <div>
+                      <div [style.color]="subject.color" class="font-semibold">{{ subject.name }}</div>
+                      <div class="text-xs text-gray-500">{{ formatTime(subjectTime.studiedMinutes) }} / {{ formatTime(subjectTime.goalMinutes) }}</div>
+                    </div>
+                  </div>
+                  <div class="text-right">
+                    <div class="text-2xl font-bold" [style.color]="subject.color">
+                      {{ getSubjectProgress(subjectTime.studiedMinutes, subjectTime.goalMinutes) }}%
+                    </div>
+                  </div>
+                </div>
+                <div class="h-2 bg-gray-800 rounded-full overflow-hidden">
+                  <div class="h-full rounded-full transition-all duration-500"
+                       [style.background]="subject.color"
+                       [style.width.%]="subjectTime.goalMinutes > 0 ? (subjectTime.studiedMinutes / subjectTime.goalMinutes) * 100 : 0">
+                  </div>
+                </div>
+              </div>
+            }
+          }
+        </div>
+        
+        <div class="flex gap-3 mt-6">
+          <button (click)="showStatsModal.set(false)" class="flex-1 py-3 bg-gradient-to-r from-yellow-400 to-yellow-600 hover:from-yellow-500 hover:to-yellow-700 rounded-xl text-black font-semibold transition-all">
+            Fermer
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Footer -->
+  <footer class="bg-black/50 border-t border-yellow-500/20 mt-16">
+    <div class="container mx-auto px-4 py-6 text-center">
+      <p class="text-gray-500 text-sm">Built with ❤️ using Angular 18 + MongoDB + Tailwind CSS</p>
+      <div class="mt-2 text-xs text-yellow-500/60">EduFocus © 2024 - Premium Study Planner</div>
+    </div>
+  </footer>
+</div>
