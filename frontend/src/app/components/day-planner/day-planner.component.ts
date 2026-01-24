@@ -204,19 +204,16 @@ export class DayPlannerComponent implements OnInit {
     }
 
     const newSessions: StudySession[] = [];
-    let currentTime = new Date();
-    currentTime.setHours(8, 0, 0, 0); // Start at 8:00 AM
 
     // Parse the plan date (YYYY-MM-DD format)
     const [year, month, day] = plan.date.split('-').map(Number);
-    const planDate = new Date(year, month - 1, day);
 
     plan.subjects.forEach((subjectPlan: DayPlanSubject) => {
       const subjectId = typeof subjectPlan.subjectId === 'string' ? subjectPlan.subjectId : subjectPlan.subjectId._id;
       const subject = this.subjects().find(s => s._id === subjectId);
       if (!subject || subjectPlan.goalMinutes === 0) return;
 
-      // Check if there are existing sessions in the plan
+      // ONLY load existing sessions from the backend, don't generate automatic ones
       if (subjectPlan.sessions && subjectPlan.sessions.length > 0) {
         console.log(`📚 Loading ${subjectPlan.sessions.length} existing sessions for ${subject.name}`);
         // Load existing sessions with proper date
@@ -239,35 +236,7 @@ export class DayPlannerComponent implements OnInit {
           });
         });
       } else {
-        console.log(`🆕 Generating new Pomodoro sessions for ${subject.name}`);
-        // Generate new Pomodoro sessions (25 min work + 5 min break)
-        let remainingMinutes = subjectPlan.goalMinutes;
-        
-        while (remainingMinutes > 0) {
-          const sessionDuration = Math.min(25, remainingMinutes);
-          const endTime = new Date(currentTime);
-          endTime.setMinutes(endTime.getMinutes() + sessionDuration);
-
-          newSessions.push({
-            subjectId: subject._id!,
-            subjectName: subject.name,
-            subjectColor: subject.color,
-            subjectIcon: subject.icon,
-            date: new Date(currentTime),
-            startTime: currentTime.toTimeString().slice(0, 5),
-            endTime: endTime.toTimeString().slice(0, 5),
-            duration: sessionDuration,
-            completed: subjectPlan.studiedMinutes >= sessionDuration
-          });
-
-          remainingMinutes -= sessionDuration;
-          currentTime = new Date(endTime);
-          
-          // Add 5 min break
-          if (remainingMinutes > 0) {
-            currentTime.setMinutes(currentTime.getMinutes() + 5);
-          }
-        }
+        console.log(`ℹ️ No sessions for ${subject.name}, user can create them manually`);
       }
     });
 
@@ -604,8 +573,24 @@ export class DayPlannerComponent implements OnInit {
       count: sessions.length
     })));
 
+    // Get all unique dates from both current sessions and existing plan
+    const allDates = new Set<string>();
+    sessionsByDate.forEach((_, date) => allDates.add(date));
+    
+    // Also check if we need to update dates that no longer have sessions
+    const currentRange = this.currentDateRange();
+    if (currentRange.start && currentRange.end) {
+      const start = new Date(currentRange.start);
+      const end = new Date(currentRange.end);
+      for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+        const dateStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+        allDates.add(dateStr);
+      }
+    }
+
     // Save each date separately
-    sessionsByDate.forEach((dateSessions, dateStr) => {
+    allDates.forEach(dateStr => {
+      const dateSessions = sessionsByDate.get(dateStr) || [];
       this.saveDatePlan(dateStr, dateSessions);
     });
   }
@@ -648,18 +633,20 @@ export class DayPlannerComponent implements OnInit {
       const existingSubject = existingSubjectsMap.get(subjectId);
       const subject = this.subjects().find(s => s._id === subjectId);
       
+      // Always recalculate goalMinutes based on current sessions
+      const totalSessionMinutes = sessions.reduce((sum, s) => sum + s.duration, 0);
+      
       if (existingSubject) {
-        // Update existing subject
+        // Update existing subject - recalculate goalMinutes from sessions
         updatedSubjects.push({
           subjectId: subjectId,
-          goalMinutes: Math.max(existingSubject.goalMinutes || 0, 5),
+          goalMinutes: Math.max(totalSessionMinutes, 5),
           studiedMinutes: existingSubject.studiedMinutes || 0,
           sessions: sessions,
           priority: existingSubject.priority || 'medium'
         });
       } else if (subject) {
         // Add new subject with calculated goal from sessions
-        const totalSessionMinutes = sessions.reduce((sum, s) => sum + s.duration, 0);
         updatedSubjects.push({
           subjectId: subjectId,
           goalMinutes: Math.max(totalSessionMinutes, 5),
@@ -671,20 +658,27 @@ export class DayPlannerComponent implements OnInit {
     });
 
     // Add subjects without sessions that were in the original plan (only if same date)
+    // These are subjects that had manual goals set but no sessions yet
     if (plan && plan.date === dateStr) {
       plan.subjects.forEach(subjectPlan => {
       const subjectId = typeof subjectPlan.subjectId === 'string' 
         ? subjectPlan.subjectId 
         : subjectPlan.subjectId?._id || '';
       
-      if (subjectId && !sessionsBySubject.has(subjectId) && subjectPlan.goalMinutes >= 5) {
-        updatedSubjects.push({
-          subjectId: subjectId,
-          goalMinutes: subjectPlan.goalMinutes,
-          studiedMinutes: subjectPlan.studiedMinutes || 0,
-          sessions: [],
-          priority: subjectPlan.priority || 'medium'
-        });
+      // Only keep subjects without sessions if they have a manual goal AND studied time
+      // This prevents keeping old planned time when all sessions are deleted
+      if (subjectId && !sessionsBySubject.has(subjectId)) {
+        // If subject has studied time, keep it with manual goal
+        if (subjectPlan.studiedMinutes > 0) {
+          updatedSubjects.push({
+            subjectId: subjectId,
+            goalMinutes: subjectPlan.goalMinutes || 0,
+            studiedMinutes: subjectPlan.studiedMinutes || 0,
+            sessions: [],
+            priority: subjectPlan.priority || 'medium'
+          });
+        }
+        // If no studied time and no sessions, don't include it (it means sessions were deleted)
       }
     });
     }
@@ -695,16 +689,8 @@ export class DayPlannerComponent implements OnInit {
       subjectsCount: updatedSubjects.length
     });
 
-    if (updatedSubjects.length === 0) {
-      console.warn('⚠️ No valid subjects to save');
-      Swal.fire({
-        icon: 'warning',
-        title: 'Aucune donnée à sauvegarder',
-        text: 'Aucune matière ou session valide trouvée',
-        timer: 2000
-      });
-      return;
-    }
+    // Allow saving even with 0 subjects (means all sessions were deleted)
+    // This ensures the planned time is updated correctly when sessions are removed
 
     // Save to backend
     this.dayPlanService.saveDayPlan({

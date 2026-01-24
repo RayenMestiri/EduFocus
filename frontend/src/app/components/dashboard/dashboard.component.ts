@@ -30,11 +30,29 @@ export class DashboardComponent implements OnInit {
   selectedSubjectForTimer = signal<Subject | null>(null);
   private timerInterval: any = null;
   
+  // Advanced Timer Settings
+  showTimerSettings = signal<boolean>(false);
+  timerMode = signal<'focus' | 'break'>('focus'); // Current mode
+  sessionsCompleted = signal<number>(0); // Sessions completed today
+  currentSessionGoal = signal<number>(4); // Target sessions per day
+  
+  timerSettings = {
+    focusDuration: 25,
+    shortBreakDuration: 5,
+    longBreakDuration: 15,
+    sessionsBeforeLongBreak: 4,
+    autoStartBreaks: true,
+    autoStartFocus: false,
+    soundEnabled: true,
+    notificationsEnabled: true
+  };
+  
   // UI state
   showSubjectModal = signal<boolean>(false);
   showTodoModal = signal<boolean>(false);
   showPlanModal = signal<boolean>(false);
   showStatsModal = signal<boolean>(false);
+  showRelaxationModal = signal<boolean>(false);
   editingSubject = signal<Subject | null>(null);
   editingTodo = signal<Todo | null>(null);
   studyStreak = signal<number>(0);
@@ -61,18 +79,28 @@ export class DashboardComponent implements OnInit {
   // Computed values
   totalGoalMinutes = computed(() => {
     const plan = this.dayPlan();
-    return plan?.totalGoalMinutes || 0;
+    if (!plan || !plan.subjects) return 0;
+    // Calculate from subjects array to ensure accuracy
+    return plan.subjects.reduce((sum, s) => sum + (s.goalMinutes || 0), 0);
   });
   
   totalStudiedMinutes = computed(() => {
     const plan = this.dayPlan();
-    return plan?.totalStudiedMinutes || 0;
+    if (!plan || !plan.subjects) return 0;
+    // Calculate from subjects array to ensure accuracy
+    return plan.subjects.reduce((sum, s) => sum + (s.studiedMinutes || 0), 0);
   });
   
   progressPercentage = computed(() => {
     const goal = this.totalGoalMinutes();
     const studied = this.totalStudiedMinutes();
     return goal > 0 ? Math.round((studied / goal) * 100) : 0;
+  });
+  
+  hasAnySessions = computed(() => {
+    const plan = this.dayPlan();
+    if (!plan) return false;
+    return plan.subjects.some(s => s.sessions && s.sessions.length > 0);
   });
   
   completedTodos = computed(() => {
@@ -106,6 +134,8 @@ export class DashboardComponent implements OnInit {
     this.loadTodos();
     this.loadWeekStats();
     this.calculateStreak();
+    this.loadTimerSettings();
+    this.loadSessionsCompleted();
   }
 
   loadWeekStats() {
@@ -232,60 +262,200 @@ export class DashboardComponent implements OnInit {
     // Initialize planForm with current day plan
     this.planForm = {};
     const plan = this.dayPlan();
+    
     if (plan) {
       plan.subjects.forEach(s => {
         const subjectId = typeof s.subjectId === 'string' ? s.subjectId : s.subjectId._id;
         if (subjectId) {
+          // Always use the goalMinutes from the plan
           this.planForm[subjectId] = s.goalMinutes;
         }
       });
     }
+    
     // Add all subjects with 0 if not in plan
     this.subjects().forEach(s => {
       if (s._id && !this.planForm[s._id]) {
         this.planForm[s._id] = 0;
       }
     });
+    
+    // Always show modal directly - no warnings
     this.showPlanModal.set(true);
   }
 
   saveDayPlan() {
     const existingPlan = this.dayPlan();
+    // Always preserve sessions - never overwrite them
+    this.proceedSaveDayPlan(existingPlan, false);
+  }
+
+  private proceedSaveDayPlan(existingPlan: any, overwriteSessions: boolean) {
     const subjects = Object.keys(this.planForm)
-      .filter(subjectId => this.planForm[subjectId] > 0)
       .map(subjectId => {
-        // Find existing studied minutes for this subject
+        // Find existing data for this subject
         let studiedMinutes = 0;
+        let existingSessions: any[] = [];
+        let priority: 'low' | 'medium' | 'high' = 'medium';
+        
         if (existingPlan) {
-          const existingSubject = existingPlan.subjects.find(s => {
+          const existingSubject = existingPlan.subjects.find((s: any) => {
             const sid = typeof s.subjectId === 'string' ? s.subjectId : s.subjectId._id;
             return sid === subjectId;
           });
-          studiedMinutes = existingSubject?.studiedMinutes || 0;
+          
+          if (existingSubject) {
+            studiedMinutes = existingSubject.studiedMinutes || 0;
+            priority = existingSubject.priority || 'medium';
+            
+            // Si goalMinutes = 0, supprimer toutes les sessions
+            if (this.planForm[subjectId] === 0) {
+              existingSessions = [];
+              console.log(`🗑️ Toutes les sessions supprimées (goalMinutes = 0)`);
+            }
+            // If sessions exist, adjust them to match new goalMinutes
+            else if (existingSubject.sessions && existingSubject.sessions.length > 0) {
+              existingSessions = [...existingSubject.sessions];
+              
+              // Calculate current total session time
+              const currentSessionTotal = existingSessions.reduce((sum: number, sess: any) => sum + sess.duration, 0);
+              const newGoalMinutes = this.planForm[subjectId];
+              
+              // If goalMinutes changed, adjust sessions intelligently
+              if (currentSessionTotal !== newGoalMinutes) {
+                const difference = newGoalMinutes - currentSessionTotal;
+                
+                if (difference > 0) {
+                  // AUGMENTATION : Ajouter à la dernière session
+                  const lastIdx = existingSessions.length - 1;
+                  const lastSession = existingSessions[lastIdx];
+                  const newDuration = lastSession.duration + difference;
+                  
+                  const startTime = new Date(`2000-01-01T${lastSession.startTime}`);
+                  const endTime = new Date(startTime.getTime() + newDuration * 60000);
+                  
+                  existingSessions[lastIdx] = {
+                    ...lastSession,
+                    duration: newDuration,
+                    endTime: endTime.toTimeString().slice(0, 5)
+                  };
+                  
+                  console.log(`➕ Augmentation: +${difference}min ajouté à la dernière session (${lastSession.duration}min → ${newDuration}min)`);
+                  
+                } else {
+                  // DIMINUTION : Retirer des sessions en partant de la fin
+                  let remainingToRemove = Math.abs(difference);
+                  
+                  // Parcourir les sessions de la fin vers le début
+                  for (let i = existingSessions.length - 1; i >= 0 && remainingToRemove > 0; i--) {
+                    const session = existingSessions[i];
+                    
+                    if (session.duration <= remainingToRemove) {
+                      // Supprimer complètement cette session
+                      console.log(`🗑️ Session ${i + 1} supprimée (${session.duration}min)`);
+                      remainingToRemove -= session.duration;
+                      existingSessions.splice(i, 1);
+                    } else {
+                      // Réduire cette session
+                      const newDuration = session.duration - remainingToRemove;
+                      
+                      // Garder seulement si >= 15min, sinon supprimer
+                      if (newDuration >= 15) {
+                        const startTime = new Date(`2000-01-01T${session.startTime}`);
+                        const endTime = new Date(startTime.getTime() + newDuration * 60000);
+                        
+                        existingSessions[i] = {
+                          ...session,
+                          duration: newDuration,
+                          endTime: endTime.toTimeString().slice(0, 5)
+                        };
+                        
+                        console.log(`➖ Session ${i + 1} réduite: ${session.duration}min → ${newDuration}min`);
+                        remainingToRemove = 0;
+                      } else {
+                        // Session < 15min, la supprimer complètement
+                        console.log(`🗑️ Session ${i + 1} supprimée (< 15min: ${newDuration}min)`);
+                        remainingToRemove -= session.duration;
+                        existingSessions.splice(i, 1);
+                      }
+                    }
+                  }
+                  
+                  console.log(`✅ Diminution terminée. ${existingSessions.length} session(s) restante(s)`);
+                }
+              }
+            }
+          }
         }
         
         return {
           subjectId,
           goalMinutes: this.planForm[subjectId],
-          studiedMinutes, // Preserve existing studied minutes
-          sessions: [],
-          priority: 'medium' as const
+          studiedMinutes,
+          sessions: existingSessions,
+          priority
         };
+      })
+      .filter(subject => {
+        // Garder si goalMinutes > 0 OU si on a des sessions/studiedMinutes (pour les supprimer/conserver)
+        return subject.goalMinutes > 0 || subject.sessions.length > 0 || subject.studiedMinutes > 0;
       });
 
+    // Also include subjects with sessions but no new goalMinutes (to preserve them)
+    if (existingPlan) {
+      existingPlan.subjects.forEach((existingSubject: any) => {
+        const sid = typeof existingSubject.subjectId === 'string' 
+          ? existingSubject.subjectId 
+          : existingSubject.subjectId._id;
+        
+        // If subject has sessions but wasn't in planForm, preserve it
+        if ((existingSubject.sessions && existingSubject.sessions.length > 0) && !this.planForm.hasOwnProperty(sid)) {
+          subjects.push({
+            subjectId: sid,
+            goalMinutes: existingSubject.goalMinutes || 0,
+            studiedMinutes: existingSubject.studiedMinutes || 0,
+            sessions: existingSubject.sessions,
+            priority: existingSubject.priority || 'medium'
+          });
+        }
+      });
+    }
+
     if (subjects.length === 0) {
-      Swal.fire({ icon: 'error', title: 'Erreur', text: 'Ajoutez au moins une matière', background: '#1a1a1a', color: '#ffd700', confirmButtonColor: '#ffd700' });
+      Swal.fire({ 
+        icon: 'error', 
+        title: 'Erreur', 
+        text: 'Ajoutez au moins une matière avec un objectif', 
+        background: '#1a1a1a', 
+        color: '#ffd700', 
+        confirmButtonColor: '#ffd700' 
+      });
       return;
     }
 
     this.dayPlanService.saveDayPlan({ date: this.today, subjects }).subscribe({
       next: () => {
-        Swal.fire({ icon: 'success', title: 'Plan enregistré', timer: 1500, showConfirmButton: false, background: '#1a1a1a', color: '#ffd700' });
+        Swal.fire({ 
+          icon: 'success', 
+          title: '✅ Plan mis à jour', 
+          text: 'Sessions ajustées automatiquement',
+          timer: 2000, 
+          showConfirmButton: false, 
+          background: '#1a1a1a', 
+          color: '#ffd700' 
+        });
         this.showPlanModal.set(false);
         this.loadDayPlan();
       },
       error: (err) => {
-        Swal.fire({ icon: 'error', title: 'Erreur', text: err.error?.message, background: '#1a1a1a', color: '#ffd700', confirmButtonColor: '#ffd700' });
+        Swal.fire({ 
+          icon: 'error', 
+          title: 'Erreur', 
+          text: err.error?.message, 
+          background: '#1a1a1a', 
+          color: '#ffd700', 
+          confirmButtonColor: '#ffd700' 
+        });
       }
     });
   }
@@ -332,8 +502,20 @@ export class DashboardComponent implements OnInit {
     }
   }
 
-  startTimer(subject: Subject) {
-    this.selectedSubjectForTimer.set(subject);
+  startTimer(subject: Subject, isBreak: boolean = false, isLongBreak: boolean = false) {
+    if (!isBreak) {
+      this.selectedSubjectForTimer.set(subject);
+      this.timerMode.set('focus');
+    } else {
+      this.timerMode.set('break');
+      // Store if this is a long break for later reference
+      if (isLongBreak) {
+        localStorage.setItem('currentBreakIsLong', 'true');
+      } else {
+        localStorage.removeItem('currentBreakIsLong');
+      }
+    }
+    
     const initialMinutes = this.initialTimerMinutes();
     this.timerMinutes.set(initialMinutes);
     this.timerSeconds.set(0);
@@ -345,8 +527,7 @@ export class DashboardComponent implements OnInit {
       
       if (seconds === 0) {
         if (minutes === 0) {
-          this.stopTimer();
-          Swal.fire({ icon: 'success', title: 'Terminé!', text: `${initialMinutes} minutes complétées`, background: '#1a1a1a', color: '#ffd700', confirmButtonColor: '#ffd700' });
+          this.handleTimerComplete(initialMinutes);
           return;
         }
         minutes--;
@@ -360,6 +541,153 @@ export class DashboardComponent implements OnInit {
     }, 1000);
   }
 
+  async handleTimerComplete(minutes: number) {
+    this.pauseTimer();
+    
+    const mode = this.timerMode();
+    
+    if (mode === 'focus') {
+      // Focus session completed
+      const newSessionCount = this.sessionsCompleted() + 1;
+      this.sessionsCompleted.set(newSessionCount);
+      this.saveSessionsCompleted(); // 💾 Save to localStorage
+      console.log(`✅ Session ${newSessionCount} complétée et sauvegardée`);
+      
+      // Update studied time and award points
+      if (this.selectedSubjectForTimer()) {
+        console.log(`🔍 handleTimerComplete: calling updateStudiedTime with ${minutes} minutes`);
+        this.updateStudiedTime(this.selectedSubjectForTimer()!._id!, minutes);
+        
+        const pointsEarned = minutes * 2;
+        this.authService.awardPoints(pointsEarned).subscribe({
+          next: (res) => {
+            console.log(`✅ +${pointsEarned} points awarded`);
+          },
+          error: (err) => console.error('Error awarding points:', err)
+        });
+      }
+      
+      // Show completion celebration
+      await this.showFocusCompletionCelebration(minutes, newSessionCount);
+      
+      // Determine break type
+      const needsLongBreak = newSessionCount % this.timerSettings.sessionsBeforeLongBreak === 0;
+      const breakDuration = needsLongBreak ? this.timerSettings.longBreakDuration : this.timerSettings.shortBreakDuration;
+      const breakType = needsLongBreak ? 'longue pause' : 'courte pause';
+      
+      // Offer break
+      const result = await Swal.fire({
+        title: `☕ Temps de pause!`,
+        html: `
+          <div class="text-center">
+            <p class="text-lg mb-4">Vous avez complété <strong class="text-yellow-400">${newSessionCount}</strong> session(s) aujourd'hui!</p>
+            <p class="text-gray-400 mb-2">Prenez une <strong>${breakType}</strong> de <strong class="text-green-400">${breakDuration} minutes</strong></p>
+            <div class="mt-4 flex justify-center gap-4">
+              <div class="text-center p-4 bg-blue-500/10 rounded-lg">
+                <div class="text-3xl mb-2">🎯</div>
+                <div class="text-sm text-gray-400">Session ${newSessionCount}/${this.currentSessionGoal()}</div>
+              </div>
+              ${needsLongBreak ? '<div class="text-center p-4 bg-purple-500/10 rounded-lg"><div class="text-3xl mb-2">🌟</div><div class="text-sm text-gray-400">Pause longue!</div></div>' : ''}
+            </div>
+          </div>
+        `,
+        icon: 'success',
+        showCancelButton: true,
+        confirmButtonText: `🧘 Commencer la pause (${breakDuration}min)`,
+        cancelButtonText: '⏭️ Passer la pause',
+        background: '#1a1a1a',
+        color: '#ffd700',
+        confirmButtonColor: '#10b981',
+        cancelButtonColor: '#6b7280'
+      });
+      
+      if (result.isConfirmed) {
+        this.showRelaxationModal.set(true);
+        this.initialTimerMinutes.set(breakDuration);
+        this.startTimer(this.selectedSubjectForTimer()!, true, needsLongBreak);
+      } else {
+        // Si on passe la pause, ne PAS réinitialiser les sessions
+        // On garde le compteur actuel
+        this.resetTimer();
+      }
+    } else {
+      // Break completed
+      const wasLongBreak = localStorage.getItem('currentBreakIsLong') === 'true';
+      
+      Swal.fire({
+        title: '💪 Pause terminée!',
+        text: wasLongBreak ? 'Nouveau cycle! Sessions réinitialisées 🔄' : 'Prêt à reprendre le travail?',
+        icon: 'info',
+        confirmButtonText: '🔥 Continuer!',
+        background: '#1a1a1a',
+        color: '#ffd700',
+        confirmButtonColor: '#ffd700'
+      });
+      
+      // Si c'était une pause longue, réinitialiser les sessions
+      if (wasLongBreak) {
+        this.sessionsCompleted.set(0);
+        this.saveSessionsCompleted();
+        localStorage.removeItem('currentBreakIsLong');
+        console.log('🔄 Sessions réinitialisées après pause longue complétée');
+      }
+      
+      this.showRelaxationModal.set(false);
+      this.resetTimer();
+      
+      if (this.timerSettings.autoStartFocus && this.selectedSubjectForTimer()) {
+        this.initialTimerMinutes.set(this.timerSettings.focusDuration);
+        this.startTimer(this.selectedSubjectForTimer()!);
+      }
+    }
+  }
+
+  async showFocusCompletionCelebration(minutes: number, sessionCount: number) {
+    const messages = [
+      { title: '🎉 Excellent travail!', text: 'Vous restez concentré!' },
+      { title: '⭐ Superbe!', text: 'Continuez comme ça!' },
+      { title: '🔥 En feu!', text: 'Rien ne peut vous arrêter!' },
+      { title: '💎 Brillant!', text: 'Votre focus est impressionnant!' },
+      { title: '🚀 Incroyable!', text: 'Vous êtes une machine!' }
+    ];
+    
+    const message = messages[Math.min(sessionCount - 1, messages.length - 1)];
+    
+    await Swal.fire({
+      title: message.title,
+      html: `
+        <div class="text-center">
+          <div class="text-6xl mb-4 animate-bounce">🏆</div>
+          <p class="text-xl mb-2">${message.text}</p>
+          <p class="text-gray-400"><strong class="text-yellow-400">${minutes} minutes</strong> de focus complet</p>
+          <div class="mt-4 text-sm text-gray-500">+${minutes * 2} points 💰</div>
+        </div>
+      `,
+      timer: 2500,
+      timerProgressBar: true,
+      showConfirmButton: false,
+      background: '#1a1a1a',
+      color: '#ffd700',
+      backdrop: `
+        rgba(0,0,0,0.8)
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='50' font-size='50'%3E⭐%3C/text%3E%3C/svg%3E")
+        left top
+        no-repeat
+      `
+    });
+  }
+
+  resetTimer() {
+    this.isTimerRunning.set(false);
+    clearInterval(this.timerInterval);
+    this.timerMinutes.set(this.timerSettings.focusDuration);
+    this.timerSeconds.set(0);
+    this.initialTimerMinutes.set(this.timerSettings.focusDuration);
+    this.selectedSubjectForTimer.set(null);
+    this.timerMode.set('focus');
+    this.showRelaxationModal.set(false); // Fermer le modal de relaxation
+  }
+
   pauseTimer() {
     this.isTimerRunning.set(false);
     clearInterval(this.timerInterval);
@@ -371,23 +699,25 @@ export class DashboardComponent implements OnInit {
     
     // Calculate studied time
     const minutesStudied = this.initialTimerMinutes() - this.timerMinutes();
-    console.log(`Timer stopped: ${minutesStudied} minutes studied`);
+    console.log(`🔍 stopTimer: initialMinutes=${this.initialTimerMinutes()}, remainingMinutes=${this.timerMinutes()}, studied=${minutesStudied}`);
     
-    if (minutesStudied > 0 && this.selectedSubjectForTimer()) {
+    if (minutesStudied > 0 && this.selectedSubjectForTimer() && this.timerMode() === 'focus') {
       this.updateStudiedTime(this.selectedSubjectForTimer()!._id!, minutesStudied);
       
-      // Award points for completing timer session
-      const pointsEarned = minutesStudied * 2; // 2 points per minute studied
-      console.log(`Awarding ${pointsEarned} points`);
+      // Award points for partial session
+      const pointsEarned = minutesStudied * 2;
+      console.log(`Awarding ${pointsEarned} points for partial session`);
       
       this.authService.awardPoints(pointsEarned).subscribe({
         next: (res) => {
-          console.log('Points awarded successfully:', res);
           if (res.success) {
             Swal.fire({
-              icon: 'success',
-              title: `+${pointsEarned} Points! 🏆`,
-              text: `Total: ${res.totalPoints} points`,
+              icon: 'info',
+              title: 'Session interrompue',
+              html: `
+                <p>${minutesStudied} minutes complétées</p>
+                <p class="text-sm text-yellow-400">+${pointsEarned} points</p>
+              `,
               timer: 2000,
               showConfirmButton: false,
               background: '#1a1a1a',
@@ -395,25 +725,91 @@ export class DashboardComponent implements OnInit {
             });
           }
         },
-        error: (err) => {
-          console.error('Error awarding points:', err);
-          // Still show completion message even if points fail
-          Swal.fire({
-            icon: 'info',
-            title: 'Session terminée!',
-            text: `${minutesStudied} minutes complétées`,
-            timer: 2000,
-            showConfirmButton: false,
-            background: '#1a1a1a',
-            color: '#ffd700'
-          });
-        }
+        error: (err) => console.error('Error awarding points:', err)
       });
     }
     
-    this.timerMinutes.set(this.initialTimerMinutes());
-    this.timerSeconds.set(0);
-    this.selectedSubjectForTimer.set(null);
+    this.resetTimer();
+  }
+
+  openTimerSettings() {
+    this.showTimerSettings.set(true);
+  }
+
+  saveTimerSettings() {
+    // Validate settings
+    if (this.timerSettings.focusDuration < 1 || this.timerSettings.focusDuration > 60) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Erreur',
+        text: 'La durée de focus doit être entre 1 et 60 minutes',
+        background: '#1a1a1a',
+        color: '#ffd700',
+        confirmButtonColor: '#ffd700'
+      });
+      return;
+    }
+    
+    // Update initial timer with new settings
+    this.initialTimerMinutes.set(this.timerSettings.focusDuration);
+    this.timerMinutes.set(this.timerSettings.focusDuration);
+    
+    // Save to localStorage
+    localStorage.setItem('timerSettings', JSON.stringify(this.timerSettings));
+    
+    Swal.fire({
+      icon: 'success',
+      title: 'Paramètres sauvegardés!',
+      timer: 1500,
+      showConfirmButton: false,
+      background: '#1a1a1a',
+      color: '#ffd700'
+    });
+    
+    this.showTimerSettings.set(false);
+  }
+
+  loadTimerSettings() {
+    const saved = localStorage.getItem('timerSettings');
+    if (saved) {
+      try {
+        const settings = JSON.parse(saved);
+        this.timerSettings = { ...this.timerSettings, ...settings };
+        this.initialTimerMinutes.set(this.timerSettings.focusDuration);
+        this.timerMinutes.set(this.timerSettings.focusDuration);
+      } catch (e) {
+        console.error('Error loading timer settings:', e);
+      }
+    }
+  }
+
+  loadSessionsCompleted() {
+    const savedSessions = localStorage.getItem('sessionsCompleted');
+    const savedDate = localStorage.getItem('sessionsDate');
+    const today = new Date().toISOString().split('T')[0];
+    
+    if (savedSessions && savedDate === today) {
+      // Same day, restore session count
+      try {
+        const sessions = parseInt(savedSessions, 10);
+        this.sessionsCompleted.set(sessions);
+        console.log(`✅ Sessions restaurées: ${sessions}`);
+      } catch (e) {
+        console.error('Error loading sessions:', e);
+        this.sessionsCompleted.set(0);
+      }
+    } else {
+      // New day, reset sessions
+      this.sessionsCompleted.set(0);
+      this.saveSessionsCompleted();
+      console.log('🆕 Nouveau jour - Sessions réinitialisées');
+    }
+  }
+
+  saveSessionsCompleted() {
+    const today = new Date().toISOString().split('T')[0];
+    localStorage.setItem('sessionsCompleted', this.sessionsCompleted().toString());
+    localStorage.setItem('sessionsDate', today);
   }
 
   updateStudiedTime(subjectId: string, additionalMinutes: number) {
@@ -422,6 +818,9 @@ export class DashboardComponent implements OnInit {
       console.log('No day plan found, cannot update studied time');
       return;
     }
+    
+    // DEBUG: Log the received additionalMinutes
+    console.log(`🔍 updateStudiedTime called with additionalMinutes: ${additionalMinutes} (type: ${typeof additionalMinutes})`);
     
     // Handle both string and object subjectId
     const subjectPlan = plan.subjects.find(s => {
@@ -438,7 +837,7 @@ export class DashboardComponent implements OnInit {
     const newStudiedMinutes = currentMinutes + additionalMinutes;
     const goalMinutes = subjectPlan.goalMinutes || 0;
     
-    console.log(`Updating studied time for subject ${subjectId}: ${currentMinutes} + ${additionalMinutes} = ${newStudiedMinutes} minutes (goal: ${goalMinutes})`);
+    console.log(`📊 Updating studied time: current=${currentMinutes}min + additional=${additionalMinutes}min = new=${newStudiedMinutes}min (goal: ${goalMinutes}min)`);
     
     // Check if goal was just reached or surpassed
     const wasNotComplete = currentMinutes < goalMinutes;
@@ -453,25 +852,124 @@ export class DashboardComponent implements OnInit {
         if (wasNotComplete && isNowComplete && goalMinutes > 0) {
           const subjectInfo = this.getSubjectById(subjectId);
           const subjectName = subjectInfo ? subjectInfo.name : 'cette matière';
-          const bonusPoints = 50; // Bonus points for completing a subject goal
+          const subjectIcon = subjectInfo ? subjectInfo.icon : '📚';
+          const subjectColor = subjectInfo ? subjectInfo.color : '#ffd700';
+          const bonusPoints = 100; // Bonus points for completing a subject goal
+          
+          // Get next incomplete subject
+          const nextSubject = this.getNextIncompleteSubject(subjectId);
           
           // Award bonus points
           this.authService.awardPoints(bonusPoints).subscribe({
             next: (res) => {
               Swal.fire({
-                icon: 'success',
-                title: `🎉 Objectif atteint! 🎉`,
-                html: `<div style="font-size: 1.2em;">
-                  <p style="margin-bottom: 1rem;">Félicitations! Vous avez complété <strong style="color: #ffd700;">${subjectName}</strong>!</p>
-                  <p style="font-size: 2em; margin: 1rem 0;">⭐ +${bonusPoints} Points Bonus! ⭐</p>
-                  <p style="color: #10b981;">Total: ${res.totalPoints} points</p>
-                </div>`,
-                background: '#1a1a1a',
-                color: '#ffd700',
-                confirmButtonColor: '#ffd700',
-                confirmButtonText: 'Super! 🚀',
-                timer: 5000,
-                timerProgressBar: true
+                title: `
+                  <div style="margin-bottom: 1rem;">
+                    <div style="font-size: 5em; animation: bounce 1s ease-in-out infinite;">${subjectIcon}</div>
+                  </div>
+                  <div style="font-size: 2em; font-weight: bold; background: linear-gradient(135deg, #ffd700, #ffed4e, #ffd700); -webkit-background-clip: text; -webkit-text-fill-color: transparent; animation: shine 2s linear infinite;">
+                    Objectif Atteint! 🎉
+                  </div>
+                `,
+                html: `
+                  <style>
+                    @keyframes bounce {
+                      0%, 100% { transform: translateY(0) scale(1); }
+                      50% { transform: translateY(-20px) scale(1.1); }
+                    }
+                    @keyframes shine {
+                      0% { background-position: -200% center; }
+                      100% { background-position: 200% center; }
+                    }
+                    @keyframes pulse-glow {
+                      0%, 100% { box-shadow: 0 0 20px rgba(255, 215, 0, 0.5); }
+                      50% { box-shadow: 0 0 40px rgba(255, 215, 0, 0.8); }
+                    }
+                    .celebration-card {
+                      animation: pulse-glow 2s ease-in-out infinite;
+                    }
+                  </style>
+                  
+                  <div style="padding: 1.5rem;">
+                    <div style="background: linear-gradient(135deg, ${subjectColor}20, ${subjectColor}10); border: 2px solid ${subjectColor}; border-radius: 1rem; padding: 1.5rem; margin-bottom: 1.5rem; animation: pulse-glow 2s ease-in-out infinite;">
+                      <div style="font-size: 1.5em; color: ${subjectColor}; font-weight: bold; margin-bottom: 0.5rem;">
+                        ✅ ${subjectName}
+                      </div>
+                      <div style="font-size: 1.2em; color: #10b981;">
+                        🎯 Objectif complété!
+                      </div>
+                    </div>
+                    
+                    <div style="background: linear-gradient(135deg, #ffd70030, #ffed4e30); border: 3px solid #ffd700; border-radius: 1.5rem; padding: 2rem; margin: 1.5rem 0; position: relative; overflow: hidden;">
+                      <div style="position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.1) 50%, transparent 70%); animation: shine 3s linear infinite;"></div>
+                      <div style="position: relative; z-index: 1;">
+                        <div style="font-size: 1.2em; color: #a0a0a0; margin-bottom: 0.5rem;">🎁 Récompense</div>
+                        <div style="font-size: 4em; font-weight: bold; color: #ffd700; text-shadow: 0 0 30px rgba(255, 215, 0, 0.8), 0 0 60px rgba(255, 215, 0, 0.4);">
+                          +${bonusPoints}
+                        </div>
+                        <div style="font-size: 1.5em; color: #ffd700; font-weight: bold;">Points! 🏆</div>
+                        <div style="font-size: 0.9em; color: #a0a0a0; margin-top: 0.5rem;">
+                          Total: <span style="color: #ffd700; font-weight: bold;">${res.totalPoints}</span> points
+                        </div>
+                      </div>
+                    </div>
+                    
+                    ${nextSubject ? `
+                      <div style="background: linear-gradient(135deg, #3b82f620, #60a5fa20); border: 2px solid #3b82f6; border-radius: 1rem; padding: 1.5rem; margin-top: 1.5rem;">
+                        <div style="font-size: 1.3em; color: #60a5fa; font-weight: bold; margin-bottom: 1rem;">
+                          🚀 Prêt pour la suite?
+                        </div>
+                        <div style="display: flex; align-items: center; justify-content: center; gap: 1rem; background: ${nextSubject.color}20; padding: 1rem; border-radius: 0.75rem; border: 2px solid ${nextSubject.color}40;">
+                          <span style="font-size: 3em;">${nextSubject.icon}</span>
+                          <div style="text-align: left;">
+                            <div style="font-size: 1.2em; color: ${nextSubject.color}; font-weight: bold;">${nextSubject.name}</div>
+                            <div style="font-size: 0.9em; color: #9ca3af;">Prochaine matière</div>
+                          </div>
+                        </div>
+                        <div style="margin-top: 1rem; font-size: 1.1em; color: #60a5fa;">
+                          💪 Continue sur cette lancée!
+                        </div>
+                      </div>
+                    ` : `
+                      <div style="background: linear-gradient(135deg, #10b98120, #34d39920); border: 2px solid #10b981; border-radius: 1rem; padding: 1.5rem; margin-top: 1.5rem;">
+                        <div style="font-size: 2em; margin-bottom: 0.5rem;">🎊</div>
+                        <div style="font-size: 1.3em; color: #10b981; font-weight: bold;">
+                          Toutes les matières complétées!
+                        </div>
+                        <div style="font-size: 1em; color: #9ca3af; margin-top: 0.5rem;">
+                          Incroyable travail! 🌟
+                        </div>
+                      </div>
+                    `}
+                    
+                    <div style="margin-top: 1.5rem; padding: 1rem; background: rgba(59, 130, 246, 0.1); border-radius: 0.75rem; border: 1px solid rgba(59, 130, 246, 0.3);">
+                      <div style="font-size: 1em; color: #60a5fa;">
+                        ⚡ Tu es une machine! Continue comme ça!
+                      </div>
+                    </div>
+                  </div>
+                `,
+                confirmButtonText: nextSubject ? `🔥 Commencer ${nextSubject.name}!` : '🎉 Parfait!',
+                background: '#0a0a0a',
+                color: '#ffffff',
+                confirmButtonColor: nextSubject ? nextSubject.color : '#ffd700',
+                width: '90vw',
+                customClass: {
+                  popup: 'celebration-popup responsive-modal',
+                  confirmButton: 'celebration-button'
+                },
+                showClass: {
+                  popup: 'animate__animated animate__bounceIn'
+                },
+                hideClass: {
+                  popup: 'animate__animated animate__zoomOut animate__faster'
+                }
+              }).then((result) => {
+                // If user clicks to start next subject and next subject exists
+                if (result.isConfirmed && nextSubject) {
+                  // Start timer for next subject
+                  this.startTimer(nextSubject);
+                }
               });
             },
             error: (err) => {
@@ -584,22 +1082,185 @@ export class DashboardComponent implements OnInit {
     }
   }
 
-  toggleTodo(todo: Todo) {
+  async toggleTodo(todo: Todo) {
+    // If marking as done and has a subject, ask for study time
+    if (!todo.done && todo.subjectId) {
+      const subject = this.subjects().find(s => s._id === todo.subjectId);
+      
+      const result = await Swal.fire({
+        title: '⏱️ Temps d\'étude',
+        html: `
+          <div class="text-left">
+            <p class="mb-4 text-gray-300">Combien de temps avez-vous passé sur cette tâche?</p>
+            <div class="flex items-center justify-center gap-3 mb-4">
+              <button id="minus-btn" class="w-12 h-12 bg-gray-700 hover:bg-gray-600 rounded-lg text-white text-2xl">−</button>
+              <div class="px-6 py-3 bg-gray-800 rounded-xl">
+                <span id="time-display" class="text-3xl font-bold text-yellow-400">15</span>
+                <span class="text-gray-400 ml-2">min</span>
+              </div>
+              <button id="plus-btn" class="w-12 h-12 bg-gray-700 hover:bg-gray-600 rounded-lg text-white text-2xl">+</button>
+            </div>
+            ${subject ? `<p class="text-center text-sm text-gray-400">Matière: ${subject.icon} ${subject.name}</p>` : ''}
+          </div>
+        `,
+        showCancelButton: true,
+        confirmButtonText: '✅ Valider',
+        cancelButtonText: 'Annuler',
+        background: '#1a1a1a',
+        color: '#ffd700',
+        confirmButtonColor: '#ffd700',
+        cancelButtonColor: '#374151',
+        didOpen: () => {
+          let minutes = 15;
+          const display = document.getElementById('time-display');
+          const minusBtn = document.getElementById('minus-btn');
+          const plusBtn = document.getElementById('plus-btn');
+          
+          minusBtn?.addEventListener('click', () => {
+            if (minutes > 5) {
+              minutes -= 5;
+              display!.textContent = minutes.toString();
+            }
+          });
+          
+          plusBtn?.addEventListener('click', () => {
+            if (minutes < 300) {
+              minutes += 5;
+              display!.textContent = minutes.toString();
+            }
+          });
+          
+          // Store minutes in a data attribute
+          display?.setAttribute('data-minutes', minutes.toString());
+          minusBtn?.addEventListener('click', () => display?.setAttribute('data-minutes', minutes.toString()));
+          plusBtn?.addEventListener('click', () => display?.setAttribute('data-minutes', minutes.toString()));
+        },
+        preConfirm: () => {
+          const display = document.getElementById('time-display');
+          return parseInt(display?.getAttribute('data-minutes') || display?.textContent || '15');
+        }
+      });
+
+      if (result.isConfirmed && result.value) {
+        const studyMinutes = result.value;
+        
+        // Update studied time for this subject
+        this.dayPlanService.updateStudiedTime(this.today, todo.subjectId, studyMinutes).subscribe({
+          next: () => {
+            console.log(`✅ ${studyMinutes} minutes ajoutées à ${subject?.name}`);
+            this.loadDayPlan();
+            
+            // Then toggle the todo
+            this.proceedToggleTodo(todo, studyMinutes);
+          },
+          error: (err) => {
+            console.error('Error updating studied time:', err);
+            // Still toggle the todo even if time update fails
+            this.proceedToggleTodo(todo, studyMinutes);
+          }
+        });
+      }
+      // If canceled, don't toggle the todo
+      return;
+    }
+    
+    // If marking as not done, or no subject, just toggle
+    this.proceedToggleTodo(todo, 0);
+  }
+
+  private proceedToggleTodo(todo: Todo, studyMinutes: number) {
     this.todoService.toggleTodo(todo._id!).subscribe({
       next: () => {
         // Award points if marking as done (was not done before)
         if (!todo.done) {
-          this.authService.awardPoints(10).subscribe({
+          const basePoints = 10;
+          const timeBonus = Math.floor(studyMinutes / 15) * 5; // 5 points per 15 min
+          const totalPoints = basePoints + timeBonus;
+          
+          // Get subject info for personalized message
+          const subject = todo.subjectId ? this.subjects().find(s => s._id === todo.subjectId) : null;
+          
+          // Array of encouraging messages
+          const encouragingMessages = [
+            "Excellent travail! Continue comme ça! 🌟",
+            "Bravo! Tu es sur la bonne voie! 🚀",
+            "Fantastique! Chaque tâche complétée te rapproche de ton objectif! 💪",
+            "Super! Tu es un champion de la productivité! 🏆",
+            "Incroyable! Continue à avancer! ⭐",
+            "Magnifique! Tu es en feu! 🔥",
+            "Impressionnant! Rien ne peut t'arrêter! 💎",
+            "Génial! Tu es une machine à réussir! ⚡"
+          ];
+          
+          const randomMessage = encouragingMessages[Math.floor(Math.random() * encouragingMessages.length)];
+          
+          this.authService.awardPoints(totalPoints).subscribe({
             next: (res) => {
               if (res.success) {
                 Swal.fire({
-                  icon: 'success',
-                  title: '+10 Points! 🏆',
-                  text: `Total: ${res.totalPoints} points`,
-                  timer: 2000,
-                  showConfirmButton: false,
-                  background: '#1a1a1a',
-                  color: '#ffd700'
+                  title: `<div style="font-size: 2.5em; margin-bottom: 0.5rem;">🎉✨🎊</div>
+                          <div style="font-size: 1.8em; font-weight: bold; background: linear-gradient(135deg, #ffd700, #ffed4e); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                            Tâche Complétée!
+                          </div>`,
+                  html: `
+                    <div style="padding: 1rem;">
+                      ${subject ? `
+                        <div style="display: flex; align-items: center; justify-content: center; gap: 0.5rem; margin-bottom: 1rem; font-size: 1.2em;">
+                          <span style="font-size: 2em;">${subject.icon}</span>
+                          <span style="color: ${subject.color}; font-weight: bold;">${subject.name}</span>
+                        </div>
+                      ` : ''}
+                      
+                      <div style="background: linear-gradient(135deg, #1a1a1a, #2d2d2d); border-radius: 1rem; padding: 1.5rem; margin: 1rem 0; border: 2px solid #ffd700;">
+                        <div style="font-size: 1.5em; color: #10b981; margin-bottom: 0.5rem;">
+                          ${randomMessage}
+                        </div>
+                      </div>
+                      
+                      <div style="display: flex; justify-content: space-around; margin: 1.5rem 0; gap: 1rem;">
+                        <div style="background: rgba(255, 215, 0, 0.1); padding: 1rem; border-radius: 0.75rem; flex: 1; border: 1px solid rgba(255, 215, 0, 0.3);">
+                          <div style="font-size: 0.9em; color: #9ca3af; margin-bottom: 0.25rem;">Tâche</div>
+                          <div style="font-size: 1.5em; color: #ffd700; font-weight: bold;">+${basePoints} 🏆</div>
+                        </div>
+                        ${studyMinutes > 0 ? `
+                          <div style="background: rgba(16, 185, 129, 0.1); padding: 1rem; border-radius: 0.75rem; flex: 1; border: 1px solid rgba(16, 185, 129, 0.3);">
+                            <div style="font-size: 0.9em; color: #9ca3af; margin-bottom: 0.25rem;">Étude (${studyMinutes}min)</div>
+                            <div style="font-size: 1.5em; color: #10b981; font-weight: bold;">+${timeBonus} ⏱️</div>
+                          </div>
+                        ` : ''}
+                      </div>
+                      
+                      <div style="background: linear-gradient(135deg, rgba(255, 215, 0, 0.2), rgba(255, 237, 78, 0.2)); padding: 1.5rem; border-radius: 1rem; margin-top: 1rem; border: 2px solid #ffd700;">
+                        <div style="font-size: 3em; font-weight: bold; color: #ffd700; text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);">
+                          +${totalPoints} Points
+                        </div>
+                        <div style="font-size: 1.1em; color: #a0a0a0; margin-top: 0.5rem;">
+                          Total: <span style="color: #ffd700; font-weight: bold;">${res.totalPoints}</span> points
+                        </div>
+                      </div>
+                      
+                      <div style="margin-top: 1.5rem; padding: 1rem; background: rgba(59, 130, 246, 0.1); border-radius: 0.75rem; border: 1px solid rgba(59, 130, 246, 0.3);">
+                        <div style="font-size: 1.1em; color: #60a5fa;">
+                          💡 Continue sur cette lancée! La prochaine tâche t'attend! 
+                        </div>
+                      </div>
+                    </div>
+                  `,
+                  confirmButtonText: '🚀 Continuer!',
+                  background: '#0a0a0a',
+                  color: '#ffffff',
+                  confirmButtonColor: '#ffd700',
+                  width: '90vw',
+                  customClass: {
+                    popup: 'celebration-popup responsive-modal',
+                    confirmButton: 'celebration-button'
+                  },
+                  showClass: {
+                    popup: 'animate__animated animate__bounceIn animate__faster'
+                  },
+                  hideClass: {
+                    popup: 'animate__animated animate__zoomOut animate__faster'
+                  }
                 });
               }
             },
@@ -644,6 +1305,34 @@ export class DashboardComponent implements OnInit {
     return this.subjects().find(s => s._id === id);
   }
 
+  getNextIncompleteSubject(currentSubjectId: string): Subject | undefined {
+    const plan = this.dayPlan();
+    if (!plan) return undefined;
+
+    // Get all subjects with their completion status
+    const subjectsWithStatus = this.subjects().map(subject => {
+      const subjectPlan = plan.subjects.find(s => {
+        const sid = typeof s.subjectId === 'string' ? s.subjectId : s.subjectId._id;
+        return sid === subject._id;
+      });
+
+      return {
+        subject,
+        studiedMinutes: subjectPlan?.studiedMinutes || 0,
+        goalMinutes: subjectPlan?.goalMinutes || 0,
+        isComplete: subjectPlan ? subjectPlan.studiedMinutes >= subjectPlan.goalMinutes : false
+      };
+    });
+
+    // Find incomplete subjects (that have goals)
+    const incompleteSubjects = subjectsWithStatus.filter(s => 
+      !s.isComplete && s.goalMinutes > 0 && s.subject._id !== currentSubjectId
+    );
+
+    // Return the first incomplete subject, or undefined if all complete
+    return incompleteSubjects.length > 0 ? incompleteSubjects[0].subject : undefined;
+  }
+
   getSubjectIdString(subjectId: string | Subject): string {
     return typeof subjectId === 'string' ? subjectId : subjectId._id || '';
   }
@@ -653,15 +1342,87 @@ export class DashboardComponent implements OnInit {
   }
 
   decrementPlan(subjectId: string) {
+    // Always allow decreasing (removing sessions)
     this.planForm[subjectId] = Math.max(0, (this.planForm[subjectId] || 0) - 15);
   }
 
   incrementPlan(subjectId: string) {
-    this.planForm[subjectId] = (this.planForm[subjectId] || 0) + 15;
+    // If subject has existing sessions, allow increasing
+    if (this.hasSubjectSessions(subjectId)) {
+      this.planForm[subjectId] = (this.planForm[subjectId] || 0) + 15;
+      return;
+    }
+    
+    // If no sessions, redirect to calendar to create them
+    Swal.fire({
+      title: '📅 Utilisez le Calendrier',
+      html: `
+        <div style="text-align: left;">
+          <p style="margin-bottom: 15px;">Pour ajouter du temps d'étude à cette matière, vous devez créer des sessions dans le <strong style="color: #ffd700;">Calendrier</strong>.</p>
+          <p style="color: #10b981; margin-bottom: 10px;">✅ Avantages du calendrier:</p>
+          <ul style="list-style: none; padding-left: 0; color: #ffd700;">
+            <li>📍 Planifiez l'heure exacte de chaque session</li>
+            <li>⏱️ Définissez la durée précise</li>
+            <li>📊 Visualisez votre emploi du temps</li>
+            <li>✏️ Modifiez facilement par glisser-déposer</li>
+          </ul>
+        </div>
+      `,
+      icon: 'info',
+      confirmButtonText: '📅 Aller au Calendrier',
+      showCancelButton: true,
+      cancelButtonText: 'Plus tard',
+      confirmButtonColor: '#10b981',
+      cancelButtonColor: '#6b7280',
+      background: '#1a1a1a',
+      color: '#ffd700',
+      customClass: {
+        popup: 'swal-wide'
+      }
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.showPlanModal.set(false);
+        this.goToPlanner();
+      }
+    });
+  }
+
+  canIncrementSubject(subjectId: string): boolean {
+    // Can increment if subject has existing sessions OR return true always for UI
+    // The logic is handled in incrementPlan()
+    return true;
+  }
+
+  canDecrementSubject(subjectId: string): boolean {
+    return (this.planForm[subjectId] || 0) > 0;
   }
 
   getSubjectProgress(studiedMinutes: number, goalMinutes: number): number {
     return goalMinutes > 0 ? Math.round((studiedMinutes / goalMinutes) * 100) : 0;
+  }
+
+  hasSubjectSessions(subjectId: string): boolean {
+    const plan = this.dayPlan();
+    if (!plan) return false;
+    
+    const subject = plan.subjects.find(s => {
+      const sid = typeof s.subjectId === 'string' ? s.subjectId : s.subjectId._id;
+      return sid === subjectId;
+    });
+    
+    return !!(subject && subject.sessions && subject.sessions.length > 0);
+  }
+
+  getSubjectSessionCount(subjectId: string): number {
+    const plan = this.dayPlan();
+    if (!plan) return 0;
+    
+    const subject = plan.subjects.find(s => {
+      const sid = typeof s.subjectId === 'string' ? s.subjectId : s.subjectId._id;
+      return sid === subjectId;
+    });
+    
+    return subject?.sessions?.length || 0;
   }
 
   openStatsModal() {

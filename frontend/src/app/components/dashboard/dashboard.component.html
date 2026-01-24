@@ -171,10 +171,34 @@
 
         <!-- Timer Section -->
         <div class="bg-gradient-to-br from-gray-900 to-black border border-yellow-500/20 rounded-2xl p-6 shadow-2xl shadow-yellow-500/5">
-          <h2 class="text-2xl font-bold bg-gradient-to-r from-yellow-400 to-yellow-600 bg-clip-text text-transparent mb-6 flex items-center gap-2">
-            <span>⏱️</span>
-            Timer Pomodoro
-          </h2>
+          <div class="flex items-center justify-between mb-6">
+            <h2 class="text-2xl font-bold bg-gradient-to-r from-yellow-400 to-yellow-600 bg-clip-text text-transparent flex items-center gap-2">
+              <span>⏱️</span>
+              Timer Pomodoro
+            </h2>
+            <div class="flex items-center gap-3">
+              <!-- Session Counter -->
+              <div class="flex items-center gap-2 px-3 py-1 bg-blue-500/10 border border-blue-500/30 rounded-lg">
+                <span class="text-blue-400 text-sm font-semibold">{{ sessionsCompleted() }}/{{ currentSessionGoal() }}</span>
+                <span class="text-xs text-gray-400">sessions</span>
+              </div>
+              <!-- Settings Button -->
+              <button (click)="openTimerSettings()" class="p-2 hover:bg-yellow-500/20 rounded-lg text-yellow-400 transition-all" title="Paramètres du timer">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+              </button>
+            </div>
+          </div>
+          
+          <!-- Mode Indicator -->
+          @if (timerMode() === 'break') {
+            <div class="mb-4 p-3 bg-green-500/10 border border-green-500/30 rounded-xl flex items-center justify-center gap-2">
+              <span class="text-2xl animate-pulse">🧘</span>
+              <span class="text-green-400 font-semibold">Mode Pause - Détendez-vous!</span>
+            </div>
+          }
           
           <div class="flex flex-col items-center justify-center py-8">
             <div class="relative w-64 h-64 mb-6">
@@ -435,34 +459,87 @@
           📅 Planifier ma journée
         </h3>
         
-        <p class="text-gray-400 mb-6">Définissez vos objectifs d'étude pour chaque matière (en minutes)</p>
+        <div class="mb-4 p-4 bg-blue-500/10 border border-blue-500/30 rounded-xl">
+          <div class="flex items-start gap-3">
+            <span class="text-2xl">ℹ️</span>
+            <div class="flex-1 text-sm text-gray-300">
+              <p class="font-semibold text-blue-400 mb-2">💡 Comment ça marche:</p>
+              <ul class="space-y-1 list-none">
+                <li class="flex items-start gap-2">
+                  <span class="text-green-400">✅</span>
+                  <span>Matières <strong class="text-green-400">avec 📅</strong>: Vous pouvez <strong>augmenter</strong> ou <strong>diminuer</strong> le temps</span>
+                </li>
+                <li class="flex items-start gap-2">
+                  <span class="text-blue-400">➕</span>
+                  <span>Matières <strong>sans sessions</strong>: Cliquez sur <strong class="text-blue-400">+</strong> pour créer des sessions dans le Calendrier</span>
+                </li>
+                <li class="flex items-start gap-2">
+                  <span class="text-yellow-400">📅</span>
+                  <span>Dans le <strong>Calendrier</strong>, créez des sessions en glissant sur l'horaire désiré</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
         
         <div class="space-y-4">
           @for (subject of subjects(); track subject._id) {
-            <div class="p-4 bg-gray-800/50 border border-gray-700 rounded-xl">
+            <div class="p-4 bg-gray-800/50 border rounded-xl"
+                 [class.border-green-500]="hasSubjectSessions(subject._id!)"
+                 [class.border-gray-700]="!hasSubjectSessions(subject._id!)">
               <div class="flex items-center gap-4">
                 <div class="flex items-center gap-3 flex-1">
                   <span class="text-3xl">{{ subject.icon }}</span>
                   <div>
-                    <div [style.color]="subject.color" class="font-semibold">{{ subject.name }}</div>
-                    <div class="text-xs text-gray-500">Objectif en minutes</div>
+                    <div class="flex items-center gap-2">
+                      <div [style.color]="subject.color" class="font-semibold">{{ subject.name }}</div>
+                      @if (hasSubjectSessions(subject._id!)) {
+                        <span class="px-2 py-0.5 text-xs font-semibold rounded-full bg-green-500/20 text-green-400 flex items-center gap-1">
+                          📅 {{ getSubjectSessionCount(subject._id!) }} session(s)
+                        </span>
+                      }
+                    </div>
+                    <div class="text-xs">
+                      @if (hasSubjectSessions(subject._id!)) {
+                        <span class="text-green-400">✅ Peut augmenter ou diminuer</span>
+                      } @else {
+                        <span class="text-blue-400">📅 Cliquez + pour créer dans le Calendrier</span>
+                      }
+                    </div>
                   </div>
                 </div>
                 <div class="flex items-center gap-2">
                   <button type="button" 
                           (click)="decrementPlan(subject._id!)"
-                          class="w-10 h-10 bg-gray-700 hover:bg-gray-600 rounded-lg text-white font-bold transition-all">
+                          [disabled]="!canDecrementSubject(subject._id!)"
+                          class="w-10 h-10 rounded-lg text-white font-bold transition-all"
+                          [class.bg-gray-700]="canDecrementSubject(subject._id!)"
+                          [class.hover:bg-gray-600]="canDecrementSubject(subject._id!)"
+                          [class.bg-gray-800]="!canDecrementSubject(subject._id!)"
+                          [class.cursor-not-allowed]="!canDecrementSubject(subject._id!)"
+                          [class.opacity-50]="!canDecrementSubject(subject._id!)">
                     -
                   </button>
                   <input type="number" 
                          [(ngModel)]="planForm[subject._id!]"
                          min="0"
                          step="15"
-                         class="w-20 px-3 py-2 bg-black/50 border border-yellow-500/30 rounded-lg text-white text-center focus:outline-none focus:ring-2 focus:ring-yellow-500" />
+                         readonly
+                         class="w-20 px-3 py-2 bg-black/50 border border-yellow-500/30 rounded-lg text-white text-center cursor-not-allowed" />
                   <button type="button"
                           (click)="incrementPlan(subject._id!)"
-                          class="w-10 h-10 bg-yellow-500 hover:bg-yellow-600 rounded-lg text-black font-bold transition-all">
+                          [title]="!hasSubjectSessions(subject._id!) ? 'Cliquez pour créer des sessions dans le calendrier' : 'Augmenter le temps'"
+                          class="w-10 h-10 rounded-lg font-bold transition-all relative group"
+                          [class.bg-yellow-500]="hasSubjectSessions(subject._id!)"
+                          [class.hover:bg-yellow-600]="hasSubjectSessions(subject._id!)"
+                          [class.text-black]="hasSubjectSessions(subject._id!)"
+                          [class.bg-blue-500]="!hasSubjectSessions(subject._id!)"
+                          [class.hover:bg-blue-600]="!hasSubjectSessions(subject._id!)"
+                          [class.text-white]="!hasSubjectSessions(subject._id!)">
                     +
+                    @if (!hasSubjectSessions(subject._id!)) {
+                      <span class="absolute -top-1 -right-1 w-5 h-5 bg-green-500 rounded-full flex items-center justify-center text-xs">📅</span>
+                    }
                   </button>
                   <span class="text-sm text-gray-400 w-16">{{ formatTime(planForm[subject._id!] || 0) }}</span>
                 </div>
@@ -557,6 +634,229 @@
         <div class="flex gap-3 mt-6">
           <button (click)="showStatsModal.set(false)" class="flex-1 py-3 bg-gradient-to-r from-yellow-400 to-yellow-600 hover:from-yellow-500 hover:to-yellow-700 rounded-xl text-black font-semibold transition-all">
             Fermer
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Timer Settings Modal -->
+  @if (showTimerSettings()) {
+    <div class="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4" (click)="showTimerSettings.set(false)">
+      <div class="bg-gradient-to-br from-gray-900 to-black border border-yellow-500/20 rounded-2xl p-8 max-w-2xl w-full shadow-2xl" (click)="$event.stopPropagation()">
+        <h3 class="text-2xl font-bold bg-gradient-to-r from-yellow-400 to-yellow-600 bg-clip-text text-transparent mb-6 flex items-center gap-2">
+          ⚙️ Paramètres du Timer Pomodoro
+        </h3>
+        
+        <div class="space-y-6">
+          <!-- Grid 2x2 for timer durations -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- Focus Duration -->
+            <div class="p-4 bg-gray-800/50 border border-gray-700 rounded-xl hover:border-yellow-500/30 transition-all">
+              <label class="text-sm font-semibold text-yellow-400 mb-3 flex items-center gap-2">
+                🎯 Durée de Focus
+              </label>
+              <div class="flex items-center gap-3 mb-2">
+                <input type="range" 
+                       [(ngModel)]="timerSettings.focusDuration"
+                       min="1" 
+                       max="60" 
+                       step="1"
+                       class="flex-1 h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer slider-thumb" />
+                <div class="px-3 py-1.5 bg-yellow-500/20 border border-yellow-500/30 rounded-lg min-w-[70px] text-center">
+                  <span class="text-xl font-bold text-yellow-400">{{ timerSettings.focusDuration }}</span>
+                  <span class="text-xs text-gray-400 ml-0.5">min</span>
+                </div>
+              </div>
+              <p class="text-xs text-gray-400">Session de travail concentré</p>
+            </div>
+
+            <!-- Short Break -->
+            <div class="p-4 bg-gray-800/50 border border-gray-700 rounded-xl hover:border-green-500/30 transition-all">
+              <label class="text-sm font-semibold text-green-400 mb-3 flex items-center gap-2">
+                ☕ Pause Courte
+              </label>
+              <div class="flex items-center gap-3 mb-2">
+                <input type="range" 
+                       [(ngModel)]="timerSettings.shortBreakDuration"
+                       min="1" 
+                       max="15" 
+                       step="1"
+                       class="flex-1 h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" />
+                <div class="px-3 py-1.5 bg-green-500/20 border border-green-500/30 rounded-lg min-w-[70px] text-center">
+                  <span class="text-xl font-bold text-green-400">{{ timerSettings.shortBreakDuration }}</span>
+                  <span class="text-xs text-gray-400 ml-0.5">min</span>
+                </div>
+              </div>
+              <p class="text-xs text-gray-400">Pause après chaque session</p>
+            </div>
+
+            <!-- Long Break -->
+            <div class="p-4 bg-gray-800/50 border border-gray-700 rounded-xl hover:border-purple-500/30 transition-all">
+              <label class="text-sm font-semibold text-purple-400 mb-3 flex items-center gap-2">
+                🌟 Pause Longue
+              </label>
+              <div class="flex items-center gap-3 mb-2">
+                <input type="range" 
+                       [(ngModel)]="timerSettings.longBreakDuration"
+                       min="10" 
+                       max="30" 
+                       step="5"
+                       class="flex-1 h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" />
+                <div class="px-3 py-1.5 bg-purple-500/20 border border-purple-500/30 rounded-lg min-w-[70px] text-center">
+                  <span class="text-xl font-bold text-purple-400">{{ timerSettings.longBreakDuration }}</span>
+                  <span class="text-xs text-gray-400 ml-0.5">min</span>
+                </div>
+              </div>
+              <p class="text-xs text-gray-400">Pause après plusieurs sessions</p>
+            </div>
+
+            <!-- Sessions Before Long Break -->
+            <div class="p-4 bg-gray-800/50 border border-gray-700 rounded-xl hover:border-blue-500/30 transition-all">
+              <label class="text-sm font-semibold text-blue-400 mb-3 flex items-center gap-2">
+                🔄 Sessions avant Pause Longue
+              </label>
+              <div class="flex items-center gap-3 mb-2">
+                <input type="range" 
+                       [(ngModel)]="timerSettings.sessionsBeforeLongBreak"
+                       min="2" 
+                       max="8" 
+                       step="1"
+                       class="flex-1 h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" />
+                <div class="px-3 py-1.5 bg-blue-500/20 border border-blue-500/30 rounded-lg min-w-[70px] text-center">
+                  <span class="text-xl font-bold text-blue-400">{{ timerSettings.sessionsBeforeLongBreak }}</span>
+                  <span class="text-xs text-gray-400 ml-0.5">sess</span>
+                </div>
+              </div>
+              <p class="text-xs text-gray-400">Nombre de sessions avant pause longue</p>
+            </div>
+          </div>
+
+          <!-- Session Goal - Full Width -->
+          <div class="p-5 bg-gradient-to-r from-yellow-500/10 to-yellow-600/10 border-2 border-yellow-500/30 rounded-xl hover:border-yellow-500/50 transition-all">
+            <label class="text-base font-bold text-yellow-400 mb-4 flex items-center gap-2">
+              🎯 Objectif de Sessions Quotidiennes
+            </label>
+            <div class="flex items-center gap-4">
+              <input type="range" 
+                     [(ngModel)]="currentSessionGoal"
+                     min="1" 
+                     max="12" 
+                     step="1"
+                     class="flex-1 h-3 bg-gray-700 rounded-lg appearance-none cursor-pointer" />
+              <div class="px-6 py-3 bg-yellow-500/20 border-2 border-yellow-500/40 rounded-xl min-w-[100px] text-center">
+                <span class="text-3xl font-bold text-yellow-400">{{ currentSessionGoal() }}</span>
+                <span class="text-sm text-gray-400 ml-1">sessions</span>
+              </div>
+            </div>
+            <p class="text-sm text-gray-400 mt-3">🎯 Combien de sessions Pomodoro voulez-vous compléter aujourd'hui?</p>
+          </div>
+
+          <!-- Auto Start Options -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="p-4 bg-gray-800/50 border border-gray-700 rounded-xl">
+              <label class="flex items-center justify-between cursor-pointer">
+                <span class="text-sm text-gray-300 flex items-center gap-2">
+                  🚀 Auto-démarrer les pauses
+                </span>
+                <input type="checkbox" 
+                       [(ngModel)]="timerSettings.autoStartBreaks"
+                       class="w-5 h-5 rounded border-yellow-500 text-yellow-500 focus:ring-2 focus:ring-yellow-500 cursor-pointer" />
+              </label>
+            </div>
+            
+            <div class="p-4 bg-gray-800/50 border border-gray-700 rounded-xl">
+              <label class="flex items-center justify-between cursor-pointer">
+                <span class="text-sm text-gray-300 flex items-center gap-2">
+                  ⚡ Auto-démarrer le focus
+                </span>
+                <input type="checkbox" 
+                       [(ngModel)]="timerSettings.autoStartFocus"
+                       class="w-5 h-5 rounded border-yellow-500 text-yellow-500 focus:ring-2 focus:ring-yellow-500 cursor-pointer" />
+              </label>
+            </div>
+          </div>
+
+          <!-- Info Box -->
+          <div class="p-4 bg-blue-500/10 border border-blue-500/30 rounded-xl">
+            <div class="flex items-start gap-3">
+              <span class="text-2xl">💡</span>
+              <div class="flex-1 text-sm text-gray-300">
+                <p class="font-semibold text-blue-400 mb-2">Technique Pomodoro</p>
+                <p>Travaillez par intervalles de focus intense suivis de courtes pauses. Cette méthode améliore la concentration et la productivité!</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="flex gap-3 mt-6">
+          <button (click)="showTimerSettings.set(false)" class="flex-1 py-3 bg-gray-800 hover:bg-gray-700 rounded-xl text-white font-semibold transition-all">
+            Annuler
+          </button>
+          <button (click)="saveTimerSettings()" class="flex-1 py-3 bg-gradient-to-r from-yellow-400 to-yellow-600 hover:from-yellow-500 hover:to-yellow-700 rounded-xl text-black font-semibold transition-all">
+            💾 Enregistrer
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Relaxation Modal (During Break) -->
+  @if (showRelaxationModal()) {
+    <div class="fixed inset-0 bg-gradient-to-br from-green-900/50 to-blue-900/50 backdrop-blur-md flex items-center justify-center z-50 p-4">
+      <div class="bg-gradient-to-br from-gray-900/95 to-black/95 border-2 border-green-500/30 rounded-3xl p-12 max-w-2xl w-full shadow-2xl animate-pulse-slow">
+        <div class="text-center">
+          <!-- Animated Relaxation Icon -->
+          <div class="mb-8 relative">
+            <div class="text-9xl animate-bounce-slow inline-block">🧘</div>
+            <div class="absolute inset-0 flex items-center justify-center">
+              <div class="w-48 h-48 bg-green-500/20 rounded-full blur-3xl animate-pulse"></div>
+            </div>
+          </div>
+          
+          <h3 class="text-4xl font-bold bg-gradient-to-r from-green-400 to-blue-400 bg-clip-text text-transparent mb-4">
+            Temps de Pause
+          </h3>
+          
+          <p class="text-2xl text-gray-300 mb-8">Détendez-vous et rechargez vos batteries</p>
+          
+          <!-- Break Timer Display -->
+          <div class="mb-8 p-6 bg-green-500/10 border border-green-500/30 rounded-2xl">
+            <div class="text-7xl font-bold bg-gradient-to-r from-green-400 to-blue-400 bg-clip-text text-transparent">
+              {{ timerMinutes().toString().padStart(2, '0') }}:{{ timerSeconds().toString().padStart(2, '0') }}
+            </div>
+            <div class="text-sm text-gray-400 mt-2">Temps de pause restant</div>
+          </div>
+          
+          <!-- Relaxation Tips -->
+          <div class="grid grid-cols-2 gap-4 mb-8">
+            <div class="p-4 bg-blue-500/10 border border-blue-500/20 rounded-xl">
+              <div class="text-3xl mb-2">💧</div>
+              <div class="text-sm text-gray-300">Buvez de l'eau</div>
+            </div>
+            <div class="p-4 bg-green-500/10 border border-green-500/20 rounded-xl">
+              <div class="text-3xl mb-2">🚶</div>
+              <div class="text-sm text-gray-300">Marchez un peu</div>
+            </div>
+            <div class="p-4 bg-purple-500/10 border border-purple-500/20 rounded-xl">
+              <div class="text-3xl mb-2">👀</div>
+              <div class="text-sm text-gray-300">Reposez vos yeux</div>
+            </div>
+            <div class="p-4 bg-yellow-500/10 border border-yellow-500/20 rounded-xl">
+              <div class="text-3xl mb-2">🫁</div>
+              <div class="text-sm text-gray-300">Respirez profondément</div>
+            </div>
+          </div>
+          
+          <!-- Breathing Animation -->
+          <div class="flex items-center justify-center gap-2 text-gray-400 text-sm">
+            <div class="w-3 h-3 bg-green-400 rounded-full animate-ping"></div>
+            <span>Inspirez... Expirez... Détendez-vous</span>
+            <div class="w-3 h-3 bg-blue-400 rounded-full animate-ping animation-delay-1000"></div>
+          </div>
+          
+          <button (click)="stopTimer()" class="mt-8 px-6 py-3 bg-red-600/20 hover:bg-red-600/30 border border-red-500/30 rounded-xl text-red-400 font-semibold transition-all">
+            ⏹ Arrêter la pause
           </button>
         </div>
       </div>

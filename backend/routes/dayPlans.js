@@ -135,6 +135,9 @@ router.patch('/:date/subject/:subjectId', async (req, res) => {
     const { date, subjectId } = req.params;
     const { studiedMinutes } = req.body;
     
+    // DEBUG: Log the received value
+    console.log(`🔍 Backend received updateStudiedTime: date=${date}, subjectId=${subjectId}, studiedMinutes=${studiedMinutes} (type: ${typeof studiedMinutes})`);
+    
     const dayPlan = await DayPlan.findOne({ 
       date,
       user: req.user._id 
@@ -158,13 +161,22 @@ router.patch('/:date/subject/:subjectId', async (req, res) => {
       });
     }
     
+    // Calculate the difference (new minutes added)
+    const previousMinutes = subjectPlan.studiedMinutes || 0;
+    const minutesAdded = studiedMinutes - previousMinutes;
+    
+    console.log(`📊 Backend update: previous=${previousMinutes}min, new=${studiedMinutes}min, added=${minutesAdded}min`);
+    
+    // Replace with the new total (frontend already calculates the sum)
     subjectPlan.studiedMinutes = studiedMinutes;
     await dayPlan.save();
     
-    // Update subject stats
-    const subject = await Subject.findById(subjectId);
-    if (subject) {
-      await subject.updateStats(studiedMinutes);
+    // Update subject stats with only the NEW minutes
+    if (minutesAdded > 0) {
+      const subject = await Subject.findById(subjectId);
+      if (subject) {
+        await subject.updateStats(minutesAdded);
+      }
     }
     
     // Populate and return
