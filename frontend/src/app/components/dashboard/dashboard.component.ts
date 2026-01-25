@@ -52,6 +52,8 @@ export class DashboardComponent implements OnInit {
   // YouTube Player
   youtubePlayer: any = null;
   youtubePlayerReady = signal<boolean>(false);
+  private dateCheckInterval: any = null;
+  private lastKnownDate: string = this.formatLocalDate(new Date());
   
   // UI state
   showSubjectModal = signal<boolean>(false);
@@ -86,8 +88,10 @@ export class DashboardComponent implements OnInit {
 
   planForm: { [key: string]: number } = {};
   
-  // Date
-  today = new Date().toISOString().split('T')[0];
+  // Date - Always get current date dynamically
+  get today() {
+    return this.formatLocalDate(new Date());
+  }
   
   // Computed values
   totalGoalMinutes = computed(() => {
@@ -140,6 +144,7 @@ export class DashboardComponent implements OnInit {
   ngOnInit() {
     this.loadData();
     this.loadYouTubeAPI();
+    this.startDateCheck();
   }
 
   loadData() {
@@ -149,31 +154,96 @@ export class DashboardComponent implements OnInit {
     this.loadWeekStats();
     this.calculateStreak();
     this.loadTimerSettings();
+    this.lastKnownDate = this.formatLocalDate(new Date());
+  }
+
+  // Check if date has changed and reload data
+  startDateCheck() {
+    this.dateCheckInterval = setInterval(() => {
+      const currentDate = this.formatLocalDate(new Date());
+      if (currentDate !== this.lastKnownDate) {
+        console.log('🗓️ Nouveau jour détecté, rechargement des données...');
+        this.loadData();
+        this.lastKnownDate = currentDate;
+      }
+    }, 60000); // Check every minute
     this.loadSessionsCompleted();
   }
 
+  private formatLocalDate(date: Date): string {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
+
   loadWeekStats() {
-    // Get last 7 days statistics
-    const stats: { date: string; day: string; minutes: number; }[] = [];
-    for (let i = 6; i >= 0; i--) {
-      const date = new Date();
-      date.setDate(date.getDate() - i);
-      const dateStr = date.toISOString().split('T')[0];
-      
-      this.dayPlanService.getDayPlan(dateStr).subscribe({
-        next: (res) => {
-          if (res.success && res.data) {
-            const totalStudied = res.data.subjects.reduce((sum, s) => sum + s.studiedMinutes, 0);
+    // Get last 7 days statistics using range query
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const endDate = new Date(today);
+    const startDate = new Date(today);
+    startDate.setDate(today.getDate() - 6);
+    
+    const startStr = this.formatLocalDate(startDate);
+    const endStr = this.formatLocalDate(endDate);
+    
+    this.dayPlanService.getDayPlansRange(startStr, endStr).subscribe({
+      next: (res) => {
+        if (res.success && res.data) {
+          const stats: { date: string; day: string; minutes: number; }[] = [];
+          
+          // Create stat entry for each day in range
+          for (let i = 0; i < 7; i++) {
+            const date = new Date(today);
+            date.setDate(today.getDate() - 6 + i);
+            const dateStr = this.formatLocalDate(date);
+            
+            // Find plan for this date
+            const plan = res.data.find(p => p.date === dateStr);
+            const totalStudied = plan ? plan.subjects.reduce((sum, s) => sum + s.studiedMinutes, 0) : 0;
+            
             stats.push({
               date: dateStr,
               day: date.toLocaleDateString('fr-FR', { weekday: 'short' }),
               minutes: totalStudied
             });
-            this.weekStats.set([...stats].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()));
           }
+          
+          this.weekStats.set(stats);
+          console.log('📊 Week stats loaded:', stats);
+        } else {
+          // No data, fill with zeros
+          const stats: { date: string; day: string; minutes: number; }[] = [];
+          for (let i = 0; i < 7; i++) {
+            const date = new Date(today);
+            date.setDate(today.getDate() - 6 + i);
+            stats.push({
+              date: this.formatLocalDate(date),
+              day: date.toLocaleDateString('fr-FR', { weekday: 'short' }),
+              minutes: 0
+            });
+          }
+          this.weekStats.set(stats);
         }
-      });
-    }
+      },
+      error: (error) => {
+        console.error('❌ Error loading week stats:', error);
+        // Fill with zeros on error
+        const stats: { date: string; day: string; minutes: number; }[] = [];
+        for (let i = 0; i < 7; i++) {
+          const date = new Date(today);
+          date.setDate(today.getDate() - 6 + i);
+          stats.push({
+            date: this.formatLocalDate(date),
+            day: date.toLocaleDateString('fr-FR', { weekday: 'short' }),
+            minutes: 0
+          });
+        }
+        this.weekStats.set(stats);
+      }
+    });
   }
 
   calculateStreak() {
@@ -212,7 +282,8 @@ export class DashboardComponent implements OnInit {
   }
 
   loadDayPlan() {
-    this.dayPlanService.getDayPlan(this.today).subscribe({
+    const currentDate = this.formatLocalDate(new Date());
+    this.dayPlanService.getDayPlan(currentDate).subscribe({
       next: (res) => {
         if (res.success && res.data) {
           this.dayPlan.set(res.data);
@@ -223,7 +294,8 @@ export class DashboardComponent implements OnInit {
   }
 
   loadTodos() {
-    this.todoService.getTodos(this.today).subscribe({
+    const currentDate = this.formatLocalDate(new Date());
+    this.todoService.getTodos(currentDate).subscribe({
       next: (res) => {
         if (res.success && res.data) {
           this.todos.set(res.data);
@@ -265,6 +337,7 @@ export class DashboardComponent implements OnInit {
         Swal.fire({ icon: 'success', title: 'Succès', text: 'Matière enregistrée', background: '#1a1a1a', color: '#ffd700', confirmButtonColor: '#ffd700', timer: 1500, showConfirmButton: false });
         this.showSubjectModal.set(false);
         this.loadSubjects();
+        this.loadDayPlan(); // Reload current day plan to show updated data
       },
       error: (err) => {
         Swal.fire({ icon: 'error', title: 'Erreur', text: err.error?.message || 'Erreur', background: '#1a1a1a', color: '#ffd700', confirmButtonColor: '#ffd700' });
@@ -877,7 +950,7 @@ export class DashboardComponent implements OnInit {
   loadSessionsCompleted() {
     const savedSessions = localStorage.getItem('sessionsCompleted');
     const savedDate = localStorage.getItem('sessionsDate');
-    const today = new Date().toISOString().split('T')[0];
+    const today = this.formatLocalDate(new Date());
     
     if (savedSessions && savedDate === today) {
       // Same day, restore session count
@@ -898,7 +971,7 @@ export class DashboardComponent implements OnInit {
   }
 
   saveSessionsCompleted() {
-    const today = new Date().toISOString().split('T')[0];
+    const today = this.formatLocalDate(new Date());
     localStorage.setItem('sessionsCompleted', this.sessionsCompleted().toString());
     localStorage.setItem('sessionsDate', today);
   }
@@ -1683,6 +1756,10 @@ export class DashboardComponent implements OnInit {
     if (this.timerInterval) {
       clearInterval(this.timerInterval);
     }
+    if (this.dateCheckInterval) {
+      clearInterval(this.dateCheckInterval);
+    }
+    this.stopYouTubeAudio();
   }
 
   logout() {
