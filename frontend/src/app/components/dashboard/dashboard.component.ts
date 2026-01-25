@@ -8,11 +8,12 @@ import { DayPlanService } from '../../services/day-plan.service';
 import { TodoService } from '../../services/todo.service';
 import { Subject, DayPlan, Todo } from '../../models';
 import Swal from 'sweetalert2';
+import { LottieComponent, AnimationOptions } from 'ngx-lottie';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, LottieComponent],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.css'
 })
@@ -43,9 +44,14 @@ export class DashboardComponent implements OnInit {
     sessionsBeforeLongBreak: 4,
     autoStartBreaks: true,
     autoStartFocus: false,
+    relaxationAudioUrl: '',
     soundEnabled: true,
     notificationsEnabled: true
   };
+  
+  // YouTube Player
+  youtubePlayer: any = null;
+  youtubePlayerReady = signal<boolean>(false);
   
   // UI state
   showSubjectModal = signal<boolean>(false);
@@ -57,6 +63,13 @@ export class DashboardComponent implements OnInit {
   editingTodo = signal<Todo | null>(null);
   studyStreak = signal<number>(0);
   weekStats = signal<any[]>([]);
+  
+  // Lottie Animation Configuration
+  lottieOptions: AnimationOptions = {
+    path: 'assets/animations/CalmZen.json',
+    loop: true,
+    autoplay: true
+  };
   
   // Forms
   subjectForm = {
@@ -126,6 +139,7 @@ export class DashboardComponent implements OnInit {
 
   ngOnInit() {
     this.loadData();
+    this.loadYouTubeAPI();
   }
 
   loadData() {
@@ -603,6 +617,7 @@ export class DashboardComponent implements OnInit {
       
       if (result.isConfirmed) {
         this.showRelaxationModal.set(true);
+        this.playYouTubeAudio(); // Play audio during break
         this.initialTimerMinutes.set(breakDuration);
         this.startTimer(this.selectedSubjectForTimer()!, true, needsLongBreak);
       } else {
@@ -633,6 +648,7 @@ export class DashboardComponent implements OnInit {
       }
       
       this.showRelaxationModal.set(false);
+      this.stopYouTubeAudio(); // Stop audio when break ends
       this.resetTimer();
       
       if (this.timerSettings.autoStartFocus && this.selectedSubjectForTimer()) {
@@ -686,6 +702,7 @@ export class DashboardComponent implements OnInit {
     this.selectedSubjectForTimer.set(null);
     this.timerMode.set('focus');
     this.showRelaxationModal.set(false); // Fermer le modal de relaxation
+    this.stopYouTubeAudio(); // Stop audio if playing
   }
 
   pauseTimer() {
@@ -754,22 +771,55 @@ export class DashboardComponent implements OnInit {
     this.initialTimerMinutes.set(this.timerSettings.focusDuration);
     this.timerMinutes.set(this.timerSettings.focusDuration);
     
-    // Save to localStorage
+    // Save to localStorage immediately
     localStorage.setItem('timerSettings', JSON.stringify(this.timerSettings));
+    localStorage.setItem('currentSessionGoal', this.currentSessionGoal().toString());
     
-    Swal.fire({
-      icon: 'success',
-      title: 'Paramètres sauvegardés!',
-      timer: 1500,
-      showConfirmButton: false,
-      background: '#1a1a1a',
-      color: '#ffd700'
+    // Prepare ALL settings for database
+    const allSettings = {
+      pomodoroLength: this.timerSettings.focusDuration,
+      shortBreak: this.timerSettings.shortBreakDuration,
+      longBreak: this.timerSettings.longBreakDuration,
+      sessionsBeforeLongBreak: this.timerSettings.sessionsBeforeLongBreak,
+      autoStartBreaks: this.timerSettings.autoStartBreaks,
+      autoStartFocus: this.timerSettings.autoStartFocus,
+      dailySessionsGoal: this.currentSessionGoal(),
+      relaxationAudioUrl: this.timerSettings.relaxationAudioUrl
+    };
+    
+    // Save ALL settings to database
+    this.authService.updateTimerSettings(allSettings).subscribe({
+      next: (response) => {
+        console.log('✅ Tous les paramètres sauvegardés dans la base:', response.settings);
+        Swal.fire({
+          icon: 'success',
+          title: 'Paramètres sauvegardés!',
+          text: 'Synchronisés sur tous vos appareils',
+          timer: 1500,
+          showConfirmButton: false,
+          background: '#1a1a1a',
+          color: '#ffd700'
+        });
+      },
+      error: (error) => {
+        console.error('❌ Erreur sauvegarde base de données:', error);
+        Swal.fire({
+          icon: 'warning',
+          title: 'Paramètres sauvegardés localement',
+          text: 'Synchronisation avec le serveur échouée',
+          timer: 2000,
+          showConfirmButton: false,
+          background: '#1a1a1a',
+          color: '#ffd700'
+        });
+      }
     });
     
     this.showTimerSettings.set(false);
   }
 
   loadTimerSettings() {
+    // Load from localStorage as fallback
     const saved = localStorage.getItem('timerSettings');
     if (saved) {
       try {
@@ -781,6 +831,47 @@ export class DashboardComponent implements OnInit {
         console.error('Error loading timer settings:', e);
       }
     }
+    
+    const savedGoal = localStorage.getItem('currentSessionGoal');
+    if (savedGoal) {
+      this.currentSessionGoal.set(parseInt(savedGoal, 10));
+    }
+    
+    // Load ALL settings from database (priority)
+    this.authService.getTimerSettings().subscribe({
+      next: (response) => {
+        if (response.success && response.settings) {
+          const s = response.settings;
+          
+          // Map backend fields to frontend
+          this.timerSettings = {
+            focusDuration: s.pomodoroLength || 25,
+            shortBreakDuration: s.shortBreak || 5,
+            longBreakDuration: s.longBreak || 15,
+            sessionsBeforeLongBreak: s.sessionsBeforeLongBreak || 4,
+            autoStartBreaks: s.autoStartBreaks !== undefined ? s.autoStartBreaks : true,
+            autoStartFocus: s.autoStartFocus !== undefined ? s.autoStartFocus : false,
+            relaxationAudioUrl: s.relaxationAudioUrl || '',
+            soundEnabled: true,
+            notificationsEnabled: true
+          };
+          
+          this.currentSessionGoal.set(s.dailySessionsGoal || 4);
+          
+          // Update localStorage with fresh data
+          localStorage.setItem('timerSettings', JSON.stringify(this.timerSettings));
+          localStorage.setItem('currentSessionGoal', this.currentSessionGoal().toString());
+          
+          this.initialTimerMinutes.set(this.timerSettings.focusDuration);
+          this.timerMinutes.set(this.timerSettings.focusDuration);
+          
+          console.log('✅ Tous les paramètres chargés depuis la base de données');
+        }
+      },
+      error: (error) => {
+        console.warn('⚠️ Impossible de charger depuis la base, utilisation localStorage');
+      }
+    });
   }
 
   loadSessionsCompleted() {
@@ -1432,6 +1523,166 @@ export class DashboardComponent implements OnInit {
 
   goToPlanner() {
     this.router.navigate(['/planner']);
+  }
+
+  // Lottie Animation Callback
+  onAnimationCreated(animationItem: any): void {
+    console.log('🧘 Animation de relaxation chargée');
+    // L'animation est gérée automatiquement par ngx-lottie
+  }
+
+  // YouTube API Methods
+  loadYouTubeAPI() {
+    // Check if API is already loaded
+    if ((window as any).YT) {
+      this.youtubePlayerReady.set(true);
+      return;
+    }
+
+    // Load YouTube IFrame API
+    const tag = document.createElement('script');
+    tag.src = 'https://www.youtube.com/iframe_api';
+    const firstScriptTag = document.getElementsByTagName('script')[0];
+    firstScriptTag.parentNode!.insertBefore(tag, firstScriptTag);
+
+    // API ready callback
+    (window as any).onYouTubeIframeAPIReady = () => {
+      this.youtubePlayerReady.set(true);
+      console.log('✅ YouTube API loaded');
+    };
+  }
+
+  extractYouTubeVideoId(url: string): string | null {
+    if (!url) return null;
+    
+    // Support various YouTube URL formats
+    const patterns = [
+      /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&\n?#]+)/,
+      /^([a-zA-Z0-9_-]{11})$/ // Direct video ID
+    ];
+
+    for (const pattern of patterns) {
+      const match = url.match(pattern);
+      if (match && match[1]) {
+        return match[1];
+      }
+    }
+
+    return null;
+  }
+
+  playYouTubeAudio() {
+    if (!this.timerSettings.relaxationAudioUrl || !this.youtubePlayerReady()) {
+      return;
+    }
+
+    const videoId = this.extractYouTubeVideoId(this.timerSettings.relaxationAudioUrl);
+    
+    if (!videoId) {
+      console.warn('⚠️ Invalid YouTube URL');
+      return;
+    }
+
+    // Destroy existing player if any
+    if (this.youtubePlayer) {
+      this.youtubePlayer.destroy();
+    }
+
+    // Create hidden player container if it doesn't exist
+    let playerContainer = document.getElementById('youtube-audio-player');
+    if (!playerContainer) {
+      playerContainer = document.createElement('div');
+      playerContainer.id = 'youtube-audio-player';
+      playerContainer.style.display = 'none';
+      document.body.appendChild(playerContainer);
+    }
+
+    // Create YouTube player
+    this.youtubePlayer = new (window as any).YT.Player('youtube-audio-player', {
+      videoId: videoId,
+      playerVars: {
+        autoplay: 1,
+        controls: 0,
+        disablekb: 1,
+        fs: 0,
+        modestbranding: 1,
+        playsinline: 1
+      },
+      events: {
+        onReady: (event: any) => {
+          event.target.setVolume(50);
+          event.target.playVideo();
+          console.log('🎵 YouTube audio playing');
+        },
+        onError: (event: any) => {
+          console.error('❌ YouTube player error:', event.data);
+          Swal.fire({
+            icon: 'error',
+            title: 'Erreur Audio',
+            text: 'Impossible de lire la vidéo YouTube. Vérifiez le lien.',
+            background: '#1a1a1a',
+            color: '#ffd700',
+            timer: 3000
+          });
+        }
+      }
+    });
+  }
+
+  stopYouTubeAudio() {
+    if (this.youtubePlayer) {
+      this.youtubePlayer.stopVideo();
+      this.youtubePlayer.destroy();
+      this.youtubePlayer = null;
+      console.log('⏸️ YouTube audio stopped');
+    }
+  }
+
+  testYouTubeUrl() {
+    const videoId = this.extractYouTubeVideoId(this.timerSettings.relaxationAudioUrl);
+    
+    if (!videoId) {
+      Swal.fire({
+        icon: 'error',
+        title: 'URL Invalide',
+        text: 'Le lien YouTube n\'est pas valide',
+        background: '#1a1a1a',
+        color: '#ffd700'
+      });
+      return;
+    }
+
+    // Check if video exists
+    fetch(`https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${videoId}&format=json`)
+      .then(response => {
+        if (response.ok) {
+          Swal.fire({
+            icon: 'success',
+            title: 'URL Valide!',
+            text: 'La vidéo YouTube existe et sera jouée pendant les pauses',
+            background: '#1a1a1a',
+            color: '#ffd700',
+            timer: 2000
+          });
+        } else {
+          throw new Error('Video not found');
+        }
+      })
+      .catch(() => {
+        Swal.fire({
+          icon: 'error',
+          title: 'Vidéo Introuvable',
+          text: 'Cette vidéo YouTube n\'existe pas ou est privée',
+          background: '#1a1a1a',
+          color: '#ffd700'
+        });
+      });
+  }
+
+  ngOnDestroy() {
+    if (this.timerInterval) {
+      clearInterval(this.timerInterval);
+    }
   }
 
   logout() {

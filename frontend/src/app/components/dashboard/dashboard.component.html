@@ -741,7 +741,7 @@
               <input type="range" 
                      [(ngModel)]="currentSessionGoal"
                      min="1" 
-                     max="12" 
+                     max="30" 
                      step="1"
                      class="flex-1 h-3 bg-gray-700 rounded-lg appearance-none cursor-pointer" />
               <div class="px-6 py-3 bg-yellow-500/20 border-2 border-yellow-500/40 rounded-xl min-w-[100px] text-center">
@@ -777,6 +777,36 @@
             </div>
           </div>
 
+          <!-- YouTube Relaxation Audio URL -->
+          <div class="p-5 bg-gradient-to-r from-purple-500/10 to-pink-500/10 border-2 border-purple-500/30 rounded-xl hover:border-purple-500/50 transition-all">
+            <label class="text-base font-bold text-purple-400 mb-4 flex items-center gap-2">
+              🎵 Audio de Relaxation YouTube
+            </label>
+            <div class="space-y-3">
+              <div class="flex gap-2">
+                <input 
+                  type="text" 
+                  [(ngModel)]="timerSettings.relaxationAudioUrl"
+                  placeholder="https://youtube.com/watch?v=..."
+                  class="flex-1 px-4 py-3 bg-gray-800 border border-purple-500/30 rounded-xl text-white placeholder-gray-500 focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 outline-none transition-all"
+                />
+                <button 
+                  (click)="testYouTubeUrl()"
+                  class="px-6 py-3 bg-purple-600 hover:bg-purple-700 rounded-xl text-white font-semibold transition-all">
+                  🔍 Tester
+                </button>
+              </div>
+              <p class="text-xs text-gray-400">
+                🎧 Entrez un lien YouTube. L'audio sera joué en arrière-plan pendant vos pauses de relaxation.
+              </p>
+              <div class="flex gap-2 text-xs text-gray-500">
+                <span>Exemples:</span>
+                <code class="px-2 py-1 bg-gray-800 rounded">youtube.com/watch?v=ID</code>
+                <code class="px-2 py-1 bg-gray-800 rounded">youtu.be/ID</code>
+              </div>
+            </div>
+          </div>
+
           <!-- Info Box -->
           <div class="p-4 bg-blue-500/10 border border-blue-500/30 rounded-xl">
             <div class="flex items-start gap-3">
@@ -804,19 +834,29 @@
   <!-- Relaxation Modal (During Break) -->
   @if (showRelaxationModal()) {
     <div class="fixed inset-0 bg-gradient-to-br from-green-900/50 to-blue-900/50 backdrop-blur-md flex items-center justify-center z-50 p-4">
-      <div class="bg-gradient-to-br from-gray-900/95 to-black/95 border-2 border-green-500/30 rounded-3xl p-12 max-w-2xl w-full shadow-2xl animate-pulse-slow">
+      <div class="bg-gradient-to-br from-gray-900/95 to-black/95 border-2 border-green-500/30 rounded-3xl p-12 max-w-2xl w-full shadow-2xl">
         <div class="text-center">
-          <!-- Animated Relaxation Icon -->
-          <div class="mb-8 relative">
-            <div class="text-9xl animate-bounce-slow inline-block">🧘</div>
-            <div class="absolute inset-0 flex items-center justify-center">
-              <div class="w-48 h-48 bg-green-500/20 rounded-full blur-3xl animate-pulse"></div>
+          <!-- Lottie Animation avec ng-lottie -->
+          <div class="mb-8 relative flex justify-center">
+            <div class="lottie-relax-wrapper">
+              <ng-lottie 
+                [options]="lottieOptions"
+                (animationCreated)="onAnimationCreated($event)">
+              </ng-lottie>
             </div>
           </div>
           
           <h3 class="text-4xl font-bold bg-gradient-to-r from-green-400 to-blue-400 bg-clip-text text-transparent mb-4">
             Temps de Pause
           </h3>
+          
+          <!-- Audio Indicator -->
+          @if (timerSettings.relaxationAudioUrl) {
+            <div class="mb-4 flex items-center justify-center gap-2 text-purple-400">
+              <span class="animate-pulse">🎵</span>
+              <span class="text-sm">Audio de relaxation en cours...</span>
+            </div>
+          }
           
           <p class="text-2xl text-gray-300 mb-8">Détendez-vous et rechargez vos batteries</p>
           
@@ -830,19 +870,19 @@
           
           <!-- Relaxation Tips -->
           <div class="grid grid-cols-2 gap-4 mb-8">
-            <div class="p-4 bg-blue-500/10 border border-blue-500/20 rounded-xl">
+            <div class="p-4 bg-blue-500/10 border border-blue-500/20 rounded-xl hover:bg-blue-500/20 transition-all">
               <div class="text-3xl mb-2">💧</div>
               <div class="text-sm text-gray-300">Buvez de l'eau</div>
             </div>
-            <div class="p-4 bg-green-500/10 border border-green-500/20 rounded-xl">
+            <div class="p-4 bg-green-500/10 border border-green-500/20 rounded-xl hover:bg-green-500/20 transition-all">
               <div class="text-3xl mb-2">🚶</div>
               <div class="text-sm text-gray-300">Marchez un peu</div>
             </div>
-            <div class="p-4 bg-purple-500/10 border border-purple-500/20 rounded-xl">
+            <div class="p-4 bg-purple-500/10 border border-purple-500/20 rounded-xl hover:bg-purple-500/20 transition-all">
               <div class="text-3xl mb-2">👀</div>
               <div class="text-sm text-gray-300">Reposez vos yeux</div>
             </div>
-            <div class="p-4 bg-yellow-500/10 border border-yellow-500/20 rounded-xl">
+            <div class="p-4 bg-yellow-500/10 border border-yellow-500/20 rounded-xl hover:bg-yellow-500/20 transition-all">
               <div class="text-3xl mb-2">🫁</div>
               <div class="text-sm text-gray-300">Respirez profondément</div>
             </div>
@@ -855,7 +895,7 @@
             <div class="w-3 h-3 bg-blue-400 rounded-full animate-ping animation-delay-1000"></div>
           </div>
           
-          <button (click)="stopTimer()" class="mt-8 px-6 py-3 bg-red-600/20 hover:bg-red-600/30 border border-red-500/30 rounded-xl text-red-400 font-semibold transition-all">
+          <button (click)="stopTimer()" class="mt-8 px-6 py-3 bg-red-600/20 hover:bg-red-600/30 border border-red-500/30 rounded-xl text-red-400 font-semibold transition-all hover:scale-105">
             ⏹ Arrêter la pause
           </button>
         </div>

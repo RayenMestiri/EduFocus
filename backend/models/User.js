@@ -55,7 +55,12 @@ const UserSchema = new mongoose.Schema({
       pomodoroLength: { type: Number, default: 25, min: 5, max: 60 },
       shortBreak: { type: Number, default: 5, min: 1, max: 15 },
       longBreak: { type: Number, default: 15, min: 5, max: 30 },
-      dailyGoal: { type: Number, default: 120, min: 0 }
+      dailyGoal: { type: Number, default: 120, min: 0 },
+      dailySessionsGoal: { type: Number, default: 4, min: 1, max: 30 },
+      sessionsBeforeLongBreak: { type: Number, default: 4, min: 2, max: 8 },
+      autoStartBreaks: { type: Boolean, default: true },
+      autoStartFocus: { type: Boolean, default: false },
+      relaxationAudioUrl: { type: String, default: '' }
     }
   },
   stats: {

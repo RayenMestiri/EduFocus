@@ -152,5 +152,25 @@ export class AuthService {
       })
     );
   }
+
+  // Get all timer settings
+  getTimerSettings(): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/timer-settings`);
+  }
+
+  // Update all timer settings
+  updateTimerSettings(settings: any): Observable<any> {
+    return this.http.put<any>(`${this.apiUrl}/timer-settings`, settings);
+  }
+
+  // Get daily sessions goal
+  getSessionGoal(): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/session-goal`);
+  }
+
+  // Update daily sessions goal
+  updateSessionGoal(goal: number): Observable<any> {
+    return this.http.put<any>(`${this.apiUrl}/session-goal`, { dailySessionsGoal: goal });
+  }
 }
 

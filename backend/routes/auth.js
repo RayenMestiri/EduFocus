@@ -228,4 +228,210 @@ router.post('/award-points', async (req, res) => {
   }
 });
 
+// @route   GET /api/auth/timer-settings
+// @desc    Get all user timer settings
+// @access  Private
+router.get('/timer-settings', async (req, res) => {
+  try {
+    let token;
+    if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
+      token = req.headers.authorization.split(' ')[1];
+    }
+
+    if (!token) {
+      return res.status(401).json({
+        success: false,
+        message: 'Not authorized'
+      });
+    }
+
+    const jwt = require('jsonwebtoken');
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const user = await User.findById(decoded.id);
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found'
+      });
+    }
+
+    res.json({
+      success: true,
+      settings: user.preferences.studySettings
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Server error',
+      error: error.message
+    });
+  }
+});
+
+// @route   PUT /api/auth/timer-settings
+// @desc    Update all user timer settings
+// @access  Private
+router.put('/timer-settings', [
+  body('pomodoroLength').optional().isInt({ min: 5, max: 60 }).withMessage('Pomodoro length must be between 5 and 60'),
+  body('shortBreak').optional().isInt({ min: 1, max: 15 }).withMessage('Short break must be between 1 and 15'),
+  body('longBreak').optional().isInt({ min: 5, max: 30 }).withMessage('Long break must be between 5 and 30'),
+  body('sessionsBeforeLongBreak').optional().isInt({ min: 2, max: 8 }).withMessage('Sessions before long break must be between 2 and 8'),
+  body('autoStartBreaks').optional().isBoolean().withMessage('Auto start breaks must be boolean'),
+  body('autoStartFocus').optional().isBoolean().withMessage('Auto start focus must be boolean'),
+  body('dailySessionsGoal').optional().isInt({ min: 1, max: 30 }).withMessage('Daily sessions goal must be between 1 and 30'),
+  body('relaxationAudioUrl').optional().isString().withMessage('Relaxation audio URL must be a string')
+], async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({
+      success: false,
+      errors: errors.array()
+    });
+  }
+
+  try {
+    let token;
+    if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
+      token = req.headers.authorization.split(' ')[1];
+    }
+
+    if (!token) {
+      return res.status(401).json({
+        success: false,
+        message: 'Not authorized'
+      });
+    }
+
+    const jwt = require('jsonwebtoken');
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const user = await User.findById(decoded.id);
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found'
+      });
+    }
+
+    // Update only provided fields
+    const allowedFields = ['pomodoroLength', 'shortBreak', 'longBreak', 'sessionsBeforeLongBreak', 'autoStartBreaks', 'autoStartFocus', 'dailySessionsGoal', 'relaxationAudioUrl'];
+    allowedFields.forEach(field => {
+      if (req.body[field] !== undefined) {
+        user.preferences.studySettings[field] = req.body[field];
+      }
+    });
+
+    await user.save();
+
+    res.json({
+      success: true,
+      message: 'Timer settings updated',
+      settings: user.preferences.studySettings
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Server error',
+      error: error.message
+    });
+  }
+});
+
+// @route   GET /api/auth/session-goal
+// @desc    Get user daily sessions goal
+// @access  Private
+router.get('/session-goal', async (req, res) => {
+  try {
+    let token;
+    if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
+      token = req.headers.authorization.split(' ')[1];
+    }
+
+    if (!token) {
+      return res.status(401).json({
+        success: false,
+        message: 'Not authorized'
+      });
+    }
+
+    const jwt = require('jsonwebtoken');
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const user = await User.findById(decoded.id);
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found'
+      });
+    }
+
+    res.json({
+      success: true,
+      dailySessionsGoal: user.preferences.studySettings.dailySessionsGoal || 4
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Server error',
+      error: error.message
+    });
+  }
+});
+
+// @route   PUT /api/auth/session-goal
+// @desc    Update user daily sessions goal
+// @access  Private
+router.put('/session-goal', [
+  body('dailySessionsGoal').isInt({ min: 1, max: 30 }).withMessage('Daily sessions goal must be between 1 and 30')
+], async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({
+      success: false,
+      errors: errors.array()
+    });
+  }
+
+  try {
+    let token;
+    if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
+      token = req.headers.authorization.split(' ')[1];
+    }
+
+    if (!token) {
+      return res.status(401).json({
+        success: false,
+        message: 'Not authorized'
+      });
+    }
+
+    const jwt = require('jsonwebtoken');
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const user = await User.findById(decoded.id);
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found'
+      });
+    }
+
+    user.preferences.studySettings.dailySessionsGoal = req.body.dailySessionsGoal;
+    await user.save();
+
+    res.json({
+      success: true,
+      message: 'Daily sessions goal updated',
+      dailySessionsGoal: user.preferences.studySettings.dailySessionsGoal
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Server error',
+      error: error.message
+    });
+  }
+});
+
 module.exports = router;
