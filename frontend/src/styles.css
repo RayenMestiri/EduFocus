@@ -1,19 +1,71 @@
 /* You can add global styles to this file, and also import other style files */
+@import url('https://fonts.googleapis.com/icon?family=Material+Icons');
+@import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200');
+
+.material-icons,
+.material-symbols-outlined {
+  font-family: 'Material Icons', 'Material Symbols Outlined';
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  -moz-osx-font-smoothing: grayscale;
+  font-feature-settings: 'liga';
+}
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
+  /* Dark Mode (Default) */
   body {
-    @apply bg-black text-white;
+    @apply bg-black text-white transition-colors duration-300;
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  }
+
+  /* Light Mode */
+  .light body {
+    @apply bg-gradient-to-br from-gray-50 via-blue-50 to-white text-gray-900;
+  }
+
+  /* Material Icons styling */
+  .material-icons,
+  .material-symbols-outlined {
+    font-family: 'Material Icons', 'Material Symbols Outlined';
+    font-weight: normal;
+    font-style: normal;
+    font-size: 24px;
+    line-height: 1;
+    letter-spacing: normal;
+    text-transform: none;
+    display: inline-block;
+    white-space: nowrap;
+    word-wrap: normal;
+    direction: ltr;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    -moz-osx-font-smoothing: grayscale;
+    font-feature-settings: 'liga';
   }
 }
 
 @layer utilities {
-  /* Gold Text Gradient */
+  /* Gold Text Gradient (Dark Mode) */
   .text-gold-gradient {
     @apply text-transparent bg-clip-text bg-gradient-to-r from-gold-400 via-gold-500 to-amber-600;
+  }
+
+  /* Blue Text Gradient (Light Mode) */
+  .light .text-blue-gradient {
+    @apply text-transparent bg-clip-text bg-gradient-to-r from-premium-blue-400 via-premium-blue-500 to-premium-blue-600;
   }
   
   /* Premium Animations */
@@ -28,11 +80,26 @@
   
   .animate-shimmer {
     animation: shimmer 3s infinite linear;
+  }
+
+  /* Dark mode shimmer */
+  .dark .animate-shimmer {
     background: linear-gradient(
       90deg,
       rgba(255, 215, 0, 0) 0%,
       rgba(255, 215, 0, 0.3) 50%,
       rgba(255, 215, 0, 0) 100%
+    );
+    background-size: 1000px 100%;
+  }
+
+  /* Light mode shimmer */
+  .light .animate-shimmer {
+    background: linear-gradient(
+      90deg,
+      rgba(59, 130, 246, 0) 0%,
+      rgba(59, 130, 246, 0.3) 50%,
+      rgba(59, 130, 246, 0) 100%
     );
     background-size: 1000px 100%;
   }
@@ -63,44 +130,94 @@
     animation: glow 2s ease-in-out infinite;
   }
 
-  /* Custom Scrollbar - Gold/Black */
-  ::-webkit-scrollbar {
+  /* Light mode glow */
+  .light .animate-glow {
+    animation: glow-blue 2s ease-in-out infinite;
+  }
+
+  @keyframes glow-blue {
+    0%, 100% {
+      box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
+    }
+    50% {
+      box-shadow: 0 0 40px rgba(59, 130, 246, 0.6);
+    }
+  }
+
+  /* Custom Scrollbar - Dark Mode (Gold/Black) */
+  .dark ::-webkit-scrollbar {
     width: 12px;
   }
 
-  ::-webkit-scrollbar-track {
+  .dark ::-webkit-scrollbar-track {
     background: #0a0a0a;
   }
 
-  ::-webkit-scrollbar-thumb {
+  .dark ::-webkit-scrollbar-thumb {
     background: linear-gradient(180deg, #ffd700, #ffb300);
     border-radius: 6px;
   }
 
-  ::-webkit-scrollbar-thumb:hover {
+  .dark ::-webkit-scrollbar-thumb:hover {
     background: linear-gradient(180deg, #ffb300, #ff8f00);
+  }
+
+  /* Custom Scrollbar - Light Mode (Blue/White) */
+  .light ::-webkit-scrollbar {
+    width: 12px;
+  }
+
+  .light ::-webkit-scrollbar-track {
+    background: #f1f5f9;
+  }
+
+  .light ::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #3b82f6, #2563eb);
+    border-radius: 6px;
+  }
+
+  .light ::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, #2563eb, #1d4ed8);
   }
 }
 
-/* FullCalendar Global Styles - Force Black Text on White Background */
+/* FullCalendar Global Styles - Theme Aware */
 .fc {
   background: white !important;
 }
 
-.fc-toolbar-title {
+/* Dark Mode FullCalendar */
+.dark .fc-toolbar-title {
   color: #000000 !important;
   font-weight: 700 !important;
 }
 
-.fc-button {
+.dark .fc-button {
   background: #ffd700 !important;
   border-color: #ffd700 !important;
   color: #000000 !important;
 }
 
-.fc-button:hover {
+.dark .fc-button:hover {
   background: #ffb300 !important;
   border-color: #ffb300 !important;
+}
+
+/* Light Mode FullCalendar */
+.light .fc-toolbar-title {
+  color: #000000 !important;
+  font-weight: 700 !important;
+}
+
+.light .fc-button {
+  background: #3b82f6 !important;
+  border-color: #3b82f6 !important;
+  color: #ffffff !important;
+}
+
+.light .fc-button:hover {
+  background: #2563eb !important;
+  border-color: #2563eb !important;
 }
 
 .fc-col-header-cell {

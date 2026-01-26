@@ -19,10 +19,20 @@
 /* Celebration Popup Styles */
 .celebration-popup {
   animation: celebration-entrance 0.6s ease-out !important;
+  max-width: 520px !important;
+  width: 90vw !important;
+  max-height: 85vh !important;
+  overflow: hidden !important;
 }
 
 .responsive-modal {
-  max-width: 650px !important;
+  max-width: 520px !important;
+}
+
+.celebration-popup .swal2-html-container {
+  max-height: 60vh !important;
+  overflow-y: auto !important;
+  margin: 0 !important;
 }
 
 @media (max-width: 768px) {
