@@ -6,6 +6,7 @@ import { AuthService } from '../../services/auth.service';
 import { SubjectService } from '../../services/subject.service';
 import { DayPlanService } from '../../services/day-plan.service';
 import { TodoService } from '../../services/todo.service';
+import { ThemeService } from '../../services/theme.service';
 import { Subject, DayPlan, DayPlanSubject, Todo } from '../../models';
 
 // FullCalendar Imports
@@ -123,15 +124,73 @@ export class DayPlannerComponent implements OnInit {
       day: 'Jour',
       week: 'Semaine',
       month: 'Mois'
-    }
+    },
+    eventContent: this.renderEventContent.bind(this)
   });
+
+  // Custom render function for FullCalendar events with Material Icons
+  renderEventContent(arg: any) {
+    const icon = arg.event.extendedProps.icon || arg.event._def.extendedProps.icon;
+    const isCompleted = arg.event.extendedProps.isCompleted || arg.event._def.extendedProps.isCompleted;
+    
+    const container = document.createElement('div');
+    container.style.display = 'flex';
+    container.style.alignItems = 'center';
+    container.style.gap = '4px';
+    container.style.padding = '2px 4px';
+    container.style.overflow = 'hidden';
+    container.style.whiteSpace = 'nowrap';
+    container.style.textOverflow = 'ellipsis';
+
+    // Add completion checkmark if completed
+    if (isCompleted) {
+      const checkIcon = document.createElement('span');
+      checkIcon.className = 'material-icons';
+      checkIcon.textContent = 'check_circle';
+      checkIcon.style.fontSize = '16px';
+      checkIcon.style.color = '#ffffff';
+      container.appendChild(checkIcon);
+    }
+
+    // Add subject icon
+    if (icon) {
+      const iconSpan = document.createElement('span');
+      iconSpan.className = 'material-icons';
+      iconSpan.textContent = icon;
+      iconSpan.style.fontSize = '18px';
+      iconSpan.style.color = '#ffffff';
+      container.appendChild(iconSpan);
+    }
+
+    // Add time
+    const timeSpan = document.createElement('span');
+    timeSpan.style.fontSize = '12px';
+    timeSpan.style.fontWeight = '600';
+    timeSpan.style.color = '#ffffff';
+    timeSpan.textContent = arg.timeText;
+    container.appendChild(timeSpan);
+
+    // Add title
+    const titleSpan = document.createElement('span');
+    titleSpan.style.fontSize = '13px';
+    titleSpan.style.fontWeight = '600';
+    titleSpan.style.color = '#ffffff';
+    titleSpan.style.marginLeft = '4px';
+    titleSpan.style.overflow = 'hidden';
+    titleSpan.style.textOverflow = 'ellipsis';
+    titleSpan.textContent = arg.event.title;
+    container.appendChild(titleSpan);
+
+    return { domNodes: [container] };
+  }
 
   constructor(
     private authService: AuthService,
     private subjectService: SubjectService,
     private dayPlanService: DayPlanService,
     private todoService: TodoService,
-    private router: Router
+    private router: Router,
+    public themeService: ThemeService
   ) {}
 
   ngOnInit() {
@@ -272,13 +331,14 @@ export class DayPlannerComponent implements OnInit {
       const isCompleted = session.completed;
       const backgroundColor = isCompleted ? '#10b981' : session.subjectColor; // Green for completed
       const borderColor = isCompleted ? '#059669' : session.subjectColor;
-      const title = isCompleted 
-        ? `✅ ${session.subjectIcon} ${session.subjectName}` 
-        : `${session.subjectIcon} ${session.subjectName}`;
+      const title = session.subjectName; // Just the name, icon will be rendered separately
 
       return {
         id: session.id || `${session.subjectId}-${session.startTime}`,
         title: title,
+        // Store icon and completion status for custom rendering
+        icon: session.subjectIcon,
+        isCompleted: isCompleted,
         start: startDateTime,
         end: endDateTime,
         backgroundColor: backgroundColor,
@@ -314,15 +374,15 @@ export class DayPlannerComponent implements OnInit {
     Swal.fire({
       title: 'Nouvelle session d\'étude',
       html: `
-        <select id="subject-select" class="swal2-input" style="width: 80%">
-          <option value="">Sélectionnez une matière</option>
-          ${subjects.map(s => `<option value="${s._id}">${s.icon} ${s.name}</option>`).join('')}
+        <select id="subject-select" class="swal2-input" style="width: 90%; padding: 14px 16px; font-size: 16px; height: auto; min-height: 48px; margin: 20px auto; display: block; border: 2px solid #3b82f6; border-radius: 8px; background-color: white; color: #1f2937;">
+          <option value="" style="padding: 10px; font-size: 16px;">Sélectionnez une matière</option>
+          ${subjects.map(s => `<option value="${s._id}" style="padding: 10px; font-size: 16px;">${s.name}</option>`).join('')}
         </select>
       `,
       showCancelButton: true,
       confirmButtonText: 'Créer',
       cancelButtonText: 'Annuler',
-      confirmButtonColor: '#ffd700',
+      confirmButtonColor: '#3b82f6',
       preConfirm: () => {
         const select = document.getElementById('subject-select') as HTMLSelectElement;
         if (!select.value) {
@@ -386,7 +446,7 @@ export class DayPlannerComponent implements OnInit {
     const session: StudySession = clickInfo.event.extendedProps['session'];
 
     Swal.fire({
-      title: `${session.subjectIcon} ${session.subjectName}`,
+      title: session.subjectName,
       html: `
         <div style="text-align: left; padding: 1rem;">
           <p><strong>🕐 Horaire:</strong> ${session.startTime} - ${session.endTime}</p>
@@ -529,7 +589,7 @@ export class DayPlannerComponent implements OnInit {
       viewStart = new Date(viewStart);
       viewStart.setDate(viewStart.getDate() + mondayOffset);
       viewEnd = new Date(viewStart);
-      viewEnd.setDate(viewEnd.getDate() + 6); // Sunday of current week
+      viewEnd.setDate(viewEnd.getDate() + 7); // Exclusive end (next Monday)
     }
     
     viewStart.setHours(12, 0, 0, 0);
