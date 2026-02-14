@@ -1,45 +1,48 @@
-<div class="min-h-screen bg-black text-white">
+<div class="min-h-screen dark:bg-black dark:text-white light:bg-gradient-to-br light:from-indigo-50/50 light:via-white light:to-violet-50/50 light:text-slate-800 transition-colors duration-300">
   <!-- Premium Header -->
-  <header class="sticky top-0 z-50 bg-black/80 backdrop-blur-xl border-b border-yellow-500/20 shadow-2xl shadow-yellow-500/10">
+  <header class="sticky top-0 z-50 dark:bg-black/80 light:bg-white/90 backdrop-blur-xl dark:border-b dark:border-yellow-500/20 light:border-b light:border-indigo-200/60 dark:shadow-2xl dark:shadow-yellow-500/10 light:shadow-xl light:shadow-indigo-500/8">
     <div class="container mx-auto px-4 py-4">
       <div class="flex items-center justify-between">
         <div class="flex items-center gap-4">
-          <div class="w-12 h-12 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-xl flex items-center justify-center shadow-lg shadow-yellow-500/50">
-            <span class="text-2xl">🎓</span>
+          <div class="w-12 h-12 dark:bg-gradient-to-br dark:from-yellow-400 dark:to-yellow-600 light:bg-gradient-to-br light:from-indigo-500 light:to-violet-600 rounded-xl flex items-center justify-center dark:shadow-lg dark:shadow-yellow-500/50 light:shadow-lg light:shadow-indigo-500/40">
+            <span class="material-icons text-3xl dark:text-black light:text-white">school</span>
           </div>
           <div>
-            <h1 class="text-3xl font-bold bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 bg-clip-text text-transparent">EduFocus</h1>
-            <p class="text-xs text-yellow-500/60">Premium Study Planner</p>
+            <h1 class="text-3xl font-bold dark:bg-gradient-to-r dark:from-yellow-400 dark:via-yellow-500 dark:to-yellow-600 light:bg-gradient-to-r light:from-indigo-600 light:via-violet-600 light:to-purple-600 bg-clip-text text-transparent">EduFocus</h1>
+            <p class="text-xs dark:text-yellow-500/60 light:text-indigo-500">Premium Study Planner</p>
           </div>
         </div>
         
         <div class="flex items-center gap-4">
-          <button (click)="goToPlanner()" class="px-4 py-2 bg-yellow-500/20 hover:bg-yellow-500/30 border border-yellow-500/30 rounded-xl text-yellow-400 transition-all duration-300 flex items-center gap-2">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-            </svg>
+          <!-- Theme Toggle Button -->
+            <button (click)="themeService.toggleTheme()" 
+              class="p-3 dark:bg-yellow-500/20 dark:hover:bg-yellow-500/30 dark:border-yellow-500/30 light:bg-indigo-50 light:hover:bg-indigo-100 light:border-indigo-200 border rounded-xl dark:text-yellow-400 light:text-indigo-600 transition-all duration-300 flex items-center gap-2 hover:scale-105 shadow-sm light:shadow-indigo-200/50"
+                  [title]="themeService.isDark() ? 'Passer en mode clair' : 'Passer en mode sombre'">
+            <span class="material-icons">{{ themeService.isDark() ? 'light_mode' : 'dark_mode' }}</span>
+          </button>
+
+          <button (click)="goToPlanner()" class="px-4 py-2 dark:bg-yellow-500/20 dark:hover:bg-yellow-500/30 dark:border-yellow-500/30 light:bg-indigo-50 light:hover:bg-indigo-100 light:border-indigo-200 border rounded-xl dark:text-yellow-400 light:text-indigo-600 transition-all duration-300 flex items-center gap-2 shadow-sm light:shadow-indigo-200/50">
+            <span class="material-icons text-xl">event</span>
             Planning
           </button>
           
           <!-- Points Display -->
-          <div class="px-4 py-2 bg-gradient-to-r from-yellow-500/20 to-yellow-600/20 border border-yellow-500/30 rounded-xl flex items-center gap-2">
-            <span class="text-2xl">🏆</span>
+          <div class="px-4 py-2 dark:bg-gradient-to-r dark:from-yellow-500/20 dark:to-yellow-600/20 dark:border-yellow-500/30 light:bg-gradient-to-r light:from-indigo-50 light:to-violet-50 light:border-indigo-200 border rounded-xl flex items-center gap-2 shadow-sm light:shadow-indigo-200/50">
+            <span class="material-icons text-2xl dark:text-yellow-400 light:text-indigo-500">emoji_events</span>
             <div class="flex flex-col">
-              <span class="text-xs text-yellow-500/60">Points</span>
-              <span class="text-lg font-bold text-yellow-400">{{ currentUser()?.stats?.points || 0 }}</span>
+              <span class="text-xs dark:text-yellow-500/60 light:text-indigo-500">Points</span>
+              <span class="text-lg font-bold dark:text-yellow-400 light:text-indigo-700">{{ currentUser()?.stats?.points || 0 }}</span>
             </div>
           </div>
           
           <div class="flex items-center gap-2">
-            <div class="w-10 h-10 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-full flex items-center justify-center text-black font-bold">
+            <div class="w-10 h-10 dark:bg-gradient-to-br dark:from-yellow-400 dark:to-yellow-600 light:bg-gradient-to-br light:from-indigo-500 light:to-violet-600 rounded-full flex items-center justify-center dark:text-black light:text-white font-bold">
               {{ currentUser()?.name ? currentUser()!.name.charAt(0).toUpperCase() : 'U' }}
             </div>
-            <span class="text-yellow-400 font-semibold">{{ currentUser()?.name }}</span>
+            <span class="dark:text-yellow-400 light:text-indigo-700 font-semibold">{{ currentUser()?.name }}</span>
           </div>
-          <button (click)="logout()" class="px-4 py-2 bg-gray-800 hover:bg-gray-700 rounded-xl text-white transition-all duration-300 flex items-center gap-2">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-            </svg>
+          <button (click)="logout()" class="px-4 py-2 dark:bg-gray-800 dark:hover:bg-gray-700 light:bg-white light:hover:bg-slate-50 border light:border-slate-200 rounded-xl dark:text-white light:text-slate-700 transition-all duration-300 flex items-center gap-2 shadow-sm light:shadow-slate-200/50">
+            <span class="material-icons text-xl">logout</span>
             Déconnexion
           </button>
         </div>
@@ -53,47 +56,43 @@
       
       <!-- Sidebar - Subjects -->
       <aside class="lg:col-span-1">
-        <div class="bg-gradient-to-br from-gray-900 to-black border border-yellow-500/20 rounded-2xl p-6 shadow-2xl shadow-yellow-500/5 sticky top-24">
-          <h2 class="text-xl font-bold bg-gradient-to-r from-yellow-400 to-yellow-600 bg-clip-text text-transparent mb-4 flex items-center gap-2">
-            <span>📚</span>
+        <div class="dark:bg-gradient-to-br dark:from-gray-900 dark:to-black light:bg-white/80 light:backdrop-blur-sm dark:border-yellow-500/20 light:border light:border-indigo-100 rounded-2xl p-6 dark:shadow-2xl dark:shadow-yellow-500/5 light:shadow-lg light:shadow-indigo-200/40 sticky top-24">
+          <h2 class="text-xl font-bold dark:bg-gradient-to-r dark:from-yellow-400 dark:to-yellow-600 light:bg-gradient-to-r light:from-indigo-600 light:to-violet-600 bg-clip-text text-transparent mb-4 flex items-center gap-2">
+            <span class="material-icons">menu_book</span>
             Matières
           </h2>
           
           <!-- Add Subject Button -->
-          <button (click)="openSubjectModal()" class="w-full py-3 bg-yellow-500/10 hover:bg-yellow-500/20 border border-yellow-500/30 rounded-xl text-yellow-500 font-medium transition-all duration-300 mb-4 flex items-center justify-center gap-2 hover:scale-105">
-            <span class="text-xl">+</span>
+          <button (click)="openSubjectModal()" class="w-full py-3 dark:bg-yellow-500/10 dark:hover:bg-yellow-500/20 dark:border-yellow-500/30 light:bg-indigo-50 light:hover:bg-indigo-100 light:border-indigo-200 border rounded-xl dark:text-yellow-500 light:text-indigo-600 font-medium transition-all duration-300 mb-4 flex items-center justify-center gap-2 hover:scale-105 shadow-sm light:shadow-indigo-100">
+            <span class="material-icons">add</span>
             Ajouter une matière
           </button>
           
           <!-- Subject List -->
           <div class="space-y-3">
             @for (subject of subjects(); track subject._id) {
-              <div [style.background]="'linear-gradient(to right, ' + subject.color + '10, ' + subject.color + '20)'" 
-                   [style.border-color]="subject.color + '40'"
-                   class="p-4 border rounded-xl hover:scale-105 transition-all duration-300 cursor-pointer group">
+              <div [style.background]="'linear-gradient(to right, ' + subject.color + '15, ' + subject.color + '08)'" 
+                   [style.border-color]="subject.color + '50'"
+                   class="p-4 border-2 rounded-xl hover:scale-102 transition-all duration-300 cursor-pointer group shadow-sm hover:shadow-md">
                 <div class="flex items-center justify-between">
                   <div class="flex items-center gap-3 flex-1">
-                    <span class="text-2xl">{{ subject.icon }}</span>
+                    <span class="material-icons text-3xl" [style.color]="subject.color" [style.filter]="themeService.isLight() ? 'saturate(1.2) brightness(0.9)' : ''">{{ subject.icon }}</span>
                     <div class="flex-1">
-                      <div [style.color]="subject.color" class="font-semibold">{{ subject.name }}</div>
+                      <div [style.color]="subject.color" [style.filter]="themeService.isLight() ? 'saturate(1.3) brightness(0.85)' : ''" class="font-semibold">{{ subject.name }}</div>
                     </div>
                   </div>
                   <div class="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <button (click)="openSubjectModal(subject)" class="p-1 hover:bg-white/10 rounded">
-                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                      </svg>
+                    <button (click)="openSubjectModal(subject)" class="p-1 dark:hover:bg-white/10 light:hover:bg-slate-200/80 rounded">
+                      <span class="material-icons text-lg dark:text-white light:text-slate-600">edit</span>
                     </button>
-                    <button (click)="deleteSubject(subject)" class="p-1 hover:bg-red-500/20 rounded text-red-400">
-                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                      </svg>
+                    <button (click)="deleteSubject(subject)" class="p-1 hover:bg-red-500/20 rounded text-red-500">
+                      <span class="material-icons text-lg">delete</span>
                     </button>
                   </div>
                 </div>
               </div>
             } @empty {
-              <p class="text-gray-500 text-center py-8">Aucune matière</p>
+              <p class="dark:text-gray-500 light:text-slate-400 text-center py-8">Aucune matière</p>
             }
           </div>
         </div>
@@ -103,100 +102,95 @@
       <div class="lg:col-span-3 space-y-6">
         
         <!-- Quick Access Card - Planning -->
-        <div class="bg-gradient-to-br from-yellow-500/10 to-yellow-600/10 border border-yellow-500/30 rounded-2xl p-6 hover:border-yellow-500/50 transition-all duration-300 group cursor-pointer" (click)="goToPlanner()">
+        <div class="dark:bg-gradient-to-br dark:from-yellow-500/10 dark:to-yellow-600/10 dark:border-yellow-500/30 light:bg-white/80 light:backdrop-blur-sm light:border light:border-indigo-200 rounded-2xl p-6 dark:hover:border-yellow-500/50 light:hover:border-indigo-400 transition-all duration-300 group cursor-pointer shadow-lg light:shadow-indigo-200/40" (click)="goToPlanner()">
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-4">
-              <div class="w-16 h-16 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-xl flex items-center justify-center shadow-lg shadow-yellow-500/50 group-hover:scale-110 transition-all duration-300">
-                <span class="text-3xl">📅</span>
+              <div class="w-16 h-16 dark:bg-gradient-to-br dark:from-yellow-400 dark:to-yellow-600 light:bg-gradient-to-br light:from-indigo-500 light:to-violet-600 rounded-xl flex items-center justify-center dark:shadow-lg dark:shadow-yellow-500/50 light:shadow-lg light:shadow-indigo-500/40 group-hover:scale-110 transition-all duration-300">
+                <span class="material-icons text-3xl dark:text-black light:text-white">calendar_today</span>
               </div>
               <div>
-                <h3 class="text-2xl font-bold bg-gradient-to-r from-yellow-400 to-yellow-600 bg-clip-text text-transparent">Planning Journalier</h3>
-                <p class="text-sm text-gray-400">Organisez vos sessions d'étude avec un calendrier interactif</p>
+                <h3 class="text-2xl font-bold dark:bg-gradient-to-r dark:from-yellow-400 dark:to-yellow-600 light:bg-gradient-to-r light:from-indigo-600 light:to-violet-600 bg-clip-text text-transparent">Planning Journalier</h3>
+                <p class="text-sm dark:text-gray-400 light:text-slate-600 font-medium">Organisez vos sessions d'étude avec un calendrier interactif</p>
               </div>
             </div>
-            <svg class="w-8 h-8 text-yellow-400 group-hover:translate-x-2 transition-all duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
-            </svg>
+            <span class="material-icons text-3xl dark:text-yellow-400 light:text-indigo-500 group-hover:translate-x-2 transition-all duration-300">arrow_forward</span>
           </div>
         </div>
         
         <!-- Stats Cards -->
         <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
           <!-- Today's Progress -->
-          <div class="relative overflow-hidden bg-gradient-to-br from-yellow-500/10 to-yellow-600/10 border border-yellow-500/30 rounded-2xl p-6 hover:border-yellow-500/50 transition-all duration-300 group cursor-pointer" (click)="openPlanModal()">
-            <div class="absolute top-0 right-0 w-32 h-32 bg-yellow-500/10 rounded-full blur-3xl group-hover:bg-yellow-500/20 transition-all duration-500"></div>
+          <div class="relative overflow-hidden dark:bg-gradient-to-br dark:from-yellow-500/10 dark:to-yellow-600/10 light:bg-gradient-to-br light:from-amber-50 light:to-orange-50 dark:border-yellow-500/30 light:border-amber-200 border rounded-2xl p-6 dark:hover:border-yellow-500/50 light:hover:border-amber-400 transition-all duration-300 group cursor-pointer shadow-lg light:shadow-amber-200/40" (click)="openPlanModal()">
+            <div class="absolute top-0 right-0 w-32 h-32 dark:bg-yellow-500/10 light:bg-amber-100 rounded-full blur-3xl dark:group-hover:bg-yellow-500/20 light:group-hover:bg-amber-200 transition-all duration-500"></div>
             <div class="relative">
-              <div class="text-5xl font-bold bg-gradient-to-r from-yellow-400 to-yellow-600 bg-clip-text text-transparent mb-2">{{ progressPercentage() }}%</div>
-              <div class="text-sm text-gray-400">Objectif du jour</div>
-              <div class="mt-3 h-2 bg-black rounded-full overflow-hidden">
-                <div class="h-full bg-gradient-to-r from-yellow-500 to-yellow-600 rounded-full transition-all duration-500" 
+              <div class="text-5xl font-bold dark:bg-gradient-to-r dark:from-yellow-400 dark:to-yellow-600 dark:bg-clip-text dark:text-transparent light:text-amber-600 mb-2">{{ progressPercentage() }}%</div>
+              <div class="text-sm dark:text-gray-400 light:text-slate-600 font-medium">Objectif du jour</div>
+              <div class="mt-3 h-2 dark:bg-black light:bg-amber-100 rounded-full overflow-hidden">
+                <div class="h-full dark:bg-gradient-to-r dark:from-yellow-500 dark:to-yellow-600 light:bg-gradient-to-r light:from-amber-400 light:to-orange-500 rounded-full transition-all duration-500" 
                      [style.width.%]="progressPercentage()"></div>
               </div>
-              <div class="mt-2 text-xs text-yellow-400">Cliquez pour planifier</div>
+              <div class="mt-2 text-xs dark:text-yellow-400 light:text-amber-600 font-semibold">Cliquez pour planifier</div>
             </div>
           </div>
           
           <!-- Studied Time -->
-          <div class="relative overflow-hidden bg-gradient-to-br from-green-500/10 to-green-600/10 border border-green-500/30 rounded-2xl p-6 hover:border-green-500/50 transition-all duration-300 group">
-            <div class="absolute top-0 right-0 w-32 h-32 bg-green-500/10 rounded-full blur-3xl group-hover:bg-green-500/20 transition-all duration-500"></div>
+          <div class="relative overflow-hidden dark:bg-gradient-to-br dark:from-green-500/10 dark:to-green-600/10 light:bg-gradient-to-br light:from-emerald-50 light:to-teal-50 dark:border-green-500/30 light:border-emerald-200 border rounded-2xl p-6 dark:hover:border-green-500/50 light:hover:border-emerald-400 transition-all duration-300 group shadow-lg light:shadow-emerald-200/40">
+            <div class="absolute top-0 right-0 w-32 h-32 dark:bg-green-500/10 light:bg-emerald-100 rounded-full blur-3xl dark:group-hover:bg-green-500/20 light:group-hover:bg-emerald-200 transition-all duration-500"></div>
             <div class="relative">
-              <div class="text-5xl font-bold bg-gradient-to-r from-green-400 to-green-600 bg-clip-text text-transparent mb-2">{{ formatTime(totalStudiedMinutes()) }}</div>
-              <div class="text-sm text-gray-400">Temps étudié</div>
-              <div class="mt-2 text-xs text-green-400">Sur {{ formatTime(totalGoalMinutes()) }} planifié</div>
+              <div class="text-5xl font-bold dark:bg-gradient-to-r dark:from-green-400 dark:to-green-600 dark:bg-clip-text dark:text-transparent light:text-emerald-600 mb-2">{{ formatTime(totalStudiedMinutes()) }}</div>
+              <div class="text-sm dark:text-gray-400 light:text-slate-600 font-medium">Temps étudié</div>
+              <div class="mt-2 text-xs dark:text-green-400 light:text-emerald-600 font-semibold">Sur {{ formatTime(totalGoalMinutes()) }} planifié</div>
             </div>
           </div>
           
           <!-- Tasks -->
-          <div class="relative overflow-hidden bg-gradient-to-br from-blue-500/10 to-blue-600/10 border border-blue-500/30 rounded-2xl p-6 hover:border-blue-500/50 transition-all duration-300 group">
-            <div class="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 rounded-full blur-3xl group-hover:bg-blue-500/20 transition-all duration-500"></div>
+          <div class="relative overflow-hidden dark:bg-gradient-to-br dark:from-blue-500/10 dark:to-blue-600/10 light:bg-gradient-to-br light:from-indigo-50 light:to-violet-50 dark:border-blue-500/30 light:border-indigo-200 border rounded-2xl p-6 dark:hover:border-blue-500/50 light:hover:border-indigo-400 transition-all duration-300 group shadow-lg light:shadow-indigo-200/40">
+            <div class="absolute top-0 right-0 w-32 h-32 dark:bg-blue-500/10 light:bg-indigo-100 rounded-full blur-3xl dark:group-hover:bg-blue-500/20 light:group-hover:bg-indigo-200 transition-all duration-500"></div>
             <div class="relative">
-              <div class="text-5xl font-bold bg-gradient-to-r from-blue-400 to-blue-600 bg-clip-text text-transparent mb-2">{{ completedTodos() }}/{{ totalTodos() }}</div>
-              <div class="text-sm text-gray-400">Tâches complétées</div>
-              <div class="mt-2 text-xs text-blue-400">{{ totalTodos() - completedTodos() }} restantes</div>
+              <div class="text-5xl font-bold dark:bg-gradient-to-r dark:from-blue-400 dark:to-blue-600 dark:bg-clip-text dark:text-transparent light:text-indigo-600 mb-2">{{ completedTodos() }}/{{ totalTodos() }}</div>
+              <div class="text-sm dark:text-gray-400 light:text-slate-600 font-medium">Tâches complétées</div>
+              <div class="mt-2 text-xs dark:text-blue-400 light:text-indigo-600 font-semibold">{{ totalTodos() - completedTodos() }} restantes</div>
             </div>
           </div>
 
           <!-- Study Streak -->
-          <div class="relative overflow-hidden bg-gradient-to-br from-purple-500/10 to-purple-600/10 border border-purple-500/30 rounded-2xl p-6 hover:border-purple-500/50 transition-all duration-300 group cursor-pointer" (click)="openStatsModal()">
-            <div class="absolute top-0 right-0 w-32 h-32 bg-purple-500/10 rounded-full blur-3xl group-hover:bg-purple-500/20 transition-all duration-500"></div>
+          <div class="relative overflow-hidden dark:bg-gradient-to-br dark:from-purple-500/10 dark:to-purple-600/10 light:bg-gradient-to-br light:from-violet-50 light:to-purple-50 dark:border-purple-500/30 light:border-violet-200 border rounded-2xl p-6 dark:hover:border-purple-500/50 light:hover:border-violet-400 transition-all duration-300 group cursor-pointer shadow-lg light:shadow-violet-200/40" (click)="openStatsModal()">
+            <div class="absolute top-0 right-0 w-32 h-32 dark:bg-purple-500/10 light:bg-violet-100 rounded-full blur-3xl dark:group-hover:bg-purple-500/20 light:group-hover:bg-violet-200 transition-all duration-500"></div>
             <div class="relative">
-              <div class="text-5xl font-bold bg-gradient-to-r from-purple-400 to-purple-600 bg-clip-text text-transparent mb-2 flex items-center gap-2">
-                🔥 {{ studyStreak() }}
+              <div class="text-5xl font-bold dark:bg-gradient-to-r dark:from-purple-400 dark:to-purple-600 dark:bg-clip-text dark:text-transparent light:text-violet-600 mb-2 flex items-center gap-2">
+                <span class="material-icons text-5xl dark:text-orange-400 light:text-orange-500">local_fire_department</span> {{ studyStreak() }}
               </div>
-              <div class="text-sm text-gray-400">Jours consécutifs</div>
-              <div class="mt-2 text-xs text-purple-400">Cliquez pour statistiques</div>
+              <div class="text-sm dark:text-gray-400 light:text-slate-600 font-medium">Jours consécutifs</div>
+              <div class="mt-2 text-xs dark:text-purple-400 light:text-violet-600 font-semibold">Cliquez pour statistiques</div>
             </div>
           </div>
         </div>
 
         <!-- Timer Section -->
-        <div class="bg-gradient-to-br from-gray-900 to-black border border-yellow-500/20 rounded-2xl p-6 shadow-2xl shadow-yellow-500/5">
+        <div class="dark:bg-gradient-to-br dark:from-gray-900 dark:to-black light:bg-white/80 light:backdrop-blur-sm dark:border-yellow-500/20 light:border light:border-indigo-100 rounded-2xl p-6 dark:shadow-2xl dark:shadow-yellow-500/5 light:shadow-lg light:shadow-indigo-200/40">
           <div class="flex items-center justify-between mb-6">
-            <h2 class="text-2xl font-bold bg-gradient-to-r from-yellow-400 to-yellow-600 bg-clip-text text-transparent flex items-center gap-2">
-              <span>⏱️</span>
+            <h2 class="text-2xl font-bold dark:bg-gradient-to-r dark:from-yellow-400 dark:to-yellow-600 light:bg-gradient-to-r light:from-indigo-600 light:to-violet-600 bg-clip-text text-transparent flex items-center gap-2">
+              <span class="material-icons text-3xl">timer</span>
               Timer Pomodoro
             </h2>
             <div class="flex items-center gap-3">
               <!-- Session Counter -->
-              <div class="flex items-center gap-2 px-3 py-1 bg-blue-500/10 border border-blue-500/30 rounded-lg">
-                <span class="text-blue-400 text-sm font-semibold">{{ sessionsCompleted() }}/{{ currentSessionGoal() }}</span>
-                <span class="text-xs text-gray-400">sessions</span>
+              <div class="flex items-center gap-2 px-3 py-1 dark:bg-blue-500/10 light:bg-indigo-50 dark:border-blue-500/30 light:border-indigo-200 border rounded-lg shadow-sm">
+                <span class="dark:text-blue-400 light:text-indigo-600 text-sm font-semibold">{{ sessionsCompleted() }}/{{ currentSessionGoal() }}</span>
+                <span class="text-xs dark:text-gray-400 light:text-slate-500">sessions</span>
               </div>
               <!-- Settings Button -->
-              <button (click)="openTimerSettings()" class="p-2 hover:bg-yellow-500/20 rounded-lg text-yellow-400 transition-all" title="Paramètres du timer">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                </svg>
+              <button (click)="openTimerSettings()" class="p-2 dark:hover:bg-yellow-500/20 light:hover:bg-blue-500/20 rounded-lg dark:text-yellow-400 light:text-blue-600 transition-all" title="Paramètres du timer">
+                <span class="material-icons">settings</span>
               </button>
             </div>
           </div>
           
           <!-- Mode Indicator -->
           @if (timerMode() === 'break') {
-            <div class="mb-4 p-3 bg-green-500/10 border border-green-500/30 rounded-xl flex items-center justify-center gap-2">
-              <span class="text-2xl animate-pulse">🧘</span>
-              <span class="text-green-400 font-semibold">Mode Pause - Détendez-vous!</span>
+            <div class="mb-4 p-3 dark:bg-green-500/10 light:bg-green-100 dark:border-green-500/30 light:border-green-400 border rounded-xl flex items-center justify-center gap-2 shadow-lg light:shadow-green-200/50">
+              <span class="material-icons text-3xl animate-pulse dark:text-green-400 light:text-green-600">self_improvement</span>
+              <span class="dark:text-green-400 light:text-green-700 font-semibold">Mode Pause - Détendez-vous!</span>
             </div>
           }
           
@@ -204,7 +198,7 @@
             <div class="relative w-64 h-64 mb-6">
               <!-- Circle Progress -->
               <svg class="transform -rotate-90 w-full h-full">
-                <circle cx="128" cy="128" r="120" stroke="currentColor" stroke-width="8" fill="none" class="text-gray-800" />
+                <circle cx="128" cy="128" r="120" stroke="currentColor" stroke-width="8" fill="none" class="dark:text-gray-800 light:text-gray-300" />
                 <circle cx="128" cy="128" r="120" 
                         stroke="url(#goldGradient)" 
                         stroke-width="8" 
@@ -221,11 +215,11 @@
                 </defs>
               </svg>
               <div class="absolute inset-0 flex flex-col items-center justify-center">
-                <div class="text-6xl font-bold bg-gradient-to-r from-yellow-400 to-yellow-600 bg-clip-text text-transparent">
+                <div class="text-6xl font-bold dark:bg-gradient-to-r dark:from-yellow-400 dark:to-yellow-600 light:bg-gradient-to-r light:from-blue-500 light:to-blue-700 bg-clip-text text-transparent">
                   {{ timerMinutes().toString().padStart(2, '0') }}:{{ timerSeconds().toString().padStart(2, '0') }}
                 </div>
                 @if (selectedSubjectForTimer()) {
-                  <div class="text-sm text-gray-400 mt-2">{{ selectedSubjectForTimer()!.name }}</div>
+                  <div class="text-sm dark:text-gray-400 light:text-gray-600 mt-2">{{ selectedSubjectForTimer()!.name }}</div>
                 }
               </div>
             </div>
@@ -234,26 +228,26 @@
               <div class="text-center">
                 <!-- Timer Duration Adjuster -->
                 <div class="flex items-center justify-center gap-3 mb-6">
-                  <button (click)="adjustTimer(-1)" 
-                          class="w-10 h-10 bg-gray-800 hover:bg-gray-700 rounded-lg flex items-center justify-center text-white transition-all duration-300 hover:scale-110">
-                    <span class="text-xl">−</span>
+                    <button (click)="adjustTimer(-1)" 
+                      class="w-10 h-10 dark:bg-gray-800 dark:hover:bg-gray-700 light:bg-white light:hover:bg-blue-50 border light:border-blue-300 rounded-lg flex items-center justify-center dark:text-white light:text-gray-800 transition-all duration-300 hover:scale-110 shadow-sm light:shadow-blue-200/60">
+                    <span class="material-icons">remove</span>
                   </button>
-                  <div class="px-6 py-3 bg-gray-800 rounded-xl">
-                    <span class="text-2xl font-bold text-yellow-400">{{ initialTimerMinutes() }} min</span>
+                  <div class="px-6 py-3 dark:bg-gray-800 light:bg-white border light:border-blue-300 rounded-xl shadow-sm light:shadow-blue-200/60">
+                    <span class="text-2xl font-bold dark:text-yellow-400 light:text-blue-700">{{ initialTimerMinutes() }} min</span>
                   </div>
-                  <button (click)="adjustTimer(1)" 
-                          class="w-10 h-10 bg-gray-800 hover:bg-gray-700 rounded-lg flex items-center justify-center text-white transition-all duration-300 hover:scale-110">
-                    <span class="text-xl">+</span>
+                    <button (click)="adjustTimer(1)" 
+                      class="w-10 h-10 dark:bg-gray-800 dark:hover:bg-gray-700 light:bg-white light:hover:bg-blue-50 border light:border-blue-300 rounded-lg flex items-center justify-center dark:text-white light:text-gray-800 transition-all duration-300 hover:scale-110 shadow-sm light:shadow-blue-200/60">
+                    <span class="material-icons">add</span>
                   </button>
                 </div>
                 
-                <p class="text-gray-400 mb-4">Sélectionnez une matière pour commencer</p>
+                <p class="dark:text-gray-400 light:text-gray-700 mb-4 font-medium">Sélectionnez une matière pour commencer</p>
                 <div class="flex flex-wrap gap-2 justify-center">
                   @for (subject of subjects(); track subject._id) {
                     <button (click)="startTimer(subject)" 
                             [style.background]="'linear-gradient(to right, ' + subject.color + ', ' + subject.color + 'dd)'"
-                            class="px-4 py-2 rounded-xl text-black font-semibold hover:scale-105 transition-all duration-300 shadow-lg">
-                      {{ subject.icon }} {{ subject.name }}
+                            class="px-4 py-2 rounded-xl dark:text-black light:text-white font-semibold hover:scale-105 transition-all duration-300 shadow-lg flex items-center gap-2">
+                      <span class="material-icons" [style.color]="'inherit'">{{ subject.icon }}</span> {{ subject.name }}
                     </button>
                   }
                 </div>
@@ -261,16 +255,16 @@
             } @else {
               <div class="flex items-center gap-4">
                 @if (isTimerRunning()) {
-                  <button (click)="pauseTimer()" class="w-16 h-16 bg-gray-800 hover:bg-gray-700 rounded-full flex items-center justify-center text-2xl text-white shadow-lg transition-all duration-300 hover:scale-110">
-                    ⏸
+                  <button (click)="pauseTimer()" class="w-16 h-16 dark:bg-gray-800 dark:hover:bg-gray-700 light:bg-white light:hover:bg-blue-50 border light:border-blue-300 rounded-full flex items-center justify-center shadow-lg transition-all duration-300 hover:scale-110">
+                    <span class="material-icons text-3xl dark:text-white light:text-gray-800">pause</span>
                   </button>
                 } @else {
-                  <button (click)="startTimer(selectedSubjectForTimer()!)" class="w-16 h-16 bg-gradient-to-br from-yellow-500 to-yellow-600 hover:from-yellow-400 hover:to-yellow-500 rounded-full flex items-center justify-center text-2xl text-black shadow-lg shadow-yellow-500/50 transition-all duration-300 hover:scale-110">
-                    ▶
+                  <button (click)="startTimer(selectedSubjectForTimer()!)" class="w-16 h-16 dark:bg-gradient-to-br dark:from-yellow-500 dark:to-yellow-600 dark:hover:from-yellow-400 dark:hover:to-yellow-500 light:bg-gradient-to-br light:from-blue-500 light:to-blue-600 light:hover:from-blue-400 light:hover:to-blue-500 rounded-full flex items-center justify-center dark:shadow-lg dark:shadow-yellow-500/50 light:shadow-lg light:shadow-blue-500/50 transition-all duration-300 hover:scale-110">
+                    <span class="material-icons text-3xl dark:text-black light:text-white">play_arrow</span>
                   </button>
                 }
-                <button (click)="stopTimer()" class="w-12 h-12 bg-red-600 hover:bg-red-500 rounded-full flex items-center justify-center text-white transition-all duration-300">
-                  ⏹
+                <button (click)="stopTimer()" class="w-12 h-12 dark:bg-red-600 dark:hover:bg-red-500 light:bg-red-500 light:hover:bg-red-600 rounded-full flex items-center justify-center transition-all duration-300">
+                  <span class="material-icons dark:text-white light:text-white">stop</span>
                 </button>
               </div>
             }
@@ -278,58 +272,55 @@
         </div>
 
         <!-- To-Do List -->
-        <div class="bg-gradient-to-br from-gray-900 to-black border border-yellow-500/20 rounded-2xl p-6 shadow-2xl shadow-yellow-500/5">
+        <div class="dark:bg-gradient-to-br dark:from-gray-900 dark:to-black light:bg-white dark:border-yellow-500/20 light:border-2 light:border-blue-300 rounded-2xl p-6 dark:shadow-2xl dark:shadow-yellow-500/5 light:shadow-xl light:shadow-blue-200/60">
           <div class="flex items-center justify-between mb-6">
-            <h2 class="text-2xl font-bold bg-gradient-to-r from-yellow-400 to-yellow-600 bg-clip-text text-transparent flex items-center gap-2">
-              <span>✓</span>
+            <h2 class="text-2xl font-bold dark:bg-gradient-to-r dark:from-yellow-400 dark:to-yellow-600 light:bg-gradient-to-r light:from-blue-500 light:to-blue-700 bg-clip-text text-transparent flex items-center gap-2">
+              <span class="material-icons text-3xl">check_circle</span>
               To-Do List
             </h2>
-            <button (click)="openTodoModal()" class="px-4 py-2 bg-yellow-500/20 hover:bg-yellow-500/30 border border-yellow-500/30 rounded-lg text-yellow-500 font-medium transition-all duration-300 hover:scale-105">
+            <button (click)="openTodoModal()" class="px-4 py-2 dark:bg-yellow-500/20 dark:hover:bg-yellow-500/30 dark:border-yellow-500/30 light:bg-blue-100 light:hover:bg-blue-200 light:border-blue-300 border rounded-lg dark:text-yellow-500 light:text-blue-700 font-medium transition-all duration-300 hover:scale-105">
               + Ajouter
             </button>
           </div>
           
           <div class="space-y-3">
             @for (todo of todos(); track todo._id) {
-              <div class="p-4 bg-gray-800/50 border border-gray-700 rounded-xl flex items-center gap-3 hover:border-yellow-500/30 transition-all duration-300 group"
+              <div class="p-4 dark:bg-gray-800/50 light:bg-blue-50 dark:border-gray-700 light:border-blue-300 border rounded-xl flex items-center gap-3 dark:hover:border-yellow-500/30 light:hover:border-blue-400 transition-all duration-300 group shadow-sm light:shadow-blue-100"
                    [class.opacity-60]="todo.done"
-                   [class.border-green-500]="todo.done">
-                <input type="checkbox" 
-                       [(ngModel)]="todo.done"
-                       (ngModelChange)="toggleTodo(todo)"
-                       class="w-5 h-5 rounded border-yellow-500 text-yellow-500 focus:ring-2 focus:ring-yellow-500 cursor-pointer" />
+                   [class.border-green-500]="todo.done"
+                   [class.light:bg-green-50]="todo.done">
+                  <input type="checkbox" 
+                    [ngModel]="todo.done"
+                    (ngModelChange)="toggleTodo(todo, $event)"
+                       class="w-5 h-5 rounded dark:border-yellow-500 light:border-blue-500 dark:text-yellow-500 light:text-blue-500 focus:ring-2 dark:focus:ring-yellow-500 light:focus:ring-blue-500 cursor-pointer" />
                 <div class="flex-1">
                   <div [class.line-through]="todo.done" 
                        [class.text-gray-500]="todo.done"
-                       class="text-white group-hover:text-yellow-400 transition-colors">
+                       class="dark:text-white light:text-gray-900 dark:group-hover:text-yellow-400 light:group-hover:text-blue-700 transition-colors font-medium">
                     {{ todo.title }}
                   </div>
-                  <div class="text-xs text-gray-500">Priorité: {{ todo.priority }}</div>
+                  <div class="text-xs dark:text-gray-500 light:text-gray-600">Priorité: {{ todo.priority }}</div>
                 </div>
                 @if (todo.priority === 'urgent') {
-                  <span class="px-3 py-1 text-xs font-semibold rounded-full bg-purple-500/20 text-purple-400 animate-pulse">🔥 Urgent</span>
+                  <span class="px-3 py-1 text-xs font-semibold rounded-full dark:bg-purple-500/20 light:bg-purple-100 dark:text-purple-400 light:text-purple-700 animate-pulse flex items-center gap-1"><span class="material-icons text-sm">local_fire_department</span> Urgent</span>
                 } @else if (todo.priority === 'high') {
-                  <span class="px-3 py-1 text-xs font-semibold rounded-full bg-red-500/20 text-red-400">Haute</span>
+                  <span class="px-3 py-1 text-xs font-semibold rounded-full dark:bg-red-500/20 light:bg-red-100 dark:text-red-400 light:text-red-700">Haute</span>
                 } @else if (todo.priority === 'medium') {
-                  <span class="px-3 py-1 text-xs font-semibold rounded-full bg-yellow-500/20 text-yellow-400">Moyenne</span>
+                  <span class="px-3 py-1 text-xs font-semibold rounded-full dark:bg-yellow-500/20 light:bg-yellow-100 dark:text-yellow-400 light:text-yellow-700">Moyenne</span>
                 } @else {
-                  <span class="px-3 py-1 text-xs font-semibold rounded-full bg-green-500/20 text-green-400">Basse</span>
+                  <span class="px-3 py-1 text-xs font-semibold rounded-full dark:bg-green-500/20 light:bg-green-100 dark:text-green-400 light:text-green-700">Basse</span>
                 }
                 <div class="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-all">
-                  <button (click)="editTodo(todo)" class="p-2 hover:bg-yellow-500/20 rounded text-yellow-400 transition-all">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                    </svg>
+                  <button (click)="editTodo(todo)" class="p-2 dark:hover:bg-yellow-500/20 light:hover:bg-blue-100 rounded dark:text-yellow-400 light:text-blue-600 transition-all">
+                    <span class="material-icons text-xl">edit</span>
                   </button>
-                  <button (click)="deleteTodo(todo)" class="p-2 hover:bg-red-500/20 rounded text-red-400 transition-all">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                    </svg>
+                  <button (click)="deleteTodo(todo)" class="p-2 dark:hover:bg-red-500/20 light:hover:bg-red-100 rounded dark:text-red-400 light:text-red-600 transition-all">
+                    <span class="material-icons text-xl">delete</span>
                   </button>
                 </div>
               </div>
             } @empty {
-              <p class="text-gray-500 text-center py-8">Aucune tâche pour aujourd'hui</p>
+              <p class="dark:text-gray-500 light:text-gray-500 text-center py-8">Aucune tâche pour aujourd'hui</p>
             }
           </div>
         </div>
@@ -341,57 +332,72 @@
 
   <!-- Subject Modal -->
   @if (showSubjectModal()) {
-    <div class="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4" (click)="showSubjectModal.set(false)">
-      <div class="bg-gradient-to-br from-gray-900 to-black border border-yellow-500/20 rounded-2xl p-8 max-w-md w-full shadow-2xl" (click)="$event.stopPropagation()">
-        <h3 class="text-2xl font-bold bg-gradient-to-r from-yellow-400 to-yellow-600 bg-clip-text text-transparent mb-6">
+    <div class="fixed inset-0 dark:bg-black/80 light:bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4" (click)="showSubjectModal.set(false)">
+      <div class="dark:bg-gradient-to-br dark:from-gray-900 dark:to-black light:bg-white dark:border-yellow-500/20 light:border-2 light:border-blue-400 rounded-2xl p-8 max-w-md w-full dark:shadow-2xl light:shadow-2xl light:shadow-blue-300/50" (click)="$event.stopPropagation()">
+        <h3 class="text-2xl font-bold dark:bg-gradient-to-r dark:from-yellow-400 dark:to-yellow-600 light:bg-gradient-to-r light:from-blue-600 light:to-blue-700 bg-clip-text text-transparent mb-6">
           {{ editingSubject() ? 'Modifier' : 'Ajouter' }} une matière
         </h3>
         
         <div class="space-y-4">
           <div>
-            <label class="text-sm font-semibold text-gray-300 block mb-2">Nom</label>
+            <label class="text-sm font-semibold dark:text-gray-300 light:text-gray-800 block mb-2">Nom</label>
             <input type="text" 
                    [(ngModel)]="subjectForm.name"
                    placeholder="Ex: Mathématiques"
-                   class="w-full px-4 py-3 bg-black/50 border border-yellow-500/30 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-yellow-500" />
+                   class="w-full px-4 py-3 dark:bg-black/50 light:bg-blue-50 dark:border-yellow-500/30 light:border-2 light:border-blue-300 rounded-xl dark:text-white light:text-gray-900 dark:placeholder-gray-500 light:placeholder-gray-500 focus:outline-none dark:focus:ring-2 dark:focus:ring-yellow-500 light:focus:ring-2 light:focus:ring-blue-500" />
           </div>
           
           <div>
-            <label class="text-sm font-semibold text-gray-300 block mb-2">Icône</label>
+            <label class="text-sm font-semibold dark:text-gray-300 light:text-gray-700 block mb-2">Icône</label>
             <div class="grid grid-cols-6 gap-2">
               @for (icon of icons; track icon) {
                 <button type="button"
                         (click)="subjectForm.icon = icon"
                         [class.ring-2]="subjectForm.icon === icon"
-                        [class.ring-yellow-500]="subjectForm.icon === icon"
-                        class="text-3xl p-2 bg-gray-800 hover:bg-gray-700 rounded-lg transition-all">
-                  {{ icon }}
+                        [class.ring-yellow-500]="subjectForm.icon === icon && themeService.isDark()"
+                        [class.ring-blue-500]="subjectForm.icon === icon && themeService.isLight()"
+                        class="p-2 dark:bg-gray-800 dark:hover:bg-gray-700 light:bg-gray-100 light:hover:bg-gray-200 rounded-lg transition-all flex items-center justify-center">
+                  <span class="material-icons text-2xl dark:text-yellow-400 light:text-blue-600">{{ icon }}</span>
                 </button>
               }
             </div>
           </div>
           
           <div>
-            <label class="text-sm font-semibold text-gray-300 block mb-2">Couleur</label>
-            <div class="grid grid-cols-4 gap-2">
+            <label class="text-sm font-semibold dark:text-gray-300 light:text-gray-700 block mb-2">Couleur</label>
+            <div class="grid grid-cols-4 gap-3">
               @for (color of colors; track color) {
                 <button type="button"
                         (click)="subjectForm.color = color"
-                        [class.ring-2]="subjectForm.color === color"
-                        [class.ring-white]="subjectForm.color === color"
-                        class="w-full h-12 rounded-lg transition-all hover:scale-110"
+                        [class.ring-4]="subjectForm.color === color"
+                        [class.ring-white]="subjectForm.color === color && themeService.isDark()"
+                        [class.ring-blue-600]="subjectForm.color === color && themeService.isLight()"
+                        [class.scale-110]="subjectForm.color === color"
+                        [class.shadow-2xl]="subjectForm.color === color"
+                        class="relative w-full h-14 rounded-xl transition-all hover:scale-105 hover:shadow-lg border-2 dark:border-transparent light:border-gray-200"
                         [style.background]="color">
+                  @if (subjectForm.color === color) {
+                    <div class="absolute inset-0 flex items-center justify-center">
+                      <span class="material-icons text-3xl" [class.text-white]="color !== '#ffd700'" [class.text-black]="color === '#ffd700'">check_circle</span>
+                    </div>
+                  }
                 </button>
               }
             </div>
+            @if (subjectForm.color) {
+              <div class="mt-3 p-3 rounded-lg dark:bg-gray-800 light:bg-blue-50 flex items-center gap-2">
+                <div class="w-8 h-8 rounded-lg" [style.background]="subjectForm.color"></div>
+                <span class="text-sm font-medium dark:text-gray-300 light:text-blue-700">Couleur sélectionnée</span>
+              </div>
+            }
           </div>
         </div>
         
         <div class="flex gap-3 mt-6">
-          <button (click)="showSubjectModal.set(false)" class="flex-1 py-3 bg-gray-800 hover:bg-gray-700 rounded-xl text-white font-semibold transition-all">
+          <button (click)="showSubjectModal.set(false)" class="flex-1 py-3 dark:bg-gray-800 dark:hover:bg-gray-700 light:bg-gray-200 light:hover:bg-gray-300 rounded-xl dark:text-white light:text-gray-900 font-semibold transition-all">
             Annuler
           </button>
-          <button (click)="saveSubject()" class="flex-1 py-3 bg-gradient-to-r from-yellow-400 to-yellow-600 hover:from-yellow-500 hover:to-yellow-700 rounded-xl text-black font-semibold transition-all">
+          <button (click)="saveSubject()" class="flex-1 py-3 dark:bg-gradient-to-r dark:from-yellow-400 dark:to-yellow-600 dark:hover:from-yellow-500 dark:hover:to-yellow-700 light:bg-gradient-to-r light:from-blue-500 light:to-blue-700 light:hover:from-blue-600 light:hover:to-blue-800 rounded-xl dark:text-black light:text-white font-semibold transition-all">
             Enregistrer
           </button>
         </div>
@@ -401,25 +407,25 @@
 
   <!-- Todo Modal -->
   @if (showTodoModal()) {
-    <div class="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4" (click)="showTodoModal.set(false)">
-      <div class="bg-gradient-to-br from-gray-900 to-black border border-yellow-500/20 rounded-2xl p-8 max-w-md w-full shadow-2xl" (click)="$event.stopPropagation()">
-        <h3 class="text-2xl font-bold bg-gradient-to-r from-yellow-400 to-yellow-600 bg-clip-text text-transparent mb-6">
+    <div class="fixed inset-0 dark:bg-black/80 light:bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4" (click)="showTodoModal.set(false)">
+      <div class="dark:bg-gradient-to-br dark:from-gray-900 dark:to-black light:bg-white dark:border-yellow-500/20 light:border-blue-500/20 border rounded-2xl p-8 max-w-md w-full dark:shadow-2xl light:shadow-2xl" (click)="$event.stopPropagation()">
+        <h3 class="text-2xl font-bold dark:bg-gradient-to-r dark:from-yellow-400 dark:to-yellow-600 light:bg-gradient-to-r light:from-blue-500 light:to-blue-700 bg-clip-text text-transparent mb-6">
           {{ editingTodo() ? 'Modifier la tâche' : 'Ajouter une tâche' }}
         </h3>
         
         <div class="space-y-4">
           <div>
-            <label class="text-sm font-semibold text-gray-300 block mb-2">Titre</label>
+            <label class="text-sm font-semibold dark:text-gray-300 light:text-gray-700 block mb-2">Titre</label>
             <input type="text" 
                    [(ngModel)]="todoForm.title"
                    placeholder="Ex: Réviser chapitre 3"
-                   class="w-full px-4 py-3 bg-black/50 border border-yellow-500/30 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-yellow-500" />
+                   class="w-full px-4 py-3 dark:bg-black/50 light:bg-gray-100 dark:border-yellow-500/30 light:border-blue-500/30 border rounded-xl dark:text-white light:text-gray-900 dark:placeholder-gray-500 light:placeholder-gray-400 focus:outline-none dark:focus:ring-2 dark:focus:ring-yellow-500 light:focus:ring-2 light:focus:ring-blue-500" />
           </div>
           
           <div>
-            <label class="text-sm font-semibold text-gray-300 block mb-2">Priorité</label>
+            <label class="text-sm font-semibold dark:text-gray-300 light:text-gray-700 block mb-2">Priorité</label>
             <select [(ngModel)]="todoForm.priority" 
-                    class="w-full px-4 py-3 bg-black/50 border border-yellow-500/30 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-yellow-500">
+                    class="w-full px-4 py-3 dark:bg-black/50 light:bg-gray-100 dark:border-yellow-500/30 light:border-blue-500/30 border rounded-xl dark:text-white light:text-gray-900 focus:outline-none dark:focus:ring-2 dark:focus:ring-yellow-500 light:focus:ring-2 light:focus:ring-blue-500">
               <option value="low">Basse</option>
               <option value="medium">Moyenne</option>
               <option value="high">Haute</option>
@@ -428,22 +434,22 @@
           </div>
           
           <div>
-            <label class="text-sm font-semibold text-gray-300 block mb-2">Matière (optionnel)</label>
+            <label class="text-sm font-semibold dark:text-gray-300 light:text-gray-700 block mb-2">Matière (optionnel)</label>
             <select [(ngModel)]="todoForm.subjectId" 
-                    class="w-full px-4 py-3 bg-black/50 border border-yellow-500/30 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-yellow-500">
+                    class="w-full px-4 py-3 dark:bg-black/50 light:bg-gray-100 dark:border-yellow-500/30 light:border-blue-500/30 border rounded-xl dark:text-white light:text-gray-900 focus:outline-none dark:focus:ring-2 dark:focus:ring-yellow-500 light:focus:ring-2 light:focus:ring-blue-500">
               <option value="">Aucune</option>
               @for (subject of subjects(); track subject._id) {
-                <option [value]="subject._id">{{ subject.icon }} {{ subject.name }}</option>
+                <option [value]="subject._id">{{ subject.name }}</option>
               }
             </select>
           </div>
         </div>
         
         <div class="flex gap-3 mt-6">
-          <button (click)="showTodoModal.set(false)" class="flex-1 py-3 bg-gray-800 hover:bg-gray-700 rounded-xl text-white font-semibold transition-all">
+          <button (click)="showTodoModal.set(false)" class="flex-1 py-3 dark:bg-gray-800 dark:hover:bg-gray-700 light:bg-gray-200 light:hover:bg-gray-300 rounded-xl dark:text-white light:text-gray-900 font-semibold transition-all">
             Annuler
           </button>
-          <button (click)="saveTodo()" class="flex-1 py-3 bg-gradient-to-r from-yellow-400 to-yellow-600 hover:from-yellow-500 hover:to-yellow-700 rounded-xl text-black font-semibold transition-all">
+          <button (click)="saveTodo()" class="flex-1 py-3 dark:bg-gradient-to-r dark:from-yellow-400 dark:to-yellow-600 dark:hover:from-yellow-500 dark:hover:to-yellow-700 light:bg-gradient-to-r light:from-blue-500 light:to-blue-700 light:hover:from-blue-600 light:hover:to-blue-800 rounded-xl dark:text-black light:text-white font-semibold transition-all">
             {{ editingTodo() ? 'Modifier' : 'Ajouter' }}
           </button>
         </div>
@@ -453,28 +459,28 @@
 
   <!-- Day Plan Modal -->
   @if (showPlanModal()) {
-    <div class="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4" (click)="showPlanModal.set(false)">
-      <div class="bg-gradient-to-br from-gray-900 to-black border border-yellow-500/20 rounded-2xl p-8 max-w-2xl w-full shadow-2xl max-h-[80vh] overflow-y-auto" (click)="$event.stopPropagation()">
-        <h3 class="text-2xl font-bold bg-gradient-to-r from-yellow-400 to-yellow-600 bg-clip-text text-transparent mb-6">
-          📅 Planifier ma journée
+    <div class="fixed inset-0 dark:bg-black/80 light:bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4" (click)="showPlanModal.set(false)">
+      <div class="dark:bg-gradient-to-br dark:from-gray-900 dark:to-black light:bg-white dark:border-yellow-500/20 light:border-blue-500/20 border rounded-2xl p-8 max-w-2xl w-full dark:shadow-2xl light:shadow-2xl max-h-[80vh] overflow-y-auto" (click)="$event.stopPropagation()">
+        <h3 class="text-2xl font-bold dark:bg-gradient-to-r dark:from-yellow-400 dark:to-yellow-600 light:bg-gradient-to-r light:from-blue-500 light:to-blue-700 bg-clip-text text-transparent mb-6 flex items-center gap-2">
+          <span class="material-icons text-3xl">calendar_today</span> Planifier ma journée
         </h3>
         
-        <div class="mb-4 p-4 bg-blue-500/10 border border-blue-500/30 rounded-xl">
+        <div class="mb-4 p-4 dark:bg-blue-500/10 light:bg-blue-500/10 dark:border-blue-500/30 light:border-blue-500/30 border rounded-xl">
           <div class="flex items-start gap-3">
-            <span class="text-2xl">ℹ️</span>
-            <div class="flex-1 text-sm text-gray-300">
-              <p class="font-semibold text-blue-400 mb-2">💡 Comment ça marche:</p>
+            <span class="material-icons text-3xl dark:text-blue-400 light:text-blue-600">info</span>
+            <div class="flex-1 text-sm dark:text-gray-300 light:text-gray-700">
+              <p class="font-semibold dark:text-blue-400 light:text-blue-600 mb-2 flex items-center gap-1"><span class="material-icons text-lg">lightbulb</span> Comment ça marche:</p>
               <ul class="space-y-1 list-none">
                 <li class="flex items-start gap-2">
-                  <span class="text-green-400">✅</span>
-                  <span>Matières <strong class="text-green-400">avec 📅</strong>: Vous pouvez <strong>augmenter</strong> ou <strong>diminuer</strong> le temps</span>
+                  <span class="dark:text-green-400 light:text-green-600"><span class="material-icons text-sm">check_circle</span></span>
+                  <span>Matières <strong class="dark:text-green-400 light:text-green-600">avec <span class="material-icons text-sm align-middle">calendar_today</span></strong>: Vous pouvez <strong>augmenter</strong> ou <strong>diminuer</strong> le temps</span>
                 </li>
                 <li class="flex items-start gap-2">
-                  <span class="text-blue-400">➕</span>
-                  <span>Matières <strong>sans sessions</strong>: Cliquez sur <strong class="text-blue-400">+</strong> pour créer des sessions dans le Calendrier</span>
+                  <span class="dark:text-blue-400 light:text-blue-600"><span class="material-icons text-sm">add_circle</span></span>
+                  <span>Matières <strong>sans sessions</strong>: Cliquez sur <strong class="dark:text-blue-400 light:text-blue-600">+</strong> pour créer des sessions dans le Calendrier</span>
                 </li>
                 <li class="flex items-start gap-2">
-                  <span class="text-yellow-400">📅</span>
+                  <span class="dark:text-yellow-400 light:text-orange-600"><span class="material-icons text-sm">calendar_today</span></span>
                   <span>Dans le <strong>Calendrier</strong>, créez des sessions en glissant sur l'horaire désiré</span>
                 </li>
               </ul>
@@ -484,26 +490,27 @@
         
         <div class="space-y-4">
           @for (subject of subjects(); track subject._id) {
-            <div class="p-4 bg-gray-800/50 border rounded-xl"
+            <div class="p-4 dark:bg-gray-800/50 light:bg-gray-100/50 border rounded-xl"
                  [class.border-green-500]="hasSubjectSessions(subject._id!)"
-                 [class.border-gray-700]="!hasSubjectSessions(subject._id!)">
+                 [class.dark:border-gray-700]="!hasSubjectSessions(subject._id!)"
+                 [class.light:border-gray-300]="!hasSubjectSessions(subject._id!)">
               <div class="flex items-center gap-4">
                 <div class="flex items-center gap-3 flex-1">
-                  <span class="text-3xl">{{ subject.icon }}</span>
+                  <span class="material-icons text-4xl" [style.color]="subject.color">{{ subject.icon }}</span>
                   <div>
                     <div class="flex items-center gap-2">
                       <div [style.color]="subject.color" class="font-semibold">{{ subject.name }}</div>
                       @if (hasSubjectSessions(subject._id!)) {
-                        <span class="px-2 py-0.5 text-xs font-semibold rounded-full bg-green-500/20 text-green-400 flex items-center gap-1">
-                          📅 {{ getSubjectSessionCount(subject._id!) }} session(s)
+                        <span class="px-2 py-0.5 text-xs font-semibold rounded-full dark:bg-green-500/20 light:bg-green-500/20 dark:text-green-400 light:text-green-600 flex items-center gap-1">
+                          <span class="material-icons text-xs">calendar_today</span> {{ getSubjectSessionCount(subject._id!) }} session(s)
                         </span>
                       }
                     </div>
                     <div class="text-xs">
                       @if (hasSubjectSessions(subject._id!)) {
-                        <span class="text-green-400">✅ Peut augmenter ou diminuer</span>
+                        <span class="dark:text-green-400 light:text-green-600"><span class="material-icons text-xs align-middle">check_circle</span> Peut augmenter ou diminuer</span>
                       } @else {
-                        <span class="text-blue-400">📅 Cliquez + pour créer dans le Calendrier</span>
+                        <span class="dark:text-blue-400 light:text-blue-600"><span class="material-icons text-xs align-middle">calendar_today</span> Cliquez + pour créer dans le Calendrier</span>
                       }
                     </div>
                   </div>
@@ -512,10 +519,13 @@
                   <button type="button" 
                           (click)="decrementPlan(subject._id!)"
                           [disabled]="!canDecrementSubject(subject._id!)"
-                          class="w-10 h-10 rounded-lg text-white font-bold transition-all"
-                          [class.bg-gray-700]="canDecrementSubject(subject._id!)"
-                          [class.hover:bg-gray-600]="canDecrementSubject(subject._id!)"
-                          [class.bg-gray-800]="!canDecrementSubject(subject._id!)"
+                          class="w-10 h-10 rounded-lg dark:text-white light:text-gray-900 font-bold transition-all"
+                          [class.dark:bg-gray-700]="canDecrementSubject(subject._id!)"
+                          [class.dark:hover:bg-gray-600]="canDecrementSubject(subject._id!)"
+                          [class.light:bg-gray-300]="canDecrementSubject(subject._id!)"
+                          [class.light:hover:bg-gray-400]="canDecrementSubject(subject._id!)"
+                          [class.dark:bg-gray-800]="!canDecrementSubject(subject._id!)"
+                          [class.light:bg-gray-200]="!canDecrementSubject(subject._id!)"
                           [class.cursor-not-allowed]="!canDecrementSubject(subject._id!)"
                           [class.opacity-50]="!canDecrementSubject(subject._id!)">
                     -
@@ -525,48 +535,54 @@
                          min="0"
                          step="15"
                          readonly
-                         class="w-20 px-3 py-2 bg-black/50 border border-yellow-500/30 rounded-lg text-white text-center cursor-not-allowed" />
+                         class="w-20 px-3 py-2 dark:bg-black/50 light:bg-gray-200 dark:border-yellow-500/30 light:border-blue-500/30 border rounded-lg dark:text-white light:text-gray-900 text-center cursor-not-allowed" />
                   <button type="button"
                           (click)="incrementPlan(subject._id!)"
                           [title]="!hasSubjectSessions(subject._id!) ? 'Cliquez pour créer des sessions dans le calendrier' : 'Augmenter le temps'"
                           class="w-10 h-10 rounded-lg font-bold transition-all relative group"
-                          [class.bg-yellow-500]="hasSubjectSessions(subject._id!)"
-                          [class.hover:bg-yellow-600]="hasSubjectSessions(subject._id!)"
-                          [class.text-black]="hasSubjectSessions(subject._id!)"
-                          [class.bg-blue-500]="!hasSubjectSessions(subject._id!)"
-                          [class.hover:bg-blue-600]="!hasSubjectSessions(subject._id!)"
-                          [class.text-white]="!hasSubjectSessions(subject._id!)">
+                          [class.dark:bg-yellow-500]="hasSubjectSessions(subject._id!)"
+                          [class.dark:hover:bg-yellow-600]="hasSubjectSessions(subject._id!)"
+                          [class.light:bg-blue-500]="hasSubjectSessions(subject._id!)"
+                          [class.light:hover:bg-blue-600]="hasSubjectSessions(subject._id!)"
+                          [class.dark:text-black]="hasSubjectSessions(subject._id!)"
+                          [class.light:text-white]="hasSubjectSessions(subject._id!)"
+                          [class.dark:bg-blue-500]="!hasSubjectSessions(subject._id!)"
+                          [class.dark:hover:bg-blue-600]="!hasSubjectSessions(subject._id!)"
+                          [class.light:bg-green-500]="!hasSubjectSessions(subject._id!)"
+                          [class.light:hover:bg-green-600]="!hasSubjectSessions(subject._id!)"
+                          [class.dark:text-white]="!hasSubjectSessions(subject._id!)"
+                          [class.light:text-white]="!hasSubjectSessions(subject._id!)">
                     +
                     @if (!hasSubjectSessions(subject._id!)) {
-                      <span class="absolute -top-1 -right-1 w-5 h-5 bg-green-500 rounded-full flex items-center justify-center text-xs">📅</span>
+                      <span class="absolute -top-1 -right-1 w-5 h-5 bg-green-500 rounded-full flex items-center justify-center"><span class="material-icons text-xs text-white">calendar_today</span></span>
                     }
                   </button>
-                  <span class="text-sm text-gray-400 w-16">{{ formatTime(planForm[subject._id!] || 0) }}</span>
+                  <span class="text-sm dark:text-gray-400 light:text-gray-600 w-16">{{ formatTime(planForm[subject._id!] || 0) }}</span>
                 </div>
               </div>
             </div>
           }
           
           @if (subjects().length === 0) {
-            <p class="text-gray-500 text-center py-8">Ajoutez d'abord des matières</p>
+            <p class="dark:text-gray-500 light:text-gray-400 text-center py-8">Ajoutez d'abord des matières</p>
           }
         </div>
         
-        <div class="mt-6 p-4 bg-yellow-500/10 border border-yellow-500/30 rounded-xl">
+        <div class="mt-6 p-4 dark:bg-yellow-500/10 light:bg-blue-500/10 dark:border-yellow-500/30 light:border-blue-500/30 border rounded-xl">
           <div class="flex items-center justify-between">
-            <span class="text-yellow-400 font-semibold">Total prévu:</span>
-            <span class="text-2xl font-bold bg-gradient-to-r from-yellow-400 to-yellow-600 bg-clip-text text-transparent">
+            <span class="dark:text-yellow-400 light:text-blue-600 font-semibold">Total prévu:</span>
+            <span class="text-2xl font-bold dark:bg-gradient-to-r dark:from-yellow-400 dark:to-yellow-600 light:bg-gradient-to-r light:from-blue-500 light:to-blue-700 bg-clip-text text-transparent">
               {{ formatTime(getTotalPlanMinutes()) }}
             </span>
           </div>
         </div>
         
         <div class="flex gap-3 mt-6">
-          <button (click)="showPlanModal.set(false)" class="flex-1 py-3 bg-gray-800 hover:bg-gray-700 rounded-xl text-white font-semibold transition-all">
+          <button (click)="showPlanModal.set(false)" class="flex-1 py-3 dark:bg-gray-800 dark:hover:bg-gray-700 light:bg-gray-200 light:hover:bg-gray-300 rounded-xl dark:text-white light:text-gray-900 font-semibold transition-all">
             Annuler
           </button>
-          <button (click)="saveDayPlan()" class="flex-1 py-3 bg-gradient-to-r from-yellow-400 to-yellow-600 hover:from-yellow-500 hover:to-yellow-700 rounded-xl text-black font-semibold transition-all">
-            💾 Enregistrer le plan
+          <button (click)="saveDayPlan()" class="flex-1 py-3 dark:bg-gradient-to-r dark:from-yellow-400 dark:to-yellow-600 dark:hover:from-yellow-500 dark:hover:to-yellow-700 light:bg-gradient-to-r light:from-blue-500 light:to-blue-700 light:hover:from-blue-600 light:hover:to-blue-800 rounded-xl dark:text-black light:text-white font-semibold transition-all flex items-center justify-center gap-2">
+            <span class="material-icons">save</span> Enregistrer le plan
           </button>
         </div>
       </div>
@@ -575,25 +591,25 @@
 
   <!-- Statistics Modal -->
   @if (showStatsModal()) {
-    <div class="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4" (click)="showStatsModal.set(false)">
-      <div class="bg-gradient-to-br from-gray-900 to-black border border-yellow-500/20 rounded-2xl p-8 max-w-4xl w-full shadow-2xl" (click)="$event.stopPropagation()">
-        <h3 class="text-2xl font-bold bg-gradient-to-r from-yellow-400 to-yellow-600 bg-clip-text text-transparent mb-6 flex items-center gap-2">
-          📊 Statistiques de la semaine
+    <div class="fixed inset-0 dark:bg-black/80 light:bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4" (click)="showStatsModal.set(false)">
+      <div class="dark:bg-gradient-to-br dark:from-gray-900 dark:to-black light:bg-white dark:border-yellow-500/20 light:border-blue-500/20 border rounded-2xl p-8 max-w-4xl w-full dark:shadow-2xl light:shadow-2xl" (click)="$event.stopPropagation()">
+        <h3 class="text-2xl font-bold dark:bg-gradient-to-r dark:from-yellow-400 dark:to-yellow-600 light:bg-gradient-to-r light:from-blue-500 light:to-blue-700 bg-clip-text text-transparent mb-6 flex items-center gap-2">
+          <span class="material-icons text-3xl">bar_chart</span> Statistiques de la semaine
         </h3>
         
         <!-- Week Chart -->
         <div class="mb-8">
-          <div class="flex items-end justify-between gap-2 h-64 bg-gray-800/30 rounded-xl p-4">
+          <div class="flex items-end justify-between gap-2 h-64 dark:bg-gray-800/30 light:bg-gray-100 rounded-xl p-4">
             @for (stat of weekStats(); track stat.date) {
               <div class="flex-1 flex flex-col items-center gap-2">
-                <div class="w-full bg-gray-800 rounded-lg overflow-hidden relative" style="height: 200px">
-                  <div class="absolute bottom-0 w-full bg-gradient-to-t from-yellow-500 to-yellow-600 transition-all duration-500 rounded-t-lg"
+                <div class="w-full dark:bg-gray-800 light:bg-gray-200 rounded-lg overflow-hidden relative" style="height: 200px">
+                  <div class="absolute bottom-0 w-full dark:bg-gradient-to-t dark:from-yellow-500 dark:to-yellow-600 light:bg-gradient-to-t light:from-blue-500 light:to-blue-600 transition-all duration-500 rounded-t-lg"
                        [style.height.%]="(stat.minutes / getMaxWeekMinutes()) * 100">
                   </div>
                 </div>
                 <div class="text-center">
-                  <div class="text-xs text-gray-400">{{ stat.day }}</div>
-                  <div class="text-sm font-semibold text-yellow-400">{{ formatTime(stat.minutes) }}</div>
+                  <div class="text-xs dark:text-gray-400 light:text-gray-600">{{ stat.day }}</div>
+                  <div class="text-sm font-semibold dark:text-yellow-400 light:text-blue-600">{{ formatTime(stat.minutes) }}</div>
                 </div>
               </div>
             }
@@ -602,16 +618,16 @@
 
         <!-- Subject Breakdown -->
         <div class="space-y-3">
-          <h4 class="text-lg font-semibold text-yellow-400 mb-4">Répartition par matière aujourd'hui</h4>
+          <h4 class="text-lg font-semibold dark:text-yellow-400 light:text-blue-600 mb-4">Répartition par matière aujourd'hui</h4>
           @for (subjectTime of dayPlan()?.subjects || []; track $index) {
             @if (getSubjectById(getSubjectIdString(subjectTime.subjectId)); as subject) {
-              <div class="p-4 bg-gray-800/50 border border-gray-700 rounded-xl">
+              <div class="p-4 dark:bg-gray-800/50 light:bg-gray-100/50 dark:border-gray-700 light:border-gray-300 border rounded-xl">
                 <div class="flex items-center justify-between mb-2">
                   <div class="flex items-center gap-3">
-                    <span class="text-2xl">{{ subject.icon }}</span>
+                    <span class="material-icons text-3xl" [style.color]="subject.color">{{ subject.icon }}</span>
                     <div>
                       <div [style.color]="subject.color" class="font-semibold">{{ subject.name }}</div>
-                      <div class="text-xs text-gray-500">{{ formatTime(subjectTime.studiedMinutes) }} / {{ formatTime(subjectTime.goalMinutes) }}</div>
+                      <div class="text-xs dark:text-gray-500 light:text-gray-600">{{ formatTime(subjectTime.studiedMinutes) }} / {{ formatTime(subjectTime.goalMinutes) }}</div>
                     </div>
                   </div>
                   <div class="text-right">
@@ -620,7 +636,7 @@
                     </div>
                   </div>
                 </div>
-                <div class="h-2 bg-gray-800 rounded-full overflow-hidden">
+                <div class="h-2 dark:bg-gray-800 light:bg-gray-200 rounded-full overflow-hidden">
                   <div class="h-full rounded-full transition-all duration-500"
                        [style.background]="subject.color"
                        [style.width.%]="subjectTime.goalMinutes > 0 ? (subjectTime.studiedMinutes / subjectTime.goalMinutes) * 100 : 0">
@@ -632,7 +648,7 @@
         </div>
         
         <div class="flex gap-3 mt-6">
-          <button (click)="showStatsModal.set(false)" class="flex-1 py-3 bg-gradient-to-r from-yellow-400 to-yellow-600 hover:from-yellow-500 hover:to-yellow-700 rounded-xl text-black font-semibold transition-all">
+          <button (click)="showStatsModal.set(false)" class="flex-1 py-3 dark:bg-gradient-to-r dark:from-yellow-400 dark:to-yellow-600 dark:hover:from-yellow-500 dark:hover:to-yellow-700 light:bg-gradient-to-r light:from-blue-500 light:to-blue-700 light:hover:from-blue-600 light:hover:to-blue-800 rounded-xl dark:text-black light:text-white font-semibold transition-all">
             Fermer
           </button>
         </div>
@@ -642,19 +658,19 @@
 
   <!-- Timer Settings Modal -->
   @if (showTimerSettings()) {
-    <div class="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4" (click)="showTimerSettings.set(false)">
-      <div class="bg-gradient-to-br from-gray-900 to-black border border-yellow-500/20 rounded-2xl p-8 max-w-2xl w-full shadow-2xl" (click)="$event.stopPropagation()">
-        <h3 class="text-2xl font-bold bg-gradient-to-r from-yellow-400 to-yellow-600 bg-clip-text text-transparent mb-6 flex items-center gap-2">
-          ⚙️ Paramètres du Timer Pomodoro
+    <div class="fixed inset-0 dark:bg-black/80 light:bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4" (click)="showTimerSettings.set(false)">
+      <div class="dark:bg-gradient-to-br dark:from-gray-900 dark:to-black light:bg-white dark:border-yellow-500/20 light:border-blue-500/20 border rounded-2xl p-8 max-w-2xl w-full dark:shadow-2xl light:shadow-2xl" (click)="$event.stopPropagation()">
+        <h3 class="text-2xl font-bold dark:bg-gradient-to-r dark:from-yellow-400 dark:to-yellow-600 light:bg-gradient-to-r light:from-blue-500 light:to-blue-700 bg-clip-text text-transparent mb-6 flex items-center gap-2">
+          <span class="material-icons text-3xl">settings</span> Paramètres du Timer Pomodoro
         </h3>
         
         <div class="space-y-6">
           <!-- Grid 2x2 for timer durations -->
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <!-- Focus Duration -->
-            <div class="p-4 bg-gray-800/50 border border-gray-700 rounded-xl hover:border-yellow-500/30 transition-all">
-              <label class="text-sm font-semibold text-yellow-400 mb-3 flex items-center gap-2">
-                🎯 Durée de Focus
+            <div class="p-4 dark:bg-gray-800/50 light:bg-gray-100 dark:border-gray-700 light:border-gray-300 border rounded-xl dark:hover:border-yellow-500/30 light:hover:border-blue-500/30 transition-all">
+              <label class="text-sm font-semibold dark:text-yellow-400 light:text-blue-600 mb-3 flex items-center gap-2">
+                <span class="material-icons text-lg">target</span> Durée de Focus
               </label>
               <div class="flex items-center gap-3 mb-2">
                 <input type="range" 
@@ -662,19 +678,19 @@
                        min="1" 
                        max="60" 
                        step="1"
-                       class="flex-1 h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer slider-thumb" />
-                <div class="px-3 py-1.5 bg-yellow-500/20 border border-yellow-500/30 rounded-lg min-w-[70px] text-center">
-                  <span class="text-xl font-bold text-yellow-400">{{ timerSettings.focusDuration }}</span>
-                  <span class="text-xs text-gray-400 ml-0.5">min</span>
+                       class="flex-1 h-2 dark:bg-gray-700 light:bg-gray-300 rounded-lg appearance-none cursor-pointer slider-thumb" />
+                <div class="px-3 py-1.5 dark:bg-yellow-500/20 light:bg-blue-500/20 dark:border-yellow-500/30 light:border-blue-500/30 border rounded-lg min-w-[70px] text-center">
+                  <span class="text-xl font-bold dark:text-yellow-400 light:text-blue-600">{{ timerSettings.focusDuration }}</span>
+                  <span class="text-xs dark:text-gray-400 light:text-gray-600 ml-0.5">min</span>
                 </div>
               </div>
-              <p class="text-xs text-gray-400">Session de travail concentré</p>
+              <p class="text-xs dark:text-gray-400 light:text-gray-600">Session de travail concentré</p>
             </div>
 
             <!-- Short Break -->
-            <div class="p-4 bg-gray-800/50 border border-gray-700 rounded-xl hover:border-green-500/30 transition-all">
-              <label class="text-sm font-semibold text-green-400 mb-3 flex items-center gap-2">
-                ☕ Pause Courte
+            <div class="p-4 dark:bg-gray-800/50 light:bg-gray-100 dark:border-gray-700 light:border-gray-300 border rounded-xl dark:hover:border-green-500/30 light:hover:border-green-500/30 transition-all">
+              <label class="text-sm font-semibold dark:text-green-400 light:text-green-600 mb-3 flex items-center gap-2">
+                <span class="material-icons text-lg">coffee</span> Pause Courte
               </label>
               <div class="flex items-center gap-3 mb-2">
                 <input type="range" 
@@ -682,19 +698,19 @@
                        min="1" 
                        max="15" 
                        step="1"
-                       class="flex-1 h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" />
-                <div class="px-3 py-1.5 bg-green-500/20 border border-green-500/30 rounded-lg min-w-[70px] text-center">
-                  <span class="text-xl font-bold text-green-400">{{ timerSettings.shortBreakDuration }}</span>
-                  <span class="text-xs text-gray-400 ml-0.5">min</span>
+                       class="flex-1 h-2 dark:bg-gray-700 light:bg-gray-300 rounded-lg appearance-none cursor-pointer" />
+                <div class="px-3 py-1.5 dark:bg-green-500/20 light:bg-green-500/20 dark:border-green-500/30 light:border-green-500/30 border rounded-lg min-w-[70px] text-center">
+                  <span class="text-xl font-bold dark:text-green-400 light:text-green-600">{{ timerSettings.shortBreakDuration }}</span>
+                  <span class="text-xs dark:text-gray-400 light:text-gray-600 ml-0.5">min</span>
                 </div>
               </div>
-              <p class="text-xs text-gray-400">Pause après chaque session</p>
+              <p class="text-xs dark:text-gray-400 light:text-gray-600">Pause après chaque session</p>
             </div>
 
             <!-- Long Break -->
-            <div class="p-4 bg-gray-800/50 border border-gray-700 rounded-xl hover:border-purple-500/30 transition-all">
-              <label class="text-sm font-semibold text-purple-400 mb-3 flex items-center gap-2">
-                🌟 Pause Longue
+            <div class="p-4 dark:bg-gray-800/50 light:bg-gray-100 dark:border-gray-700 light:border-gray-300 border rounded-xl dark:hover:border-purple-500/30 light:hover:border-purple-500/30 transition-all">
+              <label class="text-sm font-semibold dark:text-purple-400 light:text-purple-600 mb-3 flex items-center gap-2">
+                <span class="material-icons text-lg">star</span> Pause Longue
               </label>
               <div class="flex items-center gap-3 mb-2">
                 <input type="range" 
@@ -702,19 +718,19 @@
                        min="10" 
                        max="30" 
                        step="5"
-                       class="flex-1 h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" />
-                <div class="px-3 py-1.5 bg-purple-500/20 border border-purple-500/30 rounded-lg min-w-[70px] text-center">
-                  <span class="text-xl font-bold text-purple-400">{{ timerSettings.longBreakDuration }}</span>
-                  <span class="text-xs text-gray-400 ml-0.5">min</span>
+                       class="flex-1 h-2 dark:bg-gray-700 light:bg-gray-300 rounded-lg appearance-none cursor-pointer" />
+                <div class="px-3 py-1.5 dark:bg-purple-500/20 light:bg-purple-500/20 dark:border-purple-500/30 light:border-purple-500/30 border rounded-lg min-w-[70px] text-center">
+                  <span class="text-xl font-bold dark:text-purple-400 light:text-purple-600">{{ timerSettings.longBreakDuration }}</span>
+                  <span class="text-xs dark:text-gray-400 light:text-gray-600 ml-0.5">min</span>
                 </div>
               </div>
-              <p class="text-xs text-gray-400">Pause après plusieurs sessions</p>
+              <p class="text-xs dark:text-gray-400 light:text-gray-600">Pause après plusieurs sessions</p>
             </div>
 
             <!-- Sessions Before Long Break -->
-            <div class="p-4 bg-gray-800/50 border border-gray-700 rounded-xl hover:border-blue-500/30 transition-all">
-              <label class="text-sm font-semibold text-blue-400 mb-3 flex items-center gap-2">
-                🔄 Sessions avant Pause Longue
+            <div class="p-4 dark:bg-gray-800/50 light:bg-gray-100 dark:border-gray-700 light:border-gray-300 border rounded-xl dark:hover:border-blue-500/30 light:hover:border-blue-500/30 transition-all">
+              <label class="text-sm font-semibold dark:text-blue-400 light:text-blue-600 mb-3 flex items-center gap-2">
+                <span class="material-icons text-lg">repeat</span> Sessions avant Pause Longue
               </label>
               <div class="flex items-center gap-3 mb-2">
                 <input type="range" 
@@ -722,20 +738,20 @@
                        min="2" 
                        max="8" 
                        step="1"
-                       class="flex-1 h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" />
-                <div class="px-3 py-1.5 bg-blue-500/20 border border-blue-500/30 rounded-lg min-w-[70px] text-center">
-                  <span class="text-xl font-bold text-blue-400">{{ timerSettings.sessionsBeforeLongBreak }}</span>
-                  <span class="text-xs text-gray-400 ml-0.5">sess</span>
+                       class="flex-1 h-2 dark:bg-gray-700 light:bg-gray-300 rounded-lg appearance-none cursor-pointer" />
+                <div class="px-3 py-1.5 dark:bg-blue-500/20 light:bg-blue-500/20 dark:border-blue-500/30 light:border-blue-500/30 border rounded-lg min-w-[70px] text-center">
+                  <span class="text-xl font-bold dark:text-blue-400 light:text-blue-600">{{ timerSettings.sessionsBeforeLongBreak }}</span>
+                  <span class="text-xs dark:text-gray-400 light:text-gray-600 ml-0.5">sess</span>
                 </div>
               </div>
-              <p class="text-xs text-gray-400">Nombre de sessions avant pause longue</p>
+              <p class="text-xs dark:text-gray-400 light:text-gray-600">Nombre de sessions avant pause longue</p>
             </div>
           </div>
 
           <!-- Session Goal - Full Width -->
-          <div class="p-5 bg-gradient-to-r from-yellow-500/10 to-yellow-600/10 border-2 border-yellow-500/30 rounded-xl hover:border-yellow-500/50 transition-all">
-            <label class="text-base font-bold text-yellow-400 mb-4 flex items-center gap-2">
-              🎯 Objectif de Sessions Quotidiennes
+          <div class="p-5 dark:bg-gradient-to-r dark:from-yellow-500/10 dark:to-yellow-600/10 light:bg-gradient-to-r light:from-blue-500/10 light:to-blue-600/10 dark:border-yellow-500/30 light:border-blue-500/30 border-2 rounded-xl dark:hover:border-yellow-500/50 light:hover:border-blue-500/50 transition-all">
+            <label class="text-base font-bold dark:text-yellow-400 light:text-blue-600 mb-4 flex items-center gap-2">
+              <span class="material-icons">emoji_events</span> Objectif de Sessions Quotidiennes
             </label>
             <div class="flex items-center gap-4">
               <input type="range" 
@@ -743,44 +759,44 @@
                      min="1" 
                      max="30" 
                      step="1"
-                     class="flex-1 h-3 bg-gray-700 rounded-lg appearance-none cursor-pointer" />
-              <div class="px-6 py-3 bg-yellow-500/20 border-2 border-yellow-500/40 rounded-xl min-w-[100px] text-center">
-                <span class="text-3xl font-bold text-yellow-400">{{ currentSessionGoal() }}</span>
-                <span class="text-sm text-gray-400 ml-1">sessions</span>
+                     class="flex-1 h-3 dark:bg-gray-700 light:bg-gray-300 rounded-lg appearance-none cursor-pointer" />
+              <div class="px-6 py-3 dark:bg-yellow-500/20 light:bg-blue-500/20 dark:border-yellow-500/40 light:border-blue-500/40 border-2 rounded-xl min-w-[100px] text-center">
+                <span class="text-3xl font-bold dark:text-yellow-400 light:text-blue-600">{{ currentSessionGoal() }}</span>
+                <span class="text-sm dark:text-gray-400 light:text-gray-600 ml-1">sessions</span>
               </div>
             </div>
-            <p class="text-sm text-gray-400 mt-3">🎯 Combien de sessions Pomodoro voulez-vous compléter aujourd'hui?</p>
+            <p class="text-sm dark:text-gray-400 light:text-gray-600 mt-3 flex items-center gap-1"><span class="material-icons text-sm">emoji_events</span> Combien de sessions Pomodoro voulez-vous compléter aujourd'hui?</p>
           </div>
 
           <!-- Auto Start Options -->
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div class="p-4 bg-gray-800/50 border border-gray-700 rounded-xl">
+            <div class="p-4 dark:bg-gray-800/50 light:bg-gray-100 dark:border-gray-700 light:border-gray-300 border rounded-xl">
               <label class="flex items-center justify-between cursor-pointer">
-                <span class="text-sm text-gray-300 flex items-center gap-2">
-                  🚀 Auto-démarrer les pauses
+                <span class="text-sm dark:text-gray-300 light:text-gray-700 flex items-center gap-2">
+                  <span class="material-icons text-lg">rocket_launch</span> Auto-démarrer les pauses
                 </span>
                 <input type="checkbox" 
                        [(ngModel)]="timerSettings.autoStartBreaks"
-                       class="w-5 h-5 rounded border-yellow-500 text-yellow-500 focus:ring-2 focus:ring-yellow-500 cursor-pointer" />
+                       class="w-5 h-5 rounded dark:border-yellow-500 light:border-blue-500 dark:text-yellow-500 light:text-blue-500 focus:ring-2 dark:focus:ring-yellow-500 light:focus:ring-blue-500 cursor-pointer" />
               </label>
             </div>
             
-            <div class="p-4 bg-gray-800/50 border border-gray-700 rounded-xl">
+            <div class="p-4 dark:bg-gray-800/50 light:bg-gray-100 dark:border-gray-700 light:border-gray-300 border rounded-xl">
               <label class="flex items-center justify-between cursor-pointer">
-                <span class="text-sm text-gray-300 flex items-center gap-2">
-                  ⚡ Auto-démarrer le focus
+                <span class="text-sm dark:text-gray-300 light:text-gray-700 flex items-center gap-2">
+                  <span class="material-icons text-lg">flash_on</span> Auto-démarrer le focus
                 </span>
                 <input type="checkbox" 
                        [(ngModel)]="timerSettings.autoStartFocus"
-                       class="w-5 h-5 rounded border-yellow-500 text-yellow-500 focus:ring-2 focus:ring-yellow-500 cursor-pointer" />
+                       class="w-5 h-5 rounded dark:border-yellow-500 light:border-blue-500 dark:text-yellow-500 light:text-blue-500 focus:ring-2 dark:focus:ring-yellow-500 light:focus:ring-blue-500 cursor-pointer" />
               </label>
             </div>
           </div>
 
           <!-- YouTube Relaxation Audio URL -->
-          <div class="p-5 bg-gradient-to-r from-purple-500/10 to-pink-500/10 border-2 border-purple-500/30 rounded-xl hover:border-purple-500/50 transition-all">
-            <label class="text-base font-bold text-purple-400 mb-4 flex items-center gap-2">
-              🎵 Audio de Relaxation YouTube
+          <div class="p-5 dark:bg-gradient-to-r dark:from-purple-500/10 dark:to-pink-500/10 light:bg-gradient-to-r light:from-purple-500/10 light:to-pink-500/10 dark:border-purple-500/30 light:border-purple-500/30 border-2 rounded-xl dark:hover:border-purple-500/50 light:hover:border-purple-500/50 transition-all">
+            <label class="text-base font-bold dark:text-purple-400 light:text-purple-600 mb-4 flex items-center gap-2">
+              <span class="material-icons">music_note</span> Audio de Relaxation YouTube
             </label>
             <div class="space-y-3">
               <div class="flex gap-2">
@@ -788,31 +804,31 @@
                   type="text" 
                   [(ngModel)]="timerSettings.relaxationAudioUrl"
                   placeholder="https://youtube.com/watch?v=..."
-                  class="flex-1 px-4 py-3 bg-gray-800 border border-purple-500/30 rounded-xl text-white placeholder-gray-500 focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 outline-none transition-all"
+                  class="flex-1 px-4 py-3 dark:bg-gray-800 light:bg-white dark:border-purple-500/30 light:border-purple-500/30 border rounded-xl dark:text-white light:text-gray-900 dark:placeholder-gray-500 light:placeholder-gray-400 dark:focus:border-purple-500 light:focus:border-purple-500 focus:ring-2 dark:focus:ring-purple-500/20 light:focus:ring-purple-500/20 outline-none transition-all"
                 />
                 <button 
                   (click)="testYouTubeUrl()"
-                  class="px-6 py-3 bg-purple-600 hover:bg-purple-700 rounded-xl text-white font-semibold transition-all">
-                  🔍 Tester
+                  class="px-6 py-3 dark:bg-purple-600 dark:hover:bg-purple-700 light:bg-purple-500 light:hover:bg-purple-600 rounded-xl dark:text-white light:text-white font-semibold transition-all flex items-center gap-1">
+                  <span class="material-icons">search</span> Tester
                 </button>
               </div>
-              <p class="text-xs text-gray-400">
-                🎧 Entrez un lien YouTube. L'audio sera joué en arrière-plan pendant vos pauses de relaxation.
+              <p class="text-xs dark:text-gray-400 light:text-gray-600 flex items-center gap-1">
+                <span class="material-icons text-sm">headphones</span> Entrez un lien YouTube. L'audio sera joué en arrière-plan pendant vos pauses de relaxation.
               </p>
-              <div class="flex gap-2 text-xs text-gray-500">
+              <div class="flex gap-2 text-xs dark:text-gray-500 light:text-gray-600">
                 <span>Exemples:</span>
-                <code class="px-2 py-1 bg-gray-800 rounded">youtube.com/watch?v=ID</code>
-                <code class="px-2 py-1 bg-gray-800 rounded">youtu.be/ID</code>
+                <code class="px-2 py-1 dark:bg-gray-800 light:bg-gray-200 rounded">youtube.com/watch?v=ID</code>
+                <code class="px-2 py-1 dark:bg-gray-800 light:bg-gray-200 rounded">youtu.be/ID</code>
               </div>
             </div>
           </div>
 
           <!-- Info Box -->
-          <div class="p-4 bg-blue-500/10 border border-blue-500/30 rounded-xl">
+          <div class="p-4 dark:bg-blue-500/10 light:bg-blue-500/10 dark:border-blue-500/30 light:border-blue-500/30 border rounded-xl">
             <div class="flex items-start gap-3">
-              <span class="text-2xl">💡</span>
-              <div class="flex-1 text-sm text-gray-300">
-                <p class="font-semibold text-blue-400 mb-2">Technique Pomodoro</p>
+              <span class="material-icons text-3xl dark:text-blue-400 light:text-blue-600">lightbulb</span>
+              <div class="flex-1 text-sm dark:text-gray-300 light:text-gray-700">
+                <p class="font-semibold dark:text-blue-400 light:text-blue-600 mb-2">Technique Pomodoro</p>
                 <p>Travaillez par intervalles de focus intense suivis de courtes pauses. Cette méthode améliore la concentration et la productivité!</p>
               </div>
             </div>
@@ -820,11 +836,11 @@
         </div>
         
         <div class="flex gap-3 mt-6">
-          <button (click)="showTimerSettings.set(false)" class="flex-1 py-3 bg-gray-800 hover:bg-gray-700 rounded-xl text-white font-semibold transition-all">
+          <button (click)="showTimerSettings.set(false)" class="flex-1 py-3 dark:bg-gray-800 dark:hover:bg-gray-700 light:bg-gray-200 light:hover:bg-gray-300 rounded-xl dark:text-white light:text-gray-900 font-semibold transition-all">
             Annuler
           </button>
-          <button (click)="saveTimerSettings()" class="flex-1 py-3 bg-gradient-to-r from-yellow-400 to-yellow-600 hover:from-yellow-500 hover:to-yellow-700 rounded-xl text-black font-semibold transition-all">
-            💾 Enregistrer
+          <button (click)="saveTimerSettings()" class="flex-1 py-3 dark:bg-gradient-to-r dark:from-yellow-400 dark:to-yellow-600 dark:hover:from-yellow-500 dark:hover:to-yellow-700 light:bg-gradient-to-r light:from-blue-500 light:to-blue-700 light:hover:from-blue-600 light:hover:to-blue-800 rounded-xl dark:text-black light:text-white font-semibold transition-all flex items-center justify-center gap-2">
+            <span class="material-icons">save</span> Enregistrer
           </button>
         </div>
       </div>
@@ -833,8 +849,8 @@
 
   <!-- Relaxation Modal (During Break) -->
   @if (showRelaxationModal()) {
-    <div class="fixed inset-0 bg-gradient-to-br from-green-900/50 to-blue-900/50 backdrop-blur-md flex items-center justify-center z-50 p-4">
-      <div class="bg-gradient-to-br from-gray-900/95 to-black/95 border-2 border-green-500/30 rounded-3xl p-12 max-w-2xl w-full shadow-2xl">
+    <div class="fixed inset-0 dark:bg-gradient-to-br dark:from-green-900/50 dark:to-blue-900/50 light:bg-gradient-to-br light:from-green-100/90 light:to-blue-100/90 backdrop-blur-md flex items-center justify-center z-50 p-4">
+      <div class="dark:bg-gradient-to-br dark:from-gray-900/95 dark:to-black/95 light:bg-white/95 dark:border-green-500/30 light:border-green-500/30 border-2 rounded-3xl p-12 max-w-2xl w-full dark:shadow-2xl light:shadow-2xl">
         <div class="text-center">
           <!-- Lottie Animation avec ng-lottie -->
           <div class="mb-8 relative flex justify-center">
@@ -846,57 +862,57 @@
             </div>
           </div>
           
-          <h3 class="text-4xl font-bold bg-gradient-to-r from-green-400 to-blue-400 bg-clip-text text-transparent mb-4">
+          <h3 class="text-4xl font-bold dark:bg-gradient-to-r dark:from-green-400 dark:to-blue-400 light:bg-gradient-to-r light:from-green-600 light:to-blue-600 bg-clip-text text-transparent mb-4">
             Temps de Pause
           </h3>
           
           <!-- Audio Indicator -->
           @if (timerSettings.relaxationAudioUrl) {
-            <div class="mb-4 flex items-center justify-center gap-2 text-purple-400">
-              <span class="animate-pulse">🎵</span>
+            <div class="mb-4 flex items-center justify-center gap-2 dark:text-purple-400 light:text-purple-600">
+              <span class="material-icons animate-pulse">music_note</span>
               <span class="text-sm">Audio de relaxation en cours...</span>
             </div>
           }
           
-          <p class="text-2xl text-gray-300 mb-8">Détendez-vous et rechargez vos batteries</p>
+          <p class="text-2xl dark:text-gray-300 light:text-gray-700 mb-8">Détendez-vous et rechargez vos batteries</p>
           
           <!-- Break Timer Display -->
-          <div class="mb-8 p-6 bg-green-500/10 border border-green-500/30 rounded-2xl">
-            <div class="text-7xl font-bold bg-gradient-to-r from-green-400 to-blue-400 bg-clip-text text-transparent">
+          <div class="mb-8 p-6 dark:bg-green-500/10 light:bg-green-500/10 dark:border-green-500/30 light:border-green-500/30 border rounded-2xl">
+            <div class="text-7xl font-bold dark:bg-gradient-to-r dark:from-green-400 dark:to-blue-400 light:bg-gradient-to-r light:from-green-600 light:to-blue-600 bg-clip-text text-transparent">
               {{ timerMinutes().toString().padStart(2, '0') }}:{{ timerSeconds().toString().padStart(2, '0') }}
             </div>
-            <div class="text-sm text-gray-400 mt-2">Temps de pause restant</div>
+            <div class="text-sm dark:text-gray-400 light:text-gray-600 mt-2">Temps de pause restant</div>
           </div>
           
           <!-- Relaxation Tips -->
           <div class="grid grid-cols-2 gap-4 mb-8">
-            <div class="p-4 bg-blue-500/10 border border-blue-500/20 rounded-xl hover:bg-blue-500/20 transition-all">
-              <div class="text-3xl mb-2">💧</div>
-              <div class="text-sm text-gray-300">Buvez de l'eau</div>
+            <div class="p-4 dark:bg-blue-500/10 light:bg-blue-500/10 dark:border-blue-500/20 light:border-blue-500/20 border rounded-xl dark:hover:bg-blue-500/20 light:hover:bg-blue-500/20 transition-all">
+              <div class="mb-2"><span class="material-icons text-4xl dark:text-blue-400 light:text-blue-600">water_drop</span></div>
+              <div class="text-sm dark:text-gray-300 light:text-gray-700">Buvez de l'eau</div>
             </div>
-            <div class="p-4 bg-green-500/10 border border-green-500/20 rounded-xl hover:bg-green-500/20 transition-all">
-              <div class="text-3xl mb-2">🚶</div>
-              <div class="text-sm text-gray-300">Marchez un peu</div>
+            <div class="p-4 dark:bg-green-500/10 light:bg-green-500/10 dark:border-green-500/20 light:border-green-500/20 border rounded-xl dark:hover:bg-green-500/20 light:hover:bg-green-500/20 transition-all">
+              <div class="mb-2"><span class="material-icons text-4xl dark:text-green-400 light:text-green-600">directions_walk</span></div>
+              <div class="text-sm dark:text-gray-300 light:text-gray-700">Marchez un peu</div>
             </div>
-            <div class="p-4 bg-purple-500/10 border border-purple-500/20 rounded-xl hover:bg-purple-500/20 transition-all">
-              <div class="text-3xl mb-2">👀</div>
-              <div class="text-sm text-gray-300">Reposez vos yeux</div>
+            <div class="p-4 dark:bg-purple-500/10 light:bg-purple-500/10 dark:border-purple-500/20 light:border-purple-500/20 border rounded-xl dark:hover:bg-purple-500/20 light:hover:bg-purple-500/20 transition-all">
+              <div class="mb-2"><span class="material-icons text-4xl dark:text-purple-400 light:text-purple-600">visibility</span></div>
+              <div class="text-sm dark:text-gray-300 light:text-gray-700">Reposez vos yeux</div>
             </div>
-            <div class="p-4 bg-yellow-500/10 border border-yellow-500/20 rounded-xl hover:bg-yellow-500/20 transition-all">
-              <div class="text-3xl mb-2">🫁</div>
-              <div class="text-sm text-gray-300">Respirez profondément</div>
+            <div class="p-4 dark:bg-yellow-500/10 light:bg-yellow-500/10 dark:border-yellow-500/20 light:border-yellow-500/20 border rounded-xl dark:hover:bg-yellow-500/20 light:hover:bg-yellow-500/20 transition-all">
+              <div class="mb-2"><span class="material-icons text-4xl dark:text-yellow-400 light:text-yellow-600">air</span></div>
+              <div class="text-sm dark:text-gray-300 light:text-gray-700">Respirez profondément</div>
             </div>
           </div>
           
           <!-- Breathing Animation -->
-          <div class="flex items-center justify-center gap-2 text-gray-400 text-sm">
-            <div class="w-3 h-3 bg-green-400 rounded-full animate-ping"></div>
+          <div class="flex items-center justify-center gap-2 dark:text-gray-400 light:text-gray-600 text-sm">
+            <div class="w-3 h-3 dark:bg-green-400 light:bg-green-600 rounded-full animate-ping"></div>
             <span>Inspirez... Expirez... Détendez-vous</span>
-            <div class="w-3 h-3 bg-blue-400 rounded-full animate-ping animation-delay-1000"></div>
+            <div class="w-3 h-3 dark:bg-blue-400 light:bg-blue-600 rounded-full animate-ping animation-delay-1000"></div>
           </div>
           
-          <button (click)="stopTimer()" class="mt-8 px-6 py-3 bg-red-600/20 hover:bg-red-600/30 border border-red-500/30 rounded-xl text-red-400 font-semibold transition-all hover:scale-105">
-            ⏹ Arrêter la pause
+          <button (click)="stopTimer()" class="mt-8 px-6 py-3 dark:bg-red-600/20 dark:hover:bg-red-600/30 light:bg-red-500/20 light:hover:bg-red-500/30 dark:border-red-500/30 light:border-red-500/30 border rounded-xl dark:text-red-400 light:text-red-600 font-semibold transition-all hover:scale-105 flex items-center gap-2 mx-auto">
+            <span class="material-icons">stop</span> Arrêter la pause
           </button>
         </div>
       </div>
@@ -904,10 +920,10 @@
   }
 
   <!-- Footer -->
-  <footer class="bg-black/50 border-t border-yellow-500/20 mt-16">
+  <footer class="dark:bg-black/50 light:bg-white/50 dark:border-yellow-500/20 light:border-blue-500/20 border-t mt-16">
     <div class="container mx-auto px-4 py-6 text-center">
-      <p class="text-gray-500 text-sm">Built with ❤️ using Angular 18 + MongoDB + Tailwind CSS</p>
-      <div class="mt-2 text-xs text-yellow-500/60">EduFocus © 2024 - Premium Study Planner</div>
+      <p class="dark:text-gray-500 light:text-gray-600 text-sm flex items-center justify-center gap-1">Built with <span class="material-icons text-sm dark:text-red-400 light:text-red-500">favorite</span> using Angular 18 + MongoDB + Tailwind CSS</p>
+      <div class="mt-2 text-xs dark:text-yellow-500/60 light:text-blue-500/60">EduFocus © 2024 - Premium Study Planner</div>
     </div>
   </footer>
 </div>

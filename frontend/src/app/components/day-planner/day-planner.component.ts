@@ -589,7 +589,7 @@ export class DayPlannerComponent implements OnInit {
       viewStart = new Date(viewStart);
       viewStart.setDate(viewStart.getDate() + mondayOffset);
       viewEnd = new Date(viewStart);
-      viewEnd.setDate(viewEnd.getDate() + 7); // Exclusive end (next Monday)
+      viewEnd.setDate(viewEnd.getDate() + 7); // Sunday of current week
     }
     
     viewStart.setHours(12, 0, 0, 0);

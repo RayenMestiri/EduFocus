@@ -6,6 +6,7 @@ import { AuthService } from '../../services/auth.service';
 import { SubjectService } from '../../services/subject.service';
 import { DayPlanService } from '../../services/day-plan.service';
 import { TodoService } from '../../services/todo.service';
+import { ThemeService } from '../../services/theme.service';
 import { Subject, DayPlan, Todo } from '../../models';
 import Swal from 'sweetalert2';
 import { LottieComponent, AnimationOptions } from 'ngx-lottie';
@@ -77,7 +78,7 @@ export class DashboardComponent implements OnInit {
   subjectForm = {
     name: '',
     color: '#ffd700',
-    icon: '📚'
+    icon: 'menu_book'
   };
   
   todoForm = {
@@ -128,15 +129,22 @@ export class DashboardComponent implements OnInit {
     return this.todos().length;
   });
 
-  icons = ['📚', '🧮', '⚗️', '💻', '🌍', '📖', '✏️', '🎨', '🎵', '⚽', '🔬', '📐'];
-  colors = ['#ffd700', '#3b82f6', '#8b5cf6', '#ec4899', '#10b981', '#f59e0b', '#ef4444', '#06b6d4'];
+  // Material Icons for subjects
+  icons = [
+    'menu_book', 'calculate', 'science', 'computer', 'public', 
+    'book', 'edit', 'palette', 'music_note', 'sports_soccer', 
+    'biotech', 'straighten', 'psychology', 'language', 'history_edu',
+    'category', 'architecture', 'functions', 'auto_stories', 'school'
+  ];
+  colors = ['#ffd700', '#2563eb', '#7c3aed', '#db2777', '#059669', '#ea580c', '#dc2626', '#0891b2', '#16a34a', '#c026d3', '#0284c7', '#ca8a04'];
 
   constructor(
     private authService: AuthService,
     private subjectService: SubjectService,
     private dayPlanService: DayPlanService,
     private todoService: TodoService,
-    private router: Router
+    private router: Router,
+    public themeService: ThemeService
   ) {}
 
   currentUser = computed(() => this.authService.currentUser());
@@ -323,7 +331,11 @@ export class DashboardComponent implements OnInit {
 
   saveSubject() {
     if (!this.subjectForm.name.trim()) {
-      Swal.fire({ icon: 'error', title: 'Erreur', text: 'Le nom est requis', background: '#1a1a1a', color: '#ffd700', confirmButtonColor: '#ffd700' });
+      Swal.fire({ 
+        icon: 'error', 
+        title: 'Erreur', 
+        text: 'Le nom est requis'
+      });
       return;
     }
 
@@ -334,13 +346,23 @@ export class DashboardComponent implements OnInit {
 
     request.subscribe({
       next: () => {
-        Swal.fire({ icon: 'success', title: 'Succès', text: 'Matière enregistrée', background: '#1a1a1a', color: '#ffd700', confirmButtonColor: '#ffd700', timer: 1500, showConfirmButton: false });
+        Swal.fire({ 
+          icon: 'success', 
+          title: 'Succès', 
+          text: 'Matière enregistrée avec succès', 
+          timer: 1500, 
+          showConfirmButton: false 
+        });
         this.showSubjectModal.set(false);
         this.loadSubjects();
         this.loadDayPlan(); // Reload current day plan to show updated data
       },
       error: (err) => {
-        Swal.fire({ icon: 'error', title: 'Erreur', text: err.error?.message || 'Erreur', background: '#1a1a1a', color: '#ffd700', confirmButtonColor: '#ffd700' });
+        Swal.fire({ 
+          icon: 'error', 
+          title: 'Erreur', 
+          text: err.error?.message || 'Une erreur est survenue'
+        });
       }
     });
   }
@@ -512,10 +534,7 @@ export class DashboardComponent implements OnInit {
       Swal.fire({ 
         icon: 'error', 
         title: 'Erreur', 
-        text: 'Ajoutez au moins une matière avec un objectif', 
-        background: '#1a1a1a', 
-        color: '#ffd700', 
-        confirmButtonColor: '#ffd700' 
+        text: 'Ajoutez au moins une matière avec un objectif'
       });
       return;
     }
@@ -527,9 +546,7 @@ export class DashboardComponent implements OnInit {
           title: '✅ Plan mis à jour', 
           text: 'Sessions ajustées automatiquement',
           timer: 2000, 
-          showConfirmButton: false, 
-          background: '#1a1a1a', 
-          color: '#ffd700' 
+          showConfirmButton: false
         });
         this.showPlanModal.set(false);
         this.loadDayPlan();
@@ -538,10 +555,7 @@ export class DashboardComponent implements OnInit {
         Swal.fire({ 
           icon: 'error', 
           title: 'Erreur', 
-          text: err.error?.message, 
-          background: '#1a1a1a', 
-          color: '#ffd700', 
-          confirmButtonColor: '#ffd700' 
+          text: err.error?.message
         });
       }
     });
@@ -553,21 +567,17 @@ export class DashboardComponent implements OnInit {
       text: `Supprimer "${subject.name}"?`,
       icon: 'warning',
       showCancelButton: true,
-      confirmButtonColor: '#ef4444',
-      cancelButtonColor: '#6b7280',
       confirmButtonText: 'Supprimer',
-      cancelButtonText: 'Annuler',
-      background: '#1a1a1a',
-      color: '#ffd700'
+      cancelButtonText: 'Annuler'
     }).then((result) => {
       if (result.isConfirmed) {
         this.subjectService.deleteSubject(subject._id!).subscribe({
           next: () => {
-            Swal.fire({ icon: 'success', title: 'Supprimé', timer: 1500, showConfirmButton: false, background: '#1a1a1a', color: '#ffd700' });
+            Swal.fire({ icon: 'success', title: 'Supprimé', timer: 1500, showConfirmButton: false });
             this.loadSubjects();
           },
           error: (err) => {
-            Swal.fire({ icon: 'error', title: 'Erreur', text: err.error?.message, background: '#1a1a1a', color: '#ffd700', confirmButtonColor: '#ffd700' });
+            Swal.fire({ icon: 'error', title: 'Erreur', text: err.error?.message });
           }
         });
       }
@@ -756,13 +766,7 @@ export class DashboardComponent implements OnInit {
       timerProgressBar: true,
       showConfirmButton: false,
       background: '#1a1a1a',
-      color: '#ffd700',
-      backdrop: `
-        rgba(0,0,0,0.8)
-        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='50' font-size='50'%3E⭐%3C/text%3E%3C/svg%3E")
-        left top
-        no-repeat
-      `
+      color: '#ffd700'
     });
   }
 
@@ -1177,7 +1181,7 @@ export class DashboardComponent implements OnInit {
 
   saveTodo() {
     if (!this.todoForm.title.trim()) {
-      Swal.fire({ icon: 'error', title: 'Erreur', text: 'Le titre est requis', background: '#1a1a1a', color: '#ffd700', confirmButtonColor: '#ffd700' });
+      Swal.fire({ icon: 'error', title: 'Erreur', text: 'Le titre est requis' });
       return;
     }
 
@@ -1201,7 +1205,7 @@ export class DashboardComponent implements OnInit {
       this.todoService.updateTodo(editingTodo._id!, updatedTodo).subscribe({
         next: (response) => {
           console.log('Todo updated successfully:', response);
-          Swal.fire({ icon: 'success', title: 'Tâche modifiée', timer: 1500, showConfirmButton: false, background: '#1a1a1a', color: '#ffd700' });
+          Swal.fire({ icon: 'success', title: 'Tâche modifiée', timer: 1500, showConfirmButton: false });
           this.showTodoModal.set(false);
           this.editingTodo.set(null);
           this.loadTodos();
@@ -1209,7 +1213,7 @@ export class DashboardComponent implements OnInit {
         error: (err) => {
           console.error('Error updating todo:', err);
           const errorMsg = err.error?.error || err.error?.message || err.message || 'Erreur lors de la modification de la tâche';
-          Swal.fire({ icon: 'error', title: 'Erreur', text: errorMsg, background: '#1a1a1a', color: '#ffd700', confirmButtonColor: '#ffd700' });
+          Swal.fire({ icon: 'error', title: 'Erreur', text: errorMsg });
         }
       });
     } else {
@@ -1231,7 +1235,7 @@ export class DashboardComponent implements OnInit {
       this.todoService.createTodo(todo).subscribe({
         next: (response) => {
           console.log('Todo created successfully:', response);
-          Swal.fire({ icon: 'success', title: 'Tâche ajoutée', timer: 1500, showConfirmButton: false, background: '#1a1a1a', color: '#ffd700' });
+          Swal.fire({ icon: 'success', title: 'Tâche ajoutée', timer: 1500, showConfirmButton: false });
           this.showTodoModal.set(false);
           this.loadTodos();
         },
@@ -1240,50 +1244,67 @@ export class DashboardComponent implements OnInit {
           console.error('Error status:', err.status);
           console.error('Error body:', err.error);
           const errorMsg = err.error?.error || err.error?.message || err.message || 'Erreur lors de la création de la tâche';
-          Swal.fire({ icon: 'error', title: 'Erreur', text: errorMsg, background: '#1a1a1a', color: '#ffd700', confirmButtonColor: '#ffd700' });
+          Swal.fire({ icon: 'error', title: 'Erreur', text: errorMsg });
         }
       });
     }
   }
 
-  async toggleTodo(todo: Todo) {
-    // If marking as done and has a subject, ask for study time
-    if (!todo.done && todo.subjectId) {
+  async toggleTodo(todo: Todo, newDone: boolean) {
+    const wasDone = todo.done;
+    const isCompleting = newDone && !wasDone;
+    
+    // Only ask for study time if completing and has a subject
+    if (isCompleting && todo.subjectId) {
       const subject = this.subjects().find(s => s._id === todo.subjectId);
+      const isLight = this.themeService.isLight();
+      
+      // Premium theme-aware colors (indigo for light mode)
+      const textColor = isLight ? '#334155' : '#d1d5db';
+      const panelBg = isLight ? '#eef2ff' : '#1f2937';
+      const buttonBg = isLight ? '#ffffff' : '#4b5563';
+      const buttonHoverBg = isLight ? '#f1f5f9' : '#374151';
+      const numberColor = isLight ? '#6366f1' : '#fbbf24';
+      const labelColor = isLight ? '#64748b' : '#9ca3af';
+      const subjectColor = isLight ? '#64748b' : '#9ca3af';
+      const borderColor = isLight ? '#c7d2fe' : '#374151';
       
       const result = await Swal.fire({
         title: '⏱️ Temps d\'étude',
         html: `
-          <div class="text-left">
-            <p class="mb-4 text-gray-300">Combien de temps avez-vous passé sur cette tâche?</p>
-            <div class="flex items-center justify-center gap-3 mb-4">
-              <button id="minus-btn" class="w-12 h-12 bg-gray-700 hover:bg-gray-600 rounded-lg text-white text-2xl">−</button>
-              <div class="px-6 py-3 bg-gray-800 rounded-xl">
-                <span id="time-display" class="text-3xl font-bold text-yellow-400">15</span>
-                <span class="text-gray-400 ml-2">min</span>
+          <div style="text-align: left;">
+            <p style="margin-bottom: 1rem; color: ${textColor}; font-size: 0.95rem;">Combien de temps avez-vous passé sur cette tâche?</p>
+            <div style="display: flex; align-items: center; justify-content: center; gap: 0.75rem; margin-bottom: 1rem;">
+              <button id="minus-btn" style="width: 2.75rem; height: 2.75rem; background: ${buttonBg}; border: 1.5px solid ${borderColor}; border-radius: 0.625rem; color: ${textColor}; font-size: 1.25rem; cursor: pointer; transition: all 0.2s; font-weight: 600;">−</button>
+              <div style="padding: 0.75rem 1.5rem; background: ${panelBg}; border: 1.5px solid ${borderColor}; border-radius: 0.75rem;">
+                <span id="time-display" style="font-size: 1.75rem; font-weight: 700; color: ${numberColor};">15</span>
+                <span style="color: ${labelColor}; margin-left: 0.5rem; font-size: 0.9rem;">min</span>
               </div>
-              <button id="plus-btn" class="w-12 h-12 bg-gray-700 hover:bg-gray-600 rounded-lg text-white text-2xl">+</button>
+              <button id="plus-btn" style="width: 2.75rem; height: 2.75rem; background: ${buttonBg}; border: 1.5px solid ${borderColor}; border-radius: 0.625rem; color: ${textColor}; font-size: 1.25rem; cursor: pointer; transition: all 0.2s; font-weight: 600;">+</button>
             </div>
-            ${subject ? `<p class="text-center text-sm text-gray-400">Matière: ${subject.icon} ${subject.name}</p>` : ''}
+            ${subject ? `<p style="text-align: center; font-size: 0.875rem; color: ${subjectColor};">Matière: ${subject.icon} ${subject.name}</p>` : ''}
           </div>
         `,
         showCancelButton: true,
         confirmButtonText: '✅ Valider',
         cancelButtonText: 'Annuler',
-        background: '#1a1a1a',
-        color: '#ffd700',
-        confirmButtonColor: '#ffd700',
-        cancelButtonColor: '#374151',
         didOpen: () => {
           let minutes = 15;
           const display = document.getElementById('time-display');
-          const minusBtn = document.getElementById('minus-btn');
-          const plusBtn = document.getElementById('plus-btn');
+          const minusBtn = document.getElementById('minus-btn') as HTMLButtonElement;
+          const plusBtn = document.getElementById('plus-btn') as HTMLButtonElement;
+          
+          // Hover effects
+          minusBtn?.addEventListener('mouseenter', () => minusBtn.style.background = buttonHoverBg);
+          minusBtn?.addEventListener('mouseleave', () => minusBtn.style.background = buttonBg);
+          plusBtn?.addEventListener('mouseenter', () => plusBtn.style.background = buttonHoverBg);
+          plusBtn?.addEventListener('mouseleave', () => plusBtn.style.background = buttonBg);
           
           minusBtn?.addEventListener('click', () => {
             if (minutes > 5) {
               minutes -= 5;
               display!.textContent = minutes.toString();
+              display?.setAttribute('data-minutes', minutes.toString());
             }
           });
           
@@ -1291,13 +1312,11 @@ export class DashboardComponent implements OnInit {
             if (minutes < 300) {
               minutes += 5;
               display!.textContent = minutes.toString();
+              display?.setAttribute('data-minutes', minutes.toString());
             }
           });
           
-          // Store minutes in a data attribute
           display?.setAttribute('data-minutes', minutes.toString());
-          minusBtn?.addEventListener('click', () => display?.setAttribute('data-minutes', minutes.toString()));
-          plusBtn?.addEventListener('click', () => display?.setAttribute('data-minutes', minutes.toString()));
         },
         preConfirm: () => {
           const display = document.getElementById('time-display');
@@ -1307,6 +1326,7 @@ export class DashboardComponent implements OnInit {
 
       if (result.isConfirmed && result.value) {
         const studyMinutes = result.value;
+        todo.done = newDone;
         
         // Update studied time for this subject
         this.dayPlanService.updateStudiedTime(this.today, todo.subjectId, studyMinutes).subscribe({
@@ -1315,28 +1335,31 @@ export class DashboardComponent implements OnInit {
             this.loadDayPlan();
             
             // Then toggle the todo
-            this.proceedToggleTodo(todo, studyMinutes);
+            this.proceedToggleTodo(todo, studyMinutes, wasDone);
           },
           error: (err) => {
             console.error('Error updating studied time:', err);
             // Still toggle the todo even if time update fails
-            this.proceedToggleTodo(todo, studyMinutes);
+            this.proceedToggleTodo(todo, studyMinutes, wasDone);
           }
         });
+      } else {
+        // If canceled, revert the checkbox back to previous state
+        todo.done = wasDone;
       }
-      // If canceled, don't toggle the todo
       return;
     }
     
-    // If marking as not done, or no subject, just toggle
-    this.proceedToggleTodo(todo, 0);
+    // For uncompleting or no subject, just toggle without asking
+    todo.done = newDone;
+    this.proceedToggleTodo(todo, 0, wasDone);
   }
 
-  private proceedToggleTodo(todo: Todo, studyMinutes: number) {
+  private proceedToggleTodo(todo: Todo, studyMinutes: number, wasDone: boolean) {
     this.todoService.toggleTodo(todo._id!).subscribe({
       next: () => {
         // Award points if marking as done (was not done before)
-        if (!todo.done) {
+        if (!wasDone && todo.done) {
           const basePoints = 10;
           const timeBonus = Math.floor(studyMinutes / 15) * 5; // 5 points per 15 min
           const totalPoints = basePoints + timeBonus;
@@ -1414,7 +1437,7 @@ export class DashboardComponent implements OnInit {
                   background: '#0a0a0a',
                   color: '#ffffff',
                   confirmButtonColor: '#ffd700',
-                  width: '90vw',
+                  width: '40vw',
                   customClass: {
                     popup: 'celebration-popup responsive-modal',
                     confirmButton: 'celebration-button'
@@ -1440,11 +1463,11 @@ export class DashboardComponent implements OnInit {
   deleteTodo(todo: Todo) {
     this.todoService.deleteTodo(todo._id!).subscribe({
       next: () => {
-        Swal.fire({ icon: 'success', title: 'Supprimé', timer: 1500, showConfirmButton: false, background: '#1a1a1a', color: '#ffd700' });
+        Swal.fire({ icon: 'success', title: 'Supprimé', timer: 1500, showConfirmButton: false });
         this.loadTodos();
       },
       error: (err) => {
-        Swal.fire({ icon: 'error', title: 'Erreur', text: err.error?.message, background: '#1a1a1a', color: '#ffd700', confirmButtonColor: '#ffd700' });
+        Swal.fire({ icon: 'error', title: 'Erreur', text: err.error?.message });
       }
     });
   }
