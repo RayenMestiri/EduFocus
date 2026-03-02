@@ -3,6 +3,7 @@ const router = express.Router();
 const User = require('../models/User');
 const { getSignedJwtToken } = require('../middleware/auth');
 const { body, validationResult } = require('express-validator');
+const jwt = require('jsonwebtoken');
 
 // @route   POST /api/auth/register
 // @desc    Register user
@@ -143,7 +144,6 @@ router.get('/me', async (req, res) => {
       });
     }
 
-    const jwt = require('jsonwebtoken');
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const user = await User.findById(decoded.id);
 
@@ -192,7 +192,6 @@ router.post('/award-points', async (req, res) => {
       });
     }
 
-    const jwt = require('jsonwebtoken');
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const user = await User.findById(decoded.id);
 
@@ -245,7 +244,6 @@ router.get('/timer-settings', async (req, res) => {
       });
     }
 
-    const jwt = require('jsonwebtoken');
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const user = await User.findById(decoded.id);
 
@@ -303,7 +301,6 @@ router.put('/timer-settings', [
       });
     }
 
-    const jwt = require('jsonwebtoken');
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const user = await User.findById(decoded.id);
 
@@ -355,7 +352,6 @@ router.get('/session-goal', async (req, res) => {
       });
     }
 
-    const jwt = require('jsonwebtoken');
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const user = await User.findById(decoded.id);
 
