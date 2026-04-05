@@ -89,7 +89,7 @@
         <!-- Search bar -->
         <div class="relative mb-3">
           <span class="material-icons absolute left-3.5 top-1/2 -translate-y-1/2 dark:text-gray-500 light:text-slate-400" style="font-size:20px">search</span>
-          <input type="text" [ngModel]="searchQuery()" (ngModelChange)="onSearchChange($event)" placeholder="Rechercher une note..." class="w-full pl-11 pr-4 py-3 rounded-xl text-sm dark:bg-gray-900/60 dark:border-yellow-500/15 dark:text-white dark:placeholder-gray-600 dark:focus:border-yellow-500/40 dark:focus:ring-yellow-500/20 light:bg-white light:border-indigo-200/60 light:text-slate-800 light:placeholder-slate-400 light:focus:border-indigo-400 light:focus:ring-indigo-200 border focus:ring-2 outline-none transition-all" />
+          <input #searchInput name="note-search" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" type="text" [ngModel]="searchQuery()" (ngModelChange)="onSearchChange($event)" placeholder="Rechercher une note..." class="w-full pl-11 pr-4 py-3 rounded-xl text-sm dark:bg-gray-900/60 dark:border-yellow-500/15 dark:text-white dark:placeholder-gray-600 dark:focus:border-yellow-500/40 dark:focus:ring-yellow-500/20 light:bg-white light:border-indigo-200/60 light:text-slate-800 light:placeholder-slate-400 light:focus:border-indigo-400 light:focus:ring-indigo-200 border focus:ring-2 outline-none transition-all" />
         </div>
 
         <!-- Subject filter chips -->
@@ -484,7 +484,7 @@
               }
             </div>
             @if (editorHasPassword()) {
-              <input type="password" [ngModel]="editorPassword()" (ngModelChange)="editorPassword.set($event)"
+              <input name="note-editor-password" autocomplete="new-password" type="password" [ngModel]="editorPassword()" (ngModelChange)="editorPassword.set($event)"
                 placeholder="Mot de passe de protection..."
                 class="flex-1 min-w-[160px] text-xs px-3 py-1.5 rounded-lg dark:bg-white/5 dark:text-gray-300 dark:border-white/10 dark:placeholder-gray-600 light:bg-slate-50 light:text-slate-700 light:border-slate-200 light:placeholder-slate-400 border outline-none" />
             }
@@ -534,7 +534,7 @@
         @if (passwordError()) {
           <p class="text-xs text-red-500 text-center mb-3">{{ passwordError() }}</p>
         }
-        <input #pwdInput type="password" [ngModel]="passwordInput()" (ngModelChange)="passwordInput.set($event)" (keydown.enter)="verifyPassword()" placeholder="Mot de passe..." class="w-full text-sm px-4 py-2.5 rounded-xl dark:bg-white/5 dark:text-white dark:border-white/10 light:bg-slate-50 light:text-slate-800 light:border-slate-200 border outline-none mb-4" />
+        <input autocomplete="new-password" name="note-unlock-password" #pwdInput type="password" [ngModel]="passwordInput()" (ngModelChange)="passwordInput.set($event)" (keydown.enter)="verifyPassword()" placeholder="Mot de passe..." class="w-full text-sm px-4 py-2.5 rounded-xl dark:bg-white/5 dark:text-white dark:border-white/10 light:bg-slate-50 light:text-slate-800 light:border-slate-200 border outline-none mb-4" />
         <div class="flex gap-2">
           <button (click)="closePasswordModal()" class="flex-1 px-4 py-2 rounded-xl text-sm font-semibold dark:bg-white/5 dark:text-gray-400 dark:hover:bg-white/10 light:bg-slate-100 light:text-slate-600 light:hover:bg-slate-200 transition-all">Annuler</button>
           <button (click)="verifyPassword()" class="flex-1 px-4 py-2 rounded-xl text-sm font-bold transition-all dark:bg-yellow-500 dark:text-black dark:hover:bg-yellow-400 light:bg-indigo-600 light:text-white light:hover:bg-indigo-500">Déverrouiller</button>

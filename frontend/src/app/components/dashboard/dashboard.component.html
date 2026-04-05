@@ -1,15 +1,15 @@
 <div class="min-h-screen dark:bg-black dark:text-white light:bg-gradient-to-br light:from-indigo-50/50 light:via-white light:to-violet-50/50 light:text-slate-800 transition-colors duration-300">
   <!-- Premium Header -->
   <header class="sticky top-0 z-50 dark:bg-black/80 light:bg-white/90 backdrop-blur-xl dark:border-b dark:border-yellow-500/20 light:border-b light:border-indigo-200/60 dark:shadow-2xl dark:shadow-yellow-500/10 light:shadow-xl light:shadow-indigo-500/8">
-    <div class="container mx-auto px-4 py-4">
+    <div class="w-[98%] lg:w-[94%] max-w-[1800px] mx-auto py-4">
       <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-        <div class="flex flex-wrap items-center gap-2 sm:gap-3 lg:gap-4">
-          <div class="w-12 h-12 dark:bg-gradient-to-br dark:from-yellow-400 dark:to-yellow-600 light:bg-gradient-to-br light:from-indigo-500 light:to-violet-600 rounded-xl flex items-center justify-center dark:shadow-lg dark:shadow-yellow-500/50 light:shadow-lg light:shadow-indigo-500/40">
-            <span class="material-icons text-3xl dark:text-black light:text-white">school</span>
+        <div class="flex flex-wrap items-center gap-3 sm:gap-4 lg:gap-5">
+          <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-xl dark:bg-gradient-to-br dark:from-yellow-400 dark:to-yellow-600 light:bg-gradient-to-br light:from-indigo-500 light:to-violet-600 flex items-center justify-center dark:shadow-lg dark:shadow-yellow-500/50 light:shadow-lg light:shadow-indigo-500/40">
+            <span class="material-icons text-2xl sm:text-[26px] dark:text-black light:text-white">school</span>
           </div>
           <div>
-            <h1 class="text-3xl font-bold dark:bg-gradient-to-r dark:from-yellow-400 dark:via-yellow-500 dark:to-yellow-600 light:bg-gradient-to-r light:from-indigo-600 light:via-violet-600 light:to-purple-600 bg-clip-text text-transparent">EduFocus</h1>
-            <p class="text-xs dark:text-yellow-500/60 light:text-indigo-500">Premium Study Planner</p>
+            <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight dark:bg-gradient-to-r dark:from-yellow-300 dark:via-yellow-500 dark:to-yellow-600 light:bg-gradient-to-r light:from-indigo-600 light:via-violet-600 light:to-purple-600 bg-clip-text text-transparent">EduFocus</h1>
+            <p class="text-[11px] sm:text-xs font-medium dark:text-yellow-500/75 light:text-indigo-600/80">Premium Study Planner</p>
           </div>
         </div>
         
@@ -64,8 +64,8 @@
   </header>
 
   <!-- Main Content -->
-  <main class="container mx-auto px-4 py-8">
-    <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+  <main class="w-[98%] lg:w-[94%] max-w-[1800px] mx-auto py-6">
+    <div class="grid grid-cols-1 lg:grid-cols-5 gap-4 lg:gap-5">
 
       @if (showMobileSubjectsMenu()) {
         <div class="fixed inset-0 z-40 bg-black/50 backdrop-blur-[1px] lg:hidden" (click)="closeMobileSubjectsMenu()"></div>
@@ -361,61 +361,76 @@
           </div>
         </div>
 
-        <!-- To-Do List -->
-        <div class="dark:bg-gradient-to-br dark:from-gray-900 dark:to-black light:bg-white dark:border-yellow-500/20 light:border-2 light:border-blue-300 rounded-2xl p-6 dark:shadow-2xl dark:shadow-yellow-500/5 light:shadow-xl light:shadow-blue-200/60">
-          <div class="flex items-center justify-between mb-6">
-            <h2 class="text-2xl font-bold dark:bg-gradient-to-r dark:from-yellow-400 dark:to-yellow-600 light:bg-gradient-to-r light:from-blue-500 light:to-blue-700 bg-clip-text text-transparent flex items-center gap-2">
-              <span class="material-icons text-3xl">check_circle</span>
+      </div>
+
+      <!-- Sidebar - Right (To-Do List Full) -->
+      <aside class="lg:col-span-1 w-full mt-6 lg:mt-0">
+        <div class="h-full lg:h-auto overflow-y-auto w-full dark:bg-gradient-to-br dark:from-gray-900 dark:to-black light:bg-white/95 lg:light:bg-white/80 light:backdrop-blur-sm dark:border-yellow-500/20 light:border light:border-indigo-100 rounded-l-2xl lg:rounded-2xl p-4 sm:p-6 dark:shadow-2xl dark:shadow-yellow-500/5 light:shadow-lg light:shadow-indigo-200/40 lg:sticky lg:top-24 lg:max-h-[85vh]">
+          
+          <!-- Add Todo Button -->
+          <button (click)="openTodoModal()" class="w-full py-3 dark:bg-yellow-500/10 dark:hover:bg-yellow-500/20 dark:border-yellow-500/30 light:bg-indigo-50 light:hover:bg-indigo-100 light:border-indigo-200 border rounded-xl dark:text-yellow-500 light:text-indigo-600 font-medium transition-all duration-300 mb-6 flex items-center justify-center gap-2 hover:scale-105 shadow-sm">
+            <span class="material-icons text-xl">add_task</span>
+            Ajouter une tâche
+          </button>
+
+          <div class="flex items-center justify-between mb-4">
+            <h2 class="text-xl font-bold dark:bg-gradient-to-r dark:from-yellow-400 dark:to-yellow-600 light:bg-gradient-to-r light:from-indigo-600 light:to-violet-600 bg-clip-text text-transparent flex items-center gap-2">
+              <span class="material-icons">check_circle</span>
               To-Do List
             </h2>
-            <button (click)="openTodoModal()" class="px-4 py-2 dark:bg-yellow-500/20 dark:hover:bg-yellow-500/30 dark:border-yellow-500/30 light:bg-blue-100 light:hover:bg-blue-200 light:border-blue-300 border rounded-lg dark:text-yellow-500 light:text-blue-700 font-medium transition-all duration-300 hover:scale-105">
-              + Ajouter
-            </button>
           </div>
           
           <div class="space-y-3">
             @for (todo of todos(); track todo._id) {
-              <div class="p-4 dark:bg-gray-800/50 light:bg-blue-50 dark:border-gray-700 light:border-blue-300 border rounded-xl flex items-center gap-3 dark:hover:border-yellow-500/30 light:hover:border-blue-400 transition-all duration-300 group shadow-sm light:shadow-blue-100"
+              <div class="p-3 sm:p-4 dark:bg-gray-800/50 light:bg-white/90 dark:border-gray-700 light:border-indigo-100 border-2 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-2 dark:hover:border-yellow-500/30 light:hover:border-indigo-300 transition-all duration-300 group shadow-sm hover:shadow-md"
                    [class.opacity-60]="todo.done"
                    [class.border-green-500]="todo.done"
-                   [class.light:bg-green-50]="todo.done">
+                   [class.light:bg-emerald-50]="todo.done">
+                   
+                <div class="flex items-center gap-2 sm:gap-3 flex-1 min-w-0">
                   <input type="checkbox" 
                     [ngModel]="todo.done"
                     (ngModelChange)="toggleTodo(todo, $event)"
-                       class="w-5 h-5 rounded dark:border-yellow-500 light:border-blue-500 dark:text-yellow-500 light:text-blue-500 focus:ring-2 dark:focus:ring-yellow-500 light:focus:ring-blue-500 cursor-pointer" />
-                <div class="flex-1">
-                  <div [class.line-through]="todo.done" 
-                       [class.text-gray-500]="todo.done"
-                       class="dark:text-white light:text-gray-900 dark:group-hover:text-yellow-400 light:group-hover:text-blue-700 transition-colors font-medium">
-                    {{ todo.title }}
+                    class="w-5 h-5 rounded dark:border-yellow-500 light:border-indigo-500 dark:text-yellow-500 light:text-indigo-600 focus:ring-2 dark:focus:ring-yellow-500 light:focus:ring-indigo-500 cursor-pointer" />
+                  
+                  <div class="flex flex-col flex-1 min-w-0">
+                    <div [class.line-through]="todo.done" 
+                         [class.text-gray-500]="todo.done"
+                         class="text-sm sm:text-base dark:text-white light:text-slate-800 dark:group-hover:text-yellow-400 light:group-hover:text-indigo-700 transition-colors font-semibold break-words">
+                      {{ todo.title }}
+                    </div>
+                    <div class="mt-1">
+                      @if (todo.priority === 'urgent') {
+                        <span class="px-2 py-0.5 text-[10px] font-bold rounded-full dark:bg-purple-500/20 light:bg-rose-100 dark:text-purple-400 light:text-rose-700 animate-pulse inline-flex items-center gap-1"><span class="material-icons text-[10px] sm:text-xs">local_fire_department</span> Urgent</span>
+                      } @else if (todo.priority === 'high') {
+                        <span class="px-2 py-0.5 text-[10px] font-bold rounded-full dark:bg-red-500/20 light:bg-orange-100 dark:text-red-400 light:text-orange-700">Haute</span>
+                      } @else if (todo.priority === 'medium') {
+                        <span class="px-2 py-0.5 text-[10px] font-bold rounded-full dark:bg-yellow-500/20 light:bg-indigo-100 dark:text-yellow-400 light:text-indigo-700">Moyenne</span>
+                      } @else {
+                        <span class="px-2 py-0.5 text-[10px] font-bold rounded-full dark:bg-green-500/20 light:bg-emerald-100 dark:text-green-400 light:text-emerald-700">Basse</span>
+                      }
+                    </div>
                   </div>
-                  <div class="text-xs dark:text-gray-500 light:text-gray-600">Priorité: {{ todo.priority }}</div>
                 </div>
-                @if (todo.priority === 'urgent') {
-                  <span class="px-3 py-1 text-xs font-semibold rounded-full dark:bg-purple-500/20 light:bg-purple-100 dark:text-purple-400 light:text-purple-700 animate-pulse flex items-center gap-1"><span class="material-icons text-sm">local_fire_department</span> Urgent</span>
-                } @else if (todo.priority === 'high') {
-                  <span class="px-3 py-1 text-xs font-semibold rounded-full dark:bg-red-500/20 light:bg-red-100 dark:text-red-400 light:text-red-700">Haute</span>
-                } @else if (todo.priority === 'medium') {
-                  <span class="px-3 py-1 text-xs font-semibold rounded-full dark:bg-yellow-500/20 light:bg-yellow-100 dark:text-yellow-400 light:text-yellow-700">Moyenne</span>
-                } @else {
-                  <span class="px-3 py-1 text-xs font-semibold rounded-full dark:bg-green-500/20 light:bg-green-100 dark:text-green-400 light:text-green-700">Basse</span>
-                }
-                <div class="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-all">
-                  <button (click)="editTodo(todo)" class="p-2 dark:hover:bg-yellow-500/20 light:hover:bg-blue-100 rounded dark:text-yellow-400 light:text-blue-600 transition-all">
-                    <span class="material-icons text-xl">edit</span>
+
+                <div class="flex gap-1 sm:gap-2 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity self-end sm:self-auto">
+                  <button (click)="editTodo(todo)" class="p-1 dark:hover:bg-white/10 light:hover:bg-slate-200/80 rounded">
+                    <span class="material-icons text-base sm:text-lg dark:text-gray-300 light:text-slate-600">edit</span>
                   </button>
-                  <button (click)="deleteTodo(todo)" class="p-2 dark:hover:bg-red-500/20 light:hover:bg-red-100 rounded dark:text-red-400 light:text-red-600 transition-all">
-                    <span class="material-icons text-xl">delete</span>
+                  <button (click)="deleteTodo(todo)" class="p-1 hover:bg-red-500/20 rounded text-red-500">
+                    <span class="material-icons text-base sm:text-lg">delete</span>
                   </button>
                 </div>
               </div>
             } @empty {
-              <p class="dark:text-gray-500 light:text-gray-500 text-center py-8">Aucune tâche pour aujourd'hui</p>
+              <div class="dark:text-gray-500 light:text-slate-500 text-center py-8 text-sm flex flex-col items-center gap-2">
+                <span class="material-icons text-4xl opacity-50">task</span>
+                Aucune tâche
+              </div>
             }
           </div>
         </div>
-
-      </div>
+      </aside>
       
     </div>
   </main>
@@ -498,24 +513,24 @@
   <!-- Todo Modal -->
   @if (showTodoModal()) {
     <div class="fixed inset-0 dark:bg-black/80 light:bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 overflow-y-auto" (click)="showTodoModal.set(false)">
-      <div class="dark:bg-gradient-to-br dark:from-gray-900 dark:to-black light:bg-white dark:border-yellow-500/20 light:border-blue-500/20 border rounded-2xl p-6 sm:p-8 max-w-md w-full dark:shadow-2xl light:shadow-2xl max-h-[92vh] overflow-y-auto" (click)="$event.stopPropagation()">
-        <h3 class="text-2xl font-bold dark:bg-gradient-to-r dark:from-yellow-400 dark:to-yellow-600 light:bg-gradient-to-r light:from-blue-500 light:to-blue-700 bg-clip-text text-transparent mb-6">
+      <div class="dark:bg-gradient-to-br dark:from-gray-900 dark:to-black light:bg-gradient-to-br light:from-white light:to-indigo-50/70 dark:border-yellow-500/20 light:border light:border-indigo-200/80 border rounded-2xl p-6 sm:p-8 max-w-md w-full dark:shadow-2xl light:shadow-2xl light:shadow-indigo-200/50 max-h-[92vh] overflow-y-auto" (click)="$event.stopPropagation()">
+        <h3 class="text-2xl font-bold dark:bg-gradient-to-r dark:from-yellow-400 dark:to-yellow-600 light:bg-gradient-to-r light:from-indigo-600 light:to-violet-600 bg-clip-text text-transparent mb-6">
           {{ editingTodo() ? 'Modifier la tâche' : 'Ajouter une tâche' }}
         </h3>
         
         <div class="space-y-4">
           <div>
-            <label class="text-sm font-semibold dark:text-gray-300 light:text-gray-700 block mb-2">Titre</label>
+                 <label class="text-sm font-semibold dark:text-gray-300 light:text-slate-700 block mb-2">Titre</label>
             <input type="text" 
                    [(ngModel)]="todoForm.title"
                    placeholder="Ex: Réviser chapitre 3"
-                   class="w-full px-4 py-3 dark:bg-black/50 light:bg-gray-100 dark:border-yellow-500/30 light:border-blue-500/30 border rounded-xl dark:text-white light:text-gray-900 dark:placeholder-gray-500 light:placeholder-gray-400 focus:outline-none dark:focus:ring-2 dark:focus:ring-yellow-500 light:focus:ring-2 light:focus:ring-blue-500" />
+                   class="w-full px-4 py-3 dark:bg-black/50 light:bg-white dark:border-yellow-500/30 light:border-indigo-200 border rounded-xl dark:text-white light:text-slate-900 dark:placeholder-gray-500 light:placeholder-slate-400 focus:outline-none dark:focus:ring-2 dark:focus:ring-yellow-500 light:focus:ring-2 light:focus:ring-indigo-500 light:shadow-inner" />
           </div>
           
           <div>
-            <label class="text-sm font-semibold dark:text-gray-300 light:text-gray-700 block mb-2">Priorité</label>
+                <label class="text-sm font-semibold dark:text-gray-300 light:text-slate-700 block mb-2">Priorité</label>
             <select [(ngModel)]="todoForm.priority" 
-                    class="w-full px-4 py-3 dark:bg-black/50 light:bg-gray-100 dark:border-yellow-500/30 light:border-blue-500/30 border rounded-xl dark:text-white light:text-gray-900 focus:outline-none dark:focus:ring-2 dark:focus:ring-yellow-500 light:focus:ring-2 light:focus:ring-blue-500">
+                  class="w-full px-4 py-3 dark:bg-black/50 light:bg-white dark:border-yellow-500/30 light:border-indigo-200 border rounded-xl dark:text-white light:text-slate-900 focus:outline-none dark:focus:ring-2 dark:focus:ring-yellow-500 light:focus:ring-2 light:focus:ring-indigo-500">
               <option value="low">Basse</option>
               <option value="medium">Moyenne</option>
               <option value="high">Haute</option>
@@ -524,9 +539,9 @@
           </div>
           
           <div>
-            <label class="text-sm font-semibold dark:text-gray-300 light:text-gray-700 block mb-2">Matière (optionnel)</label>
+            <label class="text-sm font-semibold dark:text-gray-300 light:text-slate-700 block mb-2">Matière (optionnel)</label>
             <select [(ngModel)]="todoForm.subjectId" 
-                    class="w-full px-4 py-3 dark:bg-black/50 light:bg-gray-100 dark:border-yellow-500/30 light:border-blue-500/30 border rounded-xl dark:text-white light:text-gray-900 focus:outline-none dark:focus:ring-2 dark:focus:ring-yellow-500 light:focus:ring-2 light:focus:ring-blue-500">
+                    class="w-full px-4 py-3 dark:bg-black/50 light:bg-white dark:border-yellow-500/30 light:border-indigo-200 border rounded-xl dark:text-white light:text-slate-900 focus:outline-none dark:focus:ring-2 dark:focus:ring-yellow-500 light:focus:ring-2 light:focus:ring-indigo-500">
               <option value="">Aucune</option>
               @for (subject of subjects(); track subject._id) {
                 <option [value]="subject._id">{{ subject.name }}</option>
@@ -536,10 +551,10 @@
         </div>
         
         <div class="flex gap-3 mt-6">
-          <button (click)="showTodoModal.set(false)" class="flex-1 py-3 dark:bg-gray-800 dark:hover:bg-gray-700 light:bg-gray-200 light:hover:bg-gray-300 rounded-xl dark:text-white light:text-gray-900 font-semibold transition-all">
+          <button (click)="showTodoModal.set(false)" class="flex-1 py-3 dark:bg-gray-800 dark:hover:bg-gray-700 light:bg-slate-100 light:hover:bg-slate-200 rounded-xl dark:text-white light:text-slate-800 font-semibold transition-all">
             Annuler
           </button>
-          <button (click)="saveTodo()" class="flex-1 py-3 dark:bg-gradient-to-r dark:from-yellow-400 dark:to-yellow-600 dark:hover:from-yellow-500 dark:hover:to-yellow-700 light:bg-gradient-to-r light:from-blue-500 light:to-blue-700 light:hover:from-blue-600 light:hover:to-blue-800 rounded-xl dark:text-black light:text-white font-semibold transition-all">
+          <button (click)="saveTodo()" class="flex-1 py-3 dark:bg-gradient-to-r dark:from-yellow-400 dark:to-yellow-600 dark:hover:from-yellow-500 dark:hover:to-yellow-700 light:bg-gradient-to-r light:from-indigo-500 light:to-violet-600 light:hover:from-indigo-600 light:hover:to-violet-700 rounded-xl dark:text-black light:text-white font-semibold transition-all">
             {{ editingTodo() ? 'Modifier' : 'Ajouter' }}
           </button>
         </div>
@@ -1013,7 +1028,7 @@
   <footer class="dark:bg-black/50 light:bg-white/50 dark:border-yellow-500/20 light:border-blue-500/20 border-t mt-16">
     <div class="container mx-auto px-4 py-6 text-center">
       <p class="dark:text-gray-500 light:text-gray-600 text-sm flex items-center justify-center gap-1">Built with <span class="material-icons text-sm dark:text-red-400 light:text-red-500">favorite</span> using Angular 18 + MongoDB + Tailwind CSS</p>
-      <div class="mt-2 text-xs dark:text-yellow-500/60 light:text-blue-500/60">EduFocus © 2024 - Premium Study Planner</div>
+      <div class="mt-2 text-xs dark:text-yellow-500/60 light:text-blue-500/60">EduFocus © 2026 - Master Your Learning Journey</div>
     </div>
   </footer>
 </div>

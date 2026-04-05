@@ -4,6 +4,8 @@ const User = require('../models/User');
 const { getSignedJwtToken } = require('../middleware/auth');
 const { body, validationResult } = require('express-validator');
 const jwt = require('jsonwebtoken');
+const crypto = require('crypto');
+const { sendWelcomeEmail, sendResetPasswordEmail } = require('../services/email.service');
 
 // @route   POST /api/auth/register
 // @desc    Register user
@@ -41,6 +43,18 @@ router.post('/register', [
       password
     });
 
+    let notification = {
+      type: 'welcome_email',
+      status: 'sent'
+    };
+    try {
+      await sendWelcomeEmail({ to: user.email, name: user.name });
+    } catch (mailError) {
+      notification.status = 'failed';
+      notification.reason = mailError.message;
+      console.warn('[Mail] Welcome email failed:', mailError.message);
+    }
+
     // Generate token
     const token = getSignedJwtToken(user._id);
 
@@ -54,10 +68,113 @@ router.post('/register', [
         email: user.email,
         avatar: user.avatar,
         role: user.role
-      }
+      },
+      notification
     });
   } catch (error) {
     res.status(500).json({
+      success: false,
+      message: 'Server error',
+      error: error.message
+    });
+  }
+});
+
+// @route   POST /api/auth/forgot-password
+// @desc    Send password reset email
+// @access  Public
+router.post('/forgot-password', [
+  body('email').isEmail().withMessage('Valid email is required')
+], async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({
+      success: false,
+      errors: errors.array()
+    });
+  }
+
+  try {
+    const { email } = req.body;
+    const user = await User.findOne({ email }).select('+resetPasswordToken +resetPasswordExpire');
+
+    // Security: always return generic success message.
+    if (!user) {
+      return res.json({
+        success: true,
+        message: 'If this email exists, a reset link has been sent.'
+      });
+    }
+
+    const rawResetToken = user.createPasswordResetToken();
+    await user.save({ validateBeforeSave: false });
+
+    const frontendBaseUrl = process.env.FRONTEND_URL || 'http://localhost:4200';
+    const resetUrl = `${frontendBaseUrl}/reset-password?token=${rawResetToken}`;
+
+    await sendResetPasswordEmail({
+      to: user.email,
+      name: user.name,
+      resetUrl,
+      expiresInMinutes: 15
+    });
+
+    return res.json({
+      success: true,
+      message: 'If this email exists, a reset link has been sent.',
+      notification: {
+        type: 'forgot_password_email',
+        status: 'sent'
+      }
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: 'Server error',
+      error: error.message
+    });
+  }
+});
+
+// @route   PUT /api/auth/reset-password/:token
+// @desc    Reset user password from token
+// @access  Public
+router.put('/reset-password/:token', [
+  body('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters')
+], async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({
+      success: false,
+      errors: errors.array()
+    });
+  }
+
+  try {
+    const hashedToken = crypto.createHash('sha256').update(req.params.token).digest('hex');
+    const user = await User.findOne({
+      resetPasswordToken: hashedToken,
+      resetPasswordExpire: { $gt: Date.now() }
+    }).select('+resetPasswordToken +resetPasswordExpire');
+
+    if (!user) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid or expired reset token'
+      });
+    }
+
+    user.password = req.body.password;
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpire = undefined;
+    await user.save();
+
+    return res.json({
+      success: true,
+      message: 'Password updated successfully'
+    });
+  } catch (error) {
+    return res.status(500).json({
       success: false,
       message: 'Server error',
       error: error.message

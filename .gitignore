@@ -24,7 +24,6 @@ package-lock.json
 *.swp
 *.swo
 *~
-.DS_Store
 
 # Logs
 logs/
@@ -35,8 +34,8 @@ yarn-error.log*
 lerna-debug.log*
 
 # OS
-Thumbs.db
 .DS_Store
+Thumbs.db
 
 # Testing
 coverage/
@@ -46,3 +45,7 @@ coverage/
 *.tmp
 *.temp
 .cache/
+
+# Development utility scripts
+*.py
+*.diff

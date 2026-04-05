@@ -2,23 +2,39 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const dotenv = require('dotenv');
+const path = require('path');
 
 dotenv.config();
 
 const app = express();
 
-// Middleware
+// Trust proxy (required for Render, Heroku, etc.)
+app.set('trust proxy', 1);
+
+// CORS — supports comma-separated origins in FRONTEND_URL
+const allowedOrigins = (process.env.FRONTEND_URL || 'http://localhost:4200')
+  .split(',')
+  .map(url => url.trim());
+
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:4200',
+  origin: function (origin, callback) {
+    // Allow requests with no origin (mobile apps, curl, Postman)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+    return callback(new Error('Not allowed by CORS'));
+  },
   credentials: true
 }));
+
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // MongoDB Connection
 mongoose.connect(process.env.MONGODB_URI)
-.then(() => console.log('✅ MongoDB Connected - EduFocus Database'))
-.catch(err => console.error('❌ MongoDB Connection Error:', err));
+  .then(() => console.log('✅ MongoDB Connected - EduFocus Database'))
+  .catch(err => console.error('❌ MongoDB Connection Error:', err));
 
 // Import Routes
 const authRoutes = require('./routes/auth');
@@ -39,6 +55,11 @@ app.use('/api/sessions', sessionRoutes);
 app.use('/api/stats', statsRoutes);
 app.use('/api/ai', aiRoutes);
 app.use('/api/notes', notesRoutes);
+
+// Health check endpoint (useful for Render)
+app.get('/health', (req, res) => {
+  res.json({ status: 'ok', timestamp: new Date().toISOString() });
+});
 
 // Welcome Route
 app.get('/', (req, res) => {
@@ -64,16 +85,19 @@ app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).json({
     success: false,
-    message: 'Something went wrong!',
-    error: err.message
+    message: process.env.NODE_ENV === 'production'
+      ? 'Something went wrong!'
+      : err.message,
+    ...(process.env.NODE_ENV !== 'production' && { error: err.message })
   });
 });
 
 // Start Server
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5002;
 app.listen(PORT, () => {
   console.log(`🚀 EduFocus Server running on port ${PORT}`);
-  console.log(`🌐 Frontend URL: ${process.env.FRONTEND_URL}`);
+  console.log(`🌐 Allowed origins: ${allowedOrigins.join(', ')}`);
+  console.log(`📦 Environment: ${process.env.NODE_ENV || 'development'}`);
 });
 
 module.exports = app;

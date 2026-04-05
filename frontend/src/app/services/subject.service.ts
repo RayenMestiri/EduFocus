@@ -2,12 +2,13 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Subject, ApiResponse, SubjectAnalytics } from '../models';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class SubjectService {
-  private apiUrl = 'http://localhost:5000/api/subjects';
+  private apiUrl = `${environment.apiUrl}/api/subjects`;
 
   constructor(private http: HttpClient) { }
 
@@ -53,7 +54,7 @@ export class SubjectService {
 
   // Get subject analytics
   getSubjectAnalytics(id: string, startDate?: string, endDate?: string): Observable<ApiResponse<SubjectAnalytics>> {
-    let url = `http://localhost:5000/api/stats/subjects/${id}/analytics`;
+    let url = `${environment.apiUrl}/api/stats/subjects/${id}/analytics`;
     if (startDate && endDate) {
       url += `?startDate=${startDate}&endDate=${endDate}`;
     }

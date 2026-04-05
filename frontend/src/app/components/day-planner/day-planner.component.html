@@ -38,49 +38,29 @@
       </div>
     } @else {
       
-      <!-- Stats Dashboard -->
-      <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-8">
-        <!-- Total Planned -->
-        <div class="relative overflow-hidden dark:bg-gradient-to-br dark:from-yellow-500/10 dark:to-yellow-600/10 light:bg-gradient-to-br light:from-blue-100 light:to-blue-200 dark:border-yellow-500/30 light:border-blue-400 border rounded-2xl p-4 sm:p-6 dark:hover:border-yellow-500/50 light:hover:border-blue-500 transition-all duration-300 group shadow-lg light:shadow-blue-200/50">
-          <div class="absolute top-0 right-0 w-32 h-32 dark:bg-yellow-500/10 light:bg-blue-200/50 rounded-full blur-3xl dark:group-hover:bg-yellow-500/20 light:group-hover:bg-blue-300/50 transition-all duration-500"></div>
-          <div class="relative">
-            <div class="text-3xl sm:text-4xl font-bold dark:bg-gradient-to-r dark:from-yellow-400 dark:to-yellow-600 dark:bg-clip-text dark:text-transparent light:text-blue-700 mb-2">
-              {{ (totalPlannedMinutes() / 60).toFixed(1) }}h
+      <!-- Compact Stats Dashboard -->
+      <div class="mb-8 rounded-2xl border-2 dark:border-yellow-500/20 light:border-blue-300 dark:bg-gradient-to-r dark:from-gray-900 dark:via-black dark:to-gray-900 light:bg-gradient-to-r light:from-white light:via-blue-50 light:to-white p-4 sm:p-5 shadow-xl dark:shadow-yellow-500/5 light:shadow-blue-200/60">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+          <div class="relative overflow-hidden rounded-xl border dark:border-yellow-500/30 light:border-blue-400 dark:bg-yellow-500/10 light:bg-blue-100/80 p-4">
+            <div class="absolute -top-10 -right-10 w-28 h-28 rounded-full dark:bg-yellow-500/20 light:bg-blue-200/70 blur-2xl"></div>
+            <div class="relative flex items-center justify-between gap-3">
+              <div>
+                <p class="text-xs uppercase tracking-wide dark:text-yellow-500/70 light:text-blue-600 font-semibold">Temps planifié</p>
+                <p class="text-2xl sm:text-3xl font-bold dark:text-yellow-300 light:text-blue-800 mt-1">{{ (totalPlannedMinutes() / 60).toFixed(1) }}h</p>
+              </div>
+              <span class="material-icons text-3xl dark:text-yellow-400 light:text-blue-600">schedule</span>
             </div>
-            <div class="text-sm dark:text-gray-400 light:text-gray-700 font-medium">Temps planifié</div>
           </div>
-        </div>
-        
-        <!-- Total Studied -->
-        <div class="relative overflow-hidden dark:bg-gradient-to-br dark:from-green-500/10 dark:to-green-600/10 light:bg-gradient-to-br light:from-green-100 light:to-green-200 dark:border-green-500/30 light:border-green-400 border rounded-2xl p-4 sm:p-6 dark:hover:border-green-500/50 light:hover:border-green-500 transition-all duration-300 group shadow-lg light:shadow-green-200/50">
-          <div class="absolute top-0 right-0 w-32 h-32 dark:bg-green-500/10 light:bg-green-200/50 rounded-full blur-3xl dark:group-hover:bg-green-500/20 light:group-hover:bg-green-300/50 transition-all duration-500"></div>
-          <div class="relative">
-            <div class="text-3xl sm:text-4xl font-bold dark:bg-gradient-to-r dark:from-green-400 dark:to-green-600 dark:bg-clip-text dark:text-transparent light:text-green-700 mb-2">
-              {{ (totalStudiedMinutes() / 60).toFixed(1) }}h
-            </div>
-            <div class="text-sm dark:text-gray-400 light:text-gray-700 font-medium">Temps étudié</div>
-          </div>
-        </div>
-        
-        <!-- Planned Subjects Count -->
-        <div class="relative overflow-hidden bg-gradient-to-br dark:from-purple-500/10 dark:to-purple-600/10 light:from-indigo-100 light:to-indigo-200 border dark:border-purple-500/30 light:border-indigo-400 rounded-2xl p-4 sm:p-6 dark:hover:border-purple-500/50 light:hover:border-indigo-500 transition-all duration-300 group shadow-lg light:shadow-indigo-200/50">
-          <div class="absolute top-0 right-0 w-32 h-32 dark:bg-purple-500/10 light:bg-indigo-200/50 rounded-full blur-3xl dark:group-hover:bg-purple-500/20 light:group-hover:bg-indigo-300/50 transition-all duration-500"></div>
-          <div class="relative">
-            <div class="text-3xl sm:text-4xl font-bold dark:bg-gradient-to-r dark:from-purple-400 dark:to-purple-600 dark:bg-clip-text dark:text-transparent light:text-indigo-700 mb-2">
-              {{ plannedSubjectsCount() }}
-            </div>
-            <div class="text-sm dark:text-gray-400 light:text-gray-700 font-medium">Matières planifiées</div>
-          </div>
-        </div>
 
-        <!-- Tasks Today -->
-        <div class="relative overflow-hidden bg-gradient-to-br dark:from-pink-500/10 dark:to-pink-600/10 light:from-purple-100 light:to-purple-200 border dark:border-pink-500/30 light:border-purple-400 rounded-2xl p-4 sm:p-6 dark:hover:border-pink-500/50 light:hover:border-purple-500 transition-all duration-300 group shadow-lg light:shadow-purple-200/50">
-          <div class="absolute top-0 right-0 w-32 h-32 dark:bg-pink-500/10 light:bg-purple-200/50 rounded-full blur-3xl dark:group-hover:bg-pink-500/20 light:group-hover:bg-purple-300/50 transition-all duration-500"></div>
-          <div class="relative">
-            <div class="text-3xl sm:text-4xl font-bold dark:bg-gradient-to-r dark:from-pink-400 dark:to-pink-600 dark:bg-clip-text dark:text-transparent light:text-purple-700 mb-2">
-              {{ completedTasks() }}/{{ tasksForCurrentDate().length }}
+          <div class="relative overflow-hidden rounded-xl border dark:border-purple-500/30 light:border-indigo-400 dark:bg-purple-500/10 light:bg-indigo-100/80 p-4">
+            <div class="absolute -top-10 -right-10 w-28 h-28 rounded-full dark:bg-purple-500/20 light:bg-indigo-200/70 blur-2xl"></div>
+            <div class="relative flex items-center justify-between gap-3">
+              <div>
+                <p class="text-xs uppercase tracking-wide dark:text-purple-300/80 light:text-indigo-700 font-semibold">Matières planifiées</p>
+                <p class="text-2xl sm:text-3xl font-bold dark:text-purple-300 light:text-indigo-800 mt-1">{{ plannedSubjectsCount() }}</p>
+              </div>
+              <span class="material-icons text-3xl dark:text-purple-300 light:text-indigo-600">menu_book</span>
             </div>
-            <div class="text-sm dark:text-gray-400 light:text-gray-700 font-medium">Tâches du jour</div>
           </div>
         </div>
       </div>
@@ -108,8 +88,63 @@
           </div>
         </div>
         
+        <div class="mobile-calendar-toolbar lg:hidden mb-4 rounded-xl border dark:border-yellow-500/30 light:border-blue-400 dark:bg-black/60 light:bg-blue-50/80 p-3 shadow-md">
+          <div class="grid grid-cols-2 gap-2 mb-2">
+            <button
+              type="button"
+              (click)="mobilePrev()"
+              class="py-2 px-3 rounded-lg dark:bg-yellow-500/20 dark:hover:bg-yellow-500/30 light:bg-blue-100 light:hover:bg-blue-200 dark:text-yellow-300 light:text-blue-700 font-semibold text-sm transition-colors duration-200">
+              Précédent
+            </button>
+            <button
+              type="button"
+              (click)="mobileNext()"
+              class="py-2 px-3 rounded-lg dark:bg-yellow-500/20 dark:hover:bg-yellow-500/30 light:bg-blue-100 light:hover:bg-blue-200 dark:text-yellow-300 light:text-blue-700 font-semibold text-sm transition-colors duration-200">
+              Suivant
+            </button>
+          </div>
+
+          <button
+            type="button"
+            (click)="mobileToday()"
+            class="w-full py-2 px-3 mb-2 rounded-lg dark:bg-yellow-500/25 dark:hover:bg-yellow-500/35 light:bg-blue-200 light:hover:bg-blue-300 dark:text-yellow-200 light:text-blue-800 font-bold text-sm transition-colors duration-200">
+            Aujourd'hui
+          </button>
+
+          <div class="text-center py-2 mb-2 rounded-lg dark:bg-gray-900/70 light:bg-white dark:text-yellow-200 light:text-blue-800 font-bold text-sm sm:text-base truncate">
+            {{ currentCalendarTitle() }}
+          </div>
+
+          <div class="grid grid-cols-3 gap-2">
+            <button
+              type="button"
+              (click)="setMobileView('timeGridDay')"
+              [class]="currentViewType() === 'timeGridDay'
+                ? 'py-2 px-2 rounded-lg dark:bg-yellow-500/35 light:bg-blue-300 dark:text-yellow-100 light:text-blue-900 font-bold text-xs transition-colors duration-200'
+                : 'py-2 px-2 rounded-lg dark:bg-yellow-500/15 dark:hover:bg-yellow-500/25 light:bg-blue-100 light:hover:bg-blue-200 dark:text-yellow-300 light:text-blue-700 font-semibold text-xs transition-colors duration-200'">
+              Jour
+            </button>
+            <button
+              type="button"
+              (click)="setMobileView('timeGridWeek')"
+              [class]="currentViewType() === 'timeGridWeek'
+                ? 'py-2 px-2 rounded-lg dark:bg-yellow-500/35 light:bg-blue-300 dark:text-yellow-100 light:text-blue-900 font-bold text-xs transition-colors duration-200'
+                : 'py-2 px-2 rounded-lg dark:bg-yellow-500/15 dark:hover:bg-yellow-500/25 light:bg-blue-100 light:hover:bg-blue-200 dark:text-yellow-300 light:text-blue-700 font-semibold text-xs transition-colors duration-200'">
+              Semaine
+            </button>
+            <button
+              type="button"
+              (click)="setMobileView('dayGridMonth')"
+              [class]="currentViewType() === 'dayGridMonth'
+                ? 'py-2 px-2 rounded-lg dark:bg-yellow-500/35 light:bg-blue-300 dark:text-yellow-100 light:text-blue-900 font-bold text-xs transition-colors duration-200'
+                : 'py-2 px-2 rounded-lg dark:bg-yellow-500/15 dark:hover:bg-yellow-500/25 light:bg-blue-100 light:hover:bg-blue-200 dark:text-yellow-300 light:text-blue-700 font-semibold text-xs transition-colors duration-200'">
+              Mois
+            </button>
+          </div>
+        </div>
+
         <div class="calendar-wrapper bg-white rounded-xl p-2 sm:p-4 shadow-inner overflow-hidden">
-          <full-calendar [options]="calendarOptions()"></full-calendar>
+          <full-calendar #plannerCalendar [options]="calendarOptions()"></full-calendar>
         </div>
 
         <div class="mt-6 p-4 dark:bg-yellow-500/10 light:bg-gradient-to-br light:from-blue-50 light:to-blue-100 border-2 dark:border-yellow-500/30 light:border-blue-400 rounded-xl transition-colors duration-300 shadow-md light:shadow-blue-200/50">
@@ -134,7 +169,7 @@
   <!-- Footer -->
   <footer class="dark:bg-black/50 light:bg-white border-t dark:border-yellow-500/20 light:border-blue-300 mt-16 transition-colors duration-300">
     <div class="container mx-auto px-4 py-6 text-center">
-      <p class="dark:text-gray-500 light:text-gray-600 text-sm">EduFocus © 2024 - Premium Study Planner</p>
+      <p class="dark:text-gray-500 light:text-gray-600 text-sm">EduFocus © 2026 - Master Your Learning Journey</p>
     </div>
   </footer>
 </div>

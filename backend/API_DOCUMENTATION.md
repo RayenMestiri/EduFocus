@@ -13,6 +13,56 @@ Authorization: Bearer <your_token>
 
 ---
 
+## 🔐 Auth and Preferences API
+
+### POST /auth/register
+Register account.
+
+### POST /auth/login
+Login and return token + user.
+
+### GET /auth/me
+Get current authenticated user profile.
+
+### POST /auth/award-points
+Award points to current user.
+```json
+{
+  "points": 25
+}
+```
+
+### GET /auth/timer-settings
+Get persisted timer settings from user preferences.
+
+### PUT /auth/timer-settings
+Update timer settings.
+```json
+{
+  "pomodoroLength": 25,
+  "shortBreak": 5,
+  "longBreak": 15,
+  "sessionsBeforeLongBreak": 4,
+  "autoStartBreaks": false,
+  "autoStartFocus": false,
+  "dailySessionsGoal": 6,
+  "relaxationAudioUrl": "https://www.youtube.com/watch?v=..."
+}
+```
+
+### GET /auth/session-goal
+Get daily session goal.
+
+### PUT /auth/session-goal
+Update daily session goal.
+```json
+{
+  "dailySessionsGoal": 6
+}
+```
+
+---
+
 ## 📚 Subjects API
 
 ### GET /subjects
@@ -253,6 +303,81 @@ Delete session
 
 ---
 
+## 📝 Notes API
+
+All notes endpoints are protected.
+
+### GET /notes
+Get notes with optional filters.
+- Query examples: `?category=summary`, `?subject=<id>`, `?isPinned=true`, `?search=keyword`, `?tag=revision`
+
+### GET /notes/tags
+Get all distinct tags for current user.
+
+### POST /notes
+Create note.
+```json
+{
+  "title": "Electromagnetism summary",
+  "content": "<p>Rich text content</p>",
+  "contentText": "plain text index",
+  "color": "#6366f1",
+  "subject": "<subjectId>",
+  "tags": ["physics", "exam"],
+  "category": "summary",
+  "isPinned": false,
+  "hasPassword": true,
+  "password": "secret123"
+}
+```
+
+### PUT /notes/:id
+Update note.
+
+### DELETE /notes/:id
+Delete note.
+
+### PATCH /notes/:id/pin
+Toggle pin state.
+
+### PATCH /notes/:id/archive
+Toggle archive state.
+
+### PATCH /notes/:id/color
+Update note color.
+
+### POST /notes/:id/verify-password
+Verify note password for locked notes.
+
+---
+
+## 🤖 AI API
+
+### GET /ai
+Health/info endpoint for AI assistant route.
+
+### POST /ai/study-advice
+Generate study advice from dashboard context and optional user question.
+```json
+{
+  "context": {
+    "todayGoalMinutes": 180,
+    "todayStudiedMinutes": 95,
+    "completedTodos": 2,
+    "totalTodos": 5,
+    "subjectBreakdown": []
+  },
+  "question": "Donne-moi une stratégie pour finir ma journée",
+  "history": []
+}
+```
+
+Response contains:
+- `source`: `gemini` or `fallback`
+- `advice`: generated coaching text
+
+---
+
 ## 📊 Stats & Analytics API
 
 ### GET /stats/profile
@@ -303,26 +428,12 @@ Get detailed analytics for specific subject
 
 ## 🔐 Auth Endpoints
 
-### POST /auth/register
-```json
-{
-  "name": "John Doe",
-  "email": "john@example.com",
-  "password": "securepass123"
-}
-```
+See **Auth and Preferences API** above for the complete auth surface, including:
 
-### POST /auth/login
-```json
-{
-  "email": "john@example.com",
-  "password": "securepass123"
-}
-```
-Returns: `{ token, user }`
-
-### GET /auth/me
-Get current logged-in user info (requires auth)
+- register/login/me
+- points endpoint
+- timer settings persistence
+- daily session goal endpoints
 
 ---
 
@@ -368,6 +479,9 @@ Rating from 1 (lowest) to 5 (highest)
 ✅ **User Preferences** - Pomodoro settings, notifications, theme
 ✅ **Focus Tracking** - Rate concentration during sessions
 ✅ **Goals** - Daily and weekly goals per subject
+✅ **Notes Module API** - Rich notes with tags, archive/pin, password verification
+✅ **AI Study Advice API** - Gemini-backed advice with deterministic fallback
+✅ **Timer Preferences Sync** - Pomodoro/session goal + relaxation audio URL persistence
 
 ---
 
@@ -378,6 +492,8 @@ Rating from 1 (lowest) to 5 (highest)
 3. **Calendar**: Use `/day-plans/range/:start/:end` for week/month view
 4. **Analytics**: Use `/stats/weekly` and `/stats/monthly` for charts
 5. **Subject Details**: Use `/stats/subjects/:id/analytics` for deep dive
+6. **Notes Workspace**: Use `/notes` with filters and `/notes/tags` for chips
+7. **AI Advice**: Use `/ai/study-advice` with dashboard context for coaching
 
 ---
 

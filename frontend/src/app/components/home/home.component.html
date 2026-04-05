@@ -1,0 +1,275 @@
+<!-- ═══════════════════════════════════════════ TOP NAV ═══ -->
+<header class="home-header">
+  <div class="header-inner">
+    <div class="header-brand">
+      <div class="home-logo-icon-wrap"><span class="material-icons">school</span></div>
+      <span class="header-logo-text">Edu<strong>Focus</strong></span>
+    </div>
+    <div class="header-actions">
+      <a routerLink="/login" class="header-link">Connexion</a>
+    </div>
+  </div>
+</header>
+
+<!-- ═══════════════════════════════════════════ HERO ═══ -->
+<section class="hero">
+
+  <canvas #canvas3d class="hero-canvas"></canvas>
+
+  <div class="hero-overlay"></div>
+  <div class="hero-glow hg-1"></div>
+  <div class="hero-glow hg-2"></div>
+
+  <div class="hero-inner">
+
+    <!-- LEFT copy -->
+    <div class="hero-copy">
+
+      <div class="hero-eyebrow">
+        <span class="ey-dot"></span>
+        <span class="material-icons" style="font-size:15px">auto_awesome</span>
+        Plateforme N&deg;1 de r&eacute;ussite &eacute;tudiante
+      </div>
+
+      <h1 class="hero-h1">
+        <span class="line">Étudiez Mieux,</span>
+        <span class="line accent">R&eacute;ussissez Plus.</span>
+      </h1>
+
+      <p class="hero-sub">
+        Planificateur intelligent, notes richement format&eacute;es et assistant IA
+        &mdash; tout ce dont vous avez besoin pour atteindre l&apos;excellence acad&eacute;mique.
+      </p>
+
+      <div class="hero-actions">
+        <a routerLink="/register" class="btn-gold">
+          <span class="btn-shine"></span>
+          <span class="material-icons">rocket_launch</span>
+          Commencer gratuitement
+        </a>
+        <a routerLink="/login" class="btn-ghost">
+          Se connecter
+          <span class="material-icons">arrow_forward</span>
+        </a>
+      </div>
+
+      <div class="hero-trust">
+        <span class="trust-item"><span class="material-icons">lock</span>SSL sécurisé</span>
+        <span class="trust-dot"></span>
+        <span class="trust-item"><span class="material-icons">cancel</span>Sans engagement</span>
+        <span class="trust-dot"></span>
+        <span class="trust-item"><span class="material-icons">devices</span>Multi-plateformes</span>
+      </div>
+
+    </div>
+
+    <!-- RIGHT visual cluster -->
+    <div class="hero-visual">
+
+      <!-- main dashboard card -->
+      <div class="vis-main">
+        <div class="vis-main-glow"></div>
+        <div class="vis-main-head">
+          <div class="vm-icon-wrap">
+            <span class="material-icons">school</span>
+          </div>
+          <div>
+            <p class="vm-title">Mon Espace EduFocus</p>
+            <p class="vm-sub">Semaine du 2 mars 2026</p>
+          </div>
+          <span class="vm-badge">Actif</span>
+        </div>
+
+        <!-- mini subject bars -->
+        <div class="vm-subjects">
+          <div class="vm-subj" *ngFor="let s of [
+            {label:'Mathématiques', pct:82, color:'#facc15'},
+            {label:'Physique',       pct:67, color:'#6366f1'},
+            {label:'Informatique',   pct:91, color:'#22c55e'}
+          ]">
+            <div class="vm-subj-top">
+              <span>{{s.label}}</span><span>{{s.pct}}%</span>
+            </div>
+            <div class="vm-track">
+              <div class="vm-fill" [style.width.%]="s.pct" [style.background]="s.color"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="vm-footer">
+          <span class="material-icons vm-footer-icon">trending_up</span>
+          +12% par rapport à la semaine dernière
+        </div>
+      </div>
+
+      <!-- floating pill top-right -->
+      <div class="vis-pill pill-tr">
+        <div class="pill-icon"><span class="material-icons">event_note</span></div>
+        <div>
+          <p class="pill-val">5 sessions</p>
+          <p class="pill-lbl">planifiées aujourd'hui</p>
+        </div>
+      </div>
+
+      <!-- floating pill bottom-left -->
+      <div class="vis-pill pill-bl">
+        <div class="pill-icon green"><span class="material-icons">check_circle</span></div>
+        <div>
+          <p class="pill-val">Note sauvegardée</p>
+          <p class="pill-lbl">Il y a 3 minutes</p>
+        </div>
+      </div>
+
+      <!-- small AI badge -->
+      <div class="vis-badge badge-ai">
+        <span class="material-icons">psychology</span>
+        <p>IA<br>Prête</p>
+      </div>
+
+      <!-- small streak badge -->
+      <div class="vis-badge badge-streak">
+        <span class="material-icons">local_fire_department</span>
+        <p>14j<br>Série</p>
+      </div>
+
+      <div class="vis-orbit">
+        <div class="orbit-ring"></div>
+        <div class="orbit-dot od-1"></div>
+        <div class="orbit-dot od-2"></div>
+        <div class="orbit-dot od-3"></div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="scroll-hint">
+    <div class="scroll-mouse"><div class="scroll-wheel"></div></div>
+    <span>Défiler</span>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════ STATS ═══ -->
+<section class="stats-section">
+  <div class="stats-row">
+    <div class="stat-card" *ngFor="let s of stats; let i = index">
+      <div class="stat-icon">
+        <span class="material-icons">{{s.icon}}</span>
+      </div>
+      <p class="stat-val">{{ formatStat(s) }}</p>
+      <p class="stat-lbl">{{s.label}}</p>
+      <div class="stat-shine"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════ FEATURES ═══ -->
+<section class="feat-section">
+  <div class="sec-inner">
+    <div class="sec-header">
+      <span class="sec-eyebrow">Ce que nous offrons</span>
+      <h2 class="sec-h2">Des outils con&ccedil;us pour<br><strong>votre r&eacute;ussite</strong></h2>
+      <p class="sec-sub">Chaque fonctionnalit&eacute; est pens&eacute;e pour vous faire gagner du temps et mieux retenir.</p>
+    </div>
+    <div class="feat-grid">
+      <div class="feat-card" *ngFor="let f of features; let i = index"
+           [style.--accent]="f.color">
+        <div class="fc-top-bar" [style.background]="f.color"></div>
+        <div class="fc-icon-wrap">
+          <span class="material-icons">{{f.icon}}</span>
+        </div>
+        <span class="fc-badge" *ngIf="f.badge">{{f.badge}}</span>
+        <h3 class="fc-title">{{f.title}}</h3>
+        <p class="fc-desc">{{f.desc}}</p>
+        <a routerLink="/register" class="fc-link">
+          Découvrir <span class="material-icons">east</span>
+        </a>
+        <div class="fc-glow" [style.background]="f.color"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════ HOW IT WORKS ═══ -->
+<section class="steps-section">
+  <div class="steps-bg-glow"></div>
+  <div class="sec-inner">
+    <div class="sec-header">
+      <span class="sec-eyebrow">Simple &amp; rapide</span>
+      <h2 class="sec-h2">Lancez-vous en<br><strong>3 &eacute;tapes</strong></h2>
+    </div>
+    <div class="steps-row">
+      <div class="step-card" *ngFor="let s of steps; let i = index">
+        <div class="step-num">{{s.num}}</div>
+        <div class="step-icon-wrap">
+          <span class="material-icons">{{s.icon}}</span>
+        </div>
+        <h3 class="step-title">{{s.title}}</h3>
+        <p class="step-desc">{{s.desc}}</p>
+        <div class="step-connector" *ngIf="i < steps.length - 1"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════ TESTIMONIALS ═══ -->
+<section class="testi-section">
+  <div class="testi-bg-glow"></div>
+  <div class="sec-inner">
+    <div class="sec-header">
+      <span class="sec-eyebrow">Ils nous font confiance</span>
+      <h2 class="sec-h2">Ce que disent nos<br><strong>&eacute;tudiants</strong></h2>
+    </div>
+    <div class="testi-grid">
+      <div class="testi-card" *ngFor="let t of testimonials">
+        <div class="testi-quote">&ldquo;</div>
+        <div class="testi-stars">
+          <span *ngFor="let s of starsArray(t.stars)" class="material-icons">star</span>
+        </div>
+        <p class="testi-text">{{t.text}}</p>
+        <div class="testi-author">
+          <div class="testi-avatar">{{t.avatar}}</div>
+          <div>
+            <p class="testi-name">{{t.name}}</p>
+            <p class="testi-role">{{t.role}}</p>
+          </div>
+        </div>
+        <div class="testi-shine"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════ CTA ═══ -->
+<section class="cta-section">
+  <span class="cta-blob cta-blob-1"></span>
+  <span class="cta-blob cta-blob-2"></span>
+  <div class="cta-inner">
+    <div class="cta-eyebrow">Prêt à transformer vos études ?</div>
+    <h2 class="cta-h2">Rejoignez 15&nbsp;000+<br>étudiants qui r&eacute;ussissent</h2>
+    <p class="cta-sub">Gratuit pour commencer. Aucune carte bancaire requise.</p>
+    <div class="cta-actions">
+      <a routerLink="/register" class="btn-cta-gold">
+        <span class="material-icons">rocket_launch</span>
+        Créer mon compte gratuit
+      </a>
+      <a routerLink="/login" class="btn-cta-ghost">Déjà membre ? Se connecter</a>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════ FOOTER ═══ -->
+<footer class="home-footer">
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <div class="footer-logo-icon-wrap"><span class="material-icons">school</span></div>
+      <span class="footer-logo-text">Edu<strong>Focus</strong></span>
+    </div>
+    <nav class="footer-links">
+      <a routerLink="/">Accueil</a>
+      <a routerLink="/login">Connexion</a>
+      <a routerLink="/register">Inscription</a>
+      <a routerLink="/dashboard">Dashboard</a>
+    </nav>
+    <p class="footer-copy">&copy; 2026 EduFocus &middot; Tous droits r&eacute;serv&eacute;s</p>
+  </div>
+</footer>

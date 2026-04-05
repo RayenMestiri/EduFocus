@@ -392,54 +392,183 @@
 ============================================================ */
 @media (max-width: 768px) {
   ::ng-deep {
-    .fc .fc-header-toolbar {
+    .fc .fc-header-toolbar.fc-toolbar.fc-toolbar-ltr {
       display: grid !important;
       grid-template-columns: 1fr !important;
-      gap: 0.6rem !important;
-      padding: 0.5rem !important;
+      gap: 0.7rem !important;
+      padding: 0.65rem !important;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.92);
     }
 
-    .fc .fc-toolbar-chunk {
+    .fc .fc-header-toolbar.fc-toolbar.fc-toolbar-ltr > .fc-toolbar-chunk {
       width: 100%;
       display: flex;
       justify-content: center;
       align-items: center;
-      gap: 0.35rem;
+      gap: 0.4rem;
       flex-wrap: wrap;
     }
 
-    .fc .fc-toolbar-chunk:first-child {
-      justify-content: space-between;
+    .fc .fc-header-toolbar.fc-toolbar.fc-toolbar-ltr > .fc-toolbar-chunk:nth-child(1) {
+      display: grid;
+      grid-template-columns: 1fr;
+      justify-items: stretch;
+      gap: 0.45rem;
     }
 
-    .fc .fc-toolbar-chunk:last-child {
+    .fc .fc-header-toolbar.fc-toolbar.fc-toolbar-ltr > .fc-toolbar-chunk:nth-child(1) > .fc-button-group {
+      width: 100%;
+      max-width: 460px;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0.35rem;
+    }
+
+    .fc .fc-header-toolbar.fc-toolbar.fc-toolbar-ltr > .fc-toolbar-chunk:nth-child(1) .fc-prev-button,
+    .fc .fc-header-toolbar.fc-toolbar.fc-toolbar-ltr > .fc-toolbar-chunk:nth-child(1) .fc-next-button {
+      width: 100%;
+    }
+
+    .fc .fc-header-toolbar.fc-toolbar.fc-toolbar-ltr > .fc-toolbar-chunk:nth-child(1) > .fc-today-button {
+      width: 100% !important;
+      min-width: 0 !important;
+      grid-column: 1 / -1;
+    }
+
+    .fc .fc-header-toolbar.fc-toolbar.fc-toolbar-ltr > .fc-toolbar-chunk:nth-child(2) {
       justify-content: center;
-      overflow-x: auto;
-      white-space: nowrap;
-      -webkit-overflow-scrolling: touch;
-      padding-bottom: 2px;
+    }
+
+    .fc .fc-header-toolbar.fc-toolbar.fc-toolbar-ltr > .fc-toolbar-chunk:nth-child(3) {
+      justify-content: center;
+      overflow: visible;
+      white-space: normal;
+      padding-bottom: 0;
+    }
+
+    .fc .fc-header-toolbar.fc-toolbar.fc-toolbar-ltr > .fc-toolbar-chunk:nth-child(3) .fc-button-group {
+      width: 100%;
+      max-width: 460px;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0.35rem;
     }
 
     .fc .fc-button-group {
       display: flex;
-      gap: 0.25rem;
+      gap: 0.3rem;
       flex-wrap: nowrap;
     }
 
     .fc .fc-button {
       min-height: 38px;
-      padding: 0.4rem 0.65rem !important;
+      padding: 0.45rem 0.7rem !important;
       font-size: 0.76rem !important;
       border-radius: 10px !important;
     }
 
     .fc .fc-toolbar-title {
-      font-size: 1rem !important;
+      font-size: 1.02rem !important;
       text-align: center;
       line-height: 1.2;
-      word-break: break-word;
+      word-break: normal;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
       max-width: 100%;
     }
+  }
+}
+
+@media (max-width: 460px) {
+  ::ng-deep {
+    .fc .fc-header-toolbar {
+      padding: 0.55rem !important;
+      gap: 0.55rem !important;
+    }
+
+    .fc .fc-header-toolbar.fc-toolbar.fc-toolbar-ltr > .fc-toolbar-chunk:nth-child(1) {
+      gap: 0.4rem;
+    }
+
+    .fc .fc-today-button {
+      width: 100%;
+      min-width: 0;
+    }
+
+    .fc .fc-toolbar-title {
+      font-size: 0.94rem !important;
+    }
+
+    .fc .fc-button {
+      min-height: 36px;
+      padding: 0.38rem 0.5rem !important;
+      font-size: 0.72rem !important;
+    }
+  }
+}
+
+/* Final hard override for compact screens: force toolbar into stacked rows */
+@media (max-width: 1023px) {
+  :host ::ng-deep .calendar-wrapper .fc .fc-header-toolbar.fc-toolbar {
+    display: none !important;
+  }
+
+  :host ::ng-deep .fc-header-toolbar.fc-toolbar.fc-toolbar-ltr {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 0.55rem !important;
+  }
+
+  :host ::ng-deep .fc-header-toolbar.fc-toolbar.fc-toolbar-ltr > .fc-toolbar-chunk {
+    width: 100% !important;
+    margin: 0 !important;
+  }
+
+  :host ::ng-deep .fc-header-toolbar.fc-toolbar.fc-toolbar-ltr > .fc-toolbar-chunk:nth-child(1) {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 0.45rem !important;
+  }
+
+  :host ::ng-deep .fc-header-toolbar.fc-toolbar.fc-toolbar-ltr > .fc-toolbar-chunk:nth-child(1) > .fc-button-group {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    width: 100% !important;
+    gap: 0.35rem !important;
+  }
+
+  :host ::ng-deep .fc-header-toolbar.fc-toolbar.fc-toolbar-ltr > .fc-toolbar-chunk:nth-child(1) > .fc-today-button {
+    width: 100% !important;
+    min-width: 0 !important;
+  }
+
+  :host ::ng-deep .fc-header-toolbar.fc-toolbar.fc-toolbar-ltr > .fc-toolbar-chunk:nth-child(2) {
+    display: flex !important;
+    justify-content: center !important;
+  }
+
+  :host ::ng-deep .fc-header-toolbar.fc-toolbar.fc-toolbar-ltr > .fc-toolbar-chunk:nth-child(3) {
+    display: block !important;
+  }
+
+  :host ::ng-deep .fc-header-toolbar.fc-toolbar.fc-toolbar-ltr > .fc-toolbar-chunk:nth-child(3) > .fc-button-group {
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    width: 100% !important;
+    gap: 0.35rem !important;
+  }
+
+  :host ::ng-deep .fc-header-toolbar.fc-toolbar.fc-toolbar-ltr > .fc-toolbar-chunk:nth-child(3) .fc-button {
+    width: 100% !important;
+  }
+}
+
+@media (min-width: 1024px) {
+  :host ::ng-deep .calendar-wrapper .fc .fc-header-toolbar.fc-toolbar {
+    display: flex !important;
   }
 }
 

@@ -16,6 +16,35 @@ interface AiChatMessage {
   content: string;
 }
 
+interface AiSubjectSnapshot {
+  name: string;
+  goalMinutes: number;
+  studiedMinutes: number;
+  progress: number;
+  remainingMinutes: number;
+  sessionsCount: number;
+  priorityScore: number;
+}
+
+interface AiStudyContext {
+  date: string;
+  nowHour: number;
+  todayGoalMinutes: number;
+  todayStudiedMinutes: number;
+  progressPercentage: number;
+  totalTodos: number;
+  completedTodos: number;
+  pendingTodos: number;
+  pendingUrgentTodos: number;
+  pendingHighTodos: number;
+  pendingMediumTodos: number;
+  pendingLowTodos: number;
+  weekStats: { date: string; day: string; minutes: number }[];
+  subjectBreakdown: AiSubjectSnapshot[];
+  sessionsCompleted: number;
+  sessionGoal: number;
+}
+
 @Component({
   selector: 'app-dashboard',
   standalone: true,
@@ -341,26 +370,61 @@ export class DashboardComponent implements OnInit {
     });
   }
 
-  private buildAIContext() {
+  private buildAIContext(): AiStudyContext {
     const plan = this.dayPlan();
-    const subjects = (plan?.subjects || []).map((subjectPlan: any) => ({
-      name: typeof subjectPlan.subjectId === 'string' ? 'Matière' : subjectPlan.subjectId?.name || 'Matière',
-      goalMinutes: subjectPlan.goalMinutes || 0,
-      studiedMinutes: subjectPlan.studiedMinutes || 0,
-      progress: subjectPlan.goalMinutes > 0
-        ? Math.round(((subjectPlan.studiedMinutes || 0) / subjectPlan.goalMinutes) * 100)
-        : 0
+    const subjects: AiSubjectSnapshot[] = (plan?.subjects || []).map((subjectPlan: any) => {
+      const subjectId = this.getSubjectIdString(subjectPlan.subjectId);
+      const linkedSubject = subjectId ? this.getSubjectById(subjectId) : undefined;
+      const name = linkedSubject?.name || (typeof subjectPlan.subjectId === 'string' ? 'Matière' : subjectPlan.subjectId?.name || 'Matière');
+      const goalMinutes = subjectPlan.goalMinutes || 0;
+      const studiedMinutes = subjectPlan.studiedMinutes || 0;
+      const remainingMinutes = Math.max(goalMinutes - studiedMinutes, 0);
+      const progress = goalMinutes > 0 ? Math.round((studiedMinutes / goalMinutes) * 100) : 0;
+      const sessionsCount = Array.isArray(subjectPlan.sessions) ? subjectPlan.sessions.length : 0;
+
+      // Priority score: remaining gap + progress deficit + session scarcity.
+      const priorityScore =
+        remainingMinutes +
+        Math.max(0, 100 - progress) * 0.8 +
+        (sessionsCount === 0 && goalMinutes > 0 ? 20 : 0);
+
+      return {
+        name,
+        goalMinutes,
+        studiedMinutes,
+        progress,
+        remainingMinutes,
+        sessionsCount,
+        priorityScore
+      };
+    });
+
+    const pendingTodos = this.todos().filter((todo) => !todo.done);
+    const pendingUrgentTodos = pendingTodos.filter((todo) => todo.priority === 'urgent').length;
+    const pendingHighTodos = pendingTodos.filter((todo) => todo.priority === 'high').length;
+    const pendingMediumTodos = pendingTodos.filter((todo) => todo.priority === 'medium').length;
+    const pendingLowTodos = pendingTodos.filter((todo) => todo.priority === 'low').length;
+
+    const weekStats = this.weekStats().map((stat: any) => ({
+      date: stat.date,
+      day: stat.day,
+      minutes: stat.minutes || 0
     }));
 
     return {
       date: this.today,
+      nowHour: new Date().getHours(),
       todayGoalMinutes: this.totalGoalMinutes(),
       todayStudiedMinutes: this.totalStudiedMinutes(),
       progressPercentage: this.progressPercentage(),
       totalTodos: this.totalTodos(),
       completedTodos: this.completedTodos(),
-      pendingTodos: this.totalTodos() - this.completedTodos(),
-      weekStats: this.weekStats(),
+      pendingTodos: pendingTodos.length,
+      pendingUrgentTodos,
+      pendingHighTodos,
+      pendingMediumTodos,
+      pendingLowTodos,
+      weekStats,
       subjectBreakdown: subjects,
       sessionsCompleted: this.sessionsCompleted(),
       sessionGoal: this.currentSessionGoal()
@@ -381,59 +445,158 @@ export class DashboardComponent implements OnInit {
     this.requestAIAdvice();
   }
 
-  private generateSmartAdvice(context: any): string {
+  private getWeekTrendSignal(stats: { minutes: number }[]) {
+    const safeStats = Array.isArray(stats) ? stats : [];
+    const minutes = safeStats.map((item) => item.minutes || 0);
+    const total = minutes.reduce((sum, value) => sum + value, 0);
+
+    if (minutes.length < 6) {
+      return {
+        trend: 'stable' as 'up' | 'down' | 'stable',
+        deltaPct: 0,
+        total,
+        recentAvg: total > 0 ? Math.round(total / Math.max(minutes.length, 1)) : 0,
+        previousAvg: 0,
+      };
+    }
+
+    const recent = minutes.slice(-3);
+    const previous = minutes.slice(-6, -3);
+    const recentAvg = recent.reduce((sum, value) => sum + value, 0) / Math.max(recent.length, 1);
+    const previousAvg = previous.reduce((sum, value) => sum + value, 0) / Math.max(previous.length, 1);
+    const deltaPct = previousAvg > 0
+      ? ((recentAvg - previousAvg) / previousAvg) * 100
+      : (recentAvg > 0 ? 100 : 0);
+
+    let trend: 'up' | 'down' | 'stable' = 'stable';
+    if (deltaPct > 8) trend = 'up';
+    if (deltaPct < -8) trend = 'down';
+
+    return {
+      trend,
+      deltaPct: Math.round(deltaPct),
+      total,
+      recentAvg: Math.round(recentAvg),
+      previousAvg: Math.round(previousAvg),
+    };
+  }
+
+  private getCoachScore(context: AiStudyContext, trend: ReturnType<DashboardComponent['getWeekTrendSignal']>): number {
+    const progressScore = Math.min(Math.max(context.progressPercentage, 0), 100) * 0.45;
+    const sessionRatio = context.sessionGoal > 0
+      ? Math.min((context.sessionsCompleted / context.sessionGoal) * 100, 100)
+      : 0;
+    const sessionScore = sessionRatio * 0.2;
+    const todoLoadPenalty = Math.min(context.pendingTodos * 11, 100);
+    const todoScore = Math.max(0, 100 - todoLoadPenalty) * 0.2;
+    const trendBase = trend.trend === 'up' ? 90 : trend.trend === 'down' ? 40 : 65;
+    const trendScore = trendBase * 0.15;
+    return Math.round(progressScore + sessionScore + todoScore + trendScore);
+  }
+
+  private getCoachLevel(score: number): string {
+    if (score >= 85) return 'Exécution excellente';
+    if (score >= 70) return 'Bon pilotage';
+    if (score >= 55) return 'Pilotage moyen';
+    return 'Zone critique';
+  }
+
+  private generateSmartAdvice(context: AiStudyContext): string {
     const lines: string[] = [];
 
-    const progress = context.progressPercentage || 0;
-    const pendingTodos = context.pendingTodos || 0;
-    const goal = context.todayGoalMinutes || 0;
-    const studied = context.todayStudiedMinutes || 0;
+    const progress = context.progressPercentage;
+    const pendingTodos = context.pendingTodos;
+    const goal = context.todayGoalMinutes;
+    const studied = context.todayStudiedMinutes;
     const remaining = Math.max(goal - studied, 0);
-    const sessionsCompleted = context.sessionsCompleted || 0;
+    const sessionsCompleted = context.sessionsCompleted;
     const sessionGoal = context.sessionGoal || 4;
+    const weekTrend = this.getWeekTrendSignal(context.weekStats);
+    const score = this.getCoachScore(context, weekTrend);
+    const level = this.getCoachLevel(score);
 
     const subjectBreakdown = Array.isArray(context.subjectBreakdown) ? context.subjectBreakdown : [];
+    const prioritizedSubjects = [...subjectBreakdown]
+      .sort((a, b) => b.priorityScore - a.priorityScore)
+      .slice(0, 2);
+
     const weakestSubject = subjectBreakdown
-      .map((subject: any) => ({
+      .map((subject) => ({
         ...subject,
-        gap: Math.max((subject.goalMinutes || 0) - (subject.studiedMinutes || 0), 0)
+        gap: Math.max(subject.goalMinutes - subject.studiedMinutes, 0)
       }))
-      .sort((a: any, b: any) => b.gap - a.gap)[0];
+      .sort((a, b) => b.gap - a.gap)[0];
 
-    lines.push('AI Study Coach — Rapport du jour');
-    lines.push(`Diagnostic: ${studied} min / ${goal} min (${progress}%).`);
+    const immediateUrgency = context.pendingUrgentTodos > 0 || context.pendingHighTodos >= 2;
+    const lateDay = context.nowHour >= 20;
 
-    if (progress < 40) {
-      lines.push(`Statut: retard significatif (${remaining} min à rattraper).`);
-    } else if (progress < 75) {
-      lines.push(`Statut: rythme correct, ${remaining} min restantes.`);
+    lines.push('AI Study Coach — Analyse stratégique multi-facteurs');
+    lines.push(`Score global: ${score}/100 (${level}).`);
+    lines.push('');
+
+    lines.push('1) Diagnostic rapide');
+    lines.push(`• Progression du jour: ${studied} min / ${goal} min (${progress}%).`);
+    lines.push(`• Charge tâches: ${pendingTodos} en attente (urgent ${context.pendingUrgentTodos}, haute ${context.pendingHighTodos}, moyenne ${context.pendingMediumTodos}, basse ${context.pendingLowTodos}).`);
+    lines.push(`• Sessions Pomodoro: ${sessionsCompleted}/${sessionGoal}.`);
+    lines.push(`• Tendance hebdo: ${weekTrend.trend === 'up' ? 'en hausse' : weekTrend.trend === 'down' ? 'en baisse' : 'stable'} (${weekTrend.deltaPct >= 0 ? '+' : ''}${weekTrend.deltaPct}%).`);
+
+    lines.push('');
+    lines.push('2) Raisonnement causal');
+    if (progress < 40 && pendingTodos >= 5) {
+      lines.push('• Goulot principal: dispersion + surcharge de tâches. Il faut réduire le contexte actif avant d’augmenter le temps brut d’étude.');
+    } else if (progress < 40) {
+      lines.push('• Goulot principal: déficit de temps de focus profond. Priorité à 2 blocs sans interruption.');
+    } else if (progress < 75 && sessionsCompleted < Math.ceil(sessionGoal * 0.5)) {
+      lines.push('• Goulot principal: cadence Pomodoro insuffisante. Le rythme est la variable limitante aujourd’hui.');
     } else {
-      lines.push('Statut: très bon rythme, focus sur consolidation et révision.');
+      lines.push('• Performance globale correcte. Le gain marginal vient de l’ordre d’exécution: d’abord impact élevé, ensuite effort faible.');
     }
 
-    if (weakestSubject && weakestSubject.gap > 0) {
-      lines.push(`Priorité 1: ${weakestSubject.name} (écart ${weakestSubject.gap} min).`);
+    if (weekTrend.trend === 'down') {
+      lines.push('• Signal hebdo négatif: risque de dette d’apprentissage. Il faut sécuriser une routine minimale quotidienne non négociable.');
     }
 
-    if (pendingTodos > 5) {
-      lines.push('Priorité 2: réduire la charge de tâches à 3 actions clés (impact + urgence).');
-    } else if (pendingTodos > 0) {
-      lines.push(`Tâches restantes: ${pendingTodos}. Commencer par les tâches courtes (< 15 min).`);
+    if (prioritizedSubjects.length > 0) {
+      const focusSubjects = prioritizedSubjects
+        .filter((subject) => subject.remainingMinutes > 0)
+        .map((subject) => `${subject.name} (${subject.remainingMinutes} min restantes, ${subject.progress}%)`)
+        .join(' ; ');
+      if (focusSubjects) {
+        lines.push(`• Priorités matière: ${focusSubjects}.`);
+      }
     }
 
-    if (sessionsCompleted === 0) {
-      lines.push('Session: aucune session lancée, démarrer un bloc focus de 25 min immédiatement.');
+    lines.push('');
+    lines.push('3) Plan d’action adaptatif');
+    if (lateDay) {
+      lines.push('• Mode soirée: objectif court et propre, éviter la surcharge cognitive.');
+      lines.push('• Bloc A (20 min): tâche urgente la plus courte, livrable concret.');
+      lines.push('• Pause (5 min): reset écran + hydratation.');
+      lines.push('• Bloc B (25 min): matière prioritaire avec exercice actif (pas de relecture passive).');
+      lines.push('• Clôture (10 min): plan des 3 actions de demain + heure de démarrage.');
     } else {
-      lines.push(`Pomodoro: ${sessionsCompleted}/${sessionGoal}. Cadence active, maintenir le rythme.`);
+      lines.push('• Bloc 1 (25 min): matière la plus en retard, objectif unique mesurable.');
+      lines.push('• Bloc 2 (25 min): tâche urgente/haute priorité à terminer entièrement.');
+      lines.push('• Bloc 3 (20 min): consolidation (quiz, rappel actif, flashcards).');
+      lines.push('• Buffer (10 min): revue des écarts et re-priorisation du backlog.');
     }
 
-    lines.push('Plan recommandé (60 prochaines minutes):');
-    lines.push('1. Focus 25 min sur la matière prioritaire');
-    lines.push('2. Pause 5 min hors écran');
-    lines.push('3. Exécution 20 min sur tâches rapides ou révision active');
-    lines.push('4. Bilan 10 min et ajustement du planning');
+    lines.push('');
+    lines.push('4) Règles de pilotage pour le reste de la journée');
+    lines.push('• Règle 1: une seule cible active par bloc, notifications coupées.');
+    lines.push('• Règle 2: si un bloc échoue, repartir immédiatement sur 10 minutes au lieu d’attendre le “moment parfait”.');
+    lines.push('• Règle 3: terminer la journée avec 3 tâches maximum pour demain (pas plus).');
 
-    lines.push('Conseil pro: couper les notifications pendant le bloc de focus et définir un objectif unique mesurable.');
+    if (immediateUrgency) {
+      lines.push('• Alerte: présence de tâches critiques. Traiter au moins 1 urgente avant toute tâche moyenne/basse.');
+    }
+
+    lines.push('');
+    lines.push(`Prochaine meilleure action (5 min): ${weakestSubject?.gap > 0 ? `ouvrir ${weakestSubject.name} et lancer un mini-exercice ciblé` : 'terminer une tâche courte en attente'} maintenant.`);
+
+    if (remaining > 0) {
+      lines.push(`Temps cible restant aujourd’hui: ${remaining} min (${this.formatTime(remaining)}).`);
+    }
 
     return lines.join('\n');
   }
@@ -462,13 +625,17 @@ export class DashboardComponent implements OnInit {
 
     setTimeout(() => {
       this.aiLastSource.set('smart');
-      this.aiMessages.update((messages) => [
-        ...messages,
-        {
+      this.aiMessages.update((messages) => {
+        const nextMessage: AiChatMessage = {
           role: 'assistant',
           content: advice
-        }
-      ]);
+        };
+        const updated = [
+          ...messages,
+          nextMessage
+        ];
+        return updated.slice(-12);
+      });
       this.aiLoading.set(false);
     }, 250);
   }
@@ -621,7 +788,9 @@ export class DashboardComponent implements OnInit {
                   existingSessions[lastIdx] = {
                     ...lastSession,
                     duration: newDuration,
-                    endTime: endTime.toTimeString().slice(0, 5)
+                    endTime: endTime.toTimeString().slice(0, 5),
+                    completed: false,
+                    completedAt: undefined
                   };
                   
                   console.log(`➕ Augmentation: +${difference}min ajouté à la dernière session (${lastSession.duration}min → ${newDuration}min)`);
@@ -829,7 +998,7 @@ export class DashboardComponent implements OnInit {
       // Update studied time and award points
       if (this.selectedSubjectForTimer()) {
         console.log(`🔍 handleTimerComplete: calling updateStudiedTime with ${minutes} minutes`);
-        this.updateStudiedTime(this.selectedSubjectForTimer()!._id!, minutes);
+        this.updateStudiedTime(this.selectedSubjectForTimer()!._id!, minutes, true);
         
         const pointsEarned = minutes * 2;
         this.authService.awardPoints(pointsEarned).subscribe({
@@ -972,7 +1141,7 @@ export class DashboardComponent implements OnInit {
     console.log(`🔍 stopTimer: initialMinutes=${this.initialTimerMinutes()}, remainingMinutes=${this.timerMinutes()}, studied=${minutesStudied}`);
     
     if (minutesStudied > 0 && this.selectedSubjectForTimer() && this.timerMode() === 'focus') {
-      this.updateStudiedTime(this.selectedSubjectForTimer()!._id!, minutesStudied);
+      this.updateStudiedTime(this.selectedSubjectForTimer()!._id!, minutesStudied, false);
       
       // Award points for partial session
       const pointsEarned = minutesStudied * 2;
@@ -1156,7 +1325,7 @@ export class DashboardComponent implements OnInit {
     localStorage.setItem('sessionsDate', today);
   }
 
-  updateStudiedTime(subjectId: string, additionalMinutes: number) {
+  updateStudiedTime(subjectId: string, additionalMinutes: number, markSessionOnGoalComplete: boolean = false) {
     const plan = this.dayPlan();
     if (!plan) {
       console.log('No day plan found, cannot update studied time');
@@ -1194,6 +1363,9 @@ export class DashboardComponent implements OnInit {
         
         // Celebrate if goal just reached!
         if (wasNotComplete && isNowComplete && goalMinutes > 0) {
+          // Keep Day Planner session state in sync with goal completion.
+          this.markPlannerSessionCompleted(subjectId, newStudiedMinutes);
+
           const subjectInfo = this.getSubjectById(subjectId);
           const subjectName = subjectInfo ? subjectInfo.name : 'cette matière';
           const subjectIcon = subjectInfo ? subjectInfo.icon : '📚';
@@ -1338,6 +1510,74 @@ export class DashboardComponent implements OnInit {
     });
   }
 
+  private markPlannerSessionCompleted(subjectId: string, targetStudiedMinutes?: number) {
+    const plan = this.dayPlan();
+    if (!plan?.subjects?.length) {
+      return;
+    }
+
+    const subjectsPayload = plan.subjects
+      .map((subjectPlan: any) => {
+        const sid = this.getSubjectIdString(subjectPlan.subjectId);
+        if (!sid) {
+          return null;
+        }
+
+        const sessions = Array.isArray(subjectPlan.sessions) ? [...subjectPlan.sessions] : [];
+
+        if (sid === subjectId) {
+          const pendingIndex = sessions.findIndex((session: any) => !session?.completed);
+          if (pendingIndex >= 0) {
+            sessions[pendingIndex] = {
+              ...sessions[pendingIndex],
+              completed: true,
+              completedAt: new Date()
+            };
+          }
+
+          const completedMinutesAfterMark = sessions
+            .filter((session: any) => session?.completed)
+            .reduce((sum: number, session: any) => sum + (session?.duration || 0), 0);
+
+          if (targetStudiedMinutes && completedMinutesAfterMark < targetStudiedMinutes) {
+            const missingMinutes = targetStudiedMinutes - completedMinutesAfterMark;
+            const end = new Date();
+            const start = new Date(end.getTime() - missingMinutes * 60000);
+
+            sessions.push({
+              startTime: start.toTimeString().slice(0, 5),
+              endTime: end.toTimeString().slice(0, 5),
+              duration: missingMinutes,
+              completed: true,
+              completedAt: new Date(),
+              note: 'Ajustement timer pour completion objectif'
+            });
+          }
+        }
+
+        const studiedFromSessions = sessions
+          .filter((session: any) => session?.completed)
+          .reduce((sum: number, session: any) => sum + (session?.duration || 0), 0);
+
+        return {
+          subjectId: sid,
+          goalMinutes: subjectPlan.goalMinutes || 0,
+          studiedMinutes: sessions.length > 0 ? studiedFromSessions : (subjectPlan.studiedMinutes || 0),
+          sessions,
+          priority: subjectPlan.priority || 'medium'
+        };
+      })
+      .filter(Boolean) as any[];
+
+    this.dayPlanService.saveDayPlan({
+      date: this.today,
+      subjects: subjectsPayload
+    }).subscribe({
+      next: () => this.loadDayPlan(),
+      error: (err) => console.error('Error syncing planner completion state:', err)
+    });
+  }
+
   // Todo Management
   openTodoModal() {
     this.editingTodo.set(null);
@@ -1355,9 +1595,33 @@ export class DashboardComponent implements OnInit {
     this.showTodoModal.set(true);
   }
 
+  private getTaskSwalTheme() {
+    const isLight = this.themeService.isLight();
+    return isLight
+      ? {
+          background: '#ffffff',
+          color: '#0f172a',
+          confirmButtonColor: '#4f46e5',
+          cancelButtonColor: '#cbd5e1'
+        }
+      : {
+          background: '#0a0a0a',
+          color: '#f8fafc',
+          confirmButtonColor: '#facc15',
+          cancelButtonColor: '#374151'
+        };
+  }
+
+  private taskAlert(options: any) {
+    return Swal.fire({
+      ...this.getTaskSwalTheme(),
+      ...options
+    });
+  }
+
   saveTodo() {
     if (!this.todoForm.title.trim()) {
-      Swal.fire({ icon: 'error', title: 'Erreur', text: 'Le titre est requis' });
+      this.taskAlert({ icon: 'error', title: 'Erreur', text: 'Le titre est requis' });
       return;
     }
 
@@ -1381,7 +1645,7 @@ export class DashboardComponent implements OnInit {
       this.todoService.updateTodo(editingTodo._id!, updatedTodo).subscribe({
         next: (response) => {
           console.log('Todo updated successfully:', response);
-          Swal.fire({ icon: 'success', title: 'Tâche modifiée', timer: 1500, showConfirmButton: false });
+          this.taskAlert({ icon: 'success', title: 'Tâche modifiée', timer: 1500, showConfirmButton: false });
           this.showTodoModal.set(false);
           this.editingTodo.set(null);
           this.loadTodos();
@@ -1389,7 +1653,7 @@ export class DashboardComponent implements OnInit {
         error: (err) => {
           console.error('Error updating todo:', err);
           const errorMsg = err.error?.error || err.error?.message || err.message || 'Erreur lors de la modification de la tâche';
-          Swal.fire({ icon: 'error', title: 'Erreur', text: errorMsg });
+          this.taskAlert({ icon: 'error', title: 'Erreur', text: errorMsg });
         }
       });
     } else {
@@ -1411,7 +1675,7 @@ export class DashboardComponent implements OnInit {
       this.todoService.createTodo(todo).subscribe({
         next: (response) => {
           console.log('Todo created successfully:', response);
-          Swal.fire({ icon: 'success', title: 'Tâche ajoutée', timer: 1500, showConfirmButton: false });
+          this.taskAlert({ icon: 'success', title: 'Tâche ajoutée', timer: 1500, showConfirmButton: false });
           this.showTodoModal.set(false);
           this.loadTodos();
         },
@@ -1420,7 +1684,7 @@ export class DashboardComponent implements OnInit {
           console.error('Error status:', err.status);
           console.error('Error body:', err.error);
           const errorMsg = err.error?.error || err.error?.message || err.message || 'Erreur lors de la création de la tâche';
-          Swal.fire({ icon: 'error', title: 'Erreur', text: errorMsg });
+          this.taskAlert({ icon: 'error', title: 'Erreur', text: errorMsg });
         }
       });
     }
@@ -1445,7 +1709,7 @@ export class DashboardComponent implements OnInit {
       const subjectColor = isLight ? '#64748b' : '#9ca3af';
       const borderColor = isLight ? '#c7d2fe' : '#374151';
       
-      const result = await Swal.fire({
+      const result = await this.taskAlert({
         title: '⏱️ Temps d\'étude',
         html: `
           <div style="text-align: left;">
@@ -1464,6 +1728,7 @@ export class DashboardComponent implements OnInit {
         showCancelButton: true,
         confirmButtonText: '✅ Valider',
         cancelButtonText: 'Annuler',
+        reverseButtons: true,
         didOpen: () => {
           let minutes = 15;
           const display = document.getElementById('time-display');
@@ -1560,59 +1825,66 @@ export class DashboardComponent implements OnInit {
           this.authService.awardPoints(totalPoints).subscribe({
             next: (res) => {
               if (res.success) {
-                Swal.fire({
-                  title: `<div style="font-size: 2.5em;">🎉✨🎊</div>
-                          <div style="font-size: 1.8em; font-weight: bold; background: linear-gradient(135deg, #ffd700, #ffed4e); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                const isLightTheme = this.themeService.isLight();
+                const cardBg = isLightTheme ? 'rgba(79, 70, 229, 0.08)' : 'linear-gradient(135deg, #1a1a1a, #2d2d2d)';
+                const cardBorder = isLightTheme ? '1px solid rgba(99, 102, 241, 0.25)' : '2px solid #ffd700';
+                const mutedText = isLightTheme ? '#475569' : '#9ca3af';
+                const totalPanelBg = isLightTheme
+                  ? 'linear-gradient(135deg, rgba(79, 70, 229, 0.14), rgba(139, 92, 246, 0.12))'
+                  : 'linear-gradient(135deg, rgba(255, 215, 0, 0.2), rgba(255, 237, 78, 0.2))';
+                const totalPanelBorder = isLightTheme ? '2px solid rgba(99, 102, 241, 0.35)' : '2px solid #ffd700';
+
+                this.taskAlert({
+                  title: `<div style="font-size: 2.25em; line-height: 1; margin: 0 0 0.25rem 0;">🎉✨🎊</div>
+                          <div style="font-size: 1.65em; line-height: 1.1; font-weight: bold; margin: 0; background: linear-gradient(135deg, #ffd700, #ffed4e); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
                             Tâche Complétée!
                           </div>`,
                   html: `
-                    <div style="padding: 1rem;">
+                    <div style="padding: 0.65rem;">
                       ${subject ? `
-                        <div style="display: flex; align-items: center; justify-content: center; gap: 0.5rem; margin-bottom: 1rem; font-size: 1.2em;">
+                        <div style="display: flex; align-items: center; justify-content: center; gap: 0.45rem; margin-bottom: 0.65rem; font-size: 1.1em;">
                           <span style="font-size: 2em;">${subject.icon}</span>
                           <span style="color: ${subject.color}; font-weight: bold;">${subject.name}</span>
                         </div>
                       ` : ''}
                       
-                      <div style="background: linear-gradient(135deg, #1a1a1a, #2d2d2d); border-radius: 1rem; padding: 1.5rem; margin: 1rem 0; border: 2px solid #ffd700;">
-                        <div style="font-size: 1.5em; color: #10b981; margin-bottom: 0.5rem;">
+                      <div style="background: ${cardBg}; border-radius: 1rem; padding: 1rem; margin: 0.65rem 0; border: ${cardBorder};">
+                        <div style="font-size: 1.35em; line-height: 1.2; color: #10b981; margin-bottom: 0.25rem;">
                           ${randomMessage}
                         </div>
                       </div>
                       
-                      <div style="display: flex; justify-content: space-around; margin: 1.5rem 0; gap: 1rem;">
-                        <div style="background: rgba(255, 215, 0, 0.1); padding: 1rem; border-radius: 0.75rem; flex: 1; border: 1px solid rgba(255, 215, 0, 0.3);">
-                          <div style="font-size: 0.9em; color: #9ca3af; margin-bottom: 0.25rem;">Tâche</div>
+                      <div style="display: flex; justify-content: space-around; margin: 0.85rem 0; gap: 0.65rem;">
+                        <div style="background: rgba(255, 215, 0, 0.1); padding: 0.75rem; border-radius: 0.75rem; flex: 1; border: 1px solid rgba(255, 215, 0, 0.3);">
+                          <div style="font-size: 0.86em; color: ${mutedText}; margin-bottom: 0.2rem;">Tâche</div>
                           <div style="font-size: 1.5em; color: #ffd700; font-weight: bold;">+${basePoints} 🏆</div>
                         </div>
                         ${studyMinutes > 0 ? `
-                          <div style="background: rgba(16, 185, 129, 0.1); padding: 1rem; border-radius: 0.75rem; flex: 1; border: 1px solid rgba(16, 185, 129, 0.3);">
-                            <div style="font-size: 0.9em; color: #9ca3af; margin-bottom: 0.25rem;">Étude (${studyMinutes}min)</div>
+                          <div style="background: rgba(16, 185, 129, 0.1); padding: 0.75rem; border-radius: 0.75rem; flex: 1; border: 1px solid rgba(16, 185, 129, 0.3);">
+                            <div style="font-size: 0.86em; color: ${mutedText}; margin-bottom: 0.2rem;">Étude (${studyMinutes}min)</div>
                             <div style="font-size: 1.5em; color: #10b981; font-weight: bold;">+${timeBonus} ⏱️</div>
                           </div>
                         ` : ''}
                       </div>
                       
-                      <div style="background: linear-gradient(135deg, rgba(255, 215, 0, 0.2), rgba(255, 237, 78, 0.2)); padding: 1.5rem; border-radius: 1rem; margin-top: 1rem; border: 2px solid #ffd700;">
+                      <div style="background: ${totalPanelBg}; padding: 1rem; border-radius: 1rem; margin-top: 0.65rem; border: ${totalPanelBorder};">
                         <div style="font-size: 3em; font-weight: bold; color: #ffd700; text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);">
                           +${totalPoints} Points
                         </div>
-                        <div style="font-size: 1.1em; color: #a0a0a0; margin-top: 0.5rem;">
+                        <div style="font-size: 1em; color: ${mutedText}; margin-top: 0.35rem;">
                           Total: <span style="color: #ffd700; font-weight: bold;">${res.totalPoints}</span> points
                         </div>
                       </div>
                       
-                      <div style="margin-top: 1.5rem; padding: 1rem; background: rgba(59, 130, 246, 0.1); border-radius: 0.75rem; border: 1px solid rgba(59, 130, 246, 0.3);">
-                        <div style="font-size: 1.1em; color: #60a5fa;">
+                      <div style="margin-top: 0.85rem; padding: 0.75rem; background: rgba(59, 130, 246, 0.1); border-radius: 0.75rem; border: 1px solid rgba(59, 130, 246, 0.3);">
+                        <div style="font-size: 1em; color: #60a5fa; line-height: 1.25;">
                           💡 Continue sur cette lancée! La prochaine tâche t'attend! 
                         </div>
                       </div>
                     </div>
                   `,
                   confirmButtonText: '🚀 Continuer!',
-                  background: '#0a0a0a',
-                  color: '#ffffff',
-                  confirmButtonColor: '#ffd700',
+                  confirmButtonColor: isLightTheme ? '#4f46e5' : '#ffd700',
                   width: '40vw',
                   customClass: {
                     popup: 'celebration-popup responsive-modal',
@@ -1639,11 +1911,11 @@ export class DashboardComponent implements OnInit {
   deleteTodo(todo: Todo) {
     this.todoService.deleteTodo(todo._id!).subscribe({
       next: () => {
-        Swal.fire({ icon: 'success', title: 'Supprimé', timer: 1500, showConfirmButton: false });
+        this.taskAlert({ icon: 'success', title: 'Supprimé', timer: 1500, showConfirmButton: false });
         this.loadTodos();
       },
       error: (err) => {
-        Swal.fire({ icon: 'error', title: 'Erreur', text: err.error?.message });
+        this.taskAlert({ icon: 'error', title: 'Erreur', text: err.error?.message || 'Impossible de supprimer la tâche.' });
       }
     });
   }

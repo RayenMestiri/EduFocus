@@ -90,10 +90,27 @@ const DayPlanSchema = new mongoose.Schema({
 DayPlanSchema.index({ user: 1, date: 1 }, { unique: true });
 DayPlanSchema.index({ user: 1, createdAt: -1 });
 
-// Calculate totals before saving
+function computeStudiedMinutesFromCompletedSessions(subject) {
+  if (!subject || !Array.isArray(subject.sessions)) {
+    return 0;
+  }
+
+  return subject.sessions.reduce((sum, session) => {
+    if (session?.completed) {
+      return sum + (Number(session.duration) || 0);
+    }
+    return sum;
+  }, 0);
+}
+
+// Calculate per-subject studied minutes and totals before saving
 DayPlanSchema.pre('save', function() {
-  this.totalGoalMinutes = this.subjects.reduce((sum, s) => sum + s.goalMinutes, 0);
-  this.totalStudiedMinutes = this.subjects.reduce((sum, s) => sum + s.studiedMinutes, 0);
+  this.subjects.forEach((subject) => {
+    subject.studiedMinutes = computeStudiedMinutesFromCompletedSessions(subject);
+  });
+
+  this.totalGoalMinutes = this.subjects.reduce((sum, s) => sum + (Number(s.goalMinutes) || 0), 0);
+  this.totalStudiedMinutes = this.subjects.reduce((sum, s) => sum + (Number(s.studiedMinutes) || 0), 0);
   this.isCompleted = this.totalStudiedMinutes >= this.totalGoalMinutes;
 });
 
@@ -102,7 +119,7 @@ DayPlanSchema.methods.addSession = function(subjectId, sessionData) {
   const subject = this.subjects.find(s => s.subjectId.toString() === subjectId.toString());
   if (subject) {
     subject.sessions.push(sessionData);
-    subject.studiedMinutes += sessionData.duration;
+    subject.studiedMinutes = computeStudiedMinutesFromCompletedSessions(subject);
   }
   return this.save();
 };

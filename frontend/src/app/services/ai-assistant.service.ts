@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 export interface AiAssistantResponse {
   success: boolean;
@@ -12,9 +13,7 @@ export interface AiAssistantResponse {
   providedIn: 'root'
 })
 export class AiAssistantService {
-  private apiUrl = (window as any).__API_BASE_URL__
-    ? `${(window as any).__API_BASE_URL__}/api/ai`
-    : 'http://localhost:5000/api/ai';
+  private apiUrl = `${environment.apiUrl}/api/ai`;
 
   constructor(private http: HttpClient) {}
 

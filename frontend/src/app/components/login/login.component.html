@@ -1,90 +1,162 @@
-<div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-black via-gray-900 to-black p-3 sm:p-4">
-  <div class="w-full max-w-md">
-    <!-- Logo & Title -->
-    <div class="text-center mb-6 sm:mb-8 animate-fadeIn">
-      <div class="inline-block p-3 sm:p-4 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-2xl shadow-2xl shadow-yellow-500/20 mb-4">
-        <span class="material-icons text-5xl sm:text-6xl text-black">school</span>
-      </div>
-      <h1 class="text-4xl sm:text-5xl font-black bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 bg-clip-text text-transparent mb-2">
-        EduFocus
-      </h1>
-      <p class="text-gray-400 text-base sm:text-lg">Premium Study Planner</p>
+<!-- Forgot Password Overlay -->
+@if (forgotMode) {
+  <div class="forgot-overlay">
+    <div class="forgot-backdrop" (click)="closeForgot()"></div>
+    <div class="forgot-card">
+      <button class="forgot-close" (click)="closeForgot()">
+        <span class="material-icons">close</span>
+      </button>
+
+      @if (!forgotSent) {
+        <div style="margin-bottom:1.2rem">
+          <p class="forgot-title">Mot de passe oublié&nbsp;?</p>
+          <p class="forgot-sub">Entrez votre adresse e-mail pour recevoir un lien de réinitialisation.</p>
+        </div>
+        <div class="field-wrap">
+          <label class="field-label">Adresse e-mail</label>
+          <div class="field-box">
+            <span class="material-icons left-icon">email</span>
+            <input type="email" [(ngModel)]="forgotEmail" name="forgotEmail" placeholder="votre@email.com" class="auth-input" autocomplete="off" />
+          </div>
+        </div>
+        <button class="btn-auth" [disabled]="forgotLoading || !forgotEmail" (click)="sendReset()">
+          @if (forgotLoading) {
+            <svg class="animate-spin" style="width:18px;height:18px" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" opacity=".25"/><path fill="currentColor" opacity=".75" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>
+            Envoi en cours…
+          } @else {
+            <span class="material-icons">send</span> Envoyer le lien
+          }
+        </button>
+      } @else {
+        <div style="text-align:center;padding:1rem 0">
+          <span class="material-icons" style="font-size:3rem;color:#22c55e">mark_email_read</span>
+          <p class="forgot-success-title">E-mail envoyé&nbsp;!</p>
+          <p class="forgot-success-sub">Vérifiez votre boîte de réception pour réinitialiser votre mot de passe.</p>
+          <button class="btn-auth" style="margin-top:1.5rem" (click)="closeForgot()">Fermer</button>
+        </div>
+      }
+    </div>
+  </div>
+}
+
+<!-- Main Page -->
+<div class="auth-page">
+  <!-- Background layers -->
+  <div class="auth-orb orb-1"></div>
+  <div class="auth-orb orb-2"></div>
+  <div class="auth-orb orb-3"></div>
+  <div class="edu-aurora"></div>
+
+  
+
+  <!-- Centered card -->
+  <div class="auth-wrap">
+    <!-- Left decorative panel -->
+    <div class="auth-left">
+    <div class="auth-left-logo">
+      <div class="logo-icon-wrap"><span class="material-icons">school</span></div>
+      <span class="logo-name">Edu<span>Focus</span></span>
     </div>
 
-    <!-- Login Card -->
-    <div class="bg-gradient-to-br from-gray-900 to-black border border-yellow-500/20 rounded-3xl shadow-2xl shadow-yellow-500/10 p-5 sm:p-8 backdrop-blur-xl animate-slideIn">
-      <h2 class="text-2xl sm:text-3xl font-bold text-yellow-400 mb-6 text-center">Welcome Back</h2>
-      
-      <form (ngSubmit)="onSubmit()" class="space-y-6">
+    <h2 class="auth-left-tagline">
+      Étudiez plus <em>intelligemment</em>,<br>pas plus dur.
+    </h2>
+    <p class="auth-left-sub">
+      La plateforme d'apprentissage qui s'adapte à vous — notes intelligentes, planification avancée, et suivi de progression en temps réel.
+    </p>
+
+    <div class="auth-feature-list">
+      <div class="auth-feature">
+        <div class="af-icon"><span class="material-icons">edit_note</span></div>
+        Notes enrichies avec éditeur intelligent
+      </div>
+      <div class="auth-feature">
+        <div class="af-icon"><span class="material-icons">insights</span></div>
+        Statistiques d'apprentissage détaillées
+      </div>
+      <div class="auth-feature">
+        <div class="af-icon"><span class="material-icons">calendar_month</span></div>
+        Planificateur de révisions adaptatif
+      </div>
+      <div class="auth-feature">
+        <div class="af-icon"><span class="material-icons">lock</span></div>
+        Notes protégées par mot de passe
+      </div>
+    </div>
+
+    <div class="auth-stat-row">
+      <div class="auth-stat"><span class="as-val">12k+</span><span class="as-lbl">ÉTUDIANTS</span></div>
+      <div class="auth-stat"><span class="as-val">98%</span><span class="as-lbl">SATISFACTION</span></div>
+      <div class="auth-stat"><span class="as-val">4.9★</span><span class="as-lbl">NOTE</span></div>
+    </div>
+  </div>
+
+  <!-- Right form panel -->
+  <div class="auth-right">
+    <a routerLink="/" class="auth-back">
+      <span class="material-icons">arrow_back</span> Retour à l'accueil
+    </a>
+
+    <div class="auth-card">
+      <div class="auth-card-header">
+        <h1 class="auth-card-title">Connexion</h1>
+        <p class="auth-card-sub">Bon retour&nbsp;! Entrez vos identifiants.</p>
+      </div>
+
+      <form (ngSubmit)="onSubmit()" autocomplete="off">
         <!-- Email -->
-        <div class="space-y-2">
-          <label class="text-sm font-semibold text-gray-300 block">Email Address</label>
-          <div class="relative">
-            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-              <span class="material-icons text-xl text-yellow-500">email</span>
-            </div>
-            <input
-              type="email"
-              [(ngModel)]="email"
-              name="email"
-              placeholder="your@email.com"
-              class="w-full pl-12 pr-4 py-3 bg-black/50 border border-yellow-500/30 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent transition-all duration-300"
-              required
-            />
+        <div class="field-wrap">
+          <label class="field-label">Adresse e-mail</label>
+          <div class="field-box">
+            <span class="material-icons left-icon">email</span>
+            <input type="email" [(ngModel)]="email" name="email" placeholder="votre@email.com" class="auth-input" autocomplete="email" />
           </div>
         </div>
 
         <!-- Password -->
-        <div class="space-y-2">
-          <label class="text-sm font-semibold text-gray-300 block">Password</label>
-          <div class="relative">
-            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-              <span class="material-icons text-xl text-yellow-500">lock</span>
-            </div>
-            <input
-              type="password"
-              [(ngModel)]="password"
-              name="password"
-              placeholder="••••••••"
-              class="w-full pl-12 pr-4 py-3 bg-black/50 border border-yellow-500/30 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent transition-all duration-300"
-              required
-            />
+        <div class="field-wrap">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem">
+            <label class="field-label" style="margin-bottom:0">Mot de passe</label>
+            <button type="button" (click)="forgotMode=true" class="forgot-link">Mot de passe oublié&nbsp;?</button>
           </div>
+          <div class="field-box">
+            <span class="material-icons left-icon">lock</span>
+            <input [type]="showPassword ? 'text' : 'password'" [(ngModel)]="password" name="password" placeholder="••••••••" class="auth-input" autocomplete="current-password" />
+            <button type="button" class="toggle-pw" (click)="showPassword=!showPassword">
+              <span class="material-icons">{{ showPassword ? 'visibility_off' : 'visibility' }}</span>
+            </button>
+          </div>
+          <!-- Mini strength bar on login too -->
+          @if (password.length > 0) {
+            <div class="strength-row" style="margin-top:.5rem">
+              <div class="strength-bar">
+                @for (s of [1,2,3,4]; track s) {
+                  <div class="strength-seg" [style.background]="s <= passwordStrength.score ? passwordStrength.color : ''"></div>
+                }
+              </div>
+              <span class="strength-label" [style.color]="passwordStrength.color">{{ passwordStrength.label }}</span>
+            </div>
+          }
         </div>
 
-        <!-- Submit Button -->
-        <button
-          type="submit"
-          [disabled]="isLoading"
-          class="w-full py-3.5 sm:py-4 bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 text-black font-bold rounded-xl shadow-lg shadow-yellow-500/50 hover:shadow-yellow-500/70 hover:scale-105 transform transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
-        >
+        <!-- Submit -->
+        <button type="submit" class="btn-auth" [disabled]="isLoading">
           @if (isLoading) {
-            <svg class="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-            </svg>
-            <span>Signing in...</span>
+            <svg class="animate-spin" style="width:18px;height:18px" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" opacity=".25"/><path fill="currentColor" opacity=".75" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>
+            Connexion en cours…
           } @else {
-            <span>Sign In</span>
-            <span class="material-icons">arrow_forward</span>
+            <span class="material-icons">login</span> Se connecter
           }
         </button>
       </form>
 
-      <!-- Register Link -->
-      <div class="mt-6 text-center">
-        <p class="text-gray-400">
-          Don't have an account?
-          <a routerLink="/register" class="text-yellow-400 hover:text-yellow-300 font-semibold ml-2 transition-colors duration-300">
-            Create Account
-          </a>
-        </p>
-      </div>
-    </div>
+      <div class="auth-divider">ou</div>
 
-    <!-- Footer -->
-    <div class="text-center mt-6 sm:mt-8 text-gray-500 text-xs sm:text-sm animate-fadeIn">
-      <p>&copy; 2024 EduFocus. Premium Study Experience.</p>
+      <p class="auth-foot-note">
+        Pas encore de compte&nbsp;?
+        <a routerLink="/register" class="auth-foot-link">Créer un compte</a>
+      </p>
     </div>
+  </div>
   </div>
 </div>

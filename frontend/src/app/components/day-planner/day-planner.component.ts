@@ -1,4 +1,4 @@
-import { Component, OnInit, signal, computed, ViewEncapsulation } from '@angular/core';
+import { Component, HostListener, OnInit, signal, computed, ViewChild, ViewEncapsulation } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { catchError, forkJoin, map, of } from 'rxjs';
@@ -10,11 +10,19 @@ import { ThemeService } from '../../services/theme.service';
 import { Subject, DayPlan, DayPlanSubject, Todo } from '../../models';
 
 // FullCalendar Imports
-import { FullCalendarModule } from '@fullcalendar/angular';
-import { CalendarOptions, EventClickArg, DateSelectArg, EventMountArg } from '@fullcalendar/core';
+import { FullCalendarComponent, FullCalendarModule } from '@fullcalendar/angular';
+import {
+  CalendarOptions,
+  DateSelectArg,
+  EventClickArg,
+  EventContentArg,
+  EventDropArg,
+  EventMountArg
+} from '@fullcalendar/core';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
+import type { EventResizeDoneArg } from '@fullcalendar/interaction';
 import listPlugin from '@fullcalendar/list';
 import frLocale from '@fullcalendar/core/locales/fr';
 
@@ -30,6 +38,25 @@ interface StudySession {
   duration: number;
   completed: boolean;
 }
+
+interface SavedSessionPayload {
+  startTime: string;
+  endTime: string;
+  duration: number;
+  completed: boolean;
+}
+
+interface DayPlanSubjectPayload {
+  subjectId: string;
+  goalMinutes: number;
+  studiedMinutes: number;
+  sessions: SavedSessionPayload[];
+  priority: 'low' | 'medium' | 'high';
+}
+
+const DEFAULT_SESSION_DURATION_MINUTES = 60;
+const MIN_GOAL_MINUTES = 5;
+const MOBILE_BREAKPOINT = 1024;
 
 function formatLocalDate(date: Date): string {
   const year = date.getFullYear();
@@ -47,6 +74,8 @@ function formatLocalDate(date: Date): string {
   encapsulation: ViewEncapsulation.None
 })
 export class DayPlannerComponent implements OnInit {
+  @ViewChild('plannerCalendar') plannerCalendar?: FullCalendarComponent;
+
   subjects = signal<Subject[]>([]);
   dayPlan = signal<DayPlan | null>(null);
   visiblePlans = signal<DayPlan[]>([]);
@@ -98,6 +127,7 @@ export class DayPlannerComponent implements OnInit {
 
   currentDate = signal<string>(formatLocalDate(new Date()));
   currentViewType = signal<string>('timeGridDay');
+  currentCalendarTitle = signal<string>('');
   currentDateRange = signal<{start: string, end: string}>({start: '', end: ''});
   lastRotateHintView = signal<string | null>(null);
   private pendingRange: {start: string, end: string} | null = null;
@@ -157,9 +187,9 @@ export class DayPlannerComponent implements OnInit {
   });
 
   // Custom render function for FullCalendar events with Material Icons
-  renderEventContent(arg: any) {
-    const icon = arg.event.extendedProps.icon || arg.event._def.extendedProps.icon;
-    const isCompleted = arg.event.extendedProps.isCompleted || arg.event._def.extendedProps.isCompleted;
+  renderEventContent(arg: EventContentArg) {
+    const icon = arg.event.extendedProps['icon'] || arg.event._def.extendedProps['icon'];
+    const isCompleted = arg.event.extendedProps['isCompleted'] || arg.event._def.extendedProps['isCompleted'];
     
     const container = document.createElement('div');
     container.style.display = 'flex';
@@ -221,6 +251,8 @@ export class DayPlannerComponent implements OnInit {
   ) {}
 
   ngOnInit() {
+    this.applyResponsiveCalendarToolbar();
+
     // Load subjects first, then calendar will trigger handleDatesSet
     this.subjectService.getSubjects().subscribe({
       next: (response) => {
@@ -239,6 +271,26 @@ export class DayPlannerComponent implements OnInit {
         this.isLoading.set(false);
       }
     });
+  }
+
+  @HostListener('window:resize')
+  onWindowResize() {
+    this.applyResponsiveCalendarToolbar();
+  }
+
+  private applyResponsiveCalendarToolbar() {
+    const isMobile = window.innerWidth < MOBILE_BREAKPOINT;
+
+    this.calendarOptions.update((options) => ({
+      ...options,
+      headerToolbar: isMobile
+        ? false
+        : {
+            left: 'prev,next today',
+            center: 'title',
+            right: 'timeGridDay,timeGridWeek,dayGridMonth'
+          }
+    }));
   }
 
   generateSessionsFromSinglePlan(plan: DayPlan): StudySession[] {
@@ -429,7 +481,7 @@ export class DayPlannerComponent implements OnInit {
 
         let duration = Math.round((normalizedEnd.getTime() - normalizedStart.getTime()) / 60000);
         if (!Number.isFinite(duration) || duration <= 0) {
-          duration = 60;
+          duration = DEFAULT_SESSION_DURATION_MINUTES;
           normalizedEnd = new Date(normalizedStart);
           normalizedEnd.setMinutes(normalizedEnd.getMinutes() + duration);
         }
@@ -442,7 +494,7 @@ export class DayPlannerComponent implements OnInit {
         const sessionDate = new Date(year, month, day, clickedDate.getHours(), clickedDate.getMinutes());
         
         // Update current date if clicking on a different day
-        const clickedDateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+        const clickedDateStr = formatLocalDate(clickedDate);
         if (clickedDateStr !== this.currentDate()) {
           this.currentDate.set(clickedDateStr);
         }
@@ -461,7 +513,7 @@ export class DayPlannerComponent implements OnInit {
 
         this.sessions.update(sessions => [...sessions, newSession]);
         this.updateCalendarEvents();
-        const affectedDate = `${sessionDate.getFullYear()}-${String(sessionDate.getMonth() + 1).padStart(2, '0')}-${String(sessionDate.getDate()).padStart(2, '0')}`;
+        const affectedDate = formatLocalDate(sessionDate);
         this.saveSessionsToBackend(affectedDate);
 
         Swal.fire({
@@ -504,11 +556,10 @@ export class DayPlannerComponent implements OnInit {
           )
         );
         this.updateCalendarEvents();
-        const affectedDate = `${session.date.getFullYear()}-${String(session.date.getMonth() + 1).padStart(2, '0')}-${String(session.date.getDate()).padStart(2, '0')}`;
+        const affectedDate = formatLocalDate(session.date);
         this.saveSessionsToBackend(affectedDate);
-        this.syncStudiedMinutesFromSessions(affectedDate, session.subjectId);
       } else if (result.isDenied) {
-        const affectedDate = `${session.date.getFullYear()}-${String(session.date.getMonth() + 1).padStart(2, '0')}-${String(session.date.getDate()).padStart(2, '0')}`;
+        const affectedDate = formatLocalDate(session.date);
         this.sessions.update(sessions => 
           sessions.filter(s => s !== session)
         );
@@ -524,36 +575,16 @@ export class DayPlannerComponent implements OnInit {
     });
   }
 
-  private syncStudiedMinutesFromSessions(dateStr: string, subjectId: string) {
-    const completedMinutes = this.sessions()
-      .filter(s => formatLocalDate(s.date) === dateStr && s.subjectId === subjectId && s.completed)
-      .reduce((sum, s) => sum + s.duration, 0);
-
-    this.dayPlanService.updateStudiedTime(dateStr, subjectId, completedMinutes).subscribe({
-      next: () => {
-        const today = formatLocalDate(new Date());
-        if (dateStr === today) {
-          this.dayPlanService.getDayPlan(dateStr).subscribe({
-            next: (res) => {
-              if (res.success && res.data) {
-                this.dayPlan.set(res.data);
-              }
-            }
-          });
-        }
-      },
-      error: (error) => {
-        console.error('❌ Error syncing studied minutes:', error);
-      }
-    });
-  }
-
-  handleEventDrop(info: any) {
+  handleEventDrop(info: EventDropArg) {
     const session: StudySession = info.event.extendedProps['session'];
     const newStart = info.event.start;
     const newEnd = info.event.end;
 
-    const affectedDate = `${newStart.getFullYear()}-${String(newStart.getMonth() + 1).padStart(2, '0')}-${String(newStart.getDate()).padStart(2, '0')}`;
+    if (!newStart || !newEnd) {
+      return;
+    }
+
+    const affectedDate = formatLocalDate(newStart);
     this.sessions.update(sessions => 
       sessions.map(s => {
         if (s === session) {
@@ -577,12 +608,18 @@ export class DayPlannerComponent implements OnInit {
     });
   }
 
-  handleEventResize(info: any) {
+  handleEventResize(info: EventResizeDoneArg) {
     const session: StudySession = info.event.extendedProps['session'];
     const newEnd = info.event.end;
-    const newDuration = Math.round((newEnd.getTime() - info.event.start.getTime()) / 60000);
+    const newStart = info.event.start;
 
-    const affectedDate = `${session.date.getFullYear()}-${String(session.date.getMonth() + 1).padStart(2, '0')}-${String(session.date.getDate()).padStart(2, '0')}`;
+    if (!newStart || !newEnd) {
+      return;
+    }
+
+    const newDuration = Math.round((newEnd.getTime() - newStart.getTime()) / 60000);
+
+    const affectedDate = formatLocalDate(session.date);
     this.sessions.update(sessions => 
       sessions.map(s => {
         if (s === session) {
@@ -608,6 +645,22 @@ export class DayPlannerComponent implements OnInit {
 
   goToDashboard() {
     this.router.navigate(['/dashboard']);
+  }
+
+  mobilePrev() {
+    this.plannerCalendar?.getApi().prev();
+  }
+
+  mobileNext() {
+    this.plannerCalendar?.getApi().next();
+  }
+
+  mobileToday() {
+    this.plannerCalendar?.getApi().today();
+  }
+
+  setMobileView(viewName: 'timeGridDay' | 'timeGridWeek' | 'dayGridMonth') {
+    this.plannerCalendar?.getApi().changeView(viewName);
   }
 
   private shouldShowRotateHint(viewType: string): boolean {
@@ -646,6 +699,7 @@ export class DayPlannerComponent implements OnInit {
     const viewType = dateInfo.view.type;
     const activeDate = formatLocalDate(new Date(dateInfo.view?.currentStart || dateInfo.start));
     this.currentDate.set(activeDate);
+    this.currentCalendarTitle.set(dateInfo.view?.title || '');
     
     // Get the visible date range
     let viewStart = new Date(dateInfo.start);
@@ -776,7 +830,7 @@ export class DayPlannerComponent implements OnInit {
     // Group sessions by date first
     const sessionsByDate = new Map<string, StudySession[]>();
     this.sessions().forEach(session => {
-      const dateStr = `${session.date.getFullYear()}-${String(session.date.getMonth() + 1).padStart(2, '0')}-${String(session.date.getDate()).padStart(2, '0')}`;
+      const dateStr = formatLocalDate(session.date);
       if (!sessionsByDate.has(dateStr)) {
         sessionsByDate.set(dateStr, []);
       }
@@ -810,7 +864,7 @@ export class DayPlannerComponent implements OnInit {
     console.log(`💾 Saving ${dateSessions.length} sessions for ${dateStr}`);
 
     // Group sessions by subject for this date
-    const sessionsBySubject = new Map<string, any[]>();
+    const sessionsBySubject = new Map<string, SavedSessionPayload[]>();
     
     dateSessions.forEach(session => {
       if (!sessionsBySubject.has(session.subjectId)) {
@@ -826,7 +880,7 @@ export class DayPlannerComponent implements OnInit {
 
     // Get existing plan for this date or create structure for new subjects
     const plan = this.dayPlan();
-    const existingSubjectsMap = new Map();
+    const existingSubjectsMap = new Map<string, DayPlanSubject>();
     
     // If plan exists and is for the same date, use its subjects
     if (plan && plan.date === dateStr) {
@@ -843,7 +897,7 @@ export class DayPlannerComponent implements OnInit {
     }
 
     // Build updated subjects array, including new subjects from sessions
-    const updatedSubjects: any[] = [];
+    const updatedSubjects: DayPlanSubjectPayload[] = [];
     
     // Add all subjects that have sessions
     sessionsBySubject.forEach((sessions, subjectId) => {
@@ -852,22 +906,25 @@ export class DayPlannerComponent implements OnInit {
       
       // Always recalculate goalMinutes based on current sessions
       const totalSessionMinutes = sessions.reduce((sum, s) => sum + s.duration, 0);
+      const completedSessionMinutes = sessions
+        .filter((s) => s.completed)
+        .reduce((sum, s) => sum + s.duration, 0);
       
       if (existingSubject) {
-        // Update existing subject - recalculate goalMinutes from sessions
+        // Update existing subject - derive studied minutes from completed sessions
         updatedSubjects.push({
           subjectId: subjectId,
-          goalMinutes: Math.max(totalSessionMinutes, 5),
-          studiedMinutes: existingSubject.studiedMinutes || 0,
+          goalMinutes: Math.max(totalSessionMinutes, MIN_GOAL_MINUTES),
+          studiedMinutes: completedSessionMinutes,
           sessions: sessions,
           priority: existingSubject.priority || 'medium'
         });
       } else if (subject) {
-        // Add new subject with calculated goal from sessions
+        // Add new subject with derived studied minutes from completed sessions
         updatedSubjects.push({
           subjectId: subjectId,
-          goalMinutes: Math.max(totalSessionMinutes, 5),
-          studiedMinutes: 0,
+          goalMinutes: Math.max(totalSessionMinutes, MIN_GOAL_MINUTES),
+          studiedMinutes: completedSessionMinutes,
           sessions: sessions,
           priority: 'medium'
         });

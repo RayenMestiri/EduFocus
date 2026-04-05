@@ -85,6 +85,7 @@ export class NotesComponent implements OnInit, OnDestroy {
 
   // ── Editor element ──
   @ViewChild('noteEditor') noteEditorRef!: ElementRef<HTMLDivElement>;
+  @ViewChild('searchInput') searchInputRef?: ElementRef<HTMLInputElement>;
   @ViewChild('pwdInput') pwdInputRef?: ElementRef<HTMLInputElement>;
 
   private selectionChangeHandler: (() => void) | null = null;
@@ -223,6 +224,9 @@ export class NotesComponent implements OnInit, OnDestroy {
   }
 
   onSearchChange(value: string) {
+    const activeElement = document.activeElement;
+    if (activeElement !== this.searchInputRef?.nativeElement) return;
+    if (this.showPasswordModal()) return;
     this.searchQuery.set(value);
   }
 
