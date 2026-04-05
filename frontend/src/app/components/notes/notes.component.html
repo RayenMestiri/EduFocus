@@ -86,6 +86,12 @@
 
       <!-- ─── CONTENT AREA ─── -->
       <main class="flex-1 min-w-0">
+        <!-- Mobile: New Note button (always visible, replaces sidebar button) -->
+        <button (click)="openNewNote()" class="lg:hidden w-full mb-4 px-4 py-3 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition-all duration-300 hover:scale-[1.02] active:scale-95 dark:bg-gradient-to-r dark:from-yellow-500 dark:to-yellow-600 dark:text-black dark:shadow-lg dark:shadow-yellow-500/30 light:bg-gradient-to-r light:from-indigo-600 light:to-violet-600 light:text-white light:shadow-lg light:shadow-indigo-500/30">
+          <span class="material-icons text-xl">add</span>
+          Nouvelle Note
+        </button>
+
         <!-- Search bar -->
         <div class="relative mb-3">
           <span class="material-icons absolute left-3.5 top-1/2 -translate-y-1/2 dark:text-gray-500 light:text-slate-400" style="font-size:20px">search</span>

@@ -106,12 +106,15 @@ function computeStudiedMinutesFromCompletedSessions(subject) {
 // Calculate per-subject studied minutes and totals before saving
 DayPlanSchema.pre('save', function() {
   this.subjects.forEach((subject) => {
-    subject.studiedMinutes = computeStudiedMinutesFromCompletedSessions(subject);
+    const fromSessions = computeStudiedMinutesFromCompletedSessions(subject);
+    // Preserve existing studiedMinutes if higher — study progress should never go
+    // backwards when a user extends a completed session (adds more goal time).
+    subject.studiedMinutes = Math.max(fromSessions, subject.studiedMinutes || 0);
   });
 
   this.totalGoalMinutes = this.subjects.reduce((sum, s) => sum + (Number(s.goalMinutes) || 0), 0);
   this.totalStudiedMinutes = this.subjects.reduce((sum, s) => sum + (Number(s.studiedMinutes) || 0), 0);
-  this.isCompleted = this.totalStudiedMinutes >= this.totalGoalMinutes;
+  this.isCompleted = this.totalGoalMinutes > 0 && this.totalStudiedMinutes >= this.totalGoalMinutes;
 });
 
 // Add session method
