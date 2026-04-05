@@ -34,8 +34,8 @@ const corsOptions = {
   optionsSuccessStatus: 200
 };
 
-// Handle preflight OPTIONS requests explicitly for all routes
-app.options('*', cors(corsOptions));
+// Handle preflight OPTIONS requests explicitly for all routes (Express 5 syntax)
+app.options('(.*)', cors(corsOptions));
 app.use(cors(corsOptions));
 
 
