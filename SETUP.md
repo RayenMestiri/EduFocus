@@ -1,198 +1,137 @@
-# EduFocus - Premium Study Planner 🎓
+# EduFocus - Setup and Current Functionality
 
-## Project Overview
-A professional study planner built with **Angular 18.2.0**, **MongoDB**, **Express.js**, and **Tailwind CSS**, featuring a premium gold/black theme and complete authentication system.
+EduFocus is a full-stack study productivity platform with a modern Angular frontend and an Express/MongoDB backend.
 
-## Tech Stack
-- **Frontend**: Angular 18.2.0 (Standalone Components, Signals)
-- **Backend**: Node.js, Express.js, MongoDB Atlas
-- **Styling**: Tailwind CSS v3 (Premium Gold/Black Theme)
-- **Authentication**: JWT with HttpOnly tokens
-- **UI**: SweetAlert2, Custom animations
+## Stack
 
-## Features Implemented ✅
+- Frontend: Angular 18 standalone components, Signals, Tailwind, SweetAlert2
+- Motion/visuals: GSAP, ScrollTrigger, Three.js, FullCalendar
+- Backend: Express + Mongoose
+- Auth: JWT Bearer token
 
-### 1. Authentication System
-- **JWT-based authentication** with secure token storage
-- **Login & Register** components with validation
-- **Auth Guard** for route protection
-- **HTTP Interceptor** for automatic token injection
-- **AuthService** with Signals for reactive state
+## What is currently implemented
 
-### 2. Services (Complete CRUD)
-- **SubjectService**: Manage study subjects
-- **DayPlanService**: Daily study planning
-- **TodoService**: Task management
-- All services protected with JWT authentication
+### Core modules
+- Authentication (login/register/me)
+- Dashboard with subjects, todos, timer, sessions, statistics
+- Day planner calendar workflow
+- Notes module (tags, categories, pin/archive, color, password-protected notes)
+- Home landing page with animated hero and themed sections
 
-### 3. Backend API (All Protected)
-- **User Authentication** (register, login, getMe)
-- **Subjects CRUD** with user ownership
-- **Day Plans CRUD** with date-based queries
-- **Todos CRUD** with priority levels
-- MongoDB models with user references
+### Productivity and intelligence features
+- Pomodoro focus/break system with configurable settings
+- Timer settings sync (local + backend persistence)
+- Daily session goal and streak/points related flows
+- YouTube relaxation audio support during breaks
+- AI assistant endpoint + frontend strategic coach reasoning panel
 
-### 4. Security Features
-- Password hashing with bcryptjs
-- JWT token validation middleware
-- User-specific data isolation
-- Protected routes on backend and frontend
+### UX and theme updates
+- Premium login/register redesign with dual theme support
+- Autofill readability fixes for login inputs
+- Register password strength and terms validation flow
+- White-mode task alert improvements
+- Home page palette aligned with login/register theme language
 
-## MongoDB Database
+## Project structure
+
+```text
+EduFocus/
+	backend/
+		models/
+		routes/
+			auth.js
+			subjects.js
+			dayPlans.js
+			todos.js
+			sessions.js
+			stats.js
+			ai.js
+			notes.js
+		middleware/
+		server.js
+	frontend/
+		src/app/
+			components/
+				home/
+				login/
+				register/
+				dashboard/
+				day-planner/
+				notes/
+			services/
+			guards/
+			interceptors/
+			app.routes.ts
 ```
-Database: edufocus
-Connection: mongodb+srv://USERNAME:PASSWORD@cluster0.XXXXX.mongodb.net/edufocus
-```
 
-### Collections:
-- **users**: User accounts with authentication
-- **subjects**: Study subjects (name, color, icon)
-- **dayplans**: Daily study schedules with goal/studied minutes
-- **todos**: Task list with priorities
+## Run locally
 
-## Installation & Setup
+### 1) Backend
 
-### Backend
 ```bash
 cd backend
 npm install
+npm run dev
+```
+
+or:
+
+```bash
 npm start
 ```
-Server runs on: `http://localhost:5000`
 
-### Frontend
+Backend default: http://localhost:5000
+
+### 2) Frontend
+
 ```bash
 cd frontend
 npm install
 npm start
 ```
-App runs on: `http://localhost:4201`
 
-## Environment Variables (.env)
-```
-MONGO_URI=mongodb+srv://USERNAME:PASSWORD@cluster0.XXXXX.mongodb.net/edufocus
-JWT_SECRET=your_secure_jwt_secret_key_here
+Frontend default: http://localhost:4200
+
+## Environment variables (backend)
+
+Create `backend/.env` with:
+
+```env
+MONGODB_URI=mongodb+srv://USERNAME:PASSWORD@cluster.mongodb.net/edufocus
+JWT_SECRET=replace_with_secure_secret
 JWT_EXPIRE=30d
 PORT=5000
+FRONTEND_URL=http://localhost:4200
 
-# Cloudinary (For avatar upload - future feature)
-CLOUDINARY_CLOUD_NAME=your_cloudinary_name
-CLOUDINARY_API_KEY=your_api_key
-CLOUDINARY_API_SECRET=your_api_secret
+# Optional AI provider key (for /api/ai/study-advice)
+GEMINI_API_KEY=
 ```
 
-## Project Structure
+## Frontend routes
 
-### Frontend Structure
-```
-frontend/src/app/
-├── components/
-│   ├── login/           # Login page with SweetAlert2
-│   ├── register/        # Registration page
-│   └── dashboard/       # Main dashboard (to be completed)
-├── services/
-│   ├── auth.service.ts  # Authentication with Signals
-│   ├── subject.service.ts
-│   ├── day-plan.service.ts
-│   └── todo.service.ts
-├── guards/
-│   └── auth.guard.ts    # Route protection
-├── interceptors/
-│   └── auth.interceptor.ts  # JWT token injection
-└── app.routes.ts        # Routing configuration
+```text
+/           Home
+/login      Login
+/register   Register
+/dashboard  Dashboard (protected)
+/planner    Day Planner
+/notes      Notes (protected)
 ```
 
-### Backend Structure
-```
-backend/
-├── models/
-│   ├── User.js          # User schema with bcrypt
-│   ├── Subject.js       # Subject schema
-│   ├── DayPlan.js       # Daily plan schema
-│   └── Todo.js          # Todo schema
-├── routes/
-│   ├── auth.js          # Auth endpoints
-│   ├── subjects.js      # Subject CRUD (protected)
-│   ├── dayPlans.js      # Day plan CRUD (protected)
-│   └── todos.js         # Todo CRUD (protected)
-├── middleware/
-│   └── auth.js          # JWT verification
-└── server.js            # Express server
-```
+## API surface (high level)
 
-## API Endpoints
+- /api/auth
+- /api/subjects
+- /api/day-plans
+- /api/todos
+- /api/sessions
+- /api/stats
+- /api/ai
+- /api/notes
 
-### Authentication
-- `POST /api/auth/register` - Register new user
-- `POST /api/auth/login` - Login user
-- `GET /api/auth/me` - Get current user (protected)
+See backend/API_DOCUMENTATION.md for endpoint details.
 
-### Subjects (All Protected)
-- `GET /api/subjects` - Get all user subjects
-- `POST /api/subjects` - Create subject
-- `PUT /api/subjects/:id` - Update subject
-- `DELETE /api/subjects/:id` - Delete subject
+## Notes for contributors
 
-### Day Plans (All Protected)
-- `GET /api/day-plans/:date` - Get day plan by date
-- `POST /api/day-plans` - Create/update day plan
-- `PATCH /api/day-plans/:date/subject/:subjectId` - Update studied time
-
-### Todos (All Protected)
-- `GET /api/todos/:date` - Get todos by date
-- `POST /api/todos` - Create todo
-- `PATCH /api/todos/:id/toggle` - Toggle todo status
-- `DELETE /api/todos/:id` - Delete todo
-
-## Routes Configuration
-
-### Angular Routes
-```typescript
-{ path: '', redirectTo: '/login', pathMatch: 'full' }
-{ path: 'login', component: LoginComponent }
-{ path: 'register', component: RegisterComponent }
-{ path: 'dashboard', component: DashboardComponent, canActivate: [authGuard] }
-{ path: '**', redirectTo: '/login' }
-```
-
-## Color Theme (Premium Gold/Black)
-```css
-Primary Gold: #ffd700
-Gold 500: #ffb300
-Gold 600: #ff8f00
-Black: #000000
-Gray 900: #1a1a1a
-Gray 800: #2d2d2d
-```
-
-## Next Steps (To Do)
-
-### Dashboard Component
-- [ ] Implement subject management UI
-- [ ] Create day planning interface
-- [ ] Add study timer with Pomodoro technique
-- [ ] Build todo list interface
-- [ ] Add statistics and progress tracking
-
-### Advanced Features
-- [ ] Cloudinary integration for avatar upload
-- [ ] Add Lottie animations
-- [ ] Implement calendar view
-- [ ] Add study streak tracking
-- [ ] Export study reports
-
-### Enhancements
-- [ ] Add dark/light mode toggle
-- [ ] Implement notifications
-- [ ] Add sound effects for timer
-- [ ] Create mobile responsive design
-- [ ] Add PWA support
-
-## Testing Credentials
-Register a new account or use the registration form to create your premium study account!
-
-## Development Team
-Built with ❤️ using modern web technologies
-
----
-**EduFocus © 2024 - Premium Study Experience**
+- Some production builds may fail on strict CSS bundle budgets before functional errors; adjust budgets in angular.json if needed.
+- Keep theme changes consistent across Home, Login, Register, Dashboard task UI, and alerts.

@@ -1,136 +1,77 @@
-# 🎨 EduFocus Theme System
+# EduFocus Theme System
 
 ## Overview
-EduFocus now features a professional dual-theme system with Material Icons throughout the application.
 
-## Theme Colors
+EduFocus uses a dual-theme architecture with a consistent premium visual language:
 
-### Dark Mode (Default)
-- **Primary**: Gold (#ffd700, #ffb300, #ff8f00)
-- **Background**: Black/Gray-900
-- **Text**: White
-- **Accents**: Yellow gradients
+- Dark mode: deep near-black surfaces with yellow/gold accents
+- Light mode: white/slate surfaces with indigo/violet accents
 
-### Light Mode  
-- **Primary**: Premium Blue (#3b82f6, #2563eb, #1d4ed8)
-- **Background**: White/Blue-50/Gray-50
-- **Text**: Gray-900
-- **Accents**: Blue gradients
+Theme consistency has been applied across Home, Login, Register, Dashboard task UI, and alert styling.
 
-## Icons
-All icons have been replaced with **Google Material Icons** for a professional look:
-- Menu Book, School, Event, Timer, etc.
-- Consistent sizing: text-xl, text-2xl, text-3xl
-- Theme-aware colors
+## Color direction
 
-## Theme Toggle
-Users can switch themes via the button in the header (moon/sun icon)
-- State persists in localStorage
-- Smooth transitions (300ms)
-- All components respond dynamically
+### Dark mode
+- Base surfaces: #050505, #0b0b0b, #131313
+- Accent family: #fde047, #facc15, #eab308
+- Text hierarchy: white + layered alpha variants
 
-## CSS Classes Pattern
+### Light mode
+- Base surfaces: #eef2ff, #ffffff, #f5f3ff
+- Accent family: #6366f1, #4f46e5, #8b5cf6
+- Text hierarchy: slate shades with strong contrast
 
-### Dual Theme Classes
-```html
-<!-- Background -->
-dark:bg-black light:bg-white
-dark:bg-gray-900 light:bg-gray-50
+## Theme implementation model
 
-<!-- Text -->
-dark:text-white light:text-gray-900
-dark:text-yellow-400 light:text-blue-600
+- Component token variables are declared in `:host`
+- Light-mode overrides are applied with `:host-context(.light)`
+- Existing Tailwind class-based dark/light patterns remain supported
+- SweetAlert styling is also theme-aware in dashboard task flows
 
-<!-- Borders -->
-dark:border-yellow-500/20 light:border-blue-500/20
+## Components currently aligned
 
-<!-- Gradients -->
-dark:from-yellow-400 dark:to-yellow-600 light:from-blue-500 light:to-blue-700
-```
+### Home
+- Tokenized palette + dual-mode visuals
+- Hero overlays, cards, CTA, footer aligned with auth theme family
+- Three.js particle palette updated to the same accent system
 
-## Components Updated
+### Login
+- Premium card layout with ambient effects
+- Full light-mode support
+- Autofill readability fixed (`-webkit-autofill` / `-moz-autofill`)
 
-### ✅ Dashboard
-- Theme toggle button in header
-- All cards with dual-theme styling
-- Material Icons throughout
-- Stats, timer, todos all theme-aware
+### Register
+- Same design system as Login
+- Light-mode support and matching tokens
+- Enhanced validation UX (password strength and checklist)
 
-### ✅ Day Planner
-- Theme toggle button
-- Calendar with theme-aware styling
-- Stats cards with dual themes
-- Material Icons
+### Dashboard
+- Task UI refined for white mode
+- Alert dialogs color-tuned for both themes
+- AI panel and timer-related elements follow global contrast rules
 
-### ✅ Login/Register
-- Material Icons (school, email, lock, person)
-- Dark theme only (auth pages)
+### Day Planner and Notes
+- Retain dual-theme compatibility with updated component styles and token usage patterns
 
-## ThemeService
+## Theme service usage
 
-Location: `frontend/src/app/services/theme.service.ts`
+Theme state is controlled by `frontend/src/app/services/theme.service.ts`.
 
-### Methods:
-- `toggleTheme()`: Switch between dark/light
-- `setTheme(theme)`: Set specific theme
-- `isDark()`: Check if dark mode
-- `isLight()`: Check if light mode
-- `currentTheme()`: Signal with current theme
+Key methods:
+- `toggleTheme()`
+- `setTheme(theme)`
+- `isDark()`
+- `isLight()`
+- `currentTheme()`
 
-### Usage:
-```typescript
-constructor(public themeService: ThemeService) {}
+## Practical conventions
 
-// In template:
-themeService.isDark()
-themeService.toggleTheme()
-```
+- Prefer semantic local tokens (`--surface-*`, `--text-*`, `--border`, `--ghost-*`) over one-off hardcoded colors.
+- Keep accent mapping consistent:
+	- Dark -> yellow/gold
+	- Light -> indigo/violet
+- Avoid introducing isolated color islands that break page-to-page continuity.
 
-## FullCalendar Integration
-FullCalendar buttons change color based on theme:
-- Dark: Gold buttons
-- Light: Blue buttons
+## Material icons
 
-## Material Icons Usage
-
-### In HTML:
-```html
-<span class="material-icons">icon_name</span>
-<span class="material-icons text-2xl">icon_name</span>
-```
-
-### Common Icons Used:
-- `school`: Education/logo
-- `calendar_today`: Calendar
-- `timer`: Pomodoro timer
-- `menu_book`: Books/subjects
-- `event`: Events
-- `light_mode` / `dark_mode`: Theme toggle
-- `add`: Add button
-- `edit`: Edit button
-- `delete`: Delete button
-- `check_circle`: Completed/success
-- `local_fire_department`: Streak/fire
-
-## Tailwind Configuration
-Premium color palettes added in `tailwind.config.js`:
-- Gold scales (50-900)
-- Premium Blue scales (50-900)
-- Sky scales for light mode accents
-
-## Global Styles
-Theme-aware animations and scrollbars in `styles.css`:
-- Dark: Gold scrollbar with black track
-- Light: Blue scrollbar with light track
-- Shimmer, glow, float animations
-
-## Browser Support
-- Modern browsers with CSS custom properties
-- localStorage for theme persistence
-- Smooth transitions on all theme changes
-
-## Future Enhancements
-- Auto theme based on system preference
-- Additional accent color options
-- Per-user theme preferences in backend
-- Theme preview before switching
+Material Icons remain the default icon set across modules with consistent sizing and themed color application.

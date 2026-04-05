@@ -262,6 +262,40 @@ export interface SubjectAnalytics {
   recentSessions: StudySession[];
 }
 
+// ── Notes ──
+export type NoteCategory = 'lecture' | 'summary' | 'formula' | 'vocabulary' | 'exercise' | 'mindmap' | 'question' | 'other';
+
+export interface Note {
+  _id: string;
+  user: string;
+  title: string;
+  content: string;
+  contentText: string;
+  color: string;
+  subject?: {
+    _id: string;
+    name: string;
+    color: string;
+    icon: string;
+  } | null;
+  tags: string[];
+  category: NoteCategory;
+  isPinned: boolean;
+  isArchived: boolean;
+  hasPassword: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface NoteFilter {
+  category?: string;
+  subject?: string;
+  isPinned?: string;
+  isArchived?: string;
+  search?: string;
+  tag?: string;
+}
+
 // API Response
 export interface ApiResponse<T> {
   success: boolean;

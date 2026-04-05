@@ -101,7 +101,7 @@ router.get('/dashboard', async (req, res) => {
           totalMinutes: weekMinutes,
           totalSessions: weekSessions.length,
           averagePerDay: Math.round(weekMinutes / 7),
-          mostStudiedDay: this.getMostStudiedDay(weekSessions)
+          mostStudiedDay: getMostStudiedDay(weekSessions)
         },
         subjects: subjects.map(s => ({
           id: s._id,
@@ -225,7 +225,7 @@ router.get('/monthly/:year/:month', async (req, res) => {
         studyDays: dayPlans.filter(p => p.totalStudiedMinutes > 0).length,
         averagePerDay: Math.round(totalMinutes / new Date(year, month, 0).getDate()),
         subjects: Object.values(subjectStats),
-        dailyData: this.groupByDay(sessions, dayPlans)
+        dailyData: groupByDay(sessions, dayPlans)
       }
     });
   } catch (error) {

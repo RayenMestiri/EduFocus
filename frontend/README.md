@@ -1,27 +1,92 @@
-# Frontend
+# EduFocus Frontend (Angular 18)
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 18.2.0.
+Modern student productivity frontend built with Angular standalone components, Signals, Tailwind utilities, GSAP animations, Three.js effects, FullCalendar, and SweetAlert2.
 
-## Development server
+## Main features
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+### Home landing page
+- Full hero experience with Three.js animated particles and GSAP motion reveals.
+- Multi-section marketing page (features, workflow steps, testimonials, CTA).
+- Theme-aligned visual system matching login/register design language.
 
-## Code scaffolding
+### Authentication experience
+- Premium login and register layouts with dual-theme support.
+- Improved validation and UX messaging.
+- Register flow with password strength checks and terms acceptance.
+- Login autofill readability fixes for saved credentials.
+- Forgot-password modal flow (UI-driven).
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+### Dashboard
+- Subject management and daily tracking.
+- Task (todo) workflow with premium UI updates, including white-mode polish.
+- Theme-aware task alerts using centralized SweetAlert configuration.
+- Pomodoro timer with focus/break cycles, celebration flows, and session tracking.
+- Timer settings persistence to local storage and backend user preferences.
+- Optional YouTube relaxation audio during break sessions.
 
-## Build
+### AI Study Assistant
+- Local strategic coaching engine based on daily/weekly context.
+- Multi-factor reasoning: progress, trend, task pressure, and subject priority.
+- Structured coaching output with diagnostic + causal analysis + plan + next action.
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+### Day Planner and Notes
+- Calendar planning interface via FullCalendar.
+- Rich notes module with categories, tags, pin/archive, color, and optional password protection.
 
-## Running unit tests
+## Routing
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+Defined in `src/app/app.routes.ts`:
 
-## Running end-to-end tests
+- `/` -> Home
+- `/login` -> Login
+- `/register` -> Register
+- `/dashboard` -> Protected Dashboard
+- `/planner` -> Day Planner
+- `/notes` -> Protected Notes
 
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
+## Tech stack
 
-## Further help
+- Angular 18.2 (standalone components)
+- RxJS + Angular Signals
+- Tailwind CSS
+- GSAP + ScrollTrigger
+- Three.js
+- FullCalendar
+- SweetAlert2
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+## Local development
+
+Install dependencies:
+
+```bash
+npm install
+```
+
+Run dev server:
+
+```bash
+npm start
+```
+
+Default URL:
+
+```text
+http://localhost:4200
+```
+
+Build:
+
+```bash
+npm run build
+```
+
+Tests:
+
+```bash
+npm test
+```
+
+## Notes
+
+- Frontend API URL should point to the backend running at `http://localhost:5000`.
+- If production build fails due CSS bundle budgets, adjust Angular budget values in `angular.json`.

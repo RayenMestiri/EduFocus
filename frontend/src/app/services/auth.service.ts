@@ -2,6 +2,7 @@ import { Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, BehaviorSubject, tap } from 'rxjs';
 import { Router } from '@angular/router';
+import { environment } from '../../environments/environment';
 
 export interface User {
   id: string;
@@ -26,13 +27,18 @@ export interface AuthResponse {
   message?: string;
   token?: string;
   user?: User;
+  notification?: {
+    type: string;
+    status: string;
+    reason?: string;
+  };
 }
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  private apiUrl = 'http://localhost:5000/api/auth';
+  private apiUrl = `${environment.apiUrl}/api/auth`;
   private currentUserSubject = new BehaviorSubject<User | null>(null);
   public currentUser$ = this.currentUserSubject.asObservable();
   
@@ -92,6 +98,14 @@ export class AuthService {
         }
       })
     );
+  }
+
+  forgotPassword(email: string): Observable<AuthResponse> {
+    return this.http.post<AuthResponse>(`${this.apiUrl}/forgot-password`, { email });
+  }
+
+  resetPassword(token: string, password: string): Observable<AuthResponse> {
+    return this.http.put<AuthResponse>(`${this.apiUrl}/reset-password/${token}`, { password });
   }
 
   // Get current user

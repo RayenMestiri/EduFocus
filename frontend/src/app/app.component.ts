@@ -28,7 +28,7 @@ export class AppComponent implements OnInit {
             console.log('Auto-login successful');
             // Redirect to dashboard if on login page
             const currentUrl = this.router.url;
-            if (currentUrl === '/' || currentUrl === '/login' || currentUrl === '/register') {
+            if ( currentUrl === '/login' || currentUrl === '/register') {
               this.router.navigate(['/dashboard']);
             }
           }

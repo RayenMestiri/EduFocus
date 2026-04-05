@@ -15,6 +15,25 @@
   padding: 1rem;
 }
 
+@media (max-width: 768px) {
+  .calendar-wrapper {
+    min-height: 520px;
+    padding: 0.5rem;
+  }
+
+  .calendar-wrapper .fc,
+  .calendar-wrapper .fc-view-harness,
+  .calendar-wrapper .fc-scroller {
+    touch-action: pan-y !important;
+  }
+
+  .calendar-wrapper .fc-timegrid-col-frame,
+  .calendar-wrapper .fc-timegrid-slots,
+  .calendar-wrapper .fc-daygrid-body {
+    touch-action: none !important;
+  }
+}
+
 /* ============================================================
    FULLCALENDAR CUSTOM STYLES
 ============================================================ */
@@ -192,10 +211,20 @@
   .fc-daygrid-event {
     .fc-event-title,
     .fc-event-main {
-      color: #000000 !important;
+      color: #ffffff !important;
       font-weight: 600 !important;
       text-shadow: none !important;
     }
+  }
+
+  .fc-daygrid-dot-event .fc-event-dot {
+    display: none !important;
+  }
+
+  .fc-daygrid-dot-event {
+    border: 1px solid transparent !important;
+    border-radius: 6px !important;
+    padding: 2px 6px !important;
   }
   
   .fc-daygrid-event-dot {
@@ -253,6 +282,27 @@
   .fc-timegrid-slot {
     height: 3rem !important;
     background: white !important;
+  }
+
+  @media (max-width: 768px) {
+    .fc-toolbar {
+      padding: 0.5rem !important;
+      gap: 0.5rem !important;
+      flex-wrap: wrap !important;
+    }
+
+    .fc-toolbar-title {
+      font-size: 1.1rem !important;
+    }
+
+    .fc-timegrid-slot {
+      height: 2.4rem !important;
+    }
+
+    .fc-button {
+      padding: 0.35rem 0.55rem !important;
+      font-size: 0.75rem !important;
+    }
   }
 
   .fc-timegrid-slot-label {
@@ -342,18 +392,213 @@
 ============================================================ */
 @media (max-width: 768px) {
   ::ng-deep {
-    .fc-toolbar {
-      flex-direction: column !important;
-      gap: 1rem !important;
+    .fc .fc-header-toolbar.fc-toolbar.fc-toolbar-ltr {
+      display: grid !important;
+      grid-template-columns: 1fr !important;
+      gap: 0.7rem !important;
+      padding: 0.65rem !important;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.92);
     }
 
-    .fc-toolbar-chunk {
+    .fc .fc-header-toolbar.fc-toolbar.fc-toolbar-ltr > .fc-toolbar-chunk {
+      width: 100%;
       display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 0.4rem;
+      flex-wrap: wrap;
+    }
+
+    .fc .fc-header-toolbar.fc-toolbar.fc-toolbar-ltr > .fc-toolbar-chunk:nth-child(1) {
+      display: grid;
+      grid-template-columns: 1fr;
+      justify-items: stretch;
+      gap: 0.45rem;
+    }
+
+    .fc .fc-header-toolbar.fc-toolbar.fc-toolbar-ltr > .fc-toolbar-chunk:nth-child(1) > .fc-button-group {
+      width: 100%;
+      max-width: 460px;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0.35rem;
+    }
+
+    .fc .fc-header-toolbar.fc-toolbar.fc-toolbar-ltr > .fc-toolbar-chunk:nth-child(1) .fc-prev-button,
+    .fc .fc-header-toolbar.fc-toolbar.fc-toolbar-ltr > .fc-toolbar-chunk:nth-child(1) .fc-next-button {
+      width: 100%;
+    }
+
+    .fc .fc-header-toolbar.fc-toolbar.fc-toolbar-ltr > .fc-toolbar-chunk:nth-child(1) > .fc-today-button {
+      width: 100% !important;
+      min-width: 0 !important;
+      grid-column: 1 / -1;
+    }
+
+    .fc .fc-header-toolbar.fc-toolbar.fc-toolbar-ltr > .fc-toolbar-chunk:nth-child(2) {
       justify-content: center;
     }
 
-    .fc-toolbar-title {
-      font-size: 1.25rem !important;
+    .fc .fc-header-toolbar.fc-toolbar.fc-toolbar-ltr > .fc-toolbar-chunk:nth-child(3) {
+      justify-content: center;
+      overflow: visible;
+      white-space: normal;
+      padding-bottom: 0;
     }
+
+    .fc .fc-header-toolbar.fc-toolbar.fc-toolbar-ltr > .fc-toolbar-chunk:nth-child(3) .fc-button-group {
+      width: 100%;
+      max-width: 460px;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0.35rem;
+    }
+
+    .fc .fc-button-group {
+      display: flex;
+      gap: 0.3rem;
+      flex-wrap: nowrap;
+    }
+
+    .fc .fc-button {
+      min-height: 38px;
+      padding: 0.45rem 0.7rem !important;
+      font-size: 0.76rem !important;
+      border-radius: 10px !important;
+    }
+
+    .fc .fc-toolbar-title {
+      font-size: 1.02rem !important;
+      text-align: center;
+      line-height: 1.2;
+      word-break: normal;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 100%;
+    }
+  }
+}
+
+@media (max-width: 460px) {
+  ::ng-deep {
+    .fc .fc-header-toolbar {
+      padding: 0.55rem !important;
+      gap: 0.55rem !important;
+    }
+
+    .fc .fc-header-toolbar.fc-toolbar.fc-toolbar-ltr > .fc-toolbar-chunk:nth-child(1) {
+      gap: 0.4rem;
+    }
+
+    .fc .fc-today-button {
+      width: 100%;
+      min-width: 0;
+    }
+
+    .fc .fc-toolbar-title {
+      font-size: 0.94rem !important;
+    }
+
+    .fc .fc-button {
+      min-height: 36px;
+      padding: 0.38rem 0.5rem !important;
+      font-size: 0.72rem !important;
+    }
+  }
+}
+
+/* Final hard override for compact screens: force toolbar into stacked rows */
+@media (max-width: 1023px) {
+  :host ::ng-deep .calendar-wrapper .fc .fc-header-toolbar.fc-toolbar {
+    display: none !important;
+  }
+
+  :host ::ng-deep .fc-header-toolbar.fc-toolbar.fc-toolbar-ltr {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 0.55rem !important;
+  }
+
+  :host ::ng-deep .fc-header-toolbar.fc-toolbar.fc-toolbar-ltr > .fc-toolbar-chunk {
+    width: 100% !important;
+    margin: 0 !important;
+  }
+
+  :host ::ng-deep .fc-header-toolbar.fc-toolbar.fc-toolbar-ltr > .fc-toolbar-chunk:nth-child(1) {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 0.45rem !important;
+  }
+
+  :host ::ng-deep .fc-header-toolbar.fc-toolbar.fc-toolbar-ltr > .fc-toolbar-chunk:nth-child(1) > .fc-button-group {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    width: 100% !important;
+    gap: 0.35rem !important;
+  }
+
+  :host ::ng-deep .fc-header-toolbar.fc-toolbar.fc-toolbar-ltr > .fc-toolbar-chunk:nth-child(1) > .fc-today-button {
+    width: 100% !important;
+    min-width: 0 !important;
+  }
+
+  :host ::ng-deep .fc-header-toolbar.fc-toolbar.fc-toolbar-ltr > .fc-toolbar-chunk:nth-child(2) {
+    display: flex !important;
+    justify-content: center !important;
+  }
+
+  :host ::ng-deep .fc-header-toolbar.fc-toolbar.fc-toolbar-ltr > .fc-toolbar-chunk:nth-child(3) {
+    display: block !important;
+  }
+
+  :host ::ng-deep .fc-header-toolbar.fc-toolbar.fc-toolbar-ltr > .fc-toolbar-chunk:nth-child(3) > .fc-button-group {
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    width: 100% !important;
+    gap: 0.35rem !important;
+  }
+
+  :host ::ng-deep .fc-header-toolbar.fc-toolbar.fc-toolbar-ltr > .fc-toolbar-chunk:nth-child(3) .fc-button {
+    width: 100% !important;
+  }
+}
+
+@media (min-width: 1024px) {
+  :host ::ng-deep .calendar-wrapper .fc .fc-header-toolbar.fc-toolbar {
+    display: flex !important;
+  }
+}
+
+::ng-deep .rotate-hint-toast {
+  border: 1px solid rgba(59, 130, 246, 0.25) !important;
+  box-shadow: 0 10px 28px rgba(37, 99, 235, 0.2) !important;
+}
+
+::ng-deep .rotate-hint-content {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.88rem;
+  line-height: 1.35;
+}
+
+::ng-deep .rotate-hint-icon {
+  font-size: 1.15rem;
+  color: #3b82f6;
+  animation: rotateHintPulse 1.2s ease-in-out infinite;
+}
+
+@keyframes rotateHintPulse {
+  0%,
+  100% {
+    transform: rotate(0deg) scale(1);
+    opacity: 0.85;
+  }
+  50% {
+    transform: rotate(18deg) scale(1.12);
+    opacity: 1;
   }
 }

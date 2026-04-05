@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
+const crypto = require('crypto');
 
 const UserSchema = new mongoose.Schema({
   name: {
@@ -80,6 +81,14 @@ const UserSchema = new mongoose.Schema({
   lastLogin: {
     type: Date
   },
+  resetPasswordToken: {
+    type: String,
+    select: false
+  },
+  resetPasswordExpire: {
+    type: Date,
+    select: false
+  },
   createdAt: {
     type: Date,
     default: Date.now
@@ -114,6 +123,13 @@ UserSchema.methods.updateLastLogin = function() {
 // Compare password
 UserSchema.methods.matchPassword = async function(enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.password);
+};
+
+UserSchema.methods.createPasswordResetToken = function() {
+  const resetToken = crypto.randomBytes(32).toString('hex');
+  this.resetPasswordToken = crypto.createHash('sha256').update(resetToken).digest('hex');
+  this.resetPasswordExpire = Date.now() + 15 * 60 * 1000;
+  return resetToken;
 };
 
 // Update study stats

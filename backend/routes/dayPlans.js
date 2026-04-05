@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
 const DayPlan = require('../models/DayPlan');
-const Subject = require('../models/Subject');
 const User = require('../models/User');
 const { protect } = require('../middleware/auth');
 
@@ -133,10 +132,6 @@ router.post('/', async (req, res) => {
 router.patch('/:date/subject/:subjectId', async (req, res) => {
   try {
     const { date, subjectId } = req.params;
-    const { studiedMinutes } = req.body;
-    
-    // DEBUG: Log the received value
-    console.log(`🔍 Backend received updateStudiedTime: date=${date}, subjectId=${subjectId}, studiedMinutes=${studiedMinutes} (type: ${typeof studiedMinutes})`);
     
     const dayPlan = await DayPlan.findOne({ 
       date,
@@ -160,24 +155,16 @@ router.patch('/:date/subject/:subjectId', async (req, res) => {
         message: 'Subject not found in day plan'
       });
     }
-    
-    // Calculate the difference (new minutes added)
-    const previousMinutes = subjectPlan.studiedMinutes || 0;
-    const minutesAdded = studiedMinutes - previousMinutes;
-    
-    console.log(`📊 Backend update: previous=${previousMinutes}min, new=${studiedMinutes}min, added=${minutesAdded}min`);
-    
-    // Replace with the new total (frontend already calculates the sum)
-    subjectPlan.studiedMinutes = studiedMinutes;
-    await dayPlan.save();
-    
-    // Update subject stats with only the NEW minutes
-    if (minutesAdded > 0) {
-      const subject = await Subject.findById(subjectId);
-      if (subject) {
-        await subject.updateStats(minutesAdded);
+
+    // Source of truth: derive studied minutes from completed sessions
+    subjectPlan.studiedMinutes = (subjectPlan.sessions || []).reduce((sum, session) => {
+      if (session?.completed) {
+        return sum + (Number(session.duration) || 0);
       }
-    }
+      return sum;
+    }, 0);
+
+    await dayPlan.save();
     
     // Populate and return
     const updatedPlan = await DayPlan.findById(dayPlan._id).populate('subjects.subjectId');
