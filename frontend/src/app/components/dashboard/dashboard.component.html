@@ -1,62 +1,68 @@
 <div class="min-h-screen dark:bg-black dark:text-white light:bg-gradient-to-br light:from-indigo-50/50 light:via-white light:to-violet-50/50 light:text-slate-800 transition-colors duration-300">
   <!-- Premium Header -->
   <header class="sticky top-0 z-50 dark:bg-black/80 light:bg-white/90 backdrop-blur-xl dark:border-b dark:border-yellow-500/20 light:border-b light:border-indigo-200/60 dark:shadow-2xl dark:shadow-yellow-500/10 light:shadow-xl light:shadow-indigo-500/8">
-    <div class="w-[98%] lg:w-[94%] max-w-[1800px] mx-auto py-4">
-      <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-        <div class="flex flex-wrap items-center gap-3 sm:gap-4 lg:gap-5">
-          <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-xl dark:bg-gradient-to-br dark:from-yellow-400 dark:to-yellow-600 light:bg-gradient-to-br light:from-indigo-500 light:to-violet-600 flex items-center justify-center dark:shadow-lg dark:shadow-yellow-500/50 light:shadow-lg light:shadow-indigo-500/40">
-            <span class="material-icons text-2xl sm:text-[26px] dark:text-black light:text-white">school</span>
+    <div class="w-[98%] lg:w-[94%] max-w-[1800px] mx-auto py-3 lg:py-4">
+      <!-- Mobile: two-row layout / Desktop: single row -->
+      <div class="flex items-center justify-between gap-2">
+        <!-- Logo -->
+        <div class="flex items-center gap-2 sm:gap-4 lg:gap-5 shrink-0">
+          <div class="w-10 h-10 sm:w-12 sm:h-12 lg:w-14 lg:h-14 rounded-xl dark:bg-gradient-to-br dark:from-yellow-400 dark:to-yellow-600 light:bg-gradient-to-br light:from-indigo-500 light:to-violet-600 flex items-center justify-center dark:shadow-lg dark:shadow-yellow-500/50 light:shadow-lg light:shadow-indigo-500/40">
+            <span class="material-icons text-xl sm:text-2xl lg:text-[26px] dark:text-black light:text-white">school</span>
           </div>
           <div>
-            <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight dark:bg-gradient-to-r dark:from-yellow-300 dark:via-yellow-500 dark:to-yellow-600 light:bg-gradient-to-r light:from-indigo-600 light:via-violet-600 light:to-purple-600 bg-clip-text text-transparent">EduFocus</h1>
-            <p class="text-[11px] sm:text-xs font-medium dark:text-yellow-500/75 light:text-indigo-600/80">Premium Study Planner</p>
+            <h1 class="text-xl sm:text-2xl lg:text-3xl font-extrabold tracking-tight dark:bg-gradient-to-r dark:from-yellow-300 dark:via-yellow-500 dark:to-yellow-600 light:bg-gradient-to-r light:from-indigo-600 light:via-violet-600 light:to-purple-600 bg-clip-text text-transparent">EduFocus</h1>
+            <p class="text-[10px] sm:text-[11px] font-medium dark:text-yellow-500/75 light:text-indigo-600/80 hidden sm:block">Premium Study Planner</p>
           </div>
         </div>
-        
-        <div class="flex flex-wrap items-center justify-end gap-2 sm:gap-4">
+
+        <!-- Right side — compact on mobile -->
+        <div class="flex items-center gap-1.5 sm:gap-2 lg:gap-3">
+          <!-- Subjects menu toggle (mobile only) -->
           <button
             (click)="toggleMobileSubjectsMenu()"
-            class="lg:hidden p-3 dark:bg-yellow-500/20 dark:hover:bg-yellow-500/30 dark:border-yellow-500/30 light:bg-indigo-50 light:hover:bg-indigo-100 light:border-indigo-200 border rounded-xl dark:text-yellow-400 light:text-indigo-600 transition-all duration-300 flex items-center justify-center shadow-sm light:shadow-indigo-200/50"
+            class="lg:hidden p-2 sm:p-2.5 dark:bg-yellow-500/20 dark:hover:bg-yellow-500/30 dark:border-yellow-500/30 light:bg-indigo-50 light:hover:bg-indigo-100 light:border-indigo-200 border rounded-xl dark:text-yellow-400 light:text-indigo-600 transition-all duration-300"
             [attr.aria-label]="showMobileSubjectsMenu() ? 'Fermer le menu matières' : 'Ouvrir le menu matières'"
             [title]="showMobileSubjectsMenu() ? 'Fermer' : 'Matières'">
-            <span class="material-icons">{{ showMobileSubjectsMenu() ? 'close' : 'menu' }}</span>
+            <span class="material-icons text-[20px]">{{ showMobileSubjectsMenu() ? 'close' : 'menu' }}</span>
           </button>
 
-          <!-- Theme Toggle Button -->
-            <button (click)="themeService.toggleTheme()" 
-              class="p-3 dark:bg-yellow-500/20 dark:hover:bg-yellow-500/30 dark:border-yellow-500/30 light:bg-indigo-50 light:hover:bg-indigo-100 light:border-indigo-200 border rounded-xl dark:text-yellow-400 light:text-indigo-600 transition-all duration-300 flex items-center gap-2 hover:scale-105 shadow-sm light:shadow-indigo-200/50"
-                  [title]="themeService.isDark() ? 'Passer en mode clair' : 'Passer en mode sombre'">
-            <span class="material-icons">{{ themeService.isDark() ? 'light_mode' : 'dark_mode' }}</span>
+          <!-- Theme Toggle -->
+          <button (click)="themeService.toggleTheme()" 
+            class="p-2 sm:p-2.5 dark:bg-yellow-500/20 dark:hover:bg-yellow-500/30 dark:border-yellow-500/30 light:bg-indigo-50 light:hover:bg-indigo-100 light:border-indigo-200 border rounded-xl dark:text-yellow-400 light:text-indigo-600 transition-all duration-300 hover:scale-105"
+            [title]="themeService.isDark() ? 'Passer en mode clair' : 'Passer en mode sombre'">
+            <span class="material-icons text-[20px]">{{ themeService.isDark() ? 'light_mode' : 'dark_mode' }}</span>
           </button>
 
-          <button (click)="goToPlanner()" class="px-3 sm:px-4 py-2 dark:bg-yellow-500/20 dark:hover:bg-yellow-500/30 dark:border-yellow-500/30 light:bg-indigo-50 light:hover:bg-indigo-100 light:border-indigo-200 border rounded-xl dark:text-yellow-400 light:text-indigo-600 transition-all duration-300 flex items-center gap-2 shadow-sm light:shadow-indigo-200/50 text-sm sm:text-base">
-            <span class="material-icons text-xl">event</span>
-            Planning
+          <!-- Planning (icon on mobile, icon+text on sm+) -->
+          <button (click)="goToPlanner()" class="p-2 sm:px-3 sm:py-2 dark:bg-yellow-500/20 dark:hover:bg-yellow-500/30 dark:border-yellow-500/30 light:bg-indigo-50 light:hover:bg-indigo-100 light:border-indigo-200 border rounded-xl dark:text-yellow-400 light:text-indigo-600 transition-all duration-300 flex items-center gap-1.5 text-sm" title="Planning">
+            <span class="material-icons text-[20px]">event</span>
+            <span class="hidden sm:inline">Planning</span>
           </button>
 
-          <button (click)="goToNotes()" class="px-3 sm:px-4 py-2 dark:bg-yellow-500/20 dark:hover:bg-yellow-500/30 dark:border-yellow-500/30 light:bg-indigo-50 light:hover:bg-indigo-100 light:border-indigo-200 border rounded-xl dark:text-yellow-400 light:text-indigo-600 transition-all duration-300 flex items-center gap-2 shadow-sm light:shadow-indigo-200/50 text-sm sm:text-base">
-            <span class="material-icons text-xl">sticky_note_2</span>
-            Notes
+          <!-- Notes (icon on mobile, icon+text on sm+) -->
+          <button (click)="goToNotes()" class="p-2 sm:px-3 sm:py-2 dark:bg-yellow-500/20 dark:hover:bg-yellow-500/30 dark:border-yellow-500/30 light:bg-indigo-50 light:hover:bg-indigo-100 light:border-indigo-200 border rounded-xl dark:text-yellow-400 light:text-indigo-600 transition-all duration-300 flex items-center gap-1.5 text-sm" title="Notes">
+            <span class="material-icons text-[20px]">sticky_note_2</span>
+            <span class="hidden sm:inline">Notes</span>
           </button>
           
-          <!-- Points Display -->
-          <div class="px-3 sm:px-4 py-2 dark:bg-gradient-to-r dark:from-yellow-500/20 dark:to-yellow-600/20 dark:border-yellow-500/30 light:bg-gradient-to-r light:from-indigo-50 light:to-violet-50 light:border-indigo-200 border rounded-xl flex items-center gap-2 shadow-sm light:shadow-indigo-200/50">
-            <span class="material-icons text-2xl dark:text-yellow-400 light:text-indigo-500">emoji_events</span>
-            <div class="flex flex-col">
-              <span class="text-xs dark:text-yellow-500/60 light:text-indigo-500">Points</span>
-              <span class="text-lg font-bold dark:text-yellow-400 light:text-indigo-700">{{ currentUser()?.stats?.points || 0 }}</span>
-            </div>
+          <!-- Points (compact on mobile) -->
+          <div class="px-2 sm:px-3 py-1.5 sm:py-2 dark:bg-gradient-to-r dark:from-yellow-500/20 dark:to-yellow-600/20 dark:border-yellow-500/30 light:bg-gradient-to-r light:from-indigo-50 light:to-violet-50 light:border-indigo-200 border rounded-xl flex items-center gap-1.5 shadow-sm light:shadow-indigo-200/50">
+            <span class="material-icons text-lg sm:text-2xl dark:text-yellow-400 light:text-indigo-500">emoji_events</span>
+            <span class="text-sm sm:text-lg font-bold dark:text-yellow-400 light:text-indigo-700">{{ currentUser()?.stats?.points || 0 }}</span>
           </div>
           
-          <div class="hidden sm:flex items-center gap-2">
+          <!-- User avatar + name (hidden on mobile, visible sm+) -->
+          <div class="hidden lg:flex items-center gap-2">
             <div class="w-10 h-10 dark:bg-gradient-to-br dark:from-yellow-400 dark:to-yellow-600 light:bg-gradient-to-br light:from-indigo-500 light:to-violet-600 rounded-full flex items-center justify-center dark:text-black light:text-white font-bold">
               {{ currentUser()?.name ? currentUser()!.name.charAt(0).toUpperCase() : 'U' }}
             </div>
             <span class="dark:text-yellow-400 light:text-indigo-700 font-semibold">{{ currentUser()?.name }}</span>
           </div>
-          <button (click)="logout()" class="px-3 sm:px-4 py-2 dark:bg-gray-800 dark:hover:bg-gray-700 light:bg-white light:hover:bg-slate-50 border light:border-slate-200 rounded-xl dark:text-white light:text-slate-700 transition-all duration-300 flex items-center gap-2 shadow-sm light:shadow-slate-200/50 text-sm sm:text-base">
-            <span class="material-icons text-xl">logout</span>
-            Déconnexion
+
+          <!-- Logout (icon on mobile, icon+text on sm+) -->
+          <button (click)="logout()" class="p-2 sm:px-3 sm:py-2 dark:bg-gray-800 dark:hover:bg-gray-700 light:bg-white light:hover:bg-slate-50 border light:border-slate-200 rounded-xl dark:text-white light:text-slate-700 transition-all duration-300 flex items-center gap-1.5 text-sm" title="Déconnexion">
+            <span class="material-icons text-[20px]">logout</span>
+            <span class="hidden sm:inline">Déconnexion</span>
           </button>
         </div>
       </div>

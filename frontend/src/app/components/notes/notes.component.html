@@ -279,11 +279,18 @@
     </div>
   </div>
 
+  <!-- ═══════════════════════ MOBILE FAB ═══════════════════════ -->
+  @if (!showEditor()) {
+    <button (click)="openNewNote()" class="lg:hidden fixed bottom-6 right-6 z-40 w-14 h-14 rounded-2xl dark:bg-gradient-to-br dark:from-yellow-500 dark:to-yellow-600 light:bg-gradient-to-br light:from-indigo-600 light:to-violet-600 flex items-center justify-center dark:shadow-lg dark:shadow-yellow-500/40 light:shadow-lg light:shadow-indigo-500/40 hover:scale-110 active:scale-95 transition-all duration-300" title="Nouvelle Note" aria-label="Créer une nouvelle note">
+      <span class="material-icons text-2xl dark:text-black light:text-white">add</span>
+    </button>
+  }
+
   <!-- ═══════════════════════ EDITOR MODAL ═══════════════════════ -->
   @if (showEditor()) {
-    <div class="fixed inset-0 z-50 flex items-start justify-center pt-6 sm:pt-10 px-4 modal-overlay">
+    <div class="fixed inset-0 z-50 flex items-end sm:items-start justify-center sm:pt-10 modal-overlay">
       <div class="absolute inset-0 dark:bg-black/80 light:bg-slate-900/40 backdrop-blur-md" (click)="closeEditor()"></div>
-      <div class="relative w-full max-w-3xl dark:bg-[#080810] light:bg-white rounded-2xl dark:border dark:border-white/[0.06] light:border light:border-slate-200 dark:shadow-[0_40px_100px_rgba(0,0,0,0.9)] light:shadow-[0_40px_80px_rgba(99,102,241,0.2)] modal-slide-up max-h-[90vh] flex flex-col overflow-hidden">
+      <div class="relative w-full sm:max-w-3xl dark:bg-[#080810] light:bg-white rounded-t-2xl sm:rounded-2xl dark:border dark:border-white/[0.06] light:border light:border-slate-200 dark:shadow-[0_40px_100px_rgba(0,0,0,0.9)] light:shadow-[0_40px_80px_rgba(99,102,241,0.2)] modal-slide-up max-h-[95dvh] sm:max-h-[90vh] flex flex-col overflow-hidden">
 
         <!-- ── Colour accent bar ── -->
         <div class="h-[3px] w-full shrink-0 rounded-t-2xl transition-all duration-500"
@@ -353,9 +360,9 @@
         </div>
 
         <!-- ── Editor Body ── -->
-        <div class="flex-1 overflow-y-auto px-6 py-5">
+        <div class="flex-1 overflow-y-auto px-4 sm:px-6 py-4 sm:py-5">
           <div #noteEditor contenteditable="true"
-            class="notes-editor min-h-[220px] outline-none text-sm dark:text-gray-200 light:text-slate-700 leading-relaxed"
+            class="notes-editor min-h-[120px] sm:min-h-[220px] outline-none text-sm dark:text-gray-200 light:text-slate-700 leading-relaxed"
             data-placeholder="Commencez à écrire votre note..."></div>
         </div>
 
