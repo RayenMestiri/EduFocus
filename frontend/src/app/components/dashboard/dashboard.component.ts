@@ -106,7 +106,7 @@ export class DashboardComponent implements OnInit {
   aiMessages = signal<AiChatMessage[]>([
     {
       role: 'assistant',
-      content: 'Je suis ton AI Study Assistant. Clique sur "Analyser ma journée" pour recevoir une stratégie personnalisée.'
+      content: '👋 Salut ! Je suis ton AI Study Coach.\n\nClique sur « Analyser ma journée » pour recevoir une stratégie personnalisée basée sur ta progression, tes matières et tes tâches.'
     }
   ]);
   aiLoading = signal<boolean>(false);
@@ -493,7 +493,6 @@ export class DashboardComponent implements OnInit {
     const trendScore = trendBase * 0.15;
     return Math.round(progressScore + sessionScore + todoScore + trendScore);
   }
-
   private getCoachLevel(score: number): string {
     if (score >= 85) return 'Exécution excellente';
     if (score >= 70) return 'Bon pilotage';
@@ -503,9 +502,7 @@ export class DashboardComponent implements OnInit {
 
   private generateSmartAdvice(context: AiStudyContext): string {
     const lines: string[] = [];
-
     const progress = context.progressPercentage;
-    const pendingTodos = context.pendingTodos;
     const goal = context.todayGoalMinutes;
     const studied = context.todayStudiedMinutes;
     const remaining = Math.max(goal - studied, 0);
@@ -513,89 +510,75 @@ export class DashboardComponent implements OnInit {
     const sessionGoal = context.sessionGoal || 4;
     const weekTrend = this.getWeekTrendSignal(context.weekStats);
     const score = this.getCoachScore(context, weekTrend);
-    const level = this.getCoachLevel(score);
-
     const subjectBreakdown = Array.isArray(context.subjectBreakdown) ? context.subjectBreakdown : [];
-    const prioritizedSubjects = [...subjectBreakdown]
+    const nowHour = context.nowHour;
+
+    // — Greeting based on time of day
+    const greeting = nowHour < 12 ? '☀️ Bonjour' : nowHour < 18 ? '👋 Bon après-midi' : '🌙 Bonsoir';
+    lines.push(`${greeting} ! Voici ton analyse du jour.`);
+    lines.push('');
+
+    // — Score & Status
+    const scoreEmoji = score >= 85 ? '🏆' : score >= 70 ? '💪' : score >= 55 ? '📈' : '⚡';
+    const statusLabel = score >= 85 ? 'Excellent' : score >= 70 ? 'Bon rythme' : score >= 55 ? 'En cours' : 'À booster';
+    lines.push(`${scoreEmoji} Score du jour : ${score}/100 — ${statusLabel}`);
+    lines.push('');
+
+    // — Quick Overview (compact)
+    lines.push('📊 Résumé rapide');
+    lines.push(`  ▸ Progression : ${studied} min / ${goal} min (${progress}%)`);
+    lines.push(`  ▸ Sessions Pomodoro : ${sessionsCompleted}/${sessionGoal}`);
+    lines.push(`  ▸ Tâches : ${context.completedTodos}/${context.totalTodos} terminées`);
+
+    if (weekTrend.trend !== 'stable') {
+      const trendIcon = weekTrend.trend === 'up' ? '📈' : '📉';
+      lines.push(`  ▸ Tendance hebdo : ${trendIcon} ${weekTrend.deltaPct >= 0 ? '+' : ''}${weekTrend.deltaPct}%`);
+    }
+    lines.push('');
+
+    // — Priority subjects (only if there are some)
+    const behindSubjects = subjectBreakdown
+      .filter(s => s.remainingMinutes > 0)
       .sort((a, b) => b.priorityScore - a.priorityScore)
-      .slice(0, 2);
+      .slice(0, 3);
 
-    const weakestSubject = subjectBreakdown
-      .map((subject) => ({
-        ...subject,
-        gap: Math.max(subject.goalMinutes - subject.studiedMinutes, 0)
-      }))
-      .sort((a, b) => b.gap - a.gap)[0];
+    if (behindSubjects.length > 0) {
+      lines.push('🎯 Matières prioritaires');
+      behindSubjects.forEach(s => {
+        const bar = s.progress >= 75 ? '🟢' : s.progress >= 40 ? '🟡' : '🔴';
+        lines.push(`  ${bar} ${s.name} — ${s.progress}% (${s.remainingMinutes} min restantes)`);
+      });
+      lines.push('');
+    }
 
-    const immediateUrgency = context.pendingUrgentTodos > 0 || context.pendingHighTodos >= 2;
-    const lateDay = context.nowHour >= 20;
-
-    lines.push('AI Study Coach — Analyse stratégique multi-facteurs');
-    lines.push(`Score global: ${score}/100 (${level}).`);
-    lines.push('');
-
-    lines.push('1) Diagnostic rapide');
-    lines.push(`• Progression du jour: ${studied} min / ${goal} min (${progress}%).`);
-    lines.push(`• Charge tâches: ${pendingTodos} en attente (urgent ${context.pendingUrgentTodos}, haute ${context.pendingHighTodos}, moyenne ${context.pendingMediumTodos}, basse ${context.pendingLowTodos}).`);
-    lines.push(`• Sessions Pomodoro: ${sessionsCompleted}/${sessionGoal}.`);
-    lines.push(`• Tendance hebdo: ${weekTrend.trend === 'up' ? 'en hausse' : weekTrend.trend === 'down' ? 'en baisse' : 'stable'} (${weekTrend.deltaPct >= 0 ? '+' : ''}${weekTrend.deltaPct}%).`);
-
-    lines.push('');
-    lines.push('2) Raisonnement causal');
-    if (progress < 40 && pendingTodos >= 5) {
-      lines.push('• Goulot principal: dispersion + surcharge de tâches. Il faut réduire le contexte actif avant d’augmenter le temps brut d’étude.');
-    } else if (progress < 40) {
-      lines.push('• Goulot principal: déficit de temps de focus profond. Priorité à 2 blocs sans interruption.');
-    } else if (progress < 75 && sessionsCompleted < Math.ceil(sessionGoal * 0.5)) {
-      lines.push('• Goulot principal: cadence Pomodoro insuffisante. Le rythme est la variable limitante aujourd’hui.');
+    // — Smart recommendation (one clear action)
+    lines.push('💡 Recommandation');
+    if (progress >= 100) {
+      lines.push('  Bravo, objectif atteint ! 🎉 Tu peux consolider tes acquis avec un mini-quiz de révision, ou passer aux tâches restantes.');
+    } else if (progress >= 75) {
+      lines.push(`  Tu y es presque ! Encore ${remaining} min pour boucler. Lance un dernier bloc Pomodoro sur ta matière la plus en retard.`);
+    } else if (context.pendingUrgentTodos > 0) {
+      lines.push(`  ⚠️ ${context.pendingUrgentTodos} tâche(s) urgente(s) en attente. Traite-les d'abord, puis enchaîne avec un bloc d'étude de 25 min.`);
+    } else if (nowHour >= 20 && remaining > 60) {
+      lines.push(`  Il est tard et il reste ${remaining} min. Concentre-toi sur 1 seul bloc de 25 min sur ta matière clé, puis planifie le reste pour demain.`);
+    } else if (sessionsCompleted < Math.ceil(sessionGoal * 0.5)) {
+      lines.push(`  Cadence Pomodoro trop basse (${sessionsCompleted}/${sessionGoal}). Lance un timer maintenant : 25 min de focus sans interruption.`);
     } else {
-      lines.push('• Performance globale correcte. Le gain marginal vient de l’ordre d’exécution: d’abord impact élevé, ensuite effort faible.');
-    }
-
-    if (weekTrend.trend === 'down') {
-      lines.push('• Signal hebdo négatif: risque de dette d’apprentissage. Il faut sécuriser une routine minimale quotidienne non négociable.');
-    }
-
-    if (prioritizedSubjects.length > 0) {
-      const focusSubjects = prioritizedSubjects
-        .filter((subject) => subject.remainingMinutes > 0)
-        .map((subject) => `${subject.name} (${subject.remainingMinutes} min restantes, ${subject.progress}%)`)
-        .join(' ; ');
-      if (focusSubjects) {
-        lines.push(`• Priorités matière: ${focusSubjects}.`);
+      const topSubject = behindSubjects[0];
+      if (topSubject) {
+        lines.push(`  Commence par ${topSubject.name} (${topSubject.remainingMinutes} min restantes). Un bloc de 25 min avec exercices actifs sera le plus efficace.`);
+      } else {
+        lines.push('  Bonne dynamique ! Continue avec un bloc Pomodoro sur ta matière principale.');
       }
     }
 
-    lines.push('');
-    lines.push('3) Plan d’action adaptatif');
-    if (lateDay) {
-      lines.push('• Mode soirée: objectif court et propre, éviter la surcharge cognitive.');
-      lines.push('• Bloc A (20 min): tâche urgente la plus courte, livrable concret.');
-      lines.push('• Pause (5 min): reset écran + hydratation.');
-      lines.push('• Bloc B (25 min): matière prioritaire avec exercice actif (pas de relecture passive).');
-      lines.push('• Clôture (10 min): plan des 3 actions de demain + heure de démarrage.');
-    } else {
-      lines.push('• Bloc 1 (25 min): matière la plus en retard, objectif unique mesurable.');
-      lines.push('• Bloc 2 (25 min): tâche urgente/haute priorité à terminer entièrement.');
-      lines.push('• Bloc 3 (20 min): consolidation (quiz, rappel actif, flashcards).');
-      lines.push('• Buffer (10 min): revue des écarts et re-priorisation du backlog.');
-    }
-
-    lines.push('');
-    lines.push('4) Règles de pilotage pour le reste de la journée');
-    lines.push('• Règle 1: une seule cible active par bloc, notifications coupées.');
-    lines.push('• Règle 2: si un bloc échoue, repartir immédiatement sur 10 minutes au lieu d’attendre le “moment parfait”.');
-    lines.push('• Règle 3: terminer la journée avec 3 tâches maximum pour demain (pas plus).');
-
-    if (immediateUrgency) {
-      lines.push('• Alerte: présence de tâches critiques. Traiter au moins 1 urgente avant toute tâche moyenne/basse.');
-    }
-
-    lines.push('');
-    lines.push(`Prochaine meilleure action (5 min): ${weakestSubject?.gap > 0 ? `ouvrir ${weakestSubject.name} et lancer un mini-exercice ciblé` : 'terminer une tâche courte en attente'} maintenant.`);
-
-    if (remaining > 0) {
-      lines.push(`Temps cible restant aujourd’hui: ${remaining} min (${this.formatTime(remaining)}).`);
+    // — Motivation
+    if (weekTrend.trend === 'up') {
+      lines.push('');
+      lines.push('🔥 Tu es en progression cette semaine, continue sur cette lancée !');
+    } else if (weekTrend.trend === 'down') {
+      lines.push('');
+      lines.push('💪 Ta semaine peut encore s\'améliorer. Chaque session compte !');
     }
 
     return lines.join('\n');
@@ -618,24 +601,17 @@ export class DashboardComponent implements OnInit {
     }
 
     this.aiNotice.set('');
-
     this.aiLoading.set(true);
 
     const advice = this.generateSmartAdvice(context);
 
     setTimeout(() => {
       this.aiLastSource.set('smart');
-      this.aiMessages.update((messages) => {
-        const nextMessage: AiChatMessage = {
-          role: 'assistant',
-          content: advice
-        };
-        const updated = [
-          ...messages,
-          nextMessage
-        ];
-        return updated.slice(-12);
-      });
+      // Replace all messages with a single fresh analysis — no chat history clutter
+      this.aiMessages.set([{
+        role: 'assistant',
+        content: advice
+      }]);
       this.aiLoading.set(false);
     }, 250);
   }
@@ -788,9 +764,8 @@ export class DashboardComponent implements OnInit {
                   existingSessions[lastIdx] = {
                     ...lastSession,
                     duration: newDuration,
-                    endTime: endTime.toTimeString().slice(0, 5),
-                    completed: false,
-                    completedAt: undefined
+                    endTime: endTime.toTimeString().slice(0, 5)
+                    // Preserve completed status — don't reset what was already studied
                   };
                   
                   console.log(`➕ Augmentation: +${difference}min ajouté à la dernière session (${lastSession.duration}min → ${newDuration}min)`);
