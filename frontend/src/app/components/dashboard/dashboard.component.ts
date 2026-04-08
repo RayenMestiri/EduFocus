@@ -1565,7 +1565,7 @@ export class DashboardComponent implements OnInit {
     this.todoForm = {
       title: todo.title,
       priority: todo.priority,
-      subjectId: todo.subjectId || ''
+      subjectId: this.getSubjectIdString(todo.subjectId as any)
     };
     this.showTodoModal.set(true);
   }
@@ -1611,9 +1611,7 @@ export class DashboardComponent implements OnInit {
         done: editingTodo.done
       };
       
-      if (this.todoForm.subjectId && this.todoForm.subjectId.trim()) {
-        updatedTodo.subjectId = this.todoForm.subjectId.trim();
-      }
+      updatedTodo.subjectId = this.todoForm.subjectId?.trim() ? this.todoForm.subjectId.trim() : null;
       
       console.log('Updating todo:', editingTodo._id, updatedTodo);
       
@@ -1641,9 +1639,7 @@ export class DashboardComponent implements OnInit {
         done: false
       };
       
-      if (this.todoForm.subjectId && this.todoForm.subjectId.trim()) {
-        todo.subjectId = this.todoForm.subjectId.trim();
-      }
+      todo.subjectId = this.todoForm.subjectId?.trim() ? this.todoForm.subjectId.trim() : null;
       
       console.log('Creating todo with data:', JSON.stringify(todo, null, 2));
       
@@ -1668,10 +1664,11 @@ export class DashboardComponent implements OnInit {
   async toggleTodo(todo: Todo, newDone: boolean) {
     const wasDone = todo.done;
     const isCompleting = newDone && !wasDone;
+    const todoSubjectId = this.getSubjectIdString(todo.subjectId as any);
     
     // Only ask for study time if completing and has a subject
-    if (isCompleting && todo.subjectId) {
-      const subject = this.subjects().find(s => s._id === todo.subjectId);
+    if (isCompleting && todoSubjectId) {
+      const subject = this.subjects().find(s => s._id === todoSubjectId);
       const isLight = this.themeService.isLight();
       
       // Premium theme-aware colors (indigo for light mode)
@@ -1745,7 +1742,7 @@ export class DashboardComponent implements OnInit {
         todo.done = newDone;
         
         // Update studied time for this subject
-        this.dayPlanService.updateStudiedTime(this.today, todo.subjectId, studyMinutes).subscribe({
+        this.dayPlanService.updateStudiedTime(this.today, todoSubjectId, studyMinutes).subscribe({
           next: () => {
             console.log(`✅ ${studyMinutes} minutes ajoutées à ${subject?.name}`);
             this.loadDayPlan();
@@ -1781,7 +1778,8 @@ export class DashboardComponent implements OnInit {
           const totalPoints = basePoints + timeBonus;
           
           // Get subject info for personalized message
-          const subject = todo.subjectId ? this.subjects().find(s => s._id === todo.subjectId) : null;
+          const normalizedSubjectId = this.getSubjectIdString(todo.subjectId as any);
+          const subject = normalizedSubjectId ? this.subjects().find(s => s._id === normalizedSubjectId) : null;
           
           // Array of encouraging messages
           const encouragingMessages = [
@@ -1943,9 +1941,15 @@ export class DashboardComponent implements OnInit {
     return incompleteSubjects.length > 0 ? incompleteSubjects[0].subject : undefined;
   }
 
-  getSubjectIdString(subjectId: string | Subject | null | undefined): string {
+  getSubjectIdString(subjectId: string | Subject | { _id?: string } | null | undefined): string {
     if (!subjectId) return '';
-    return typeof subjectId === 'string' ? subjectId : subjectId._id || '';
+    if (typeof subjectId === 'string') return subjectId;
+    return subjectId._id || '';
+  }
+
+  getTodoSubject(todo: Todo): Subject | undefined {
+    const subjectId = this.getSubjectIdString(todo.subjectId as any);
+    return subjectId ? this.getSubjectById(subjectId) : undefined;
   }
 
   getTotalPlanMinutes(): number {

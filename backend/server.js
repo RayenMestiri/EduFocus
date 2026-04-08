@@ -34,8 +34,8 @@ const corsOptions = {
   optionsSuccessStatus: 200
 };
 
-// Handle preflight OPTIONS requests explicitly for all routes (Express 5 syntax)
-app.options('(.*)', cors(corsOptions));
+// Handle preflight OPTIONS requests explicitly for all routes (Express 5 + path-to-regexp v8 syntax)
+app.options('/{*any}', cors(corsOptions));
 app.use(cors(corsOptions));
 
 
@@ -109,6 +109,12 @@ app.listen(PORT, () => {
   console.log(`🚀 EduFocus Server running on port ${PORT}`);
   console.log(`🌐 Allowed origins: ${allowedOrigins.join(', ')}`);
   console.log(`📦 Environment: ${process.env.NODE_ENV || 'development'}`);
+});
+
+module.exports = app;
+le.log(`📦 Environment: ${process.env.NODE_ENV || 'development'}`);
+${PORT}`);
+  console.log(`🌐 Frontend URL: ${process.env.FRONTEND_URL}`);
 });
 
 module.exports = app;

@@ -99,7 +99,7 @@ export interface Todo {
   date: string;
   dueTime?: string;
   priority: 'low' | 'medium' | 'high' | 'urgent';
-  subjectId?: string;
+  subjectId?: string | Subject;
   category: 'homework' | 'exam' | 'project' | 'reading' | 'practice' | 'review' | 'other';
   tags: string[];
   estimatedMinutes: number;

@@ -96,19 +96,12 @@ a { text-decoration: none; }
   align-items: center;
   gap: 14px;
 }
-.home-logo-icon-wrap {
+.home-logo-img {
   width: 52px;
   height: 52px;
   border-radius: 14px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: linear-gradient(135deg, var(--gold-500), var(--gold-400));
+  object-fit: cover;
   box-shadow: var(--shadow-card);
-}
-.home-logo-icon-wrap .material-icons {
-  font-size: 26px !important;
-  color: #000;
 }
 .header-logo-text {
   font-size: 1.95rem;
@@ -990,20 +983,7 @@ a { text-decoration: none; }
   gap: 1.5rem;
 }
 .footer-brand { display: flex; align-items: center; gap: .6rem; }
-.footer-logo-icon-wrap {
-  width: 32px;
-  height: 32px;
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: linear-gradient(135deg, var(--gold-500), var(--gold-400));
-  box-shadow: var(--shadow-card);
-}
-.footer-logo-icon-wrap .material-icons {
-  font-size: 18px !important;
-  color: #000;
-}
+.footer-logo-img { width: 32px; height: 32px; border-radius: 8px; object-fit: cover; box-shadow: var(--shadow-card); }
 .footer-logo-text {
   font-size: 1.2rem; font-weight: 700; color: var(--text-main);
 }

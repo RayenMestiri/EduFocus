@@ -409,6 +409,12 @@
                          class="text-sm sm:text-base dark:text-white light:text-slate-800 dark:group-hover:text-yellow-400 light:group-hover:text-indigo-700 transition-colors font-semibold break-words">
                       {{ todo.title }}
                     </div>
+                    @if (getTodoSubject(todo); as todoSubject) {
+                      <div class="mt-1 text-[11px] font-medium inline-flex items-center gap-1 dark:text-cyan-300 light:text-cyan-700">
+                        <span class="material-icons text-[12px]">menu_book</span>
+                        {{ todoSubject.name }}
+                      </div>
+                    }
                     <div class="mt-1">
                       @if (todo.priority === 'urgent') {
                         <span class="px-2 py-0.5 text-[10px] font-bold rounded-full dark:bg-purple-500/20 light:bg-rose-100 dark:text-purple-400 light:text-rose-700 animate-pulse inline-flex items-center gap-1"><span class="material-icons text-[10px] sm:text-xs">local_fire_department</span> Urgent</span>
