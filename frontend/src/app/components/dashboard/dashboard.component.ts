@@ -65,6 +65,12 @@ export class DashboardComponent implements OnInit {
   isTimerRunning = signal<boolean>(false);
   selectedSubjectForTimer = signal<Subject | null>(null);
   private timerInterval: any = null;
+
+  // Chronometer state (frontend only)
+  chronoElapsedSeconds = signal<number>(0);
+  chronoRunning = signal<boolean>(false);
+  chronoLaps = signal<number[]>([]);
+  private chronoInterval: any = null;
   
   // Advanced Timer Settings
   showTimerSettings = signal<boolean>(false);
@@ -1146,6 +1152,55 @@ export class DashboardComponent implements OnInit {
     this.resetTimer();
   }
 
+  // Chronometer
+  toggleChronometer() {
+    if (this.chronoRunning()) {
+      this.chronoRunning.set(false);
+      if (this.chronoInterval) {
+        clearInterval(this.chronoInterval);
+      }
+      return;
+    }
+
+    this.chronoRunning.set(true);
+    this.chronoInterval = setInterval(() => {
+      this.chronoElapsedSeconds.update((value) => value + 1);
+    }, 1000);
+  }
+
+  resetChronometer() {
+    this.chronoRunning.set(false);
+    if (this.chronoInterval) {
+      clearInterval(this.chronoInterval);
+    }
+    this.chronoElapsedSeconds.set(0);
+    this.chronoLaps.set([]);
+  }
+
+  addChronoLap() {
+    const elapsed = this.chronoElapsedSeconds();
+    if (elapsed <= 0) {
+      return;
+    }
+    this.chronoLaps.update((laps) => [elapsed, ...laps]);
+  }
+
+  formatChronometer(totalSeconds: number): string {
+    const hours = Math.floor(totalSeconds / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
+    return `${hours.toString().padStart(2, '0')}:${minutes
+      .toString()
+      .padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+  }
+
+  getChronoLapDuration(index: number): string {
+    const laps = this.chronoLaps();
+    const current = laps[index] ?? 0;
+    const previous = laps[index + 1] ?? 0;
+    return this.formatChronometer(Math.max(current - previous, 0));
+  }
+
   openTimerSettings() {
     this.showTimerSettings.set(true);
   }
@@ -2215,6 +2270,9 @@ export class DashboardComponent implements OnInit {
     }
     if (this.dateCheckInterval) {
       clearInterval(this.dateCheckInterval);
+    }
+    if (this.chronoInterval) {
+      clearInterval(this.chronoInterval);
     }
     this.stopYouTubeAudio();
   }

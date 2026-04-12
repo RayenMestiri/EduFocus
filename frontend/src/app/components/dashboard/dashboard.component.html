@@ -371,6 +371,78 @@
           </div>
         </div>
 
+        <!-- Chronometer Section -->
+        <div class="mt-5 dark:bg-gradient-to-br dark:from-gray-900 dark:to-black light:bg-white/80 light:backdrop-blur-sm dark:border-cyan-500/20 light:border light:border-cyan-100 rounded-2xl p-6 dark:shadow-2xl dark:shadow-cyan-500/5 light:shadow-lg light:shadow-cyan-200/40">
+          <div class="flex items-center justify-between mb-4">
+            <h2 class="text-xl sm:text-2xl font-bold dark:bg-gradient-to-r dark:from-cyan-300 dark:to-cyan-500 light:bg-gradient-to-r light:from-cyan-600 light:to-blue-600 bg-clip-text text-transparent flex items-center gap-2">
+              <span class="material-icons text-3xl">timelapse</span>
+              Chronomètre
+            </h2>
+            <div class="text-xs px-2.5 py-1 rounded-full dark:bg-cyan-500/10 dark:text-cyan-300 light:bg-cyan-100 light:text-cyan-700 border dark:border-cyan-500/30 light:border-cyan-200">
+              Sans backend
+            </div>
+          </div>
+
+          <div class="rounded-2xl dark:bg-cyan-500/5 light:bg-cyan-50/70 border dark:border-cyan-500/20 light:border-cyan-200/70 p-5">
+            <div class="text-center mb-4">
+              <div class="text-4xl sm:text-5xl font-black tracking-wider dark:text-cyan-300 light:text-cyan-700 font-mono">
+                {{ formatChronometer(chronoElapsedSeconds()) }}
+              </div>
+              <div class="mt-1 text-xs dark:text-cyan-200/70 light:text-cyan-700/80">
+                Temps écoulé
+              </div>
+            </div>
+
+            <div class="flex flex-wrap gap-2 justify-center">
+              <button (click)="toggleChronometer()" class="px-4 py-2 rounded-xl font-semibold transition-all duration-300 flex items-center gap-2 shadow-sm dark:shadow-cyan-900/30"
+                      [class.dark:bg-cyan-500]="!chronoRunning()"
+                      [class.dark:hover:bg-cyan-400]="!chronoRunning()"
+                      [class.dark:text-black]="!chronoRunning()"
+                      [class.light:bg-cyan-600]="!chronoRunning()"
+                      [class.light:hover:bg-cyan-500]="!chronoRunning()"
+                      [class.light:text-white]="!chronoRunning()"
+                      [class.dark:bg-gray-800]="chronoRunning()"
+                      [class.dark:hover:bg-gray-700]="chronoRunning()"
+                      [class.dark:text-cyan-300]="chronoRunning()"
+                      [class.light:bg-slate-100]="chronoRunning()"
+                      [class.light:hover:bg-slate-200]="chronoRunning()"
+                      [class.light:text-cyan-700]="chronoRunning()">
+                <span class="material-icons text-lg">{{ chronoRunning() ? 'pause' : 'play_arrow' }}</span>
+                {{ chronoRunning() ? 'Pause' : 'Démarrer' }}
+              </button>
+
+              <button (click)="addChronoLap()" class="px-4 py-2 rounded-xl font-semibold dark:bg-indigo-500/20 dark:hover:bg-indigo-500/30 dark:text-indigo-300 light:bg-indigo-100 light:hover:bg-indigo-200 light:text-indigo-700 transition-all duration-300 flex items-center gap-2" [disabled]="chronoElapsedSeconds() === 0">
+                <span class="material-icons text-lg">flag</span>
+                Tour
+              </button>
+
+              <button (click)="resetChronometer()" class="px-4 py-2 rounded-xl font-semibold dark:bg-red-500/20 dark:hover:bg-red-500/30 dark:text-red-300 light:bg-red-100 light:hover:bg-red-200 light:text-red-700 transition-all duration-300 flex items-center gap-2" [disabled]="chronoElapsedSeconds() === 0">
+                <span class="material-icons text-lg">restart_alt</span>
+                Reset
+              </button>
+            </div>
+          </div>
+
+          @if (chronoLaps().length > 0) {
+            <div class="mt-4 rounded-xl border dark:border-cyan-500/20 light:border-cyan-200/60 overflow-hidden">
+              <div class="px-4 py-2 text-sm font-semibold dark:bg-cyan-500/10 dark:text-cyan-300 light:bg-cyan-100 light:text-cyan-700">
+                Tours enregistrés
+              </div>
+              <div class="max-h-40 overflow-y-auto divide-y dark:divide-cyan-500/10 light:divide-cyan-200/60">
+                @for (lap of chronoLaps(); track $index) {
+                  <div class="px-4 py-2 flex items-center justify-between text-sm dark:bg-gray-900/40 light:bg-white/70">
+                    <span class="dark:text-gray-300 light:text-slate-700">Tour #{{ chronoLaps().length - $index }}</span>
+                    <div class="flex items-center gap-4">
+                      <span class="font-mono dark:text-cyan-300 light:text-cyan-700">{{ formatChronometer(lap) }}</span>
+                      <span class="font-mono text-xs dark:text-indigo-300 light:text-indigo-700">+{{ getChronoLapDuration($index) }}</span>
+                    </div>
+                  </div>
+                }
+              </div>
+            </div>
+          }
+        </div>
+
       </div>
 
       <!-- Sidebar - Right (To-Do List Full) -->
