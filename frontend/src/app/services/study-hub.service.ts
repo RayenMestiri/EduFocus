@@ -64,6 +64,7 @@ export class StudyHubService {
 
   /** Strip any Mongoose metadata fields before sending to backend */
   private cleanForBackend(obj: any): any {
+    if (obj instanceof Date) return obj;
     if (Array.isArray(obj)) return obj.map(item => this.cleanForBackend(item));
     if (obj && typeof obj === 'object') {
       const clean: any = {};
