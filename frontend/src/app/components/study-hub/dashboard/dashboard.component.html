@@ -116,15 +116,15 @@
 
             <div class="grid grid-cols-3 gap-2 border-t border-gray-100 dark:border-gray-700 pt-4">
               <div class="text-center">
-                <span class="block text-lg font-semibold text-gray-900 dark:text-white">{{ pack.notes?.length || 0 }}</span>
+                <span class="block text-lg font-semibold text-gray-900 dark:text-white">{{ pack.notes.length }}</span>
                 <span class="block text-xs text-gray-500 dark:text-gray-400">{{ 'DASHBOARD.NOTES' | translate }}</span>
               </div>
               <div class="text-center border-x border-gray-100 dark:border-gray-700">
-                <span class="block text-lg font-semibold text-gray-900 dark:text-white">{{ pack.flashcards?.length || 0 }}</span>
+                <span class="block text-lg font-semibold text-gray-900 dark:text-white">{{ pack.flashcards.length }}</span>
                 <span class="block text-xs text-gray-500 dark:text-gray-400">{{ 'DASHBOARD.CARDS' | translate }}</span>
               </div>
               <div class="text-center">
-                <span class="block text-lg font-semibold text-gray-900 dark:text-white">{{ pack.qcm?.length || 0 }}</span>
+                <span class="block text-lg font-semibold text-gray-900 dark:text-white">{{ pack.qcm.length }}</span>
                 <span class="block text-xs text-gray-500 dark:text-gray-400">{{ 'DASHBOARD.QUIZZES' | translate }}</span>
               </div>
             </div>
