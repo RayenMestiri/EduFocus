@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { StudyHubService } from '../../../../services/study-hub.service';
 import { ThemeService } from '../../../../services/theme.service';
 import { StudyPack, Note, Flashcard, QCM, QuizAttempt } from '../../../../models/study-hub.model';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-study-pack-detail',
@@ -17,6 +18,63 @@ export class StudyPackDetailComponent implements OnInit {
   themeService = inject(ThemeService);
   route = inject(ActivatedRoute);
   router = inject(Router);
+
+  private async confirmDelete(title: string, text: string): Promise<boolean> {
+    const isDark = this.themeService.isDark();
+    const result = await Swal.fire({
+      title: title,
+      text: text,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Supprimer',
+      cancelButtonText: 'Annuler',
+      background: isDark ? '#1f2937' : '#ffffff',
+      color: isDark ? '#f9fafb' : '#111827',
+      confirmButtonColor: '#ef4444', // red-500
+      cancelButtonColor: isDark ? '#4b5563' : '#9ca3af', // gray-600 or gray-400
+      reverseButtons: true,
+      customClass: {
+        popup: 'rounded-3xl border border-gray-150 dark:border-gray-700 shadow-xl font-sans'
+      }
+    });
+    return result.isConfirmed;
+  }
+
+  private showToast(title: string, icon: 'success' | 'info' | 'error' = 'success') {
+    const isDark = this.themeService.isDark();
+    const Toast = Swal.mixin({
+      toast: true,
+      position: 'top-end',
+      showConfirmButton: false,
+      timer: 2000,
+      timerProgressBar: true,
+      background: isDark ? '#1f2937' : '#ffffff',
+      color: isDark ? '#f9fafb' : '#111827',
+      didOpen: (toast) => {
+        toast.addEventListener('mouseenter', Swal.stopTimer);
+        toast.addEventListener('mouseleave', Swal.resumeTimer);
+      }
+    });
+    Toast.fire({
+      icon,
+      title
+    });
+  }
+
+  private showAlert(title: string, text: string, icon: 'success' | 'error' | 'info' = 'info') {
+    const isDark = this.themeService.isDark();
+    Swal.fire({
+      title,
+      text,
+      icon,
+      background: isDark ? '#1f2937' : '#ffffff',
+      color: isDark ? '#f9fafb' : '#111827',
+      confirmButtonColor: '#4f46e5',
+      customClass: {
+        popup: 'rounded-3xl border border-gray-150 dark:border-gray-700 shadow-xl font-sans'
+      }
+    });
+  }
 
   // Reactive state using Signals
   packId = signal<string>('');
@@ -355,11 +413,14 @@ export class StudyPackDetailComponent implements OnInit {
     this.studyHubService.updatePack(pack.id, { exercises: defaultExercises });
   }
 
-  deletePack() {
+  async deletePack() {
     const currentPack = this.pack();
-    if (currentPack && confirm('Are you sure you want to delete this Study Pack?')) {
+    if (!currentPack) return;
+    const confirmed = await this.confirmDelete('Supprimer le Pack d\'étude', `Êtes-vous sûr de vouloir supprimer définitivement le pack "${currentPack.title}" ?`);
+    if (confirmed) {
       this.studyHubService.deletePack(currentPack.id);
       this.router.navigate(['/study-hub']);
+      this.showToast('Pack supprimé', 'success');
     }
   }
 
@@ -453,15 +514,20 @@ export class StudyPackDetailComponent implements OnInit {
 
     this.studyHubService.updatePack(currentPack.id, { notes: updatedNotes });
     this.showNoteModal.set(false);
+    this.showToast(this.isEditingNote() ? 'Note modifiée !' : 'Note ajoutée !', 'success');
   }
 
-  deleteNote(noteId: string, event: Event) {
+  async deleteNote(noteId: string, event: Event) {
     event.stopPropagation();
     const currentPack = this.pack();
-    if (!currentPack || !confirm('Are you sure you want to delete this note?')) return;
+    if (!currentPack) return;
 
-    const updatedNotes = currentPack.notes.filter(n => n.id !== noteId);
-    this.studyHubService.updatePack(currentPack.id, { notes: updatedNotes });
+    const confirmed = await this.confirmDelete('Supprimer la note', 'Êtes-vous sûr de vouloir supprimer cette note ?');
+    if (confirmed) {
+      const updatedNotes = currentPack.notes.filter(n => n.id !== noteId);
+      this.studyHubService.updatePack(currentPack.id, { notes: updatedNotes });
+      this.showToast('Note supprimée', 'success');
+    }
   }
 
   togglePinNote(note: Note, event: Event) {
@@ -508,11 +574,12 @@ export class StudyPackDetailComponent implements OnInit {
         const updatedNotes = [...(currentPack.notes || []), ...validatedNotes];
         this.studyHubService.updatePack(currentPack.id, { notes: updatedNotes });
         this.showNoteImportModal.set(false);
+        this.showToast(`${validatedNotes.length} notes importées !`, 'success');
       } else {
-        alert('JSON must be an array of notes');
+        this.showAlert('Format incorrect', 'Le fichier JSON doit être un tableau de notes', 'error');
       }
     } catch (e) {
-      alert('Invalid JSON structure. Please check and try again.');
+      this.showAlert('JSON Invalide', 'Veuillez vérifier la structure du fichier JSON.', 'error');
     }
   }
 
@@ -572,14 +639,19 @@ export class StudyPackDetailComponent implements OnInit {
 
     this.studyHubService.updatePack(currentPack.id, { flashcards: updatedCards });
     this.showFlashcardModal.set(false);
+    this.showToast(this.isEditingFlashcard() ? 'Flashcard modifiée !' : 'Flashcard ajoutée !', 'success');
   }
 
-  deleteFlashcard(cardId: string) {
+  async deleteFlashcard(cardId: string) {
     const currentPack = this.pack();
-    if (!currentPack || !confirm('Are you sure you want to delete this flashcard?')) return;
+    if (!currentPack) return;
 
-    const updatedCards = currentPack.flashcards.filter(c => c.id !== cardId);
-    this.studyHubService.updatePack(currentPack.id, { flashcards: updatedCards });
+    const confirmed = await this.confirmDelete('Supprimer la flashcard', 'Êtes-vous sûr de vouloir supprimer cette flashcard ?');
+    if (confirmed) {
+      const updatedCards = currentPack.flashcards.filter(c => c.id !== cardId);
+      this.studyHubService.updatePack(currentPack.id, { flashcards: updatedCards });
+      this.showToast('Flashcard supprimée', 'success');
+    }
   }
 
   openFlashcardImportModal() {
@@ -606,11 +678,12 @@ export class StudyPackDetailComponent implements OnInit {
         const updatedCards = [...(currentPack.flashcards || []), ...validatedCards];
         this.studyHubService.updatePack(currentPack.id, { flashcards: updatedCards });
         this.showFlashcardImportModal.set(false);
+        this.showToast(`${validatedCards.length} flashcards importées !`, 'success');
       } else {
-        alert('Format error: JSON must be an array of flashcards');
+        this.showAlert('Format incorrect', 'Le fichier JSON doit être un tableau de flashcards', 'error');
       }
     } catch (e) {
-      alert('Invalid JSON structure. Please check and try again.');
+      this.showAlert('JSON Invalide', 'Veuillez vérifier la structure du fichier JSON.', 'error');
     }
   }
 
@@ -726,14 +799,19 @@ export class StudyPackDetailComponent implements OnInit {
 
     this.studyHubService.updatePack(currentPack.id, { qcm: updatedQcms });
     this.showQuizModal.set(false);
+    this.showToast(this.isEditingQuiz() ? 'Question modifiée !' : 'Question ajoutée !', 'success');
   }
 
-  deleteQuiz(quizId: string) {
+  async deleteQuiz(quizId: string) {
     const currentPack = this.pack();
-    if (!currentPack || !confirm('Are you sure you want to delete this question?')) return;
+    if (!currentPack) return;
 
-    const updatedQcms = currentPack.qcm.filter(q => q.id !== quizId);
-    this.studyHubService.updatePack(currentPack.id, { qcm: updatedQcms });
+    const confirmed = await this.confirmDelete('Supprimer la question', 'Êtes-vous sûr de vouloir supprimer cette question de quiz ?');
+    if (confirmed) {
+      const updatedQcms = currentPack.qcm.filter(q => q.id !== quizId);
+      this.studyHubService.updatePack(currentPack.id, { qcm: updatedQcms });
+      this.showToast('Question supprimée', 'success');
+    }
   }
 
   openQuizImportModal() {
@@ -763,11 +841,12 @@ export class StudyPackDetailComponent implements OnInit {
         const updatedQcms = [...(currentPack.qcm || []), ...validatedQcms];
         this.studyHubService.updatePack(currentPack.id, { qcm: updatedQcms });
         this.showQuizImportModal.set(false);
+        this.showToast(`${validatedQcms.length} questions importées !`, 'success');
       } else {
-        alert('Le format doit être un tableau JSON de questions.');
+        this.showAlert('Format incorrect', 'Le fichier JSON doit être un tableau de questions', 'error');
       }
     } catch (e) {
-      alert('Structure JSON incorrecte. Veuillez vérifier le fichier.');
+      this.showAlert('JSON Invalide', 'Veuillez vérifier la structure du fichier JSON.', 'error');
     }
   }
 
@@ -849,15 +928,20 @@ export class StudyPackDetailComponent implements OnInit {
 
     this.studyHubService.updatePack(currentPack.id, { cheatsheets: updatedCS });
     this.showCheatSheetModal.set(false);
+    this.showToast(this.isEditingCheatSheet() ? 'Fiche modifiée !' : 'Fiche ajoutée !', 'success');
   }
 
-  deleteCheatSheet(csId: string, event: Event) {
+  async deleteCheatSheet(csId: string, event: Event) {
     event.stopPropagation();
     const currentPack = this.pack();
-    if (!currentPack || !confirm('Are you sure you want to delete this cheat sheet?')) return;
+    if (!currentPack) return;
 
-    const updatedCS = (currentPack.cheatsheets || []).filter(c => c.id !== csId);
-    this.studyHubService.updatePack(currentPack.id, { cheatsheets: updatedCS });
+    const confirmed = await this.confirmDelete('Supprimer la fiche', 'Êtes-vous sûr de vouloir supprimer cette fiche mémo ?');
+    if (confirmed) {
+      const updatedCS = (currentPack.cheatsheets || []).filter(c => c.id !== csId);
+      this.studyHubService.updatePack(currentPack.id, { cheatsheets: updatedCS });
+      this.showToast('Fiche mémo supprimée', 'success');
+    }
   }
 
   copyCheatSheetToClipboard(cs: any, event: Event) {
@@ -866,7 +950,7 @@ export class StudyPackDetailComponent implements OnInit {
     const fullText = `${cs.title}\n=====================\n${itemsText}\n\n${cs.codeSample || ''}`;
     
     navigator.clipboard.writeText(fullText.trim()).then(() => {
-      alert('✓ Fiche copiée avec succès !');
+      this.showToast('Fiche copiée !', 'success');
     });
   }
 
@@ -939,15 +1023,20 @@ export class StudyPackDetailComponent implements OnInit {
 
     this.studyHubService.updatePack(currentPack.id, { exercises: updatedEx });
     this.showExerciseModal.set(false);
+    this.showToast(this.isEditingExercise() ? 'Exercice modifié !' : 'Exercice ajouté !', 'success');
   }
 
-  deleteExercise(exId: string, event: Event) {
+  async deleteExercise(exId: string, event: Event) {
     event.stopPropagation();
     const currentPack = this.pack();
-    if (!currentPack || !confirm('Are you sure you want to delete this exercise?')) return;
+    if (!currentPack) return;
 
-    const updatedEx = (currentPack.exercises || []).filter(e => e.id !== exId);
-    this.studyHubService.updatePack(currentPack.id, { exercises: updatedEx });
+    const confirmed = await this.confirmDelete('Supprimer l\'exercice', 'Êtes-vous sûr de vouloir supprimer cet exercice de code ?');
+    if (confirmed) {
+      const updatedEx = (currentPack.exercises || []).filter(e => e.id !== exId);
+      this.studyHubService.updatePack(currentPack.id, { exercises: updatedEx });
+      this.showToast('Exercice supprimé', 'success');
+    }
   }
 
   toggleSolutionVisibility(exId: string) {
@@ -1130,11 +1219,12 @@ export class StudyPackDetailComponent implements OnInit {
         const updated = [...(currentPack.cheatsheets || []), ...validated];
         this.studyHubService.updatePack(currentPack.id, { cheatsheets: updated });
         this.showCheatSheetImportModal.set(false);
+        this.showToast(`${validated.length} fiches importées !`, 'success');
       } else {
-        alert('Format error: JSON must be an array');
+        this.showAlert('Format incorrect', 'Le fichier JSON doit être un tableau', 'error');
       }
     } catch (e) {
-      alert('Invalid JSON structure. Please check and try again.');
+      this.showAlert('JSON Invalide', 'Veuillez vérifier la structure du fichier JSON.', 'error');
     }
   }
 
@@ -1159,11 +1249,12 @@ export class StudyPackDetailComponent implements OnInit {
         const updated = [...(currentPack.exercises || []), ...validated];
         this.studyHubService.updatePack(currentPack.id, { exercises: updated });
         this.showExerciseImportModal.set(false);
+        this.showToast(`${validated.length} exercices importés !`, 'success');
       } else {
-        alert('Format error: JSON must be an array');
+        this.showAlert('Format incorrect', 'Le fichier JSON doit être un tableau', 'error');
       }
     } catch (e) {
-      alert('Invalid JSON structure. Please check and try again.');
+      this.showAlert('JSON Invalide', 'Veuillez vérifier la structure du fichier JSON.', 'error');
     }
   }
 
