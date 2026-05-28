@@ -50,12 +50,19 @@ export class AuthService {
     private http: HttpClient,
     private router: Router
   ) {
-    // Don't call checkAuth() automatically - let components handle it
     // Just set initial state based on token presence
     const token = this.getToken();
     if (token) {
       this.isAuthenticated.set(true);
     }
+  }
+
+  // Trigger Render backend wakeup by sending a lightweight health check request
+  wakeupBackend(): void {
+    this.http.get(`${environment.apiUrl}/health`).subscribe({
+      next: () => console.log('⚡ Render backend wakeup triggered successfully!'),
+      error: (err) => console.warn('⚠️ Render backend wakeup ping received a response but might have failed or CORS blocked it (which is fine, it still wakes it up!):', err)
+    });
   }
 
   // Check if user is authenticated - call this manually when needed
@@ -104,6 +111,7 @@ export class AuthService {
     return this.http.post<AuthResponse>(`${this.apiUrl}/forgot-password`, { email });
   }
 
+  // Reset password
   resetPassword(token: string, password: string): Observable<AuthResponse> {
     return this.http.put<AuthResponse>(`${this.apiUrl}/reset-password/${token}`, { password });
   }
@@ -187,4 +195,3 @@ export class AuthService {
     return this.http.put<any>(`${this.apiUrl}/session-goal`, { dailySessionsGoal: goal });
   }
 }
-

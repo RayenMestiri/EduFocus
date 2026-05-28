@@ -18,6 +18,9 @@ export class AppComponent implements OnInit {
   ) {}
 
   ngOnInit() {
+    // Wake up the backend immediately in the background
+    this.authService.wakeupBackend();
+
     // Check authentication and validate token
     const token = localStorage.getItem('token');
     if (token) {
