@@ -56,6 +56,7 @@ const sessionRoutes = require('./routes/sessions');
 const statsRoutes = require('./routes/stats');
 const aiRoutes = require('./routes/ai');
 const notesRoutes = require('./routes/notes');
+const studyPackRoutes = require('./routes/studyPacks');
 
 // Use Routes
 app.use('/api/auth', authRoutes);
@@ -66,6 +67,7 @@ app.use('/api/sessions', sessionRoutes);
 app.use('/api/stats', statsRoutes);
 app.use('/api/ai', aiRoutes);
 app.use('/api/notes', notesRoutes);
+app.use('/api/study-packs', studyPackRoutes);
 
 // Health check endpoint (useful for Render)
 app.get('/health', (req, res) => {
@@ -112,9 +114,5 @@ app.listen(PORT, () => {
 });
 
 module.exports = app;
-le.log(`📦 Environment: ${process.env.NODE_ENV || 'development'}`);
-${PORT}`);
-  console.log(`🌐 Frontend URL: ${process.env.FRONTEND_URL}`);
-});
+console.log(`📦 Environment: ${process.env.NODE_ENV || 'development'}`);
 
-module.exports = app;

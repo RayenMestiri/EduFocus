@@ -1,0 +1,39 @@
+.perspective-1000 {
+  perspective: 1000px;
+}
+
+.perspective-1200 {
+  perspective: 1200px;
+}
+
+.transform-style-3d {
+  transform-style: preserve-3d;
+}
+
+.backface-hidden {
+  backface-visibility: hidden;
+}
+
+.rotate-y-180 {
+  transform: rotateY(180deg);
+}
+
+.rotate-y-180 {
+  transform: rotateY(180deg);
+}
+
+/* Premium Dark Mode contrast safety for innerHTML (overriding low contrast text color bindings) */
+.dark h2[innerHTML],
+.dark h2[innerHTML] * {
+  color: #ffffff !important;
+}
+
+.dark p[innerHTML],
+.dark p[innerHTML] * {
+  color: #f8fafc !important; /* Force high-contrast white-slate */
+}
+
+.dark pre code,
+.dark pre code * {
+  color: #34d399 !important; /* Vibrant emerald syntax color in dark mode */
+}

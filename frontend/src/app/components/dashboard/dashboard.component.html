@@ -39,10 +39,10 @@
             <span class="hidden sm:inline">Planning</span>
           </button>
 
-          <!-- Notes (icon on mobile, icon+text on sm+) -->
-          <button (click)="goToNotes()" class="p-2 sm:px-3 sm:py-2 dark:bg-yellow-500/20 dark:hover:bg-yellow-500/30 dark:border-yellow-500/30 light:bg-indigo-50 light:hover:bg-indigo-100 light:border-indigo-200 border rounded-xl dark:text-yellow-400 light:text-indigo-600 transition-all duration-300 flex items-center gap-1.5 text-sm" title="Notes">
-            <span class="material-icons text-[20px]">sticky_note_2</span>
-            <span class="hidden sm:inline">Notes</span>
+          <!-- Study Hub (icon on mobile, icon+text on sm+) -->
+          <button (click)="goToStudyHub()" class="p-2 sm:px-3 sm:py-2 dark:bg-yellow-500/20 dark:hover:bg-yellow-500/30 dark:border-yellow-500/30 light:bg-indigo-50 light:hover:bg-indigo-100 light:border-indigo-200 border rounded-xl dark:text-yellow-400 light:text-indigo-600 transition-all duration-300 flex items-center gap-1.5 text-sm" title="Study Hub">
+            <span class="material-icons text-[20px]">school</span>
+            <span class="hidden sm:inline">Study Hub</span>
           </button>
           
           <!-- Points (compact on mobile) -->
@@ -137,19 +137,38 @@
       <!-- Main Dashboard -->
       <div class="lg:col-span-3 space-y-6">
         
-        <!-- Quick Access Card - Planning -->
-        <div class="dark:bg-gradient-to-br dark:from-yellow-500/10 dark:to-yellow-600/10 dark:border-yellow-500/30 light:bg-white/80 light:backdrop-blur-sm light:border light:border-indigo-200 rounded-2xl p-6 dark:hover:border-yellow-500/50 light:hover:border-indigo-400 transition-all duration-300 group cursor-pointer shadow-lg light:shadow-indigo-200/40" (click)="goToPlanner()">
-          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div class="flex items-center gap-4">
-              <div class="w-14 h-14 sm:w-16 sm:h-16 dark:bg-gradient-to-br dark:from-yellow-400 dark:to-yellow-600 light:bg-gradient-to-br light:from-indigo-500 light:to-violet-600 rounded-xl flex items-center justify-center dark:shadow-lg dark:shadow-yellow-500/50 light:shadow-lg light:shadow-indigo-500/40 group-hover:scale-110 transition-all duration-300">
-                <span class="material-icons text-3xl dark:text-black light:text-white">calendar_today</span>
+        <!-- Quick Access Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <!-- Quick Access Card - Planning -->
+          <div class="dark:bg-gradient-to-br dark:from-yellow-500/10 dark:to-yellow-600/10 dark:border-yellow-500/30 light:bg-white/80 light:backdrop-blur-sm light:border light:border-indigo-200 rounded-2xl p-6 dark:hover:border-yellow-500/50 light:hover:border-indigo-400 transition-all duration-300 group cursor-pointer shadow-lg light:shadow-indigo-200/40" (click)="goToPlanner()">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div class="flex items-center gap-4">
+                <div class="w-14 h-14 sm:w-16 sm:h-16 dark:bg-gradient-to-br dark:from-yellow-400 dark:to-yellow-600 light:bg-gradient-to-br light:from-indigo-500 light:to-violet-600 rounded-xl flex items-center justify-center dark:shadow-lg dark:shadow-yellow-500/50 light:shadow-lg light:shadow-indigo-500/40 group-hover:scale-110 transition-all duration-300">
+                  <span class="material-icons text-3xl dark:text-black light:text-white">calendar_today</span>
+                </div>
+                <div>
+                  <h3 class="text-xl sm:text-2xl font-bold dark:bg-gradient-to-r dark:from-yellow-400 dark:to-yellow-600 light:bg-gradient-to-r light:from-indigo-600 light:to-violet-600 bg-clip-text text-transparent">Planning Journalier</h3>
+                  <p class="text-xs sm:text-sm dark:text-gray-400 light:text-slate-600 font-medium">Organisez vos sessions d'étude actives</p>
+                </div>
               </div>
-              <div>
-                <h3 class="text-xl sm:text-2xl font-bold dark:bg-gradient-to-r dark:from-yellow-400 dark:to-yellow-600 light:bg-gradient-to-r light:from-indigo-600 light:to-violet-600 bg-clip-text text-transparent">Planning Journalier</h3>
-                <p class="text-sm dark:text-gray-400 light:text-slate-600 font-medium">Organisez vos sessions d'étude avec un calendrier interactif</p>
-              </div>
+              <span class="material-icons text-2xl sm:text-3xl dark:text-yellow-400 light:text-indigo-500 group-hover:translate-x-2 transition-all duration-300 self-end sm:self-auto">arrow_forward</span>
             </div>
-            <span class="material-icons text-2xl sm:text-3xl dark:text-yellow-400 light:text-indigo-500 group-hover:translate-x-2 transition-all duration-300 self-end sm:self-auto">arrow_forward</span>
+          </div>
+
+          <!-- Quick Access Card - Study Hub -->
+          <div class="dark:bg-gradient-to-br dark:from-indigo-500/10 dark:to-purple-600/10 dark:border-indigo-500/30 light:bg-white/80 light:backdrop-blur-sm light:border light:border-indigo-200 rounded-2xl p-6 dark:hover:border-indigo-500/50 light:hover:border-indigo-400 transition-all duration-300 group cursor-pointer shadow-lg light:shadow-indigo-200/40" (click)="goToStudyHub()">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div class="flex items-center gap-4">
+                <div class="w-14 h-14 sm:w-16 sm:h-16 dark:bg-gradient-to-br dark:from-indigo-400 dark:to-purple-600 light:bg-gradient-to-br light:from-indigo-500 light:to-violet-600 rounded-xl flex items-center justify-center dark:shadow-lg dark:shadow-indigo-500/50 light:shadow-lg light:shadow-indigo-500/40 group-hover:scale-110 transition-all duration-300">
+                  <span class="material-icons text-3xl dark:text-white light:text-white">school</span>
+                </div>
+                <div>
+                  <h3 class="text-xl sm:text-2xl font-bold dark:bg-gradient-to-r dark:from-indigo-400 dark:to-purple-400 light:bg-gradient-to-r light:from-indigo-600 light:to-violet-600 bg-clip-text text-transparent">Study Hub</h3>
+                  <p class="text-xs sm:text-sm dark:text-gray-400 light:text-slate-600 font-medium">Notes, Flashcards & Quizzes intelligents</p>
+                </div>
+              </div>
+              <span class="material-icons text-2xl sm:text-3xl dark:text-indigo-400 light:text-indigo-500 group-hover:translate-x-2 transition-all duration-300 self-end sm:self-auto">arrow_forward</span>
+            </div>
           </div>
         </div>
         

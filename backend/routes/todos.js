@@ -117,11 +117,21 @@ router.post('/', async (req, res) => {
 router.put('/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    const updates = req.body;
-    
+    const { subjectId, ...rest } = req.body;
+
+    // Build the update operation
+    const updateOp = { $set: { ...rest } };
+
+    // Handle subjectId separately: null/empty = unset, value = set
+    if (subjectId === null || subjectId === '' || subjectId === undefined) {
+      updateOp.$unset = { subjectId: '' };
+    } else {
+      updateOp.$set.subjectId = subjectId;
+    }
+
     const todo = await Todo.findOneAndUpdate(
       { _id: id, user: req.user._id },
-      updates,
+      updateOp,
       { new: true, runValidators: true }
     ).populate('subjectId');
     

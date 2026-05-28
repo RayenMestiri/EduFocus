@@ -2105,9 +2105,8 @@ export class DashboardComponent implements OnInit {
     this.router.navigate(['/planner']);
   }
 
-  goToNotes() {
-    this.closeMobileSubjectsMenu();
-    this.router.navigate(['/notes']);
+  goToStudyHub() {
+    this.router.navigate(['/study-hub']);
   }
 
   // Lottie Animation Callback

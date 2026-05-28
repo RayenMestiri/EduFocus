@@ -1,0 +1,1557 @@
+﻿<div class="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-300" *ngIf="pack() as pack">
+  
+  <!-- Top Navigation Header -->
+  <header class="sticky top-0 z-40 bg-white/80 dark:bg-black/80 backdrop-blur-xl border-b border-gray-200/50 dark:border-gray-800/50 shadow-sm transition-all duration-300">
+    <div class="max-w-[1800px] w-[98%] lg:w-[94%] mx-auto px-4 py-3 flex items-center justify-between">
+      
+      <!-- Brand / Logo -->
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-md shadow-indigo-200 dark:shadow-none">
+          <span class="material-icons text-white text-lg">school</span>
+        </div>
+        <div>
+          <span class="font-extrabold text-lg bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-400 dark:to-purple-400 bg-clip-text text-transparent">EduFocus</span>
+          <span class="ml-2 px-1.5 py-0.5 rounded bg-indigo-50 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-400 text-[10px] font-bold uppercase tracking-wider">Study Hub</span>
+        </div>
+      </div>
+
+      <!-- Action Items & Navigation links -->
+      <div class="flex items-center gap-2">
+        <!-- Back to Dashboard Link -->
+        <a routerLink="/dashboard" class="px-3 py-1.5 rounded-xl bg-gray-50 hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 border border-gray-200/50 dark:border-gray-700 text-xs font-semibold flex items-center gap-1.5 transition-all shadow-sm">
+          <span class="material-icons text-sm">home</span>
+          <span class="hidden sm:inline">Dashboard</span>
+        </a>
+
+        <!-- Back to Planner Link -->
+        <a routerLink="/planner" class="px-3 py-1.5 rounded-xl bg-gray-50 hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 border border-gray-200/50 dark:border-gray-700 text-xs font-semibold flex items-center gap-1.5 transition-all shadow-sm">
+          <span class="material-icons text-sm">event</span>
+          <span class="hidden sm:inline">Planner</span>
+        </a>
+
+        <!-- Divider -->
+        <span class="h-5 w-[1px] bg-gray-200 dark:bg-gray-700 mx-1"></span>
+
+        <!-- Dark Mode Toggle Button -->
+        <button 
+          (click)="themeService.toggleTheme()"
+          class="p-2 rounded-xl bg-gray-50 hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700 border border-gray-200/50 dark:border-gray-700 text-gray-500 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-all shadow-sm"
+          [title]="themeService.isDark() ? 'Mode clair' : 'Mode sombre'"
+        >
+          <span class="material-icons text-sm">{{ themeService.isDark() ? 'light_mode' : 'dark_mode' }}</span>
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- Workspace Content -->
+  <div class="max-w-[1800px] w-[98%] lg:w-[94%] mx-auto p-4 sm:p-6 md:p-8">
+    
+    <!-- Header -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-8 gap-4">
+    <div class="flex items-center gap-3 sm:gap-4">
+      <a routerLink="/study-hub" class="p-2 bg-white dark:bg-gray-800 rounded-full shadow-sm text-gray-500 dark:text-gray-300 hover:text-indigo-600 transition-colors border border-gray-100 dark:border-gray-700">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+        </svg>
+      </a>
+      <div>
+        <span class="inline-flex items-center rounded-md bg-indigo-50 dark:bg-indigo-900/30 px-2 py-1 text-xs font-medium text-indigo-700 dark:text-indigo-400 mb-1">
+          {{ pack.subject }}
+        </span>
+        <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white leading-tight">{{ pack.title }}</h1>
+      </div>
+    </div>
+    
+    <div class="flex flex-wrap items-center gap-2 sm:gap-3">
+      <a [routerLink]="['/study-hub/edit', pack.id]" class="px-3.5 py-2 sm:px-4 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-700 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-xs sm:text-sm font-medium shadow-sm flex items-center gap-2">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
+        Edit Pack
+      </a>
+      <button (click)="deletePack()" class="px-3.5 py-2 sm:px-4 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 border border-red-100 dark:border-red-800/30 rounded-xl hover:bg-red-100 dark:hover:bg-red-900/40 transition-colors text-xs sm:text-sm font-medium flex items-center gap-2">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+        Delete Pack
+      </button>
+    </div>
+  </div>
+
+  <p class="text-gray-600 dark:text-gray-400 mb-8 max-w-3xl">{{ pack.description || 'No description provided.' }}</p>
+
+  <!-- Workspace Section -->
+  <div class="bg-white/80 dark:bg-gray-800/80 backdrop-blur-md rounded-3xl border border-gray-200 dark:border-gray-700 shadow-xl overflow-hidden mb-8">
+    
+    <!-- Workspace Navigation Tabs -->
+    <div class="border-b border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-800/30 px-6 py-2 flex items-center justify-between overflow-x-auto whitespace-nowrap">
+      <div class="flex gap-2">
+        <button 
+          (click)="selectTab('notes')"
+          [class]="activeTab() === 'notes' ? 'px-4 py-3 text-indigo-600 dark:text-indigo-400 border-b-2 border-indigo-600 dark:border-indigo-400 font-bold flex items-center gap-2' : 'px-4 py-3 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 font-medium flex items-center gap-2'"
+        >
+          📝 Notes 
+          <span class="px-2 py-0.5 text-xs bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 rounded-full font-semibold">{{ pack.notes?.length || 0 }}</span>
+        </button>
+        <button 
+          (click)="selectTab('flashcards')"
+          [class]="activeTab() === 'flashcards' ? 'px-4 py-3 text-indigo-600 dark:text-indigo-400 border-b-2 border-indigo-600 dark:border-indigo-400 font-bold flex items-center gap-2' : 'px-4 py-3 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 font-medium flex items-center gap-2'"
+        >
+          🎴 Flashcards
+          <span class="px-2 py-0.5 text-xs bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 rounded-full font-semibold">{{ pack.flashcards?.length || 0 }}</span>
+        </button>
+        <button 
+          (click)="selectTab('quiz')"
+          [class]="activeTab() === 'quiz' ? 'px-4 py-3 text-indigo-600 dark:text-indigo-400 border-b-2 border-indigo-600 dark:border-indigo-400 font-bold flex items-center gap-2' : 'px-4 py-3 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 font-medium flex items-center gap-2'"
+        >
+          ❓ Quizzes
+          <span class="px-2 py-0.5 text-xs bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 rounded-full font-semibold">{{ pack.qcm?.length || 0 }}</span>
+        </button>
+        <button 
+          (click)="selectTab('cheatsheets')"
+          [class]="activeTab() === 'cheatsheets' ? 'px-4 py-3 text-indigo-600 dark:text-indigo-400 border-b-2 border-indigo-600 dark:border-indigo-400 font-bold flex items-center gap-2' : 'px-4 py-3 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 font-medium flex items-center gap-2'"
+        >
+          📜 Cheat Sheets
+          <span class="px-2 py-0.5 text-xs bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 rounded-full font-semibold">{{ pack.cheatsheets?.length || 0 }}</span>
+        </button>
+        <button 
+          (click)="selectTab('exercises')"
+          [class]="activeTab() === 'exercises' ? 'px-4 py-3 text-indigo-600 dark:text-indigo-400 border-b-2 border-indigo-600 dark:border-indigo-400 font-bold flex items-center gap-2' : 'px-4 py-3 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 font-medium flex items-center gap-2'"
+        >
+          💻 Coding Sandboxes
+          <span class="px-2 py-0.5 text-xs bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 rounded-full font-semibold">{{ pack.exercises?.length || 0 }}</span>
+        </button>
+      </div>
+
+      <!-- Statistics Badge -->
+      <div class="hidden sm:flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 pr-2 font-medium">
+        <span>Streak:</span>
+        <span class="flex items-center gap-0.5 text-orange-500 font-bold">
+          🔥 {{ pack.streak || 0 }}d
+        </span>
+        <span class="text-gray-300">|</span>
+        <span>Progress:</span>
+        <span class="text-green-600 dark:text-green-400 font-bold">{{ pack.progress || 0 }}%</span>
+      </div>
+    </div>
+
+    <!-- Active Workspace Tab Content -->
+    <div class="p-4 sm:p-6">
+      
+      <div *ngIf="activeTab() === 'notes'" class="space-y-6">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4">
+          <div>
+            <h2 class="text-xl font-bold text-gray-900 dark:text-white">Revision Notes</h2>
+            <p class="text-xs text-gray-400 dark:text-gray-500 font-medium">Summarize topics, formulate concepts and review guides.</p>
+          </div>
+          <div class="flex flex-wrap items-center gap-2">
+            <button (click)="openNoteImportModal()" class="px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm font-semibold border border-gray-200 dark:border-gray-700 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 flex items-center gap-1.5 shadow-sm transition-colors">
+              <span class="material-icons text-[14px] sm:text-sm">file_upload</span> Import
+            </button>
+            <button (click)="exportNotesAsJson()" [disabled]="!pack.notes || pack.notes.length === 0" class="px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm font-semibold border border-gray-200 dark:border-gray-700 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 flex items-center gap-1.5 shadow-sm transition-colors disabled:opacity-40 disabled:cursor-not-allowed">
+              <span class="material-icons text-[14px] sm:text-sm">file_download</span> Export
+            </button>
+            <button (click)="openAddNoteModal()" class="px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm font-bold bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl flex items-center gap-1.5 shadow-md transition-colors">
+              <span class="material-icons text-[14px] sm:text-sm">add</span> Add Note
+            </button>
+          </div>
+        </div>
+
+        <!-- Notes Empty State -->
+        <div *ngIf="!pack.notes || pack.notes.length === 0" class="flex flex-col items-center justify-center p-12 bg-gray-50/50 dark:bg-gray-900/30 border border-dashed border-gray-200 dark:border-gray-700 rounded-2xl">
+          <div class="w-16 h-16 bg-blue-100 dark:bg-blue-900/20 text-blue-500 dark:text-blue-400 rounded-full flex items-center justify-center mb-4">
+            <span class="material-icons text-2xl">sticky_note_2</span>
+          </div>
+          <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-1">No Notes Saved</h3>
+          <p class="text-sm text-gray-500 dark:text-gray-400 text-center max-w-sm mb-4">Write summarize guides, paste notes, or use ChatGPT JSON quick imports to fill this pack.</p>
+          <div class="flex gap-2">
+            <button (click)="openAddNoteModal()" class="px-4 py-2 text-xs font-semibold bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors">Add Custom Note</button>
+            <button (click)="openNoteImportModal()" class="px-4 py-2 text-xs font-semibold bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition-colors">Import JSON</button>
+          </div>
+        </div>
+
+        <!-- Notes Grid -->
+        <div *ngIf="pack.notes && pack.notes.length > 0" class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-6">
+          
+          <!-- Note Card (Repeater) -->
+          <div 
+            *ngFor="let note of pack.notes" 
+            (click)="openNoteReader(note)"
+            class="group bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl p-6 shadow-sm hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 cursor-pointer flex flex-col relative"
+          >
+            <!-- Pin indicator -->
+            <button 
+              (click)="togglePinNote(note, $event)" 
+              class="absolute top-4 right-4 text-gray-300 hover:text-yellow-500 transition-colors"
+              [class.text-yellow-500]="note.isPinned"
+            >
+              <span class="material-icons text-lg">{{ note.isPinned ? 'push_pin' : 'push_pin_outlined' }}</span>
+            </button>
+
+            <!-- Title & Subject badge -->
+            <div class="mb-3 pr-6">
+              <h3 class="text-lg font-bold text-gray-900 dark:text-white line-clamp-1 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">{{ note.title }}</h3>
+              <span class="text-xs text-gray-400 dark:text-gray-500 font-medium">Last updated: {{ note.updatedAt | date:'shortDate' }}</span>
+            </div>
+
+            <!-- Content preview -->
+            <p class="text-sm text-gray-500 dark:text-gray-400 line-clamp-4 flex-1 mb-4 leading-relaxed whitespace-pre-line">{{ note.content }}</p>
+
+            <!-- Tags and Actions -->
+            <div class="border-t border-gray-100 dark:border-gray-700 pt-4 flex items-center justify-between mt-auto">
+              <!-- Tags list -->
+              <div class="flex flex-wrap gap-1 max-w-[70%]">
+                <span 
+                  *ngFor="let tag of note.tags" 
+                  class="inline-flex items-center rounded-md bg-blue-50 dark:bg-blue-900/20 px-1.5 py-0.5 text-[10px] font-semibold text-blue-700 dark:text-blue-400 ring-1 ring-inset ring-blue-700/10"
+                >
+                  #{{ tag }}
+                </span>
+                <span *ngIf="!note.tags || note.tags.length === 0" class="text-[11px] text-gray-400 font-medium">No tags</span>
+              </div>
+
+              <!-- Quick action buttons -->
+              <div class="flex gap-2">
+                <button (click)="openEditNoteModal(note, $event)" class="p-1.5 text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                  <span class="material-icons text-sm">edit</span>
+                </button>
+                <button (click)="deleteNote(note.id, $event)" class="p-1.5 text-gray-400 hover:text-red-500 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                  <span class="material-icons text-sm">delete</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ========================================================================= -->
+      <!-- 2. FLASHCARDS TAB -->
+      <!-- ========================================================================= -->
+      <div *ngIf="activeTab() === 'flashcards'" class="space-y-6">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <h2 class="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
+            <span>Flashcards Set</span>
+            <span class="text-sm font-normal text-gray-500 dark:text-gray-400">Flip cards to revision. Spaced repetition system.</span>
+          </h2>
+          <div class="flex flex-wrap items-center gap-2">
+            <a 
+              *ngIf="pack.flashcards && pack.flashcards.length > 0"
+              [routerLink]="['/study-hub', pack.id, 'flashcards']" 
+              class="px-3.5 py-2 sm:px-5 sm:py-2 text-xs sm:text-sm font-bold bg-purple-600 hover:bg-purple-700 text-white rounded-xl flex items-center gap-1.5 shadow-md transition-colors"
+            >
+              <span class="material-icons text-[14px] sm:text-sm">play_arrow</span> Study
+            </a>
+            <button (click)="openFlashcardImportModal()" class="px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm font-semibold border border-gray-200 dark:border-gray-700 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 flex items-center gap-1.5 shadow-sm transition-colors">
+              <span class="material-icons text-[14px] sm:text-sm">file_upload</span> Import
+            </button>
+            <button (click)="exportFlashcardsAsJson()" [disabled]="!pack.flashcards || pack.flashcards.length === 0" class="px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm font-semibold border border-gray-200 dark:border-gray-700 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 flex items-center gap-1.5 shadow-sm transition-colors disabled:opacity-40 disabled:cursor-not-allowed">
+              <span class="material-icons text-[14px] sm:text-sm">file_download</span> Export
+            </button>
+            <button (click)="openAddFlashcardModal()" class="px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm font-semibold bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl flex items-center gap-1.5 shadow-md transition-colors">
+              <span class="material-icons text-[14px] sm:text-sm">add</span> Add Card
+            </button>
+          </div>
+        </div>
+
+        <!-- Flashcards Empty State -->
+        <div *ngIf="!pack.flashcards || pack.flashcards.length === 0" class="flex flex-col items-center justify-center p-12 bg-gray-50/50 dark:bg-gray-900/30 border border-dashed border-gray-200 dark:border-gray-700 rounded-2xl">
+          <div class="w-16 h-16 bg-purple-100 dark:bg-purple-900/20 text-purple-500 dark:text-purple-400 rounded-full flex items-center justify-center mb-4">
+            <span class="material-icons text-2xl">style</span>
+          </div>
+          <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-1">No Flashcards Available</h3>
+          <p class="text-sm text-gray-500 dark:text-gray-400 text-center max-w-sm mb-4">Create your study deck or import pre-made flashcards instantly using ChatGPT JSON export.</p>
+          <div class="flex gap-2">
+            <button (click)="openAddFlashcardModal()" class="px-4 py-2 text-xs font-semibold bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors">Add Custom Card</button>
+            <button (click)="openFlashcardImportModal()" class="px-4 py-2 text-xs font-semibold bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition-colors">Import JSON</button>
+          </div>
+        </div>
+
+        <!-- Flashcards Deck -->
+        <div *ngIf="pack.flashcards && pack.flashcards.length > 0" class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-6">
+          
+          <!-- Card Item -->
+          <div *ngFor="let card of pack.flashcards; let i = index" class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-sm hover:shadow-md transition-all flex flex-col min-h-48 h-auto pb-4 relative overflow-hidden group">
+            
+            <span class="absolute top-3 left-4 text-[10px] font-bold text-gray-400 uppercase tracking-widest">Card #{{ i + 1 }}</span>
+            
+            <!-- Edit & Delete buttons -->
+            <div class="absolute top-3 right-3 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+              <button (click)="openEditFlashcardModal(card)" class="p-1 text-gray-400 hover:text-indigo-600 rounded bg-white dark:bg-gray-700 border border-gray-100 dark:border-gray-600 shadow-sm transition-colors">
+                <span class="material-icons text-xs">edit</span>
+              </button>
+              <button (click)="deleteFlashcard(card.id)" class="p-1 text-gray-400 hover:text-red-500 rounded bg-white dark:bg-gray-700 border border-gray-100 dark:border-gray-600 shadow-sm transition-colors">
+                <span class="material-icons text-xs">delete</span>
+              </button>
+            </div>
+
+            <!-- Front Preview -->
+            <div class="p-5 flex-1 flex flex-col justify-center border-b border-gray-100 dark:border-gray-700 bg-gray-50/20 dark:bg-gray-800/10">
+              <span class="text-xs text-indigo-500 dark:text-indigo-400 font-semibold mb-1 uppercase tracking-wider text-[9px]">Front</span>
+              <p class="text-sm font-bold text-gray-900 dark:text-white line-clamp-2 leading-relaxed">{{ card.front }}</p>
+            </div>
+
+            <!-- Back Preview -->
+            <div class="p-5 flex-1 flex flex-col justify-center bg-purple-50/10 dark:bg-purple-900/5">
+              <span class="text-xs text-purple-500 dark:text-purple-400 font-semibold mb-1 uppercase tracking-wider text-[9px]">Back</span>
+              <p class="text-sm text-gray-700 dark:text-gray-300 line-clamp-3 leading-relaxed whitespace-pre-wrap">{{ card.back }}</p>
+            </div>
+
+            <!-- Optional Code block preview in Flashcard card list -->
+            <div *ngIf="card.code" class="px-5 py-2.5 bg-black/5 dark:bg-black/20 border-t border-gray-100 dark:border-gray-750/70">
+              <span class="text-[9px] font-bold text-gray-400 uppercase tracking-widest block mb-1">Snippet de Code</span>
+              <pre class="w-full bg-gray-100 dark:bg-gray-900 p-2 rounded-lg border border-gray-250/20 dark:border-gray-800/40 font-mono text-[10px] text-indigo-650 dark:text-indigo-400 truncate"><code>{{ card.code }}</code></pre>
+            </div>
+            
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ========================================================================= -->
+      <!-- 3. QUIZZES (QCM) TAB -->
+      <!-- ========================================================================= -->
+      <div *ngIf="activeTab() === 'quiz'" class="space-y-6">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4">
+          <div>
+            <h2 class="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
+              <span>Question Bank</span>
+              <span class="text-sm font-normal text-gray-500 dark:text-gray-400">Generate tests and verify your weak topics.</span>
+            </h2>
+          </div>
+          <div class="flex flex-wrap items-center gap-2">
+            <a 
+              *ngIf="pack.qcm && pack.qcm.length > 0"
+              [routerLink]="['/study-hub', pack.id, 'quiz']" 
+              class="px-3.5 py-2 sm:px-5 sm:py-2 text-xs sm:text-sm font-bold bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl flex items-center gap-1.5 shadow-md transition-all"
+            >
+              <span class="material-icons text-[14px] sm:text-sm">play_arrow</span> Start Quiz
+            </a>
+            <button (click)="openQuizImportModal()" class="px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm font-semibold border border-gray-200 dark:border-gray-700 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 flex items-center gap-1.5 shadow-sm transition-colors">
+              <span class="material-icons text-[14px] sm:text-sm">file_upload</span> Import
+            </button>
+            <button (click)="exportQcmsAsJson()" [disabled]="!pack.qcm || pack.qcm.length === 0" class="px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm font-semibold border border-gray-200 dark:border-gray-700 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 flex items-center gap-1.5 shadow-sm transition-colors disabled:opacity-40 disabled:cursor-not-allowed">
+              <span class="material-icons text-[14px] sm:text-sm">file_download</span> Export
+            </button>
+            <button (click)="openAddQuizModal()" class="px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm font-semibold bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl flex items-center gap-1.5 shadow-md transition-colors">
+              <span class="material-icons text-[14px] sm:text-sm">add</span> Add Q
+            </button>
+          </div>
+        </div>
+
+        <!-- Quizzes Empty State -->
+        <div *ngIf="!pack.qcm || pack.qcm.length === 0" class="flex flex-col items-center justify-center p-12 bg-gray-50/50 dark:bg-gray-900/30 border border-dashed border-gray-200 dark:border-gray-700 rounded-2xl">
+          <div class="w-16 h-16 bg-emerald-100 dark:bg-emerald-900/20 text-emerald-500 dark:text-emerald-400 rounded-full flex items-center justify-center mb-4">
+            <span class="material-icons text-2xl">quiz</span>
+          </div>
+          <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-1">No Quiz Questions</h3>
+          <p class="text-sm text-gray-500 dark:text-gray-400 text-center max-w-sm mb-4">Créez des questions personnalisées ou importez un schéma JSON pour enrichir votre banque de quiz.</p>
+          <div class="flex gap-2">
+            <button (click)="openAddQuizModal()" class="px-4 py-2 text-xs font-semibold bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg transition-colors">Add Custom Question</button>
+            <button (click)="openQuizImportModal()" class="px-4 py-2 text-xs font-semibold bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition-colors">Import JSON</button>
+          </div>
+        </div>
+        
+        <!-- Quizzes Grid (Organized in cards boxes like Notes) -->
+        <div *ngIf="pack.qcm && pack.qcm.length > 0" class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-6">
+          
+          <!-- Quiz Card (Repeater - Click-expandable like Notes) -->
+          <div 
+            *ngFor="let q of pack.qcm; let i = index" 
+            (click)="openQuizReader(q)"
+            class="group bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl p-6 shadow-sm hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 flex flex-col relative cursor-pointer"
+          >
+            <!-- Header Tag Row -->
+            <div class="flex items-center justify-between gap-2 mb-3">
+              <div class="flex items-center gap-1.5 flex-wrap">
+                <span class="text-xs font-black text-indigo-600 dark:text-indigo-400">Q#{{ i + 1 }}</span>
+                <span class="px-2 py-0.5 rounded bg-gray-100 dark:bg-gray-700 text-[9px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                  {{ q.type === 'multiple-choice' ? 'QCM' : q.type === 'true-false' ? 'Vrai/Faux' : 'Texte' }}
+                </span>
+                <span *ngIf="q.topic" class="px-2 py-0.5 rounded bg-indigo-50 dark:bg-indigo-950 text-[9px] font-bold text-indigo-700 dark:text-indigo-400 uppercase tracking-wider font-mono">
+                  #{{ q.topic }}
+                </span>
+              </div>
+
+              <!-- Quick action buttons -->
+              <div class="flex gap-1.5 opacity-60 group-hover:opacity-100 transition-opacity">
+                <button (click)="openEditQuizModal(q); $event.stopPropagation()" class="p-1 text-gray-400 hover:text-indigo-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                  <span class="material-icons text-sm">edit</span>
+                </button>
+                <button (click)="deleteQuiz(q.id); $event.stopPropagation()" class="p-1 text-gray-400 hover:text-red-500 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                  <span class="material-icons text-sm">delete</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Question text -->
+            <h3 class="text-sm font-bold text-gray-900 dark:text-white leading-relaxed mb-4 line-clamp-3" [innerHTML]="q.question"></h3>
+
+            <!-- Options preview (Only MCQ - 2 columns grid layout) -->
+            <div *ngIf="q.type === 'multiple-choice' && q.options" class="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-auto border-t border-gray-100 dark:border-gray-700 pt-4">
+              <div 
+                *ngFor="let opt of q.options; let optIdx = index" 
+                class="px-3 py-2 text-xs rounded-xl border font-bold flex items-center gap-2 transition-all shadow-sm"
+                [ngClass]="{
+                  'border-emerald-500 bg-emerald-50/50 dark:bg-emerald-950/20 dark:border-emerald-800/40 text-emerald-700 dark:text-emerald-400 font-extrabold shadow-sm': String(optIdx) === String(q.correctAnswer),
+                  'border-gray-100 dark:border-gray-700 text-gray-500 hover:border-gray-200 dark:hover:border-gray-600': String(optIdx) !== String(q.correctAnswer)
+                }"
+              >
+                <span class="w-5 h-5 rounded-md flex items-center justify-center text-[9px] font-black font-mono shrink-0 shadow-inner"
+                      [ngClass]="{
+                        'bg-emerald-200 text-emerald-800 dark:bg-emerald-800 dark:text-emerald-300 border border-emerald-500/20': String(optIdx) === String(q.correctAnswer),
+                        'bg-gray-150 dark:bg-gray-800 text-gray-500': String(optIdx) !== String(q.correctAnswer)
+                      }">
+                  {{ String.fromCharCode(65 + optIdx) }}
+                </span>
+                <span class="line-clamp-1" [innerHTML]="opt"></span>
+                <span *ngIf="String(optIdx) === String(q.correctAnswer)" class="material-icons text-xs text-emerald-500 dark:text-emerald-400 ml-auto">check_circle</span>
+              </div>
+            </div>
+
+            <!-- True/False Preview -->
+            <div *ngIf="q.type === 'true-false'" class="flex gap-2.5 mt-auto border-t border-gray-100 dark:border-gray-700 pt-4">
+              <span class="px-3 py-1.5 rounded-lg border text-xs font-bold transition-all shadow-sm flex items-center gap-1"
+                    [ngClass]="{
+                      'bg-emerald-50/60 border-emerald-500 text-emerald-750 dark:bg-emerald-950/20 dark:border-emerald-800/40 dark:text-emerald-400 font-extrabold': String(q.correctAnswer).toLowerCase() === 'true',
+                      'border-gray-100 dark:border-gray-700 text-gray-450 dark:text-gray-500 opacity-60': String(q.correctAnswer).toLowerCase() !== 'true'
+                    }">
+                <span class="material-icons text-sm" *ngIf="String(q.correctAnswer).toLowerCase() === 'true'">check</span>
+                Vrai
+              </span>
+              <span class="px-3 py-1.5 rounded-lg border text-xs font-bold transition-all shadow-sm flex items-center gap-1"
+                    [ngClass]="{
+                      'bg-emerald-50/60 border-emerald-500 text-emerald-750 dark:bg-emerald-950/20 dark:border-emerald-800/40 dark:text-emerald-400 font-extrabold': String(q.correctAnswer).toLowerCase() === 'false',
+                      'border-gray-100 dark:border-gray-700 text-gray-450 dark:text-gray-500 opacity-60': String(q.correctAnswer).toLowerCase() !== 'false'
+                    }">
+                <span class="material-icons text-sm" *ngIf="String(q.correctAnswer).toLowerCase() === 'false'">check</span>
+                Faux
+              </span>
+            </div>
+
+            <!-- Fill in blanks preview -->
+            <div *ngIf="q.type === 'fill-blanks'" class="mt-auto border-t border-gray-100 dark:border-gray-700 pt-4 flex flex-col gap-1 text-[11px]">
+              <span class="text-gray-400 dark:text-gray-500 font-semibold uppercase tracking-wider text-[9px]">Réponse attendue :</span>
+              <span class="px-2 py-1 bg-green-50/40 border border-green-200/50 text-green-700 dark:bg-green-900/20 dark:border-green-800/30 dark:text-green-400 rounded-lg font-bold font-mono text-center">
+                {{ q.correctAnswer }}
+              </span>
+            </div>
+
+            <!-- Explanation / Trap Note preview (Combined details expandable if exists) -->
+            <div *ngIf="q.explanation || q.trapNote" class="mt-3 text-[10px] bg-gray-50/80 dark:bg-gray-800/40 border border-gray-150/45 dark:border-gray-750/45 p-2.5 rounded-xl flex flex-col gap-1">
+              <span *ngIf="q.explanation" class="text-gray-550 dark:text-gray-400 leading-relaxed font-medium line-clamp-2">
+                💡 {{ q.explanation }}
+              </span>
+              <span *ngIf="q.trapNote" class="text-amber-600 dark:text-amber-400 leading-relaxed font-bold line-clamp-1">
+                ⚠️ {{ q.trapNote }}
+              </span>
+            </div>
+            
+          </div>
+        </div>
+
+        <!-- Quiz Session Attempt Tries History Section (Premium Glass card styling) -->
+        <div *ngIf="quizAttempts() && quizAttempts().length > 0" class="mt-12 pt-8 border-t border-gray-200 dark:border-gray-700/60 space-y-6">
+          <div class="flex items-center gap-2">
+            <span class="material-icons text-indigo-500">history</span>
+            <h3 class="text-lg font-black text-gray-900 dark:text-white uppercase tracking-wider font-mono">Historique de vos essais</h3>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div 
+              *ngFor="let attempt of quizAttempts(); let attIdx = index"
+              class="p-5 rounded-2xl bg-white dark:bg-zinc-900 border border-gray-150 dark:border-zinc-800/80 shadow-sm flex flex-col justify-between hover:shadow-md transition-all duration-200"
+            >
+              <div class="flex items-center justify-between gap-3 mb-4">
+                <div class="flex items-center gap-2">
+                  <span class="px-2 py-0.5 rounded bg-indigo-50 dark:bg-indigo-950 text-[10px] font-black text-indigo-600 dark:text-indigo-400 uppercase tracking-widest font-mono">Essai #{{ quizAttempts().length - attIdx }}</span>
+                  <span class="text-xs text-gray-400 font-medium flex items-center gap-1"><span class="material-icons text-[12px]">schedule</span> {{ attempt.completedAt | date:'medium' }}</span>
+                </div>
+                
+                <!-- Score Percentage Badge -->
+                <span class="px-2.5 py-1 rounded-full text-xs font-black border"
+                      [ngClass]="{
+                        'bg-emerald-500/10 text-emerald-600 border-emerald-500/20 dark:text-emerald-400': attempt.percentage >= 70,
+                        'bg-amber-500/10 text-amber-600 border-amber-500/20 dark:text-amber-400': attempt.percentage >= 50 && attempt.percentage < 70,
+                        'bg-rose-500/10 text-rose-600 border-rose-500/20 dark:text-rose-400': attempt.percentage < 50
+                      }">
+                  {{ attempt.percentage }}%
+                </span>
+              </div>
+
+              <div class="flex justify-between items-center text-sm border-t border-gray-100 dark:border-zinc-800/40 pt-3">
+                <span class="text-gray-500 dark:text-zinc-400 font-semibold">Score obtenu :</span>
+                <span class="font-black text-lg text-gray-900 dark:text-white font-mono">{{ attempt.score }} / {{ attempt.totalQuestions }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ========================================================================= -->
+      <!-- 4. CHEAT SHEETS TAB -->
+      <!-- ========================================================================= -->
+      <div *ngIf="activeTab() === 'cheatsheets'" class="space-y-6">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <h2 class="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
+            <span>Reference Cheat Sheets</span>
+            <span class="text-sm font-normal text-gray-500 dark:text-gray-400">Keep key commands, syntax guides, and mappings.</span>
+          </h2>
+          <div class="flex flex-wrap items-center gap-2">
+            <button (click)="showCheatSheetImportModal.set(true)" class="px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm font-semibold border border-gray-200 dark:border-gray-700 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 flex items-center gap-1.5 shadow-sm transition-colors">
+              <span class="material-icons text-[14px] sm:text-sm">file_upload</span> Import
+            </button>
+            <button (click)="exportCheatsheetsAsJson()" [disabled]="!pack.cheatsheets || pack.cheatsheets.length === 0" class="px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm font-semibold border border-gray-200 dark:border-gray-700 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 flex items-center gap-1.5 shadow-sm transition-colors disabled:opacity-40 disabled:cursor-not-allowed">
+              <span class="material-icons text-[14px] sm:text-sm">file_download</span> Export
+            </button>
+            <button (click)="openAddCheatSheetModal()" class="px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm font-semibold bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl flex items-center gap-1.5 shadow-md transition-colors">
+              <span class="material-icons text-[14px] sm:text-sm">add</span> Add Reference
+            </button>
+          </div>
+        </div>
+
+        <!-- Empty State -->
+        <div *ngIf="!pack.cheatsheets || pack.cheatsheets.length === 0" class="flex flex-col items-center justify-center p-12 bg-gray-50/50 dark:bg-gray-900/30 border border-dashed border-gray-200 dark:border-gray-700 rounded-2xl">
+          <div class="w-16 h-16 bg-indigo-100 dark:bg-indigo-900/20 text-indigo-500 rounded-full flex items-center justify-center mb-4">
+            <span class="material-icons text-2xl">assignment</span>
+          </div>
+          <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-1">No Reference Sheets</h3>
+          <p class="text-sm text-gray-500 dark:text-gray-400 text-center max-w-sm mb-4">Store useful syntax, definitions, or custom quick-guides to review them easily.</p>
+          <button (click)="openAddCheatSheetModal()" class="px-4 py-2 text-xs font-semibold bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-colors">Add Reference</button>
+        </div>
+
+        <!-- List Grid (Flexible 3 items per row) -->
+        <div *ngIf="pack.cheatsheets && pack.cheatsheets.length > 0" class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-6">
+          <div 
+            *ngFor="let cs of pack.cheatsheets; let csIdx = index" 
+            class="bg-white dark:bg-zinc-900/90 border border-gray-150 dark:border-zinc-800/85 rounded-xl flex flex-col justify-between group overflow-hidden transition-all duration-300 cursor-pointer"
+            [style.border-top]="'4px solid ' + getCheatSheetTheme(csIdx).color"
+            [style.box-shadow]="hoveredIndex() === csIdx ? '0 12px 35px ' + getCheatSheetTheme(csIdx).color + '30' : '0 4px 25px ' + getCheatSheetTheme(csIdx).rgba"
+            [style.transform]="hoveredIndex() === csIdx ? 'translateY(-3.5px)' : 'none'"
+            (mouseenter)="hoveredIndex.set(csIdx)"
+            (mouseleave)="hoveredIndex.set(null)"
+          >
+            <div>
+              <div class="px-5 py-3 border-b border-gray-150 dark:border-zinc-800/80 flex justify-between items-center"
+                   [style.background]="themeService.isDark() ? 'linear-gradient(135deg, rgba(24, 24, 27, 0.95) 30%, ' + getCheatSheetTheme(csIdx).rgba + ')' : 'linear-gradient(135deg, rgba(255, 255, 255, 0.95) 30%, ' + getCheatSheetTheme(csIdx).rgbaLight + ')'">
+                <h3 
+                  class="text-xs font-black uppercase tracking-wider flex items-center gap-1.5"
+                  [style.color]="getCheatSheetTheme(csIdx).color"
+                  [style.text-shadow]="themeService.isDark() ? '0 0 10px ' + getCheatSheetTheme(csIdx).color + '40' : 'none'"
+                >
+                  <span class="text-base mr-1 shrink-0">{{ getCheatSheetTheme(csIdx).icon }}</span>
+                  {{ cs.category }}
+                </h3>
+                <div class="flex items-center gap-1.5">
+                  <button 
+                    (click)="copyCheatSheetToClipboard(cs, $event)" 
+                    class="copy-btn shrink-0 font-bold" 
+                    [style.border]="'1px solid ' + getCheatSheetTheme(csIdx).color + '40'" 
+                    [style.color]="hoveredCopyIndex() === csIdx ? '#fff' : getCheatSheetTheme(csIdx).color" 
+                    [style.background]="hoveredCopyIndex() === csIdx ? getCheatSheetTheme(csIdx).color : (themeService.isDark() ? getCheatSheetTheme(csIdx).rgba : getCheatSheetTheme(csIdx).rgbaLight)" 
+                    style="padding:4px 10px; border-radius:6px; font-size: 11px; transition: 0.2s;"
+                    (mouseenter)="hoveredCopyIndex.set(csIdx)"
+                    (mouseleave)="hoveredCopyIndex.set(null)"
+                    title="Copy to clipboard"
+                  >
+                    📋 Copier
+                  </button>
+                  <button 
+                    (click)="openEditCheatSheetModal(cs, $event)" 
+                    class="p-1.5 text-gray-400 hover:text-indigo-500 rounded bg-white dark:bg-zinc-800 border border-gray-150 dark:border-zinc-700/50 shadow-sm transition-colors"
+                  >
+                    <span class="material-icons text-[13px]">edit</span>
+                  </button>
+                  <button (click)="deleteCheatSheet(cs.id, $event)" class="p-1.5 text-gray-400 hover:text-red-500 rounded bg-white dark:bg-zinc-800 border border-gray-150 dark:border-zinc-700/50 shadow-sm transition-colors">
+                    <span class="material-icons text-[13px]">delete</span>
+                  </button>
+                </div>
+              </div>
+ 
+              <div class="p-5 space-y-4">
+                <h4 class="text-base font-extrabold text-gray-900 dark:text-white">{{ cs.title }}</h4>
+                
+                <!-- Key-value list (Tactile borders and contrast values) -->
+                <div class="space-y-1">
+                  <div *ngFor="let item of cs.items; let iNum = index" 
+                       class="flex justify-between items-center text-xs py-2 border-b border-gray-100 dark:border-zinc-800/40 gap-4"
+                       [style.background]="iNum % 2 === 0 ? 'transparent' : (themeService.isDark() ? 'rgba(255,255,255,0.015)' : 'rgba(0,0,0,0.018)')"
+                       style="padding: 6px 4px; border-radius: 4px;">
+                    <span class="font-bold text-gray-450 dark:text-zinc-400 shrink-0">{{ item.key }}</span>
+                    <span 
+                      class="font-black font-mono text-right leading-tight select-all" 
+                      [style.color]="getCheatSheetTheme(csIdx).color"
+                      [style.text-shadow]="'0 0 8px ' + getCheatSheetTheme(csIdx).color + '20'"
+                      title="Double-click to select"
+                    >
+                      {{ item.value }}
+                    </span>
+                  </div>
+                </div>
+ 
+                <!-- Code block preview -->
+                <div *ngIf="cs.codeSample" class="mt-4">
+                  <pre 
+                    class="bg-slate-50 text-slate-800 border-gray-200/60 dark:bg-zinc-950 dark:text-slate-100 dark:border-zinc-800/40 text-xs p-4 rounded-xl overflow-x-auto border leading-relaxed font-mono whitespace-pre shadow-inner"
+                    [style.border-left]="'3px solid ' + getCheatSheetTheme(csIdx).color"
+                    [style.border-color]="getCheatSheetTheme(csIdx).color + '30'"
+                  ><code [innerHTML]="highlightSQL(cs.codeSample)"></code></pre>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- ========================================================================= -->
+      <!-- 5. CODING EXERCISES TAB -->
+      <!-- ========================================================================= -->
+      <div *ngIf="activeTab() === 'exercises'" class="space-y-6">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <h2 class="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
+            <span>Coding Sandbox & Exercises</span>
+            <span class="text-sm font-normal text-gray-500 dark:text-gray-400">Practice writing query commands and code syntax.</span>
+          </h2>
+          <div class="flex flex-wrap items-center gap-2">
+            <button (click)="showExerciseImportModal.set(true)" class="px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm font-semibold border border-gray-200 dark:border-gray-700 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 flex items-center gap-1.5 shadow-sm transition-colors">
+              <span class="material-icons text-[14px] sm:text-sm">file_upload</span> Import
+            </button>
+            <button (click)="exportExercisesAsJson()" [disabled]="!pack.exercises || pack.exercises.length === 0" class="px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm font-semibold border border-gray-200 dark:border-gray-700 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 flex items-center gap-1.5 shadow-sm transition-colors disabled:opacity-40 disabled:cursor-not-allowed">
+              <span class="material-icons text-[14px] sm:text-sm">file_download</span> Export
+            </button>
+            <button (click)="openAddExerciseModal()" class="px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm font-semibold bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl flex items-center gap-1.5 shadow-md transition-colors">
+              <span class="material-icons text-[14px] sm:text-sm">add</span> Add Exercise
+            </button>
+          </div>
+        </div>
+
+        <!-- Empty State -->
+        <div *ngIf="!pack.exercises || pack.exercises.length === 0" class="flex flex-col items-center justify-center p-12 bg-gray-50/50 dark:bg-gray-900/30 border border-dashed border-gray-200 dark:border-gray-700 rounded-2xl">
+          <div class="w-16 h-16 bg-emerald-100 dark:bg-emerald-900/20 text-emerald-500 dark:text-emerald-400 rounded-full flex items-center justify-center mb-4">
+            <span class="material-icons text-2xl">terminal</span>
+          </div>
+          <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-1">No Coding Exercises</h3>
+          <p class="text-sm text-gray-500 dark:text-gray-400 text-center max-w-sm mb-4">Create sandbox exercises to practice query lines, index statements, or trigger logic inline.</p>
+          <button (click)="openAddExerciseModal()" class="px-4 py-2 text-xs font-semibold bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg transition-colors">Add Exercise</button>
+        </div>
+
+        <!-- Exercises List -->
+        <div *ngIf="pack.exercises && pack.exercises.length > 0" class="space-y-8">
+          <div *ngFor="let ex of pack.exercises; let exIdx = index" class="bg-white dark:bg-slate-900/80 border border-gray-200 dark:border-slate-800 rounded-3xl p-6 md:p-8 shadow-md hover:shadow-2xl transition-all duration-300 flex flex-col gap-6 group relative overflow-hidden">
+            
+            <!-- Absolute background glow -->
+            <div class="absolute -top-24 -right-24 w-48 h-48 bg-emerald-500/5 dark:bg-emerald-500/10 rounded-full blur-3xl pointer-events-none group-hover:scale-125 transition-transform duration-500"></div>
+
+            <!-- Header with macOS style terminal dots and actions -->
+            <div class="flex justify-between items-center border-b border-gray-100 dark:border-slate-800/80 pb-4">
+              <div class="flex items-center gap-3">
+                <!-- Mac dots -->
+                <div class="flex gap-1.5 shrink-0">
+                  <span class="w-3.5 h-3.5 rounded-full bg-rose-500/80 shadow-sm shadow-rose-500/20"></span>
+                  <span class="w-3.5 h-3.5 rounded-full bg-amber-500/80 shadow-sm shadow-amber-500/20"></span>
+                  <span class="w-3.5 h-3.5 rounded-full bg-emerald-500/80 shadow-sm shadow-emerald-500/20"></span>
+                </div>
+                <!-- Title -->
+                <div class="ml-2">
+                  <span class="text-[10px] font-black text-emerald-600 dark:text-emerald-400 uppercase tracking-widest block font-mono">Exercise #{{ exIdx + 1 }} &mdash; Active Sandbox</span>
+                  <h3 class="text-lg font-black text-gray-900 dark:text-white mt-0.5 leading-snug">{{ ex.title }}</h3>
+                </div>
+              </div>
+              <div class="flex items-center gap-2">
+                <button (click)="openEditExerciseModal(ex, $event)" class="p-2 text-gray-400 hover:text-indigo-500 rounded-xl hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors">
+                  <span class="material-icons text-sm">edit</span>
+                </button>
+                <button (click)="deleteExercise(ex.id, $event)" class="p-2 text-gray-400 hover:text-red-500 rounded-xl hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors">
+                  <span class="material-icons text-sm">delete</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Body Description -->
+            <div class="text-sm text-gray-700 dark:text-slate-350 leading-relaxed font-medium whitespace-pre-line">{{ ex.description }}</div>
+
+            <!-- SchemaContext (Database Table Mockup style) -->
+            <div *ngIf="ex.schemaContext" class="space-y-1.5 rounded-2xl overflow-hidden border border-gray-250/60 dark:border-zinc-800/80 shadow-md dark:shadow-xl">
+              <!-- Terminal title bar -->
+              <div class="bg-slate-100 dark:bg-zinc-950 px-4 py-2 border-b border-gray-200/60 dark:border-zinc-800/60 flex items-center gap-2 text-slate-500 dark:text-zinc-450 text-[10px] font-bold tracking-wider font-mono">
+                <span class="material-icons text-xs text-indigo-400">table_rows</span>
+                📁 DATABASE SCHEMA CONTEXT
+              </div>
+              <!-- Code pre -->
+              <pre class="bg-slate-50 dark:bg-zinc-950 text-slate-800 dark:text-gray-250 p-4 overflow-x-auto leading-relaxed font-mono text-[13px] whitespace-pre shadow-inner"><code [innerHTML]="highlightSQL(ex.schemaContext)"></code></pre>
+            </div>
+
+            <!-- Task Requirement (Sleek callout badge) -->
+            <div class="p-5 bg-gradient-to-r from-sky-500/5 to-indigo-500/5 dark:from-sky-500/10 dark:to-indigo-500/10 border-l-4 border-sky-500 rounded-r-2xl rounded-l-md space-y-1.5 shadow-sm">
+              <span class="text-[10px] font-black text-sky-600 dark:text-sky-400 uppercase tracking-widest block font-mono flex items-center gap-1">
+                <span class="material-icons text-[10px]">terminal</span>
+                Task Instruction / Requirement
+              </span>
+              <div class="text-sm text-gray-800 dark:text-slate-200 font-extrabold leading-relaxed">{{ ex.task }}</div>
+            </div>
+
+            <!-- Playground Sandbox Area (Interactive Editor Console Look) -->
+            <div class="space-y-2">
+              <div class="flex items-center justify-between">
+                <span class="text-[10px] font-black text-gray-400 dark:text-slate-500 uppercase tracking-widest block font-mono flex items-center gap-1">
+                  <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
+                  LIVE INTERACTIVE COMPILER CONSOLE
+                </span>
+                <span class="text-[10px] font-black text-gray-400 dark:text-slate-500 uppercase tracking-widest block font-mono">SQL DIALECT: T-SQL</span>
+              </div>
+              <div class="relative">
+                <textarea 
+                  rows="5" 
+                  class="w-full font-mono text-[13px] p-4 bg-slate-50 text-slate-900 border border-gray-250 dark:bg-zinc-950 dark:text-slate-100 dark:border-zinc-800 rounded-2xl focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none leading-relaxed shadow-inner dark:shadow-2xl" 
+                  placeholder="-- Tapez vos requêtes SQL ici...&#10;-- Exemple: SELECT * FROM Table;"></textarea>
+                <div class="absolute bottom-3 right-4 text-[10px] font-bold font-mono text-slate-400 dark:text-zinc-500 pointer-events-none select-none">UTF-8</div>
+              </div>
+            </div>
+
+            <!-- Collapse Solutions -->
+            <div class="space-y-4 pt-2">
+              <div class="flex gap-2">
+                <button (click)="toggleSolutionVisibility(ex.id)" 
+                        class="px-5 py-2.5 text-xs font-black uppercase tracking-wider rounded-xl transition-all shadow-md flex items-center gap-1.5 border border-emerald-500/30 text-emerald-700 dark:text-emerald-450 bg-emerald-50/50 dark:bg-emerald-950/20 hover:bg-emerald-600 hover:text-white dark:hover:bg-emerald-500 dark:hover:text-black">
+                  <span class="material-icons text-sm">{{ exerciseSolutionVisible()[ex.id] ? 'visibility_off' : 'visibility' }}</span>
+                  {{ exerciseSolutionVisible()[ex.id] ? 'Cacher solution' : 'Voir solution correcte' }}
+                </button>
+              </div>
+
+              <!-- Solution block collapsible -->
+              <div *ngIf="exerciseSolutionVisible()[ex.id]" class="p-6 bg-emerald-50/25 dark:bg-emerald-950/5 border border-emerald-500/20 rounded-3xl space-y-4 animate__animated animate__fadeIn animate__faster shadow-inner">
+                <div class="space-y-1.5 rounded-2xl overflow-hidden border border-emerald-500/30 shadow-md dark:shadow-lg">
+                  <!-- verified badge -->
+                  <div class="bg-emerald-100 dark:bg-emerald-950 px-4 py-2 border-b border-emerald-500/20 flex items-center justify-between text-emerald-800 dark:text-emerald-400 text-[10px] font-black tracking-widest font-mono">
+                    <div class="flex items-center gap-1.5">
+                      <span class="material-icons text-xs text-emerald-600 dark:text-emerald-400">check_circle</span>
+                      VERIFIED SOLUTION SYNTAX
+                    </div>
+                    <span class="px-1.5 py-0.5 rounded bg-emerald-200/50 dark:bg-emerald-500/20 text-[9px] border border-emerald-300 dark:border-emerald-500/30 font-black">COMPILER APPROVED</span>
+                  </div>
+                  <!-- solution pre -->
+                  <pre class="bg-slate-50 dark:bg-zinc-950 text-slate-800 dark:text-gray-250 p-4 overflow-x-auto leading-relaxed font-mono text-[13px] whitespace-pre"><code [innerHTML]="highlightSQL(ex.correctSolution)"></code></pre>
+                </div>
+
+                <!-- Solution note if defined -->
+                <div *ngIf="ex.solutionNote" class="text-xs text-gray-600 dark:text-slate-400 leading-relaxed border-t border-emerald-500/10 pt-3 flex items-start gap-2">
+                  <span class="material-icons text-sm text-emerald-500 shrink-0 mt-0.5">info</span>
+                  <div class="font-medium"><strong class="text-emerald-700 dark:text-emerald-400 font-extrabold">Explications :</strong> {{ ex.solutionNote }}</div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+</div>
+
+<!-- ========================================================================= -->
+<!-- OVERLAY MODALS & SLIDE-OVER WORKSPACES -->
+<!-- ========================================================================= -->
+
+<!-- 1. NOTE READER DOCK -->
+<div *ngIf="viewingNote() as note" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/60 backdrop-blur-sm">
+  <div class="bg-white dark:bg-gray-800 rounded-3xl shadow-2xl w-full max-w-3xl overflow-hidden flex flex-col max-h-[90vh] animate__animated animate__fadeInUp animate__faster border border-gray-100 dark:border-gray-700">
+    <div class="px-8 py-5 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center bg-gray-50/50 dark:bg-gray-800/50">
+      <div class="flex items-center gap-2">
+        <span class="material-icons text-indigo-500">article</span>
+        <h3 class="text-xl font-bold text-gray-900 dark:text-white line-clamp-1">Reading Note</h3>
+      </div>
+      <div class="flex items-center gap-2">
+        <button (click)="openEditNoteModal(note); closeNoteReader()" class="p-2 text-gray-500 hover:text-indigo-600 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl transition-colors">
+          <span class="material-icons text-sm">edit</span>
+        </button>
+        <button (click)="closeNoteReader()" class="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl transition-colors">
+          <span class="material-icons text-sm">close</span>
+        </button>
+      </div>
+    </div>
+    
+    <div class="p-8 flex-1 overflow-y-auto space-y-6">
+      <div>
+        <h1 class="text-3xl font-extrabold text-gray-900 dark:text-white leading-tight mb-2">{{ note.title }}</h1>
+        <div class="flex items-center gap-4 text-xs text-gray-400 dark:text-gray-500 font-semibold">
+          <span>Created: {{ note.createdAt | date:'mediumDate' }}</span>
+          <span>•</span>
+          <span class="flex items-center gap-0.5 text-yellow-500" *ngIf="note.isPinned">
+            <span class="material-icons text-xs">push_pin</span> Pinned Note
+          </span>
+        </div>
+      </div>
+
+      <!-- Note tags -->
+      <div class="flex flex-wrap gap-1.5">
+        <span 
+          *ngFor="let tag of note.tags" 
+          class="px-2.5 py-1 text-xs font-semibold rounded-lg bg-indigo-50 dark:bg-indigo-900/20 text-indigo-700 dark:text-indigo-400"
+        >
+          #{{ tag }}
+        </span>
+      </div>
+
+      <!-- Rich readable note text area -->
+      <div class="prose dark:prose-invert max-w-none text-gray-800 dark:text-gray-200 leading-relaxed text-base whitespace-pre-line border-t border-gray-100 dark:border-gray-700 pt-6">
+        {{ note.content }}
+      </div>
+    </div>
+    
+    <div class="px-8 py-4 border-t border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 flex justify-end">
+      <button (click)="closeNoteReader()" class="px-6 py-2.5 text-sm font-semibold bg-gray-900 hover:bg-gray-800 dark:bg-gray-700 dark:hover:bg-gray-600 text-white rounded-xl transition-colors shadow-md">Close Reader</button>
+    </div>
+  </div>
+</div>
+
+<!-- 1.5 QUIZ READER DOCK -->
+<div *ngIf="viewingQuiz() as q" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/60 backdrop-blur-sm animate__animated animate__fadeIn animate__faster">
+  <div class="bg-white dark:bg-gray-800 rounded-3xl shadow-2xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[90vh] animate__animated animate__fadeInUp border border-gray-100 dark:border-gray-700">
+    <div class="px-8 py-5 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center bg-gray-50/50 dark:bg-gray-800/50">
+      <div class="flex items-center gap-2">
+        <span class="material-icons text-emerald-500">quiz</span>
+        <h3 class="text-xl font-bold text-gray-900 dark:text-white">Détails de la Question</h3>
+      </div>
+      <div class="flex items-center gap-2">
+        <button (click)="openEditQuizModal(q); closeQuizReader()" class="p-2 text-gray-500 hover:text-indigo-600 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl transition-colors">
+          <span class="material-icons text-sm">edit</span>
+        </button>
+        <button (click)="closeQuizReader()" class="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl transition-colors">
+          <span class="material-icons text-sm">close</span>
+        </button>
+      </div>
+    </div>
+    
+    <div class="p-8 flex-1 overflow-y-auto space-y-6">
+      <!-- Topic and Type badges -->
+      <div class="flex flex-wrap gap-2">
+        <span class="px-2.5 py-1 text-xs font-bold rounded-lg bg-indigo-50 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-400 uppercase tracking-wider font-mono">
+          #{{ q.topic || 'General' }}
+        </span>
+        <span class="px-2.5 py-1 text-xs font-bold rounded-lg bg-gray-100 dark:bg-gray-750 text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+          {{ q.type === 'multiple-choice' ? 'Choix multiples (QCM)' : q.type === 'true-false' ? 'Vrai / Faux' : 'Texte à trous' }}
+        </span>
+      </div>
+
+      <!-- Question Content -->
+      <div class="border-t border-gray-100 dark:border-gray-700 pt-6">
+        <span class="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest block mb-2">Question</span>
+        <h2 class="text-xl font-bold text-gray-950 dark:text-white leading-relaxed" [innerHTML]="q.question"></h2>
+      </div>
+
+            <!-- MCQ Options List -->
+      <div *ngIf="q.type === 'multiple-choice' && q.options" class="space-y-3">
+        <span class="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest block mb-2">Options de rÃ©ponse</span>
+        <div *ngFor="let opt of q.options; let optIdx = index" 
+             class="px-4 py-3 rounded-xl border flex items-center justify-between font-semibold text-sm shadow-sm"
+             [ngClass]="{
+               'border-green-500 bg-green-50/40 dark:bg-green-950/20 text-green-800 dark:text-green-300': String(optIdx) === String(q.correctAnswer),
+               'border-gray-250 dark:border-gray-700 text-gray-700 dark:text-gray-400': String(optIdx) !== String(q.correctAnswer)
+             }"
+        >
+          <div class="flex items-center gap-3">
+            <span class="w-6.5 h-6.5 rounded-lg bg-gray-100 dark:bg-gray-800 flex items-center justify-center text-xs font-black font-mono text-gray-550 dark:text-gray-400 shadow-sm border border-gray-250/20"
+                  [ngClass]="{
+                    'bg-green-200 text-green-800 dark:bg-green-800 dark:text-green-300 border border-green-500/20': String(optIdx) === String(q.correctAnswer)
+                  }">
+              {{ String.fromCharCode(65 + optIdx) }}
+            </span>
+            <span [innerHTML]="opt"></span>
+          </div>
+          <span *ngIf="String(optIdx) === String(q.correctAnswer)" class="px-2 py-0.5 rounded bg-green-500/20 text-green-600 dark:text-green-400 text-[10px] font-extrabold uppercase tracking-wider border border-green-500/30">Correct</span>
+        </div>
+      </div>
+
+      <!-- True / False Correct Answer -->
+      <div *ngIf="q.type === 'true-false'" class="space-y-3">
+        <span class="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest block mb-1">Correct Value</span>
+        <div class="px-4 py-3 rounded-xl border border-green-500 bg-green-50/40 dark:bg-green-950/20 text-green-800 dark:text-green-300 flex items-center justify-between font-semibold text-sm shadow-sm">
+          <div class="flex items-center gap-3">
+            <span class="material-icons text-green-500 text-lg">check_circle</span>
+            <span>{{ String(q.correctAnswer).toLowerCase() === 'true' ? 'Vrai (True)' : 'Faux (False)' }}</span>
+          </div>
+          <span class="px-2 py-0.5 rounded bg-green-500/20 text-green-600 dark:text-green-400 text-[10px] font-extrabold uppercase tracking-wider border border-green-500/30">Correct</span>
+        </div>
+      </div>
+
+      <!-- Fill Blanks Correct Answer -->
+      <div *ngIf="q.type === 'fill-blanks'" class="space-y-3">
+        <span class="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest block mb-1">Correct Answer Match</span>
+        <div class="px-4 py-3 rounded-xl border border-green-500 bg-green-50/40 dark:bg-green-950/20 text-green-800 dark:text-green-300 font-bold font-mono text-center shadow-sm">
+          {{ q.correctAnswer }}
+        </div>
+      </div>
+
+      <!-- Detailed Explanation (Always visible in reader) -->
+      <div *ngIf="q.explanation" class="p-5 bg-indigo-50/40 dark:bg-indigo-950/20 backdrop-blur-sm border border-indigo-200/20 dark:border-indigo-850/20 border-l-4 border-l-indigo-500 dark:border-l-indigo-400 rounded-r-2xl rounded-l-md animate__animated animate__fadeIn animate__faster">
+        <h4 class="font-extrabold text-indigo-700 dark:text-indigo-400 text-sm mb-2 flex items-center gap-2">
+          <span class="material-icons text-base">info</span> Explication détaillée
+        </h4>
+        <p class="text-indigo-900/90 dark:text-indigo-200/90 text-sm leading-relaxed" [innerHTML]="q.explanation"></p>
+      </div>
+
+      <!-- Trap Note (Always visible in reader if exists) -->
+      <div *ngIf="q.trapNote" class="p-5 bg-amber-50/40 dark:bg-amber-950/20 backdrop-blur-sm border border-amber-200/20 dark:border-amber-850/20 border-l-4 border-l-amber-500 dark:border-l-amber-400 rounded-r-2xl rounded-l-md animate__animated animate__fadeIn animate__faster">
+        <h4 class="font-extrabold text-amber-700 dark:text-amber-400 text-sm mb-2 flex items-center gap-2">
+          <span class="material-icons text-base">warning</span> Piège fréquent (Trap Note)
+        </h4>
+        <p class="text-amber-950/90 dark:text-amber-200/90 text-sm leading-relaxed" [innerHTML]="q.trapNote"></p>
+      </div>
+    </div>
+    
+    <div class="px-8 py-4 border-t border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 flex justify-end">
+      <button (click)="closeQuizReader()" class="px-6 py-2.5 text-sm font-semibold bg-gray-900 hover:bg-gray-800 dark:bg-gray-700 dark:hover:bg-gray-600 text-white rounded-xl transition-colors shadow-md">Fermer</button>
+    </div>
+  </div>
+</div>
+
+<!-- 2. NOTE FORM MODAL -->
+<div *ngIf="showNoteModal()" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/60 backdrop-blur-sm">
+  <div class="bg-white dark:bg-gray-800 rounded-3xl shadow-2xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[90vh] animate__animated animate__zoomIn animate__faster">
+    <div class="px-6 py-4 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center bg-gray-50/50 dark:bg-gray-800/30">
+      <h3 class="text-lg font-extrabold text-gray-900 dark:text-white">
+        {{ isEditingNote() ? 'Modify Note' : 'Add Note to Pack' }}
+      </h3>
+      <button (click)="showNoteModal.set(false)" class="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300">
+        <span class="material-icons">close</span>
+      </button>
+    </div>
+    
+    <div class="p-6 flex-1 overflow-y-auto space-y-4">
+      <div>
+        <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-1.5">Note Title</label>
+        <input 
+          type="text" 
+          [(ngModel)]="noteForm.title" 
+          class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-gray-900 dark:text-white outline-none font-semibold text-sm"
+          placeholder="e.g. Overview of Java Inheritance">
+      </div>
+
+      <div>
+        <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-1.5">Note Content</label>
+        <textarea 
+          [(ngModel)]="noteForm.content" 
+          rows="10" 
+          class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-gray-900 dark:text-white outline-none text-sm leading-relaxed"
+          placeholder="Paste or write your structured review notes here... Supports clean spacing."></textarea>
+      </div>
+
+      <div>
+        <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-1.5">Tags (Comma-separated)</label>
+        <input 
+          type="text" 
+          [(ngModel)]="noteForm.tagsString" 
+          class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-gray-900 dark:text-white outline-none text-sm"
+          placeholder="e.g. exam2026, java, basic">
+      </div>
+
+      <div class="flex items-center gap-2 pt-2">
+        <input 
+          id="pin-note"
+          type="checkbox" 
+          [(ngModel)]="noteForm.isPinned" 
+          class="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500 bg-gray-50 dark:bg-gray-900 dark:border-gray-700">
+        <label for="pin-note" class="text-sm text-gray-700 dark:text-gray-300 font-semibold cursor-pointer">Pin this note to top of library</label>
+      </div>
+    </div>
+    
+    <div class="px-6 py-4 border-t border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/30 flex justify-end gap-3">
+      <button (click)="showNoteModal.set(false)" class="px-4 py-2 text-sm font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl transition-colors">Cancel</button>
+      <button (click)="saveNote()" class="px-5 py-2 text-sm font-bold bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl transition-colors shadow-md shadow-indigo-100 dark:shadow-none">Save Note</button>
+    </div>
+  </div>
+</div>
+
+<!-- 3. FLASHCARD FORM MODAL -->
+<div *ngIf="showFlashcardModal()" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/60 backdrop-blur-sm">
+  <div class="bg-white dark:bg-gray-800 rounded-3xl shadow-2xl w-full max-w-xl overflow-hidden flex flex-col max-h-[90vh] animate__animated animate__zoomIn animate__faster">
+    <div class="px-6 py-4 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center bg-gray-50/50 dark:bg-gray-800/30">
+      <h3 class="text-lg font-extrabold text-gray-900 dark:text-white">
+        {{ isEditingFlashcard() ? 'Modify Flashcard' : 'Add Flashcard' }}
+      </h3>
+      <button (click)="showFlashcardModal.set(false)" class="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300">
+        <span class="material-icons">close</span>
+      </button>
+    </div>
+    
+    <div class="p-6 flex-1 overflow-y-auto space-y-4">
+      <div>
+        <label class="block text-xs font-bold uppercase tracking-wider text-indigo-500 mb-1.5">Card Front (Question/Prompt)</label>
+        <textarea 
+          [(ngModel)]="flashcardForm.front" 
+          rows="3" 
+          class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-gray-900 dark:text-white outline-none font-semibold text-sm leading-relaxed"
+          placeholder="e.g. What is Polymorphism?"></textarea>
+      </div>
+
+      <div>
+        <label class="block text-xs font-bold uppercase tracking-wider text-purple-500 mb-1.5">Card Back (Correct Answer)</label>
+        <textarea 
+          [(ngModel)]="flashcardForm.back" 
+          rows="4" 
+          class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-gray-900 dark:text-white outline-none text-sm leading-relaxed"
+          placeholder="e.g. The ability of an object to take on many forms in OOP, typically resolved dynamically at runtime."></textarea>
+      </div>
+
+      <div>
+        <label class="block text-xs font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-450 mb-1.5">Code Sample / Reference (Optional)</label>
+        <textarea 
+          [(ngModel)]="flashcardForm.code" 
+          rows="3" 
+          class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-gray-900 dark:text-white outline-none font-mono text-xs leading-relaxed"
+          placeholder="e.g. SELECT * FROM Users WHERE ID = 1;"></textarea>
+      </div>
+    </div>
+    
+    <div class="px-6 py-4 border-t border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/30 flex justify-end gap-3">
+      <button (click)="showFlashcardModal.set(false)" class="px-4 py-2 text-sm font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl transition-colors">Cancel</button>
+      <button (click)="saveFlashcard()" class="px-5 py-2 text-sm font-bold bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl transition-colors shadow-md">Save Card</button>
+    </div>
+  </div>
+</div>
+
+<!-- 4. QUIZ QUESTION FORM MODAL -->
+<div *ngIf="showQuizModal()" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/60 backdrop-blur-sm">
+  <div class="bg-white dark:bg-gray-800 rounded-3xl shadow-2xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[90vh] animate__animated animate__zoomIn animate__faster">
+    <div class="px-6 py-4 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center bg-gray-50/50 dark:bg-gray-800/30">
+      <h3 class="text-lg font-extrabold text-gray-900 dark:text-white">
+        {{ isEditingQuiz() ? 'Modify Question' : 'Add Question' }}
+      </h3>
+      <button (click)="showQuizModal.set(false)" class="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300">
+        <span class="material-icons">close</span>
+      </button>
+    </div>
+    
+    <div class="p-6 flex-1 overflow-y-auto space-y-4">
+      
+      <!-- Topic / Chapter -->
+      <div>
+        <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-1.5">Topic / Chapter (e.g. Index, Vues)</label>
+        <input 
+          type="text" 
+          [(ngModel)]="quizForm.topic" 
+          class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-gray-900 dark:text-white outline-none font-semibold text-sm"
+          placeholder="e.g. Index">
+      </div>
+
+      <!-- Type Select -->
+      <div>
+        <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-1.5">Question Type</label>
+        <select 
+          [(ngModel)]="quizForm.type"
+          class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm font-semibold"
+        >
+          <option value="multiple-choice">Multiple Choice (QCM)</option>
+          <option value="true-false">True / False</option>
+          <option value="fill-blanks">Fill in the Blanks</option>
+        </select>
+      </div>
+
+      <!-- Question Text -->
+      <div>
+        <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-1.5">Question Text</label>
+        <textarea 
+          [(ngModel)]="quizForm.question" 
+          rows="3" 
+          class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-gray-900 dark:text-white outline-none text-sm font-semibold leading-relaxed"
+          placeholder="e.g. Which of the following is NOT an OOP principle?"></textarea>
+      </div>
+
+      <!-- DYNAMIC CONDITIONAL OPTIONS BASE ON TYPE Selection -->
+      
+      <!-- MC Multiple Choice options -->
+      <div *ngIf="quizForm.type === 'multiple-choice'" class="space-y-3 pt-2 border-t border-gray-100 dark:border-gray-700">
+        <label class="block text-xs font-bold uppercase tracking-wider text-indigo-500">Provide 4 Choices</label>
+        
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-[11px] font-bold text-gray-400 mb-1">Option 1</label>
+            <input type="text" [(ngModel)]="quizForm.option1" class="w-full px-3 py-2 text-xs bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg outline-none text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500" placeholder="e.g. Inheritance">
+          </div>
+          <div>
+            <label class="block text-[11px] font-bold text-gray-400 mb-1">Option 2</label>
+            <input type="text" [(ngModel)]="quizForm.option2" class="w-full px-3 py-2 text-xs bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg outline-none text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500" placeholder="e.g. Encapsulation">
+          </div>
+          <div>
+            <label class="block text-[11px] font-bold text-gray-400 mb-1">Option 3</label>
+            <input type="text" [(ngModel)]="quizForm.option3" class="w-full px-3 py-2 text-xs bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg outline-none text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500" placeholder="e.g. Compilation (Correct)">
+          </div>
+          <div>
+            <label class="block text-[11px] font-bold text-gray-400 mb-1">Option 4</label>
+            <input type="text" [(ngModel)]="quizForm.option4" class="w-full px-3 py-2 text-xs bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg outline-none text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500" placeholder="e.g. Abstraction">
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-green-600 mb-1.5">Select Correct Answer</label>
+          <select 
+            [(ngModel)]="quizForm.correctAnswerMc" 
+            class="w-full px-4 py-2 text-xs bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-indigo-500"
+          >
+            <option [value]="0">Option 1</option>
+            <option [value]="1">Option 2</option>
+            <option [value]="2">Option 3</option>
+            <option [value]="3">Option 4</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- TF True / False options -->
+      <div *ngIf="quizForm.type === 'true-false'" class="space-y-3 pt-2 border-t border-gray-100 dark:border-gray-700">
+        <label class="block text-xs font-bold uppercase tracking-wider text-green-600">Select Correct Value</label>
+        <select 
+          [(ngModel)]="quizForm.correctAnswerTf" 
+          class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-indigo-500 text-sm font-semibold"
+        >
+          <option value="True">True</option>
+          <option value="False">False</option>
+        </select>
+      </div>
+
+      <!-- FB Fill in blanks -->
+      <div *ngIf="quizForm.type === 'fill-blanks'" class="space-y-3 pt-2 border-t border-gray-100 dark:border-gray-700">
+        <label class="block text-xs font-bold uppercase tracking-wider text-green-600 mb-1.5">Specify Correct Answer Match (Case-Insensitive)</label>
+        <input 
+          type="text" 
+          [(ngModel)]="quizForm.correctAnswerFb" 
+          class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-indigo-500 text-gray-900 dark:text-white outline-none font-semibold text-sm"
+          placeholder="e.g. encapsulation">
+      </div>
+
+      <!-- Explanation -->
+      <div>
+        <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-1.5">Explanation (Optional)</label>
+        <textarea 
+          [(ngModel)]="quizForm.explanation" 
+          rows="2" 
+          class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-indigo-500 text-gray-900 dark:text-white outline-none text-xs leading-relaxed"
+          placeholder="Explain why this choice is correct to help yourself review later..."></textarea>
+      </div>
+
+      <!-- Trap Note -->
+      <div>
+        <label class="block text-xs font-bold uppercase tracking-wider text-amber-500 dark:text-amber-400 mb-1.5">Trap Note / Pitfall Warning (Optional)</label>
+        <textarea 
+          [(ngModel)]="quizForm.trapNote" 
+          rows="2" 
+          class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-900 border border-amber-300 dark:border-amber-750 rounded-xl focus:ring-2 focus:ring-amber-500 text-gray-900 dark:text-white outline-none text-xs leading-relaxed"
+          placeholder="Highlight any typical traps or common exam tricks here..."></textarea>
+      </div>
+
+    </div>
+    
+    <div class="px-6 py-4 border-t border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/30 flex justify-end gap-3">
+      <button (click)="showQuizModal.set(false)" class="px-4 py-2 text-sm font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl transition-colors">Cancel</button>
+      <button (click)="saveQuiz()" class="px-5 py-2 text-sm font-bold bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl transition-colors shadow-md">Save Question</button>
+    </div>
+  </div>
+</div>
+
+<!-- ========================================== -->
+<!-- CHATGPT / AI JSON QUICK IMPORT OVERLAYS -->
+<!-- ========================================== -->
+
+<!-- Notes JSON Import Overlay -->
+<div *ngIf="showNoteImportModal()" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/60 backdrop-blur-sm">
+  <div class="bg-white dark:bg-gray-800 rounded-3xl shadow-2xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[90vh] animate__animated animate__zoomIn animate__faster">
+    <div class="px-6 py-4 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center bg-gray-50/50 dark:bg-gray-800/30">
+      <h3 class="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
+        <span class="material-icons text-blue-500">cloud_upload</span> Notes JSON Import
+      </h3>
+      <button (click)="showNoteImportModal.set(false)" class="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300">
+        <span class="material-icons">close</span>
+      </button>
+    </div>
+    
+    <div class="p-6 flex-1 overflow-y-auto space-y-4">
+      <div class="flex justify-between items-center flex-wrap gap-2">
+        <p class="text-xs text-gray-500 dark:text-gray-400 leading-relaxed font-medium">
+          Importez vos notes en collant un tableau JSON valide. Respectez le format de schéma attendu :
+        </p>
+        <button 
+          (click)="copyNotesTemplateToClipboard()" 
+          class="px-3 py-1.5 border border-gray-200 dark:border-gray-700 rounded-xl hover:border-indigo-500 text-xs font-bold flex items-center gap-1.5 text-gray-600 dark:text-gray-350 bg-gray-50 dark:bg-gray-800/40 transition-all shadow-sm"
+        >
+          <span class="material-icons text-xs">content_copy</span>
+          <span>Copier le modèle</span>
+          <span *ngIf="templateCopied() === 'notes'" class="text-green-500 font-bold ml-1 text-[10px] animate__animated animate__fadeIn flex items-center gap-0.5">✓ Copié !</span>
+        </button>
+      </div>
+      
+      <!-- Schema code hint -->
+      <pre class="bg-gray-50 dark:bg-gray-900 p-3 rounded-xl border border-gray-200 dark:border-gray-700 text-[10px] font-mono text-gray-600 dark:text-gray-400 overflow-x-auto leading-relaxed">
+[
+  &lcub;
+    "title": "Titre de la Note",
+    "content": "Contenu détaillé de la note (texte ou HTML)...",
+    "tags": ["tag1", "tag2"],
+    "isPinned": false
+  &rcub;
+]</pre>
+ 
+      <textarea 
+        [(ngModel)]="noteImportData" 
+        rows="10" 
+        class="w-full font-mono text-xs p-4 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-gray-800 dark:text-gray-200 outline-none"
+        placeholder="Collez votre tableau JSON de notes ici..."></textarea>
+    </div>
+    
+    <div class="px-6 py-4 border-t border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/30 flex justify-end gap-3">
+      <button (click)="showNoteImportModal.set(false)" class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl transition-colors">Cancel</button>
+      <button (click)="importNotesFromJson()" [disabled]="!noteImportData.trim()" class="px-4 py-2 text-sm font-bold text-white bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-xl transition-colors shadow-md">Import Notes</button>
+    </div>
+  </div>
+</div>
+
+<!-- Flashcards JSON Import Overlay -->
+<div *ngIf="showFlashcardImportModal()" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/60 backdrop-blur-sm">
+  <div class="bg-white dark:bg-gray-800 rounded-3xl shadow-2xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[90vh] animate__animated animate__zoomIn animate__faster">
+    <div class="px-6 py-4 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center bg-gray-50/50 dark:bg-gray-800/30">
+      <h3 class="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
+        <span class="material-icons text-purple-500">cloud_upload</span> Flashcards JSON Import
+      </h3>
+      <button (click)="showFlashcardImportModal.set(false)" class="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300">
+        <span class="material-icons">close</span>
+      </button>
+    </div>
+    
+    <div class="p-6 flex-1 overflow-y-auto space-y-4">
+      <div class="flex justify-between items-center flex-wrap gap-2">
+        <p class="text-xs text-gray-500 dark:text-gray-400 leading-relaxed font-medium">
+          Importez votre deck de cartes en collant un tableau JSON. Optionnel : un champ 'code' pour les blocs de syntaxe :
+        </p>
+        <button 
+          (click)="copyFlashcardsTemplateToClipboard()" 
+          class="px-3 py-1.5 border border-gray-200 dark:border-gray-700 rounded-xl hover:border-indigo-500 text-xs font-bold flex items-center gap-1.5 text-gray-600 dark:text-gray-350 bg-gray-50 dark:bg-gray-800/40 transition-all shadow-sm"
+        >
+          <span class="material-icons text-xs">content_copy</span>
+          <span>Copier le modèle</span>
+          <span *ngIf="templateCopied() === 'flashcards'" class="text-green-500 font-bold ml-1 text-[10px] animate__animated animate__fadeIn flex items-center gap-0.5">✓ Copié !</span>
+        </button>
+      </div>
+      
+      <pre class="bg-gray-50 dark:bg-gray-900 p-3 rounded-xl border border-gray-200 dark:border-gray-700 text-[10px] font-mono text-gray-600 dark:text-gray-400 overflow-x-auto leading-relaxed">
+[
+  &lcub;
+    "front": "Intitulé de la Question (Recto)",
+    "back": "Réponse / Définition (Verso)",
+    "code": "SELECT * FROM Users; // Syntaxe optionnelle"
+  &rcub;
+]</pre>
+
+      <textarea 
+        [(ngModel)]="flashcardImportData" 
+        rows="10" 
+        class="w-full font-mono text-xs p-4 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-gray-800 dark:text-gray-200 outline-none"
+        placeholder="Collez votre tableau JSON de flashcards ici..."></textarea>
+    </div>
+    
+    <div class="px-6 py-4 border-t border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/30 flex justify-end gap-3">
+      <button (click)="showFlashcardImportModal.set(false)" class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl transition-colors">Cancel</button>
+      <button (click)="importFlashcardsFromJson()" [disabled]="!flashcardImportData.trim()" class="px-4 py-2 text-sm font-bold text-white bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-xl transition-colors shadow-md">Import Deck</button>
+    </div>
+  </div>
+</div>
+
+<!-- Quiz QCM JSON Import Overlay -->
+<div *ngIf="showQuizImportModal()" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/60 backdrop-blur-sm">
+  <div class="bg-white dark:bg-gray-800 rounded-3xl shadow-2xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[90vh] animate__animated animate__zoomIn animate__faster">
+    <div class="px-6 py-4 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center bg-gray-50/50 dark:bg-gray-800/30">
+      <h3 class="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
+        <span class="material-icons text-emerald-500">cloud_upload</span> Quizzes JSON Import
+      </h3>
+      <button (click)="showQuizImportModal.set(false)" class="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300">
+        <span class="material-icons">close</span>
+      </button>
+    </div>
+    
+    <div class="p-6 flex-1 overflow-y-auto space-y-4">
+      <div class="flex justify-between items-center flex-wrap gap-2">
+        <p class="text-xs text-gray-500 dark:text-gray-400 leading-relaxed font-medium">
+          Importez votre banque de QCM. Supporte les types 'multiple-choice', 'true-false', et 'fill-blanks' :
+        </p>
+        <button 
+          (click)="copyQuizzesTemplateToClipboard()" 
+          class="px-3 py-1.5 border border-gray-200 dark:border-gray-700 rounded-xl hover:border-indigo-500 text-xs font-bold flex items-center gap-1.5 text-gray-600 dark:text-gray-355 bg-gray-50 dark:bg-gray-800/40 transition-all shadow-sm"
+        >
+          <span class="material-icons text-xs">content_copy</span>
+          <span>Copier le modèle</span>
+          <span *ngIf="templateCopied() === 'quiz'" class="text-green-500 font-bold ml-1 text-[10px] animate__animated animate__fadeIn flex items-center gap-0.5">✓ Copié !</span>
+        </button>
+      </div>
+      
+      <pre class="bg-gray-50 dark:bg-gray-900 p-3 rounded-xl border border-gray-200 dark:border-gray-700 text-[10px] font-mono text-gray-600 dark:text-gray-400 overflow-x-auto leading-relaxed">
+[
+  &lcub;
+    "question": "Question à choix multiples ?",
+    "type": "multiple-choice",
+    "options": ["Choix A", "Choix B", "Choix C", "Choix D"],
+    "correctAnswer": 1,
+    "explanation": "Explication de la réponse...",
+    "trapNote": "Piège fréquent...",
+    "topic": "Sujet/Chapitre"
+  &rcub;,
+  &lcub;
+    "question": "Le T-SQL est une norme standard ANSI.",
+    "type": "true-false",
+    "correctAnswer": "False",
+    "explanation": "Non, c'est une extension propriétaire de Microsoft.",
+    "topic": "T-SQL"
+  &rcub;
+]</pre>
+
+      <textarea 
+        [(ngModel)]="quizImportData" 
+        rows="10" 
+        class="w-full font-mono text-xs p-4 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-gray-800 dark:text-gray-200 outline-none"
+        placeholder="Collez votre tableau JSON de questions de quiz ici..."></textarea>
+    </div>
+    
+    <div class="px-6 py-4 border-t border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/30 flex justify-end gap-3">
+      <button (click)="showQuizImportModal.set(false)" class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl transition-colors">Cancel</button>
+      <button (click)="importQuizzesFromJson()" [disabled]="!quizImportData.trim()" class="px-4 py-2 text-sm font-bold text-white bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-xl transition-colors shadow-md">Import Quiz</button>
+    </div>
+  </div>
+</div>
+
+<!-- Cheat Sheets JSON Import Overlay -->
+<div *ngIf="showCheatSheetImportModal()" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/60 backdrop-blur-sm">
+  <div class="bg-white dark:bg-gray-800 rounded-3xl shadow-2xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[90vh] animate__animated animate__zoomIn animate__faster">
+    <div class="px-6 py-4 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center bg-gray-50/50 dark:bg-gray-800/30">
+      <h3 class="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
+        <span class="material-icons text-indigo-500">cloud_upload</span> Cheat Sheets JSON Import
+      </h3>
+      <button (click)="showCheatSheetImportModal.set(false)" class="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300">
+        <span class="material-icons">close</span>
+      </button>
+    </div>
+    
+    <div class="p-6 flex-1 overflow-y-auto space-y-4">
+      <div class="flex justify-between items-center flex-wrap gap-2">
+        <p class="text-xs text-gray-500 dark:text-gray-400 leading-relaxed font-medium">
+          Importez vos fiches de révision à l'aide d'un schéma JSON standard (items de correspondances et bloc de code optionnel) :
+        </p>
+        <button 
+          (click)="copyCheatsheetsTemplateToClipboard()" 
+          class="px-3 py-1.5 border border-gray-200 dark:border-gray-700 rounded-xl hover:border-indigo-500 text-xs font-bold flex items-center gap-1.5 text-gray-600 dark:text-gray-355 bg-gray-50 dark:bg-gray-800/40 transition-all shadow-sm"
+        >
+          <span class="material-icons text-xs">content_copy</span>
+          <span>Copier le modèle</span>
+          <span *ngIf="templateCopied() === 'cheatsheets'" class="text-green-500 font-bold ml-1 text-[10px] animate__animated animate__fadeIn flex items-center gap-0.5">✓ Copié !</span>
+        </button>
+      </div>
+      
+      <pre class="bg-gray-50 dark:bg-gray-900 p-3 rounded-xl border border-gray-200 dark:border-gray-700 text-[10px] font-mono text-gray-600 dark:text-gray-400 overflow-x-auto leading-relaxed">
+[
+  &lcub;
+    "title": "Titre de la fiche",
+    "category": "Sujet/Catégorie",
+    "items": [
+      &lcub; "key": "Terme 1", "value": "Définition 1" &rcub;,
+      &lcub; "key": "Terme 2", "value": "Définition 2" &rcub;
+    ],
+    "codeSample": "Exemple de code optionnel..."
+  &rcub;
+]</pre>
+
+      <textarea 
+        [(ngModel)]="cheatSheetImportData" 
+        rows="8" 
+        class="w-full font-mono text-xs p-4 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-gray-800 dark:text-gray-200 outline-none"
+        placeholder="Collez votre JSON de fiches ici..."></textarea>
+    </div>
+    
+    <div class="px-6 py-4 border-t border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/30 flex justify-end gap-3">
+      <button (click)="showCheatSheetImportModal.set(false)" class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl transition-colors">Cancel</button>
+      <button (click)="importCheatsheetsFromJson()" [disabled]="!cheatSheetImportData.trim()" class="px-4 py-2 text-sm font-bold text-white bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-xl transition-colors shadow-md">Import Fiches</button>
+    </div>
+  </div>
+</div>
+
+<!-- Coding Exercises JSON Import Overlay -->
+<div *ngIf="showExerciseImportModal()" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/60 backdrop-blur-sm">
+  <div class="bg-white dark:bg-gray-800 rounded-3xl shadow-2xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[90vh] animate__animated animate__zoomIn animate__faster">
+    <div class="px-6 py-4 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center bg-gray-50/50 dark:bg-gray-800/30">
+      <h3 class="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
+        <span class="material-icons text-emerald-500">cloud_upload</span> Exercises JSON Import
+      </h3>
+      <button (click)="showExerciseImportModal.set(false)" class="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300">
+        <span class="material-icons">close</span>
+      </button>
+    </div>
+    
+    <div class="p-6 flex-1 overflow-y-auto space-y-4">
+      <div class="flex justify-between items-center flex-wrap gap-2">
+        <p class="text-xs text-gray-500 dark:text-gray-400 leading-relaxed font-medium">
+          Importez vos bacs à sable et exercices de programmation à l'aide du schéma JSON attendu :
+        </p>
+        <button 
+          (click)="copyExercisesTemplateToClipboard()" 
+          class="px-3 py-1.5 border border-gray-200 dark:border-gray-700 rounded-xl hover:border-indigo-500 text-xs font-bold flex items-center gap-1.5 text-gray-600 dark:text-gray-355 bg-gray-50 dark:bg-gray-800/40 transition-all shadow-sm"
+        >
+          <span class="material-icons text-xs">content_copy</span>
+          <span>Copier le modèle</span>
+          <span *ngIf="templateCopied() === 'exercises'" class="text-green-500 font-bold ml-1 text-[10px] animate__animated animate__fadeIn flex items-center gap-0.5">✓ Copié !</span>
+        </button>
+      </div>
+      
+      <pre class="bg-gray-50 dark:bg-gray-900 p-3 rounded-xl border border-gray-200 dark:border-gray-700 text-[10px] font-mono text-gray-600 dark:text-gray-400 overflow-x-auto leading-relaxed">
+[
+  &lcub;
+    "title": "Nom de l'exercice",
+    "description": "Description générale...",
+    "schemaContext": "Context / Tables SQL optionnel...",
+    "task": "Instruction demandée...",
+    "correctSolution": "Code attendu...",
+    "solutionNote": "Note explicative optionnelle..."
+  &rcub;
+]</pre>
+
+      <textarea 
+        [(ngModel)]="exerciseImportData" 
+        rows="8" 
+        class="w-full font-mono text-xs p-4 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-gray-800 dark:text-gray-200 outline-none"
+        placeholder="Collez votre JSON d'exercices ici..."></textarea>
+    </div>
+    
+    <div class="px-6 py-4 border-t border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/30 flex justify-end gap-3">
+      <button (click)="showExerciseImportModal.set(false)" class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl transition-colors">Cancel</button>
+      <button (click)="importExercisesFromJson()" [disabled]="!exerciseImportData.trim()" class="px-4 py-2 text-sm font-bold text-white bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-xl transition-colors shadow-md">Import Exercices</button>
+    </div>
+  </div>
+</div>
+
+<!-- Cheat Sheets Creator/Editor Modal -->
+<div *ngIf="showCheatSheetModal()" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/60 backdrop-blur-sm">
+  <div class="bg-white dark:bg-gray-800 rounded-3xl shadow-2xl w-full max-w-xl overflow-hidden flex flex-col max-h-[90vh] animate__animated animate__zoomIn animate__faster">
+    <div class="px-6 py-4 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center bg-gray-50/50 dark:bg-gray-800/30">
+      <h3 class="text-lg font-extrabold text-gray-900 dark:text-white">
+        {{ isEditingCheatSheet() ? 'Modifier la Fiche' : 'Ajouter une Fiche de Référence' }}
+      </h3>
+      <button (click)="showCheatSheetModal.set(false)" class="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300">
+        <span class="material-icons">close</span>
+      </button>
+    </div>
+    
+    <div class="p-6 flex-1 overflow-y-auto space-y-4">
+      <div>
+        <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-1.5">Category / Topic <span class="text-red-500">*</span></label>
+        <input 
+          type="text" 
+          [(ngModel)]="cheatSheetForm.category" 
+          class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-indigo-500 text-gray-900 dark:text-white outline-none font-semibold text-sm"
+          placeholder="e.g. JOIN Syntax">
+      </div>
+
+      <div>
+        <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-1.5">Title <span class="text-red-500">*</span></label>
+        <input 
+          type="text" 
+          [(ngModel)]="cheatSheetForm.title" 
+          class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-indigo-500 text-gray-900 dark:text-white outline-none font-semibold text-sm"
+          placeholder="e.g. Standard Joins Cheat Sheet">
+      </div>
+
+      <div>
+        <label class="block text-xs font-bold uppercase tracking-wider text-indigo-500 mb-1.5">References & Mappings (One line per mapping: "Term : Definition")</label>
+        <textarea 
+          [(ngModel)]="cheatSheetForm.itemsString" 
+          rows="5" 
+          class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-indigo-500 text-gray-900 dark:text-white outline-none font-mono text-xs leading-relaxed"
+          placeholder="INNER JOIN : Matches keys in both tables&#10;LEFT JOIN : Returns all rows from left table&#10;RIGHT JOIN : Returns all rows from right table"></textarea>
+      </div>
+
+      <div>
+        <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-1.5">Code Sample Block (Optional)</label>
+        <textarea 
+          [(ngModel)]="cheatSheetForm.codeSample" 
+          rows="4" 
+          class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-indigo-500 text-gray-900 dark:text-white outline-none font-mono text-xs leading-relaxed"
+          placeholder="SELECT * FROM Users u&#10;INNER JOIN Orders o ON u.id = o.user_id;"></textarea>
+      </div>
+    </div>
+    
+    <div class="px-6 py-4 border-t border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/30 flex justify-end gap-3">
+      <button (click)="showCheatSheetModal.set(false)" class="px-4 py-2 text-sm font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl transition-colors">Cancel</button>
+      <button (click)="saveCheatSheet()" [disabled]="!cheatSheetForm.title || !cheatSheetForm.category" class="px-5 py-2 text-sm font-bold bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white rounded-xl transition-colors shadow-md">Save Reference</button>
+    </div>
+  </div>
+</div>
+
+<!-- Coding Exercises Creator/Editor Modal -->
+<div *ngIf="showExerciseModal()" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/60 backdrop-blur-sm">
+  <div class="bg-white dark:bg-gray-800 rounded-3xl shadow-2xl w-full max-w-xl overflow-hidden flex flex-col max-h-[90vh] animate__animated animate__zoomIn animate__faster">
+    <div class="px-6 py-4 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center bg-gray-50/50 dark:bg-gray-800/30">
+      <h3 class="text-lg font-extrabold text-gray-900 dark:text-white">
+        {{ isEditingExercise() ? 'Modifier l\'Exercice' : 'Créer un Exercice de Code' }}
+      </h3>
+      <button (click)="showExerciseModal.set(false)" class="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300">
+        <span class="material-icons">close</span>
+      </button>
+    </div>
+    
+    <div class="p-6 flex-1 overflow-y-auto space-y-4">
+      <div>
+        <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-1.5">Exercise Title <span class="text-red-500">*</span></label>
+        <input 
+          type="text" 
+          [(ngModel)]="exerciseForm.title" 
+          class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-indigo-500 text-gray-900 dark:text-white outline-none font-semibold text-sm"
+          placeholder="e.g. Practice INNER JOIN query">
+      </div>
+
+      <div>
+        <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-1.5">Description <span class="text-red-500">*</span></label>
+        <textarea 
+          [(ngModel)]="exerciseForm.description" 
+          rows="2" 
+          class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-indigo-500 text-gray-900 dark:text-white outline-none text-xs leading-relaxed"
+          placeholder="e.g. Practice writing SQL joins to fetch matching rows from Users and Orders tables."></textarea>
+      </div>
+
+      <div>
+        <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-1.5">Database Context / Table Schema (Optional)</label>
+        <textarea 
+          [(ngModel)]="exerciseForm.schemaContext" 
+          rows="3" 
+          class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-indigo-500 text-gray-900 dark:text-white outline-none font-mono text-xs leading-relaxed"
+          placeholder="Table Users: id, name, email&#10;Table Orders: id, user_id, product_name, price"></textarea>
+      </div>
+
+      <div>
+        <label class="block text-xs font-bold uppercase tracking-wider text-indigo-500 mb-1.5">Task Instructions <span class="text-red-500">*</span></label>
+        <input 
+          type="text" 
+          [(ngModel)]="exerciseForm.task" 
+          class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-indigo-500 text-gray-900 dark:text-white outline-none font-semibold text-sm"
+          placeholder="e.g. Write a query to fetch the name of user and product_name for all matches.">
+      </div>
+
+      <div>
+        <label class="block text-xs font-bold uppercase tracking-wider text-green-600 mb-1.5">Correct Solution Syntax <span class="text-red-500">*</span></label>
+        <textarea 
+          [(ngModel)]="exerciseForm.correctSolution" 
+          rows="3" 
+          class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-900 border border-emerald-300 dark:border-emerald-700 rounded-xl focus:ring-2 focus:ring-emerald-500 text-gray-900 dark:text-white outline-none font-mono text-xs leading-relaxed"
+          placeholder="SELECT u.name, o.product_name FROM Users u&#10;INNER JOIN Orders o ON u.id = o.user_id;"></textarea>
+      </div>
+
+      <div>
+        <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-1.5">Additional Solution Explanations (Optional)</label>
+        <textarea 
+          [(ngModel)]="exerciseForm.solutionNote" 
+          rows="2" 
+          class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-indigo-500 text-gray-900 dark:text-white outline-none text-xs leading-relaxed"
+          placeholder="e.g. Make sure to specify the ON join condition mapping primary and foreign keys correctly."></textarea>
+      </div>
+    </div>
+    
+    <div class="px-6 py-4 border-t border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/30 flex justify-end gap-3">
+      <button (click)="showExerciseModal.set(false)" class="px-4 py-2 text-sm font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl transition-colors">Cancel</button>
+      <button (click)="saveExercise()" [disabled]="!exerciseForm.title || !exerciseForm.description || !exerciseForm.task || !exerciseForm.correctSolution" class="px-5 py-2 text-sm font-bold bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white rounded-xl transition-colors shadow-md">Save Exercise</button>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,175 @@
+<div class="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
+  
+  <!-- Top Navigation Header -->
+  <header class="sticky top-0 z-40 bg-white/80 dark:bg-black/80 backdrop-blur-xl border-b border-gray-200/50 dark:border-gray-800/50 shadow-sm transition-all duration-300">
+    <div class="max-w-[1800px] w-[98%] lg:w-[94%] mx-auto px-4 py-3 flex items-center justify-between">
+      
+      <!-- Brand / Logo -->
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-md shadow-indigo-200 dark:shadow-none">
+          <span class="material-icons text-white text-lg">school</span>
+        </div>
+        <div>
+          <span class="font-extrabold text-lg bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-400 dark:to-purple-400 bg-clip-text text-transparent">EduFocus</span>
+          <span class="ml-2 px-1.5 py-0.5 rounded bg-indigo-50 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-400 text-[10px] font-bold uppercase tracking-wider">Study Hub</span>
+        </div>
+      </div>
+
+      <!-- Action Items & Navigation links -->
+      <div class="flex items-center gap-2">
+        <a routerLink="/dashboard" class="px-3 py-1.5 rounded-xl bg-gray-50 hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 border border-gray-200/50 dark:border-gray-700 text-xs font-semibold flex items-center gap-1.5 transition-all shadow-sm">
+          <span class="material-icons text-sm">home</span>
+          <span class="hidden sm:inline">Dashboard</span>
+        </a>
+        <a routerLink="/planner" class="px-3 py-1.5 rounded-xl bg-gray-50 hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 border border-gray-200/50 dark:border-gray-700 text-xs font-semibold flex items-center gap-1.5 transition-all shadow-sm">
+          <span class="material-icons text-sm">event</span>
+          <span class="hidden sm:inline">Planner</span>
+        </a>
+        <span class="h-5 w-[1px] bg-gray-200 dark:bg-gray-700 mx-1"></span>
+        <button 
+          (click)="themeService.toggleTheme()"
+          class="p-2 rounded-xl bg-gray-50 hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700 border border-gray-200/50 dark:border-gray-700 text-gray-500 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-all shadow-sm"
+          [title]="themeService.isDark() ? 'Mode clair' : 'Mode sombre'"
+        >
+          <span class="material-icons text-sm">{{ themeService.isDark() ? 'light_mode' : 'dark_mode' }}</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Dashboard Content -->
+  <div class="max-w-[1800px] w-[98%] lg:w-[94%] mx-auto p-6 md:p-8">
+    
+    <!-- Header Section -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-8 gap-4">
+      <div>
+        <h1 class="text-3xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
+          <span class="text-indigo-600 dark:text-indigo-400">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+            </svg>
+          </span>
+          Study Hub
+        </h1>
+        <p class="text-gray-500 dark:text-gray-400 mt-1">Your intelligent learning workspace</p>
+      </div>
+
+      <div class="flex flex-wrap items-center gap-2 sm:gap-3">
+        <button (click)="openImportModal()" class="px-3.5 py-2 sm:px-4 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-700 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-all text-xs sm:text-sm font-medium shadow-sm flex items-center gap-2">
+          <span class="material-icons text-sm">file_upload</span>
+          Import
+        </button>
+        <button (click)="exportAll()" [disabled]="studyHubService.totalPacks() === 0" class="px-3.5 py-2 sm:px-4 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-700 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-all text-xs sm:text-sm font-medium shadow-sm flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
+          <span class="material-icons text-sm">file_download</span>
+          Export
+        </button>
+        <a routerLink="/study-hub/new" class="px-3.5 py-2 sm:px-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl transition-all text-xs sm:text-sm font-medium shadow-sm shadow-indigo-200 dark:shadow-none flex items-center gap-2">
+          <span class="material-icons text-sm">add</span>
+          Create Pack
+        </a>
+      </div>
+    </div>
+
+    <!-- Loading State -->
+    @if (studyHubService.isLoading()) {
+      <div class="flex flex-col items-center justify-center p-16 gap-4">
+        <div class="w-12 h-12 border-4 border-indigo-200 dark:border-indigo-900 border-t-indigo-600 dark:border-t-indigo-400 rounded-full animate-spin"></div>
+        <p class="text-gray-500 dark:text-gray-400 text-sm font-medium">Loading your study packs from database…</p>
+      </div>
+    }
+
+    <!-- Study Packs Grid -->
+    @else if (studyHubService.studyPacks().length === 0) {
+      <!-- Empty State -->
+      <div class="flex flex-col items-center justify-center p-12 bg-white/50 dark:bg-gray-800/50 backdrop-blur-md rounded-2xl border border-gray-200 dark:border-gray-700 mt-8">
+        <div class="w-24 h-24 bg-indigo-100 dark:bg-indigo-900/50 text-indigo-500 rounded-full flex items-center justify-center mb-6">
+          <span class="material-icons text-5xl">library_books</span>
+        </div>
+        <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">No Study Packs Yet</h3>
+        <p class="text-gray-500 dark:text-gray-400 text-center max-w-sm mb-6">Create your first Study Pack to start organizing your notes, flashcards, and quizzes in one smart workspace.</p>
+        <a routerLink="/study-hub/new" class="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-medium transition-all shadow-md shadow-indigo-200 dark:shadow-none">
+          Create First Pack
+        </a>
+      </div>
+    } @else {
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        @for (pack of studyHubService.studyPacks(); track pack.id) {
+          <a [routerLink]="['/study-hub', pack.id]" class="group block relative bg-white dark:bg-gray-800 rounded-2xl p-6 border border-gray-100 dark:border-gray-700 shadow-sm hover:shadow-xl hover:shadow-indigo-100 dark:hover:shadow-none hover:-translate-y-1 transition-all duration-300">
+            
+            <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-indigo-500/10 to-purple-500/10 dark:from-indigo-500/20 dark:to-purple-500/20 rounded-tr-2xl rounded-bl-[100px] -z-10 group-hover:scale-110 transition-transform duration-500"></div>
+            
+            <div class="flex justify-between items-start mb-4">
+              <span class="inline-flex items-center rounded-md bg-indigo-50 dark:bg-indigo-900/30 px-2 py-1 text-xs font-medium text-indigo-700 dark:text-indigo-400 ring-1 ring-inset ring-indigo-700/10">
+                {{ pack.subject }}
+              </span>
+              <span class="text-xs text-gray-400 dark:text-gray-500 font-medium">
+                {{ pack.updatedAt | date:'shortDate' }}
+              </span>
+            </div>
+
+            <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors line-clamp-1">{{ pack.title }}</h3>
+            <p class="text-sm text-gray-500 dark:text-gray-400 mb-6 line-clamp-2 min-h-[40px]">{{ pack.description || 'No description provided.' }}</p>
+
+            <div class="grid grid-cols-3 gap-2 border-t border-gray-100 dark:border-gray-700 pt-4">
+              <div class="text-center">
+                <span class="block text-lg font-semibold text-gray-900 dark:text-white">{{ pack.notes?.length || 0 }}</span>
+                <span class="block text-xs text-gray-500 dark:text-gray-400">Notes</span>
+              </div>
+              <div class="text-center border-x border-gray-100 dark:border-gray-700">
+                <span class="block text-lg font-semibold text-gray-900 dark:text-white">{{ pack.flashcards?.length || 0 }}</span>
+                <span class="block text-xs text-gray-500 dark:text-gray-400">Cards</span>
+              </div>
+              <div class="text-center">
+                <span class="block text-lg font-semibold text-gray-900 dark:text-white">{{ pack.qcm?.length || 0 }}</span>
+                <span class="block text-xs text-gray-500 dark:text-gray-400">Quizzes</span>
+              </div>
+            </div>
+          </a>
+        }
+      </div>
+    }
+
+  </div>
+
+</div>
+
+<!-- JSON Import Modal -->
+@if (showImportModal) {
+  <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/60 backdrop-blur-sm">
+    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[90vh]">
+      <div class="px-6 py-4 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center">
+        <div>
+          <h3 class="text-lg font-bold text-gray-900 dark:text-white">Import Study Packs</h3>
+          <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Paste JSON → saved directly to your database</p>
+        </div>
+        <button (click)="closeImportModal()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+          <span class="material-icons">close</span>
+        </button>
+      </div>
+      <div class="p-6 flex-1 overflow-y-auto space-y-4">
+        <div class="p-3 bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-800 rounded-xl text-xs text-blue-700 dark:text-blue-300 font-medium flex items-start gap-2">
+          <span class="material-icons text-sm mt-0.5">info</span>
+          <span>JSON must be an <strong>array</strong> of packs. Each pack can have: <code>title</code>, <code>subject</code>, <code>description</code>, <code>notes</code>, <code>flashcards</code>, <code>qcm</code>, <code>cheatsheets</code>, <code>exercises</code>.</span>
+        </div>
+        @if (importError) {
+          <div class="p-3 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-800 rounded-xl text-xs text-red-700 dark:text-red-300 font-medium flex items-center gap-2">
+            <span class="material-icons text-sm">error</span>
+            {{ importError }}
+          </div>
+        }
+        <textarea 
+          [(ngModel)]="importJsonData"
+          rows="14"
+          class="w-full font-mono text-xs p-4 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none text-gray-800 dark:text-gray-200 resize-none"
+          placeholder='[&#10;  {&#10;    "title": "Mon Pack SQL",&#10;    "subject": "Informatique",&#10;    "description": "Révision SQL",&#10;    "notes": [],&#10;    "flashcards": [],&#10;    "qcm": [],&#10;    "cheatsheets": [],&#10;    "exercises": []&#10;  }&#10;]'></textarea>
+      </div>
+      <div class="px-6 py-4 border-t border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 flex justify-end gap-3">
+        <button (click)="closeImportModal()" class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors">Cancel</button>
+        <button (click)="confirmImport()" [disabled]="!importJsonData.trim()" class="px-5 py-2 text-sm font-bold text-white bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg transition-colors flex items-center gap-2">
+          <span class="material-icons text-sm">file_upload</span>
+          Import to Database
+        </button>
+      </div>
+    </div>
+  </div>
+}
