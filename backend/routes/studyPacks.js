@@ -186,8 +186,9 @@ router.put('/:id', async (req, res) => {
         tags: Array.isArray(n.tags) ? n.tags : [],
         isPinned: !!n.isPinned,
         createdAt: n.createdAt ? new Date(n.createdAt) : new Date(),
-        updatedAt: new Date()
+        updatedAt: n.updatedAt ? new Date(n.updatedAt) : new Date()
       }));
+      pack.markModified('notes');
     }
 
     if (flashcards !== undefined) {
@@ -199,6 +200,7 @@ router.put('/:id', async (req, res) => {
         difficulty: f.difficulty || null,
         createdAt: f.createdAt ? new Date(f.createdAt) : new Date()
       }));
+      pack.markModified('flashcards');
     }
 
     if (qcm !== undefined) {
@@ -213,6 +215,7 @@ router.put('/:id', async (req, res) => {
         topic: q.topic || 'Général',
         createdAt: q.createdAt ? new Date(q.createdAt) : new Date()
       }));
+      pack.markModified('qcm');
     }
 
     if (cheatsheets !== undefined) {
@@ -224,6 +227,7 @@ router.put('/:id', async (req, res) => {
         codeSample: cs.codeSample || '',
         createdAt: cs.createdAt ? new Date(cs.createdAt) : new Date()
       }));
+      pack.markModified('cheatsheets');
     }
 
     if (exercises !== undefined) {
@@ -237,6 +241,7 @@ router.put('/:id', async (req, res) => {
         solutionNote: ex.solutionNote || '',
         createdAt: ex.createdAt ? new Date(ex.createdAt) : new Date()
       }));
+      pack.markModified('exercises');
     }
 
     await pack.save();

@@ -8,7 +8,7 @@ const NoteSubSchema = new mongoose.Schema({
   isPinned: { type: Boolean, default: false },
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now }
-});
+}, { _id: false, id: false });
 
 const FlashcardSubSchema = new mongoose.Schema({
   id: { type: String, required: true },
@@ -17,7 +17,7 @@ const FlashcardSubSchema = new mongoose.Schema({
   code: { type: String },
   difficulty: { type: String, enum: ['easy', 'medium', 'hard', null], default: null },
   createdAt: { type: Date, default: Date.now }
-});
+}, { _id: false, id: false });
 
 const QCMSubSchema = new mongoose.Schema({
   id: { type: String, required: true },
@@ -29,19 +29,21 @@ const QCMSubSchema = new mongoose.Schema({
   trapNote: { type: String },
   topic: { type: String },
   createdAt: { type: Date, default: Date.now }
-});
+}, { _id: false, id: false });
+
+const CheatsheetItemSchema = new mongoose.Schema({
+  key: { type: String, required: true },
+  value: { type: String, required: true }
+}, { _id: false, id: false });
 
 const CheatsheetSubSchema = new mongoose.Schema({
   id: { type: String, required: true },
   title: { type: String, required: true },
   category: { type: String, required: true },
-  items: [{
-    key: { type: String, required: true },
-    value: { type: String, required: true }
-  }],
+  items: [CheatsheetItemSchema],
   codeSample: { type: String },
   createdAt: { type: Date, default: Date.now }
-});
+}, { _id: false, id: false });
 
 const ExerciseSubSchema = new mongoose.Schema({
   id: { type: String, required: true },
@@ -52,7 +54,7 @@ const ExerciseSubSchema = new mongoose.Schema({
   correctSolution: { type: String, required: true },
   solutionNote: { type: String },
   createdAt: { type: Date, default: Date.now }
-});
+}, { _id: false, id: false });
 
 const StudyPackSchema = new mongoose.Schema({
   user: {
