@@ -24,82 +24,81 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Premium SweetAlert2 Styling */
-.swal2-popup {
+/* Study Hub SweetAlert Modals */
+.study-hub-swal-modal {
   border-radius: 1rem !important;
   padding: 1.5rem !important;
   width: clamp(320px, 40vw, 760px) !important;
   max-width: 90vw !important;
   max-height: 85vh !important;
-  overflow: auto !important;
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25) !important;
 }
 
-/* Dark Mode SweetAlert */
-.dark .swal2-popup {
-  background: linear-gradient(135deg, #1a1a1a 0%, #0a0a0a 100%) !important;
-  border: 1px solid rgba(255, 215, 0, 0.2) !important;
+/* Dark Mode SweetAlert - Modals */
+.dark .study-hub-swal-modal {
+  background: linear-gradient(135deg, #111827 0%, #0f172a 100%) !important;
+  border: 1px solid rgba(99, 102, 241, 0.25) !important;
 }
 
-.dark .swal2-title {
-  color: #ffd700 !important;
+.dark .study-hub-swal-modal .swal2-title {
+  color: #818cf8 !important;
   font-size: 1.5rem !important;
-  font-weight: 700 !important;
+  font-weight: 800 !important;
   margin-bottom: 1rem !important;
 }
 
-.dark .swal2-html-container {
-  color: #d1d5db !important;
+.dark .study-hub-swal-modal .swal2-html-container {
+  color: #cbd5e1 !important;
   font-size: 0.95rem !important;
   line-height: 1.5 !important;
   margin: 0.75rem 0 !important;
 }
 
-.dark .swal2-input,
-.dark .swal2-select,
-.dark .swal2-textarea {
-  background: rgba(0, 0, 0, 0.5) !important;
-  border: 1px solid rgba(255, 215, 0, 0.3) !important;
+.dark .study-hub-swal-modal .swal2-input,
+.dark .study-hub-swal-modal .swal2-select,
+.dark .study-hub-swal-modal .swal2-textarea {
+  background: rgba(15, 23, 42, 0.6) !important;
+  border: 1px solid rgba(99, 102, 241, 0.3) !important;
   color: #ffffff !important;
   border-radius: 0.75rem !important;
   padding: 0.75rem 1rem !important;
   font-size: 0.95rem !important;
 }
 
-.dark .swal2-input::placeholder,
-.dark .swal2-select::placeholder,
-.dark .swal2-textarea::placeholder {
+.dark .study-hub-swal-modal .swal2-input::placeholder,
+.dark .study-hub-swal-modal .swal2-select::placeholder,
+.dark .study-hub-swal-modal .swal2-textarea::placeholder {
   color: #6b7280 !important;
 }
 
-.dark .swal2-input:focus,
-.dark .swal2-select:focus,
-.dark .swal2-textarea:focus {
+.dark .study-hub-swal-modal .swal2-input:focus,
+.dark .study-hub-swal-modal .swal2-select:focus,
+.dark .study-hub-swal-modal .swal2-textarea:focus {
   outline: none !important;
-  border-color: #ffd700 !important;
-  box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.1) !important;
+  border-color: #6366f1 !important;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2) !important;
 }
 
-.dark .swal2-confirm {
-  background: linear-gradient(135deg, #ffd700 0%, #ffa500 100%) !important;
-  color: #000000 !important;
+.dark .study-hub-swal-modal .swal2-confirm {
+  background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%) !important;
+  color: #ffffff !important;
   border: none !important;
   border-radius: 0.75rem !important;
   padding: 0.75rem 2rem !important;
-  font-weight: 600 !important;
+  font-weight: 700 !important;
   font-size: 0.95rem !important;
   transition: all 0.3s ease !important;
-  box-shadow: 0 4px 12px rgba(255, 215, 0, 0.3) !important;
+  box-shadow: 0 4px 14px rgba(99, 102, 241, 0.35) !important;
 }
 
-.dark .swal2-confirm:hover {
+.dark .study-hub-swal-modal .swal2-confirm:hover {
   transform: translateY(-2px) !important;
-  box-shadow: 0 6px 16px rgba(255, 215, 0, 0.4) !important;
+  box-shadow: 0 6px 16px rgba(99, 102, 241, 0.45) !important;
 }
 
-.dark .swal2-cancel {
-  background: rgba(75, 85, 99, 0.5) !important;
-  color: #ffffff !important;
+.dark .study-hub-swal-modal .swal2-cancel {
+  background: rgba(75, 85, 99, 0.4) !important;
+  color: #9ca3af !important;
   border: 1px solid rgba(255, 255, 255, 0.1) !important;
   border-radius: 0.75rem !important;
   padding: 0.75rem 2rem !important;
@@ -107,12 +106,13 @@
   font-size: 0.95rem !important;
 }
 
-.dark .swal2-cancel:hover {
-  background: rgba(75, 85, 99, 0.7) !important;
+.dark .study-hub-swal-modal .swal2-cancel:hover {
+  background: rgba(75, 85, 99, 0.6) !important;
+  color: #ffffff !important;
 }
 
-/* Light Mode SweetAlert - Premium & Comfortable */
-.light .swal2-popup {
+/* Light Mode SweetAlert - Modals */
+.light .study-hub-swal-modal {
   background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%) !important;
   border: 1px solid rgba(99, 102, 241, 0.15) !important;
   box-shadow: 
@@ -121,27 +121,24 @@
     inset 0 1px 0 rgba(255, 255, 255, 0.8) !important;
 }
 
-.light .swal2-title {
-  background: linear-gradient(135deg, #4f46e5 0%, #6366f1 50%, #818cf8 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+.light .study-hub-swal-modal .swal2-title {
+  color: #4f46e5 !important;
   font-size: 1.5rem !important;
   font-weight: 700 !important;
   margin-bottom: 1rem !important;
   letter-spacing: -0.02em !important;
 }
 
-.light .swal2-html-container {
+.light .study-hub-swal-modal .swal2-html-container {
   color: #475569 !important;
   font-size: 0.95rem !important;
   line-height: 1.6 !important;
   margin: 0.75rem 0 !important;
 }
 
-.light .swal2-input,
-.light .swal2-select,
-.light .swal2-textarea {
+.light .study-hub-swal-modal .swal2-input,
+.light .study-hub-swal-modal .swal2-select,
+.light .study-hub-swal-modal .swal2-textarea {
   background: linear-gradient(145deg, #f8fafc 0%, #ffffff 100%) !important;
   border: 1.5px solid #e2e8f0 !important;
   color: #1e293b !important;
@@ -151,22 +148,22 @@
   transition: all 0.2s ease !important;
 }
 
-.light .swal2-input::placeholder,
-.light .swal2-select::placeholder,
-.light .swal2-textarea::placeholder {
+.light .study-hub-swal-modal .swal2-input::placeholder,
+.light .study-hub-swal-modal .swal2-select::placeholder,
+.light .study-hub-swal-modal .swal2-textarea::placeholder {
   color: #94a3b8 !important;
 }
 
-.light .swal2-input:focus,
-.light .swal2-select:focus,
-.light .swal2-textarea:focus {
+.light .study-hub-swal-modal .swal2-input:focus,
+.light .study-hub-swal-modal .swal2-select:focus,
+.light .study-hub-swal-modal .swal2-textarea:focus {
   outline: none !important;
   border-color: #818cf8 !important;
   background: #ffffff !important;
   box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1) !important;
 }
 
-.light .swal2-confirm {
+.light .study-hub-swal-modal .swal2-confirm {
   background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%) !important;
   color: #ffffff !important;
   border: none !important;
@@ -181,7 +178,7 @@
   letter-spacing: 0.01em !important;
 }
 
-.light .swal2-confirm:hover {
+.light .study-hub-swal-modal .swal2-confirm:hover {
   transform: translateY(-2px) !important;
   box-shadow: 
     0 8px 20px rgba(99, 102, 241, 0.4),
@@ -189,7 +186,7 @@
   background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%) !important;
 }
 
-.light .swal2-cancel {
+.light .study-hub-swal-modal .swal2-cancel {
   background: linear-gradient(145deg, #f8fafc 0%, #f1f5f9 100%) !important;
   color: #475569 !important;
   border: 1.5px solid #e2e8f0 !important;
@@ -200,49 +197,80 @@
   transition: all 0.2s ease !important;
 }
 
-.light .swal2-cancel:hover {
+.light .study-hub-swal-modal .swal2-cancel:hover {
   background: linear-gradient(145deg, #f1f5f9 0%, #e2e8f0 100%) !important;
   border-color: #cbd5e1 !important;
   color: #334155 !important;
 }
 
-/* Icon Styling */
-.swal2-icon {
+/* Study Hub SweetAlert Toasts styling */
+.study-hub-swal-toast {
+  border-radius: 0.75rem !important;
+  padding: 0.625rem 1rem !important;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
+}
+
+.dark .study-hub-swal-toast {
+  background: #1f2937 !important; /* Slate/gray-800 */
+  color: #f3f4f6 !important;
+  border: 1px solid rgba(99, 102, 241, 0.3) !important;
+}
+
+.dark .study-hub-swal-toast .swal2-title {
+  color: #f3f4f6 !important;
+  font-size: 0.875rem !important;
+  font-weight: 600 !important;
+}
+
+.light .study-hub-swal-toast {
+  background: #ffffff !important;
+  color: #1f2937 !important;
+  border: 1px solid rgba(99, 102, 241, 0.15) !important;
+}
+
+.light .study-hub-swal-toast .swal2-title {
+  color: #1f2937 !important;
+  font-size: 0.875rem !important;
+  font-weight: 600;
+}
+
+/* Scoped Icons for Study Hub Modals & Toasts */
+.study-hub-swal-modal .swal2-icon {
   margin: 1.5rem auto 1rem !important;
 }
 
-.dark .swal2-icon.swal2-success [class^='swal2-success-line'] {
+.dark .study-hub-swal-modal .swal2-icon.swal2-success [class^='swal2-success-line'] {
   background-color: #10b981 !important;
 }
 
-.dark .swal2-icon.swal2-success .swal2-success-ring {
+.dark .study-hub-swal-modal .swal2-icon.swal2-success .swal2-success-ring {
   border-color: rgba(16, 185, 129, 0.3) !important;
 }
 
-.light .swal2-icon.swal2-success [class^='swal2-success-line'] {
+.light .study-hub-swal-modal .swal2-icon.swal2-success [class^='swal2-success-line'] {
   background-color: #10b981 !important;
 }
 
-.light .swal2-icon.swal2-success .swal2-success-ring {
+.light .study-hub-swal-modal .swal2-icon.swal2-success .swal2-success-ring {
   border-color: rgba(16, 185, 129, 0.25) !important;
 }
 
-.dark .swal2-icon.swal2-error {
+.dark .study-hub-swal-modal .swal2-icon.swal2-error {
   border-color: #ef4444 !important;
   color: #ef4444 !important;
 }
 
-.light .swal2-icon.swal2-error {
+.light .study-hub-swal-modal .swal2-icon.swal2-error {
   border-color: #ef4444 !important;
   color: #ef4444 !important;
 }
 
-.light .swal2-icon.swal2-warning {
+.light .study-hub-swal-modal .swal2-icon.swal2-warning {
   border-color: #f59e0b !important;
   color: #f59e0b !important;
 }
 
-.light .swal2-icon.swal2-info {
+.light .study-hub-swal-modal .swal2-icon.swal2-info {
   border-color: #6366f1 !important;
   color: #6366f1 !important;
 }

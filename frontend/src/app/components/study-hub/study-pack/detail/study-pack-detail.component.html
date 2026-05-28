@@ -1,7 +1,7 @@
 <div class="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-300" *ngIf="pack() as pack">
   
   <!-- Top Navigation Header -->
-  <header class="sticky top-0 z-40 bg-white/80 dark:bg-black/80 backdrop-blur-xl border-b border-gray-200/50 dark:border-gray-800/50 shadow-sm transition-all duration-300">
+  <header class="sticky top-0 z-40 bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl border-b border-gray-200/50 dark:border-gray-800/50 shadow-sm transition-all duration-300">
     <div class="max-w-[1800px] w-[98%] lg:w-[94%] mx-auto px-4 py-3 flex items-center justify-between">
       
       <!-- Brand / Logo -->
@@ -156,7 +156,7 @@
         </div>
 
         <!-- Notes Empty State -->
-        <div *ngIf="!pack.notes || pack.notes.length === 0" class="flex flex-col items-center justify-center p-12 bg-gray-50/50 dark:bg-gray-900/30 border border-dashed border-gray-200 dark:border-gray-700 rounded-2xl">
+        <div *ngIf="sortedNotes().length === 0" class="flex flex-col items-center justify-center p-12 bg-gray-50/50 dark:bg-gray-900/30 border border-dashed border-gray-200 dark:border-gray-700 rounded-2xl">
           <div class="w-16 h-16 bg-blue-100 dark:bg-blue-900/20 text-blue-500 dark:text-blue-400 rounded-full flex items-center justify-center mb-4">
             <span class="material-icons text-2xl">sticky_note_2</span>
           </div>
@@ -169,21 +169,27 @@
         </div>
 
         <!-- Notes Grid -->
-        <div *ngIf="pack.notes && pack.notes.length > 0" class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-6">
+        <div *ngIf="sortedNotes().length > 0" class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-6">
           
           <!-- Note Card (Repeater) -->
           <div 
-            *ngFor="let note of pack.notes" 
+            *ngFor="let note of sortedNotes()" 
             (click)="openNoteReader(note)"
             class="group bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl p-6 shadow-sm hover:shadow-[0_20px_40px_rgba(79,70,229,0.08)] dark:hover:shadow-[0_20px_40px_rgba(99,102,241,0.05)] hover:-translate-y-1.5 hover:border-indigo-500/40 dark:hover:border-indigo-400/40 transition-all duration-350 ease-out cursor-pointer flex flex-col relative animate__animated animate__fadeInUp animate__faster"
           >
             <!-- Pin indicator -->
             <button 
               (click)="togglePinNote(note, $event)" 
-              class="absolute top-4 right-4 text-gray-300 hover:text-yellow-500 transition-colors"
+              class="absolute top-4 right-4 transition-all duration-200"
               [class.text-yellow-500]="note.isPinned"
+              [class.text-gray-300]="!note.isPinned"
+              [class.dark:text-gray-600]="!note.isPinned"
+              [class.hover:text-yellow-500]="!note.isPinned"
+              [class.opacity-40]="!note.isPinned"
+              [class.opacity-100]="note.isPinned"
+              [class.group-hover:opacity-100]="!note.isPinned"
             >
-              <span class="material-icons text-lg">{{ note.isPinned ? 'push_pin' : 'push_pin_outlined' }}</span>
+              <span class="material-icons text-lg">push_pin</span>
             </button>
 
             <!-- Title & Subject badge -->

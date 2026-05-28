@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router, ActivatedRoute } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -6,6 +6,7 @@ import { StudyHubService } from '../../../../services/study-hub.service';
 import { SubjectService } from '../../../../services/subject.service';
 import { ThemeService } from '../../../../services/theme.service';
 import { StudyPack } from '../../../../models/study-hub.model';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-study-pack-form',
@@ -13,7 +14,7 @@ import { StudyPack } from '../../../../models/study-hub.model';
   imports: [CommonModule, RouterModule, FormsModule],
   templateUrl: './study-pack-form.component.html',
 })
-export class StudyPackFormComponent {
+export class StudyPackFormComponent implements OnInit {
   studyHubService = inject(StudyHubService);
   subjectService = inject(SubjectService);
   themeService = inject(ThemeService);
@@ -33,6 +34,31 @@ export class StudyPackFormComponent {
   };
 
   subjects: any[] = [];
+
+  private showToast(title: string, icon: 'success' | 'info' | 'error' = 'success') {
+    const isDark = this.themeService.isDark();
+    const Toast = Swal.mixin({
+      toast: true,
+      position: 'top-end',
+      showConfirmButton: false,
+      timer: 2000,
+      timerProgressBar: true,
+      background: isDark ? '#111827' : '#ffffff',
+      color: isDark ? '#f9fafb' : '#111827',
+      customClass: {
+        popup: 'study-hub-swal-toast font-sans'
+      },
+      didOpen: (toast) => {
+        toast.addEventListener('mouseenter', Swal.stopTimer);
+        toast.addEventListener('mouseleave', Swal.resumeTimer);
+      }
+    });
+    Toast.fire({
+      icon,
+      title
+    });
+  }
+
   ngOnInit() {
     this.subjectService.getSubjects().subscribe({
       next: (res) => {
@@ -91,10 +117,12 @@ export class StudyPackFormComponent {
 
     if (this.isEditing) {
       this.studyHubService.updatePack(this.packId, this.form, () => {
+        this.showToast('Pack d\'étude mis à jour !', 'success');
         this.router.navigate(['/study-hub']);
       });
     } else {
       this.studyHubService.addPack(this.form, () => {
+        this.showToast('Pack d\'étude créé !', 'success');
         this.router.navigate(['/study-hub']);
       });
     }

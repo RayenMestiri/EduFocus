@@ -28,13 +28,13 @@ export class StudyPackDetailComponent implements OnInit {
       showCancelButton: true,
       confirmButtonText: 'Supprimer',
       cancelButtonText: 'Annuler',
-      background: isDark ? '#1f2937' : '#ffffff',
+      background: isDark ? '#111827' : '#ffffff',
       color: isDark ? '#f9fafb' : '#111827',
       confirmButtonColor: '#ef4444', // red-500
       cancelButtonColor: isDark ? '#4b5563' : '#9ca3af', // gray-600 or gray-400
       reverseButtons: true,
       customClass: {
-        popup: 'rounded-3xl border border-gray-150 dark:border-gray-700 shadow-xl font-sans'
+        popup: 'study-hub-swal-modal font-sans'
       }
     });
     return result.isConfirmed;
@@ -48,8 +48,11 @@ export class StudyPackDetailComponent implements OnInit {
       showConfirmButton: false,
       timer: 2000,
       timerProgressBar: true,
-      background: isDark ? '#1f2937' : '#ffffff',
+      background: isDark ? '#111827' : '#ffffff',
       color: isDark ? '#f9fafb' : '#111827',
+      customClass: {
+        popup: 'study-hub-swal-toast font-sans'
+      },
       didOpen: (toast) => {
         toast.addEventListener('mouseenter', Swal.stopTimer);
         toast.addEventListener('mouseleave', Swal.resumeTimer);
@@ -67,11 +70,11 @@ export class StudyPackDetailComponent implements OnInit {
       title,
       text,
       icon,
-      background: isDark ? '#1f2937' : '#ffffff',
+      background: isDark ? '#111827' : '#ffffff',
       color: isDark ? '#f9fafb' : '#111827',
       confirmButtonColor: '#4f46e5',
       customClass: {
-        popup: 'rounded-3xl border border-gray-150 dark:border-gray-700 shadow-xl font-sans'
+        popup: 'study-hub-swal-modal font-sans'
       }
     });
   }
@@ -83,13 +86,26 @@ export class StudyPackDetailComponent implements OnInit {
     return id ? this.studyHubService.studyPacks().find(p => p.id === id) : undefined;
   });
 
+  sortedNotes = computed(() => {
+    const currentPack = this.pack();
+    if (!currentPack || !currentPack.notes) return [];
+    return [...currentPack.notes].sort((a, b) => {
+      const pinA = a.isPinned ? 1 : 0;
+      const pinB = b.isPinned ? 1 : 0;
+      if (pinB !== pinA) {
+        return pinB - pinA; // Pinned first
+      }
+      const dateA = a.updatedAt ? new Date(a.updatedAt).getTime() : (a.createdAt ? new Date(a.createdAt).getTime() : 0);
+      const dateB = b.updatedAt ? new Date(b.updatedAt).getTime() : (b.createdAt ? new Date(b.createdAt).getTime() : 0);
+      return dateB - dateA;
+    });
+  });
+
   activeTab = signal<'notes' | 'flashcards' | 'quiz' | 'cheatsheets' | 'exercises'>('notes');
 
-  // Interactive details readers
   viewingNote = signal<Note | null>(null);
   viewingQuiz = signal<QCM | null>(null);
 
-  // Template copy copy-toast signal
   templateCopied = signal<'notes' | 'flashcards' | 'quiz' | 'cheatsheets' | 'exercises' | null>(null);
 
   // Notes Modals and Forms
