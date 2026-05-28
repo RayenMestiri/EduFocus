@@ -1,4 +1,4 @@
-﻿<div class="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-300" *ngIf="pack() as pack">
+<div class="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-300" *ngIf="pack() as pack">
   
   <!-- Top Navigation Header -->
   <header class="sticky top-0 z-40 bg-white/80 dark:bg-black/80 backdrop-blur-xl border-b border-gray-200/50 dark:border-gray-800/50 shadow-sm transition-all duration-300">
@@ -175,7 +175,7 @@
           <div 
             *ngFor="let note of pack.notes" 
             (click)="openNoteReader(note)"
-            class="group bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl p-6 shadow-sm hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 cursor-pointer flex flex-col relative"
+            class="group bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl p-6 shadow-sm hover:shadow-[0_20px_40px_rgba(79,70,229,0.08)] dark:hover:shadow-[0_20px_40px_rgba(99,102,241,0.05)] hover:-translate-y-1.5 hover:border-indigo-500/40 dark:hover:border-indigo-400/40 transition-all duration-350 ease-out cursor-pointer flex flex-col relative animate__animated animate__fadeInUp animate__faster"
           >
             <!-- Pin indicator -->
             <button 
@@ -269,7 +269,7 @@
         <div *ngIf="pack.flashcards && pack.flashcards.length > 0" class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-6">
           
           <!-- Card Item -->
-          <div *ngFor="let card of pack.flashcards; let i = index" class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-sm hover:shadow-md transition-all flex flex-col min-h-48 h-auto pb-4 relative overflow-hidden group">
+          <div *ngFor="let card of pack.flashcards; let i = index" class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-sm hover:shadow-[0_20px_40px_rgba(168,85,247,0.08)] dark:hover:shadow-[0_20px_40px_rgba(168,85,247,0.04)] hover:-translate-y-1.5 hover:border-purple-500/40 dark:hover:border-purple-400/40 transition-all duration-350 ease-out flex flex-col min-h-48 h-auto pb-4 relative overflow-hidden group animate__animated animate__fadeInUp animate__faster">
             
             <span class="absolute top-3 left-4 text-[10px] font-bold text-gray-400 uppercase tracking-widest">Card #{{ i + 1 }}</span>
             
@@ -357,7 +357,7 @@
           <div 
             *ngFor="let q of pack.qcm; let i = index" 
             (click)="openQuizReader(q)"
-            class="group bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl p-6 shadow-sm hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 flex flex-col relative cursor-pointer"
+            class="group bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl p-6 shadow-sm hover:shadow-[0_20px_40px_rgba(16,185,129,0.08)] dark:hover:shadow-[0_20px_40px_rgba(16,185,129,0.04)] hover:-translate-y-1.5 hover:border-emerald-500/40 dark:hover:border-emerald-400/40 transition-all duration-350 ease-out flex flex-col relative cursor-pointer animate__animated animate__fadeInUp animate__faster"
           >
             <!-- Header Tag Row -->
             <div class="flex items-center justify-between gap-2 mb-3">
@@ -522,7 +522,7 @@
         <div *ngIf="pack.cheatsheets && pack.cheatsheets.length > 0" class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-6">
           <div 
             *ngFor="let cs of pack.cheatsheets; let csIdx = index" 
-            class="bg-white dark:bg-zinc-900/90 border border-gray-150 dark:border-zinc-800/85 rounded-xl flex flex-col justify-between group overflow-hidden transition-all duration-300 cursor-pointer"
+            class="bg-white dark:bg-zinc-900/90 border border-gray-150 dark:border-zinc-800/85 rounded-xl flex flex-col justify-between group overflow-hidden transition-all duration-300 cursor-pointer animate__animated animate__fadeInUp animate__faster"
             [style.border-top]="'4px solid ' + getCheatSheetTheme(csIdx).color"
             [style.box-shadow]="hoveredIndex() === csIdx ? '0 12px 35px ' + getCheatSheetTheme(csIdx).color + '30' : '0 4px 25px ' + getCheatSheetTheme(csIdx).rgba"
             [style.transform]="hoveredIndex() === csIdx ? 'translateY(-3.5px)' : 'none'"
@@ -633,9 +633,8 @@
           <button (click)="openAddExerciseModal()" class="px-4 py-2 text-xs font-semibold bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg transition-colors">Add Exercise</button>
         </div>
 
-        <!-- Exercises List -->
-        <div *ngIf="pack.exercises && pack.exercises.length > 0" class="space-y-8">
-          <div *ngFor="let ex of pack.exercises; let exIdx = index" class="bg-white dark:bg-slate-900/80 border border-gray-200 dark:border-slate-800 rounded-3xl p-6 md:p-8 shadow-md hover:shadow-2xl transition-all duration-300 flex flex-col gap-6 group relative overflow-hidden">
+        <div *ngIf="pack.exercises && pack.exercises.length > 0" class="space-y-8 animate__animated animate__fadeInUp animate__faster">
+          <div *ngFor="let ex of pack.exercises; let exIdx = index" class="bg-white dark:bg-slate-900/80 border border-gray-200 dark:border-slate-800 rounded-3xl p-6 md:p-8 shadow-md hover:shadow-[0_20px_50px_rgba(16,185,129,0.06)] dark:hover:shadow-[0_20px_50px_rgba(16,185,129,0.03)] hover:border-emerald-500/30 dark:hover:border-emerald-500/20 transition-all duration-350 ease-out flex flex-col gap-6 group relative overflow-hidden">
             
             <!-- Absolute background glow -->
             <div class="absolute -top-24 -right-24 w-48 h-48 bg-emerald-500/5 dark:bg-emerald-500/10 rounded-full blur-3xl pointer-events-none group-hover:scale-125 transition-transform duration-500"></div>
