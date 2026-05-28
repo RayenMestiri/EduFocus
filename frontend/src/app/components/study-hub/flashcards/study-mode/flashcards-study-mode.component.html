@@ -17,20 +17,19 @@
 
       <!-- Action Items & Navigation links -->
       <div class="flex items-center gap-2">
-        <!-- Back to Dashboard Link -->
         <a routerLink="/dashboard" class="px-3 py-1.5 rounded-xl bg-gray-50 hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 border border-gray-200/50 dark:border-gray-700 text-xs font-semibold flex items-center gap-1.5 transition-all shadow-sm">
           <span class="material-icons text-sm">home</span>
-          <span class="hidden sm:inline">Dashboard</span>
+          <span class="hidden sm:inline">{{ 'NAV.DASHBOARD' | translate }}</span>
         </a>
 
-        <!-- Back to Planner Link -->
         <a routerLink="/planner" class="px-3 py-1.5 rounded-xl bg-gray-50 hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 border border-gray-200/50 dark:border-gray-700 text-xs font-semibold flex items-center gap-1.5 transition-all shadow-sm">
           <span class="material-icons text-sm">event</span>
-          <span class="hidden sm:inline">Planner</span>
+          <span class="hidden sm:inline">{{ 'NAV.PLANNER' | translate }}</span>
         </a>
 
         <!-- Divider -->
         <span class="h-5 w-[1px] bg-gray-200 dark:bg-gray-700 mx-1"></span>
+        <app-language-switcher></app-language-switcher>
 
         <!-- Dark Mode Toggle Button -->
         <button 
@@ -52,7 +51,7 @@
     <!-- Header -->
     <div class="w-full flex items-center justify-between mb-8">
     <div class="flex items-center gap-4">
-      <a *ngIf="pack" [routerLink]="['/study-hub', pack.id]" class="p-2 bg-white dark:bg-gray-800 rounded-full shadow-sm text-gray-500 dark:text-gray-300 hover:text-indigo-600 transition-colors border border-gray-100 dark:border-gray-700">
+      <a *ngIf="pack()" [routerLink]="['/study-hub', pack()?.id]" class="p-2 bg-white dark:bg-gray-800 rounded-full shadow-sm text-gray-500 dark:text-gray-300 hover:text-indigo-600 transition-colors border border-gray-100 dark:border-gray-700">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
         </svg>
@@ -60,16 +59,16 @@
       <div>
         <h1 class="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
           <span class="material-icons text-purple-600 dark:text-purple-400">style</span>
-          Study Mode
+          {{ 'FLASHCARDS.STUDY_MODE' | translate }}
         </h1>
-        <p class="text-gray-500 dark:text-gray-400 text-sm">{{ pack?.title }}</p>
+        <p class="text-gray-500 dark:text-gray-400 text-sm">{{ pack()?.title }}</p>
       </div>
     </div>
   </div>
 
   <div class="w-full max-w-3xl flex-1 flex flex-col justify-center animate__animated animate__fadeIn" *ngIf="!isFinished()">
     
-    <!-- Spaced Repetition Status Banner (Premium dark glass design) -->
+    <!-- Spaced Repetition Status Banner -->
     <div class="mb-5 text-xs font-semibold rounded-2xl px-4 py-3 border-l-4 transition-all duration-350 shadow-sm flex items-center gap-2.5 bg-white/80 dark:bg-gray-800/40 backdrop-blur-md border border-gray-200/30 dark:border-gray-700/35"
          [ngClass]="{
            'border-l-rose-500 text-rose-700 dark:text-rose-450': reviewCount() > 0,
@@ -77,40 +76,40 @@
            'border-l-emerald-500 text-emerald-700 dark:text-emerald-400': reviewCount() === 0 && mediumCount() === 0
          }">
       <span class="material-icons text-base text-indigo-500 dark:text-indigo-400">psychology</span>
-      <span>Répétition espacée active &mdash; <span class="font-extrabold">{{ spacedRepetitionHint() }}</span></span>
+      <span>{{ 'FLASHCARDS.SPACED_REP' | translate }} &mdash; <span class="font-extrabold">{{ spacedRepetitionHint() }}</span></span>
     </div>
 
-    <!-- Flashcard Scoreboard Grid (Tactile Left-bordered Glass Cards) -->
+    <!-- Flashcard Scoreboard Grid -->
     <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
       <!-- Total -->
       <div class="bg-white/85 dark:bg-gray-800/80 backdrop-blur-md border-y border-r border-gray-200/50 dark:border-gray-700/50 border-l-4 border-l-indigo-500 rounded-2xl p-3.5 text-center flex flex-col justify-center shadow-sm">
-        <span class="text-2xl font-black text-indigo-600 dark:text-indigo-400 font-mono leading-none">{{ pack?.flashcards?.length }}</span>
-        <span class="text-[9px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest mt-1.5 flex items-center justify-center gap-1"><span class="material-icons text-[10px]">grid_view</span> Total</span>
+        <span class="text-2xl font-black text-indigo-600 dark:text-indigo-400 font-mono leading-none">{{ pack()?.flashcards?.length }}</span>
+        <span class="text-[9px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest mt-1.5 flex items-center justify-center gap-1"><span class="material-icons text-[10px]">grid_view</span> {{ 'FLASHCARDS.TOTAL' | translate }}</span>
       </div>
 
       <!-- Mastered -->
       <div class="bg-white/85 dark:bg-gray-800/80 backdrop-blur-md border-y border-r border-gray-200/50 dark:border-gray-700/50 border-l-4 border-l-emerald-500 rounded-2xl p-3.5 text-center flex flex-col justify-center shadow-sm">
         <span class="text-2xl font-black text-emerald-500 dark:text-emerald-400 font-mono leading-none">{{ masteredCount() }}</span>
-        <span class="text-[9px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest mt-1.5 flex items-center justify-center gap-1"><span class="material-icons text-[10px]">check_circle</span> Maîtrisées</span>
+        <span class="text-[9px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest mt-1.5 flex items-center justify-center gap-1"><span class="material-icons text-[10px]">check_circle</span> {{ 'FLASHCARDS.MASTERED' | translate }}</span>
       </div>
 
       <!-- Medium -->
       <div class="bg-white/85 dark:bg-gray-800/80 backdrop-blur-md border-y border-r border-gray-200/50 dark:border-gray-700/50 border-l-4 border-l-amber-500 rounded-2xl p-3.5 text-center flex flex-col justify-center shadow-sm">
         <span class="text-2xl font-black text-amber-500 dark:text-amber-400 font-mono leading-none">{{ mediumCount() }}</span>
-        <span class="text-[9px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest mt-1.5 flex items-center justify-center gap-1"><span class="material-icons text-[10px]">change_history</span> Moyennes</span>
+        <span class="text-[9px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest mt-1.5 flex items-center justify-center gap-1"><span class="material-icons text-[10px]">change_history</span> {{ 'FLASHCARDS.MEDIUM' | translate }}</span>
       </div>
 
       <!-- Review -->
       <div class="bg-white/85 dark:bg-gray-800/80 backdrop-blur-md border-y border-r border-gray-200/50 dark:border-gray-700/50 border-l-4 border-l-rose-500 rounded-2xl p-3.5 text-center flex flex-col justify-center shadow-sm">
         <span class="text-2xl font-black text-rose-505 dark:text-rose-400 font-mono leading-none">{{ reviewCount() }}</span>
-        <span class="text-[9px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest mt-1.5 flex items-center justify-center gap-1"><span class="material-icons text-[10px]">running_with_errors</span> À revoir</span>
+        <span class="text-[9px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest mt-1.5 flex items-center justify-center gap-1"><span class="material-icons text-[10px]">running_with_errors</span> {{ 'FLASHCARDS.TO_REVIEW' | translate }}</span>
       </div>
     </div>
 
     <!-- Progress Bar -->
     <div class="mb-6">
       <div class="flex justify-between text-xs mb-2 text-gray-500 dark:text-gray-400 font-bold uppercase tracking-wider">
-        <span>Carte {{ currentIndex() + 1 }} sur {{ pack?.flashcards?.length }}</span>
+        <span>{{ 'FLASHCARDS.CARD_OF' | translate:{current: (currentIndex() + 1), total: (pack()?.flashcards?.length || 0)} }}</span>
         <span>{{ progressPercentage }}%</span>
       </div>
       <div class="h-2 w-full bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
@@ -126,7 +125,7 @@
         <!-- Front -->
         <div class="absolute inset-0 backface-hidden bg-white dark:bg-gray-800 rounded-3xl border border-gray-150 dark:border-gray-700 flex flex-col items-center justify-center p-8">
           <span class="absolute top-5 left-6 text-[10px] font-extrabold text-indigo-500 dark:text-indigo-400 uppercase tracking-widest flex items-center gap-1">
-            <span class="material-icons text-xs">help_outline</span> Question
+            <span class="material-icons text-xs">help_outline</span> {{ 'FLASHCARDS.QUESTION' | translate }}
           </span>
           <span *ngIf="currentCard?.difficulty" class="absolute top-4 right-6 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase border"
                 [ngClass]="{
@@ -134,18 +133,18 @@
                   'bg-amber-500/10 text-amber-500 border-amber-500/20': currentCard?.difficulty === 'medium',
                   'bg-rose-500/10 text-rose-500 border-rose-500/20': currentCard?.difficulty === 'hard'
                 }">
-            {{ currentCard?.difficulty === 'easy' ? 'Maîtrisé' : currentCard?.difficulty === 'medium' ? 'Moyen' : 'À revoir' }}
+            {{ currentCard?.difficulty === 'easy' ? ('FLASHCARDS.MASTERED' | translate) : currentCard?.difficulty === 'medium' ? ('FLASHCARDS.MEDIUM' | translate) : ('FLASHCARDS.TO_REVIEW' | translate) }}
           </span>
           <h2 class="text-2xl font-bold text-center text-gray-900 dark:text-white leading-relaxed pr-4 pl-4" [innerHTML]="currentCard?.front"></h2>
           <div class="absolute bottom-6 text-gray-400 dark:text-gray-500 text-[11px] font-bold flex items-center gap-1.5 animate-pulse uppercase tracking-wider">
-            <span class="material-icons text-sm">touch_app</span> Cliquer pour retourner la carte
+            <span class="material-icons text-sm">touch_app</span> {{ 'FLASHCARDS.CLICK_TO_FLIP' | translate }}
           </div>
         </div>
 
-        <!-- Back (High contrast slate & purple glow design) -->
+        <!-- Back -->
         <div class="absolute inset-0 backface-hidden bg-purple-50/75 dark:bg-gradient-to-br dark:from-slate-900 dark:to-purple-950/80 rounded-3xl border-2 border-purple-200 dark:border-purple-500/40 flex flex-col items-center justify-center p-8 rotate-y-180">
           <span class="absolute top-5 left-6 text-[10px] font-extrabold text-purple-600 dark:text-purple-400 uppercase tracking-widest flex items-center gap-1">
-            <span class="material-icons text-xs">lightbulb_outline</span> Réponse (Back)
+            <span class="material-icons text-xs">lightbulb_outline</span> {{ 'FLASHCARDS.ANSWER' | translate }}
           </span>
           
           <div class="w-full flex flex-col items-center justify-center overflow-y-auto max-h-[85%] py-4">
@@ -156,44 +155,41 @@
           </div>
           
           <div class="absolute bottom-4 text-gray-400 dark:text-gray-500 text-[10px] font-medium uppercase tracking-wider">
-            💡 Espace/Entrée pour retourner la carte
+            💡 {{ 'FLASHCARDS.SPACE_TO_FLIP' | translate }}
           </div>
         </div>
       </div>
     </div>
 
-    <!-- General Navigation & Skip Controls (Always visible for flexibility) -->
+    <!-- Navigation Controls -->
     <div class="mt-8 flex justify-between items-center w-full max-w-lg mx-auto bg-white/70 dark:bg-gray-800/70 backdrop-blur-md rounded-2xl p-3 border border-gray-200/50 dark:border-gray-700/50 shadow-sm gap-2">
-      <!-- Précédent (Go back) -->
       <button 
         (click)="prevCard(); $event.stopPropagation()" 
         [disabled]="currentIndex() === 0"
         class="px-3.5 py-2 sm:px-4 text-xs font-semibold border border-gray-250 dark:border-gray-700 hover:border-indigo-500 hover:text-indigo-600 dark:hover:text-indigo-400 text-gray-600 dark:text-gray-300 rounded-xl transition-all flex items-center gap-1 shadow-sm disabled:opacity-30 disabled:hover:border-gray-200 disabled:hover:text-gray-500"
       >
         <span class="material-icons text-sm">arrow_back</span>
-        <span class="hidden sm:inline">Précédent</span>
+        <span class="hidden sm:inline">{{ 'FLASHCARDS.PREV' | translate }}</span>
       </button>
 
-      <!-- Retourner (Flip) -->
       <button 
         (click)="flipCard(); $event.stopPropagation()"
         class="px-4 py-2 sm:px-6 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-xl shadow-md transition-all flex items-center gap-1"
       >
         <span class="material-icons text-sm">flip</span>
-        <span>{{ isFlipped() ? 'Voir Question' : 'Voir Réponse' }}</span>
+        <span>{{ isFlipped() ? ('FLASHCARDS.SEE_QUESTION' | translate) : ('FLASHCARDS.SEE_ANSWER' | translate) }}</span>
       </button>
 
-      <!-- Passer / Suivant (Skip) -->
       <button 
         (click)="skipCard(); $event.stopPropagation()"
         class="px-3.5 py-2 sm:px-4 text-xs font-semibold border border-gray-250 dark:border-gray-700 hover:border-indigo-500 hover:text-indigo-600 dark:hover:text-indigo-400 text-gray-600 dark:text-gray-300 rounded-xl transition-all flex items-center gap-1 shadow-sm"
       >
-        <span class="hidden sm:inline">Passer</span>
+        <span class="hidden sm:inline">{{ 'FLASHCARDS.SKIP' | translate }}</span>
         <span class="material-icons text-sm">arrow_forward</span>
       </button>
     </div>
 
-    <!-- Difficulty Ratings / Spaced Repetition (Only visible when flipped) -->
+    <!-- Difficulty Ratings -->
     <div class="mt-6 min-h-20 h-auto py-2 flex flex-col sm:flex-row justify-center items-center gap-3 sm:gap-4 w-full max-w-md mx-auto transition-all duration-300"
          [class.opacity-0]="!isFlipped()" [class.pointer-events-none]="!isFlipped()">
       <button 
@@ -201,7 +197,7 @@
         class="w-full sm:w-auto px-6 py-3.5 rounded-2xl bg-rose-50 hover:bg-rose-100/70 dark:bg-rose-950/30 dark:hover:bg-rose-950/50 text-rose-700 dark:text-rose-450 font-bold transition-all border border-rose-200 dark:border-rose-800/40 shadow-sm flex items-center justify-center gap-2"
       >
         <span class="material-icons text-base text-rose-500 dark:text-rose-450">cancel</span>
-        <span>À revoir</span>
+        <span>{{ 'FLASHCARDS.TO_REVIEW' | translate }}</span>
         <kbd class="hidden sm:inline-block px-1.5 py-0.5 rounded bg-rose-100 dark:bg-rose-900/40 text-[9px] border border-rose-300 dark:border-rose-800 ml-1">1</kbd>
       </button>
 
@@ -210,7 +206,7 @@
         class="w-full sm:w-auto px-6 py-3.5 rounded-2xl bg-amber-50 hover:bg-amber-100/70 dark:bg-amber-950/30 dark:hover:bg-amber-950/50 text-amber-700 dark:text-amber-400 font-bold transition-all border border-amber-200 dark:border-amber-800/40 shadow-sm flex items-center justify-center gap-2"
       >
         <span class="material-icons text-base text-amber-500 dark:text-amber-450">change_history</span>
-        <span>Moyen</span>
+        <span>{{ 'FLASHCARDS.MEDIUM' | translate }}</span>
         <kbd class="hidden sm:inline-block px-1.5 py-0.5 rounded bg-amber-100 dark:bg-amber-900/40 text-[9px] border border-amber-300 dark:border-amber-800 ml-1">2</kbd>
       </button>
 
@@ -219,7 +215,7 @@
         class="w-full sm:w-auto px-6 py-3.5 rounded-2xl bg-emerald-50 hover:bg-emerald-100/70 dark:bg-emerald-950/30 dark:hover:bg-emerald-950/50 text-emerald-700 dark:text-emerald-400 font-bold transition-all border border-emerald-200 dark:border-emerald-800/40 shadow-sm flex items-center justify-center gap-2"
       >
         <span class="material-icons text-base text-emerald-500 dark:text-emerald-450">check_circle</span>
-        <span>Maîtrisé</span>
+        <span>{{ 'FLASHCARDS.MASTERED' | translate }}</span>
         <kbd class="hidden sm:inline-block px-1.5 py-0.5 rounded bg-emerald-100 dark:bg-emerald-900/40 text-[9px] border border-emerald-300 dark:border-emerald-800 ml-1">3</kbd>
       </button>
     </div>
@@ -232,20 +228,17 @@
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
       </svg>
     </div>
-    <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-4">Great Job!</h2>
-    <p class="text-gray-500 dark:text-gray-400 mb-8 max-w-md">You've completed all flashcards in this pack. Review them again later to strengthen your memory.</p>
+    <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-4">{{ 'FLASHCARDS.GREAT_JOB' | translate }}</h2>
+    <p class="text-gray-500 dark:text-gray-400 mb-8 max-w-md">{{ 'FLASHCARDS.COMPLETED_MSG' | translate }}</p>
     <div class="flex gap-4">
       <button (click)="restart()" class="px-6 py-3 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-700 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-all font-medium">
-        Review Again
+        {{ 'FLASHCARDS.REVIEW_AGAIN' | translate }}
       </button>
-      <a *ngIf="pack" [routerLink]="['/study-hub', pack.id]" class="px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-xl transition-all font-medium shadow-md shadow-purple-200 dark:shadow-none">
-        Back to Pack
+      <a *ngIf="pack()" [routerLink]="['/study-hub', pack()?.id]" class="px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-xl transition-all font-medium shadow-md shadow-purple-200 dark:shadow-none">
+        {{ 'FLASHCARDS.BACK_TO_PACK' | translate }}
       </a>
     </div>
   </div>
 
   </div>
 </div>
-
-
-

@@ -4,12 +4,14 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { StudyHubService } from '../../../../services/study-hub.service';
 import { ThemeService } from '../../../../services/theme.service';
 import { StudyPack, Flashcard } from '../../../../models/study-hub.model';
+import { TranslateModule } from '@ngx-translate/core';
+import { LanguageSwitcherComponent } from '../../../shared/language-switcher/language-switcher.component';
 import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-flashcards-study-mode',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, TranslateModule, LanguageSwitcherComponent],
   templateUrl: './flashcards-study-mode.component.html',
   styleUrls: ['./flashcards-study-mode.component.css']
 })
@@ -19,7 +21,11 @@ export class FlashcardsStudyModeComponent implements OnInit {
   route = inject(ActivatedRoute);
   router = inject(Router);
 
-  pack: StudyPack | undefined;
+  packId = signal<string | null>(null);
+  pack = computed(() => {
+    const id = this.packId();
+    return id ? this.studyHubService.studyPacks().find(p => p.id === id) : undefined;
+  });
   currentIndex = signal(0);
   isFlipped = signal(false);
   isFinished = signal(false);
@@ -65,21 +71,21 @@ export class FlashcardsStudyModeComponent implements OnInit {
   }
 
   masteredCount = computed(() => {
-    return this.pack?.flashcards?.filter(c => c.difficulty === 'easy').length || 0;
+    return this.pack()?.flashcards?.filter(c => c.difficulty === 'easy').length || 0;
   });
 
   mediumCount = computed(() => {
-    return this.pack?.flashcards?.filter(c => c.difficulty === 'medium').length || 0;
+    return this.pack()?.flashcards?.filter(c => c.difficulty === 'medium').length || 0;
   });
 
   reviewCount = computed(() => {
-    return this.pack?.flashcards?.filter(c => c.difficulty === 'hard').length || 0;
+    return this.pack()?.flashcards?.filter(c => c.difficulty === 'hard').length || 0;
   });
   
   spacedRepetitionHint = computed(() => {
     const hard = this.reviewCount();
     const medium = this.mediumCount();
-    const newCards = this.pack?.flashcards?.filter(c => !c.difficulty).length || 0;
+    const newCards = this.pack()?.flashcards?.filter(c => !c.difficulty).length || 0;
     
     if (hard > 0) {
       return `${hard} carte${hard > 1 ? 's' : ''} difficile${hard > 1 ? 's' : ''} à réviser d'urgence 🚨`;
@@ -95,11 +101,23 @@ export class FlashcardsStudyModeComponent implements OnInit {
   ngOnInit() {
     const packId = this.route.snapshot.paramMap.get('packId');
     if (packId) {
-      this.pack = this.studyHubService.getPackById(packId);
-      if (!this.pack || !this.pack.flashcards || this.pack.flashcards.length === 0) {
-        // No flashcards, go back
-        this.router.navigate(['/study-hub', packId]);
-      }
+      this.packId.set(packId);
+      
+      // Enforce refreshing study packs on loading study mode to make sure it is updated
+      this.studyHubService.refreshPacks();
+
+      // Robust async polling: wait until loading is complete before checking presence/flashcards
+      const checkInterval = setInterval(() => {
+        if (!this.studyHubService.isLoading()) {
+          clearInterval(checkInterval);
+          
+          const currentPack = this.pack();
+          if (!currentPack || !currentPack.flashcards || currentPack.flashcards.length === 0) {
+            // No flashcards, go back
+            this.router.navigate(['/study-hub', packId]);
+          }
+        }
+      }, 50);
     }
   }
 
@@ -136,12 +154,13 @@ export class FlashcardsStudyModeComponent implements OnInit {
   }
 
   get currentCard(): Flashcard | undefined {
-    return this.pack?.flashcards?.[this.currentIndex()];
+    return this.pack()?.flashcards?.[this.currentIndex()];
   }
 
   get progressPercentage(): number {
-    if (!this.pack?.flashcards?.length) return 0;
-    return Math.round((this.currentIndex() / this.pack.flashcards.length) * 100);
+    const currentPack = this.pack();
+    if (!currentPack?.flashcards?.length) return 0;
+    return Math.round((this.currentIndex() / currentPack.flashcards.length) * 100);
   }
 
   flipCard() {
@@ -149,24 +168,26 @@ export class FlashcardsStudyModeComponent implements OnInit {
   }
 
   markDifficulty(difficulty: 'easy' | 'medium' | 'hard') {
-    if (!this.pack || !this.currentCard) return;
+    const currentPack = this.pack();
+    if (!currentPack || !this.currentCard) return;
     
-    const updatedCards = [...this.pack.flashcards];
+    const updatedCards = [...currentPack.flashcards];
     updatedCards[this.currentIndex()] = {
       ...this.currentCard,
       difficulty,
       lastReviewed: new Date()
     };
     
-    this.studyHubService.updatePack(this.pack.id, { flashcards: updatedCards });
+    this.studyHubService.updatePack(currentPack.id, { flashcards: updatedCards });
 
     this.nextCard();
   }
 
   nextCard() {
-    if (!this.pack?.flashcards) return;
+    const currentPack = this.pack();
+    if (!currentPack?.flashcards) return;
     
-    if (this.currentIndex() < this.pack.flashcards.length - 1) {
+    if (this.currentIndex() < currentPack.flashcards.length - 1) {
       this.isFlipped.set(false);
       setTimeout(() => {
         this.currentIndex.update(i => i + 1);
@@ -175,7 +196,7 @@ export class FlashcardsStudyModeComponent implements OnInit {
       this.isFinished.set(true);
       this.showCelebration(
         'Excellent travail ! 📑',
-        `Vous avez révisé avec succès l'intégralité des ${this.pack.flashcards.length} flashcards de ce pack !`,
+        `Vous avez révisé avec succès l'intégralité des ${currentPack.flashcards.length} flashcards de ce pack !`,
         'success'
       );
     }

@@ -6,12 +6,14 @@ import { StudyHubService } from '../../../../services/study-hub.service';
 import { SubjectService } from '../../../../services/subject.service';
 import { ThemeService } from '../../../../services/theme.service';
 import { StudyPack } from '../../../../models/study-hub.model';
+import { TranslateModule } from '@ngx-translate/core';
+import { LanguageSwitcherComponent } from '../../../shared/language-switcher/language-switcher.component';
 import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-study-pack-form',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule],
+  imports: [CommonModule, RouterModule, FormsModule, TranslateModule, LanguageSwitcherComponent],
   templateUrl: './study-pack-form.component.html',
 })
 export class StudyPackFormComponent implements OnInit {

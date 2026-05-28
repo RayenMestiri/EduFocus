@@ -5,12 +5,16 @@ import { routes } from './app.routes';
 import { authInterceptor } from './interceptors/auth.interceptor';
 import { provideLottieOptions } from 'ngx-lottie';
 import player from 'lottie-web';
+import { provideTranslateService } from '@ngx-translate/core';
+import { provideTranslateHttpLoader } from '@ngx-translate/http-loader';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
     provideHttpClient(withInterceptors([authInterceptor])),
+    provideTranslateService({ defaultLanguage: 'en' }),
+    provideTranslateHttpLoader({ prefix: './assets/i18n/', suffix: '.json' }),
     provideLottieOptions({
       player: () => player,
     })

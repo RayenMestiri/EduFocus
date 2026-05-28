@@ -19,13 +19,14 @@
       <div class="flex items-center gap-2">
         <a routerLink="/dashboard" class="px-3 py-1.5 rounded-xl bg-gray-50 hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 border border-gray-200/50 dark:border-gray-700 text-xs font-semibold flex items-center gap-1.5 transition-all shadow-sm">
           <span class="material-icons text-sm">home</span>
-          <span class="hidden sm:inline">Dashboard</span>
+          <span class="hidden sm:inline">{{ 'NAV.DASHBOARD' | translate }}</span>
         </a>
         <a routerLink="/planner" class="px-3 py-1.5 rounded-xl bg-gray-50 hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 border border-gray-200/50 dark:border-gray-700 text-xs font-semibold flex items-center gap-1.5 transition-all shadow-sm">
           <span class="material-icons text-sm">event</span>
-          <span class="hidden sm:inline">Planner</span>
+          <span class="hidden sm:inline">{{ 'NAV.PLANNER' | translate }}</span>
         </a>
         <span class="h-5 w-[1px] bg-gray-200 dark:bg-gray-700 mx-1"></span>
+        <app-language-switcher></app-language-switcher>
         <button 
           (click)="themeService.toggleTheme()"
           class="p-2 rounded-xl bg-gray-50 hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700 border border-gray-200/50 dark:border-gray-700 text-gray-500 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-all shadow-sm"
@@ -51,21 +52,24 @@
           </span>
           Study Hub
         </h1>
-        <p class="text-gray-500 dark:text-gray-400 mt-1">Your intelligent learning workspace</p>
+        <div class="flex items-center gap-3 flex-wrap mt-1">
+          <p class="text-gray-500 dark:text-gray-400">{{ 'STUDY_HUB.DASHBOARD.WELCOME_SUBTITLE' | translate }}</p>
+          <span class="inline-flex items-center rounded-md bg-indigo-50 dark:bg-indigo-900/30 px-2 py-1 text-xs font-medium text-indigo-700 dark:text-indigo-400"> RAYEN MESTIRI </span>
+        </div>
       </div>
 
       <div class="flex flex-wrap items-center gap-2 sm:gap-3">
         <button (click)="openImportModal()" class="px-3.5 py-2 sm:px-4 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-700 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-all text-xs sm:text-sm font-medium shadow-sm flex items-center gap-2">
           <span class="material-icons text-sm">file_upload</span>
-          Import
+          {{ 'DASHBOARD.IMPORT' | translate }}
         </button>
         <button (click)="exportAll()" [disabled]="studyHubService.totalPacks() === 0" class="px-3.5 py-2 sm:px-4 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-700 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-all text-xs sm:text-sm font-medium shadow-sm flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
           <span class="material-icons text-sm">file_download</span>
-          Export
+          {{ 'DASHBOARD.EXPORT' | translate }}
         </button>
         <a routerLink="/study-hub/new" class="px-3.5 py-2 sm:px-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl transition-all text-xs sm:text-sm font-medium shadow-sm shadow-indigo-200 dark:shadow-none flex items-center gap-2">
           <span class="material-icons text-sm">add</span>
-          Create Pack
+          {{ 'DASHBOARD.CREATE_PACK' | translate }}
         </a>
       </div>
     </div>
@@ -74,7 +78,7 @@
     @if (studyHubService.isLoading()) {
       <div class="flex flex-col items-center justify-center p-16 gap-4">
         <div class="w-12 h-12 border-4 border-indigo-200 dark:border-indigo-900 border-t-indigo-600 dark:border-t-indigo-400 rounded-full animate-spin"></div>
-        <p class="text-gray-500 dark:text-gray-400 text-sm font-medium">Loading your study packs from database…</p>
+        <p class="text-gray-500 dark:text-gray-400 text-sm font-medium">{{ 'DASHBOARD.LOADING' | translate }}</p>
       </div>
     }
 
@@ -85,10 +89,10 @@
         <div class="w-24 h-24 bg-indigo-100 dark:bg-indigo-900/50 text-indigo-500 rounded-full flex items-center justify-center mb-6">
           <span class="material-icons text-5xl">library_books</span>
         </div>
-        <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">No Study Packs Yet</h3>
-        <p class="text-gray-500 dark:text-gray-400 text-center max-w-sm mb-6">Create your first Study Pack to start organizing your notes, flashcards, and quizzes in one smart workspace.</p>
+        <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">{{ 'DASHBOARD.NO_PACKS_TITLE' | translate }}</h3>
+        <p class="text-gray-500 dark:text-gray-400 text-center max-w-sm mb-6">{{ 'DASHBOARD.NO_PACKS_DESC' | translate }}</p>
         <a routerLink="/study-hub/new" class="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-medium transition-all shadow-md shadow-indigo-200 dark:shadow-none">
-          Create First Pack
+          {{ 'DASHBOARD.CREATE_FIRST' | translate }}
         </a>
       </div>
     } @else {
@@ -108,20 +112,20 @@
             </div>
 
             <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors line-clamp-1">{{ pack.title }}</h3>
-            <p class="text-sm text-gray-500 dark:text-gray-400 mb-6 line-clamp-2 min-h-[40px]">{{ pack.description || 'No description provided.' }}</p>
+            <p class="text-sm text-gray-500 dark:text-gray-400 mb-6 line-clamp-2 min-h-[40px]">{{ pack.description || ('PACK_DETAIL.NO_DESC' | translate) }}</p>
 
             <div class="grid grid-cols-3 gap-2 border-t border-gray-100 dark:border-gray-700 pt-4">
               <div class="text-center">
                 <span class="block text-lg font-semibold text-gray-900 dark:text-white">{{ pack.notes?.length || 0 }}</span>
-                <span class="block text-xs text-gray-500 dark:text-gray-400">Notes</span>
+                <span class="block text-xs text-gray-500 dark:text-gray-400">{{ 'DASHBOARD.NOTES' | translate }}</span>
               </div>
               <div class="text-center border-x border-gray-100 dark:border-gray-700">
                 <span class="block text-lg font-semibold text-gray-900 dark:text-white">{{ pack.flashcards?.length || 0 }}</span>
-                <span class="block text-xs text-gray-500 dark:text-gray-400">Cards</span>
+                <span class="block text-xs text-gray-500 dark:text-gray-400">{{ 'DASHBOARD.CARDS' | translate }}</span>
               </div>
               <div class="text-center">
                 <span class="block text-lg font-semibold text-gray-900 dark:text-white">{{ pack.qcm?.length || 0 }}</span>
-                <span class="block text-xs text-gray-500 dark:text-gray-400">Quizzes</span>
+                <span class="block text-xs text-gray-500 dark:text-gray-400">{{ 'DASHBOARD.QUIZZES' | translate }}</span>
               </div>
             </div>
           </a>
@@ -139,8 +143,8 @@
     <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[90vh]">
       <div class="px-6 py-4 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center">
         <div>
-          <h3 class="text-lg font-bold text-gray-900 dark:text-white">Import Study Packs</h3>
-          <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Paste JSON → saved directly to your database</p>
+          <h3 class="text-lg font-bold text-gray-900 dark:text-white">{{ 'DASHBOARD.IMPORT_MODAL_TITLE' | translate }}</h3>
+          <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{{ 'DASHBOARD.IMPORT_MODAL_DESC' | translate }}</p>
         </div>
         <button (click)="closeImportModal()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
           <span class="material-icons">close</span>
@@ -164,10 +168,10 @@
           placeholder='[&#10;  {&#10;    "title": "Mon Pack SQL",&#10;    "subject": "Informatique",&#10;    "description": "Révision SQL",&#10;    "notes": [],&#10;    "flashcards": [],&#10;    "qcm": [],&#10;    "cheatsheets": [],&#10;    "exercises": []&#10;  }&#10;]'></textarea>
       </div>
       <div class="px-6 py-4 border-t border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 flex justify-end gap-3">
-        <button (click)="closeImportModal()" class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors">Cancel</button>
+        <button (click)="closeImportModal()" class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors">{{ 'DASHBOARD.CANCEL' | translate }}</button>
         <button (click)="confirmImport()" [disabled]="!importJsonData.trim()" class="px-5 py-2 text-sm font-bold text-white bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg transition-colors flex items-center gap-2">
           <span class="material-icons text-sm">file_upload</span>
-          Import to Database
+          {{ 'DASHBOARD.IMPORT_TO_DB' | translate }}
         </button>
       </div>
     </div>

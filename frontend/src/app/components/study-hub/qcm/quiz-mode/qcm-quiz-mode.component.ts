@@ -5,12 +5,14 @@ import { FormsModule } from '@angular/forms';
 import { StudyHubService } from '../../../../services/study-hub.service';
 import { ThemeService } from '../../../../services/theme.service';
 import { StudyPack, QCM } from '../../../../models/study-hub.model';
+import { TranslateModule } from '@ngx-translate/core';
+import { LanguageSwitcherComponent } from '../../../shared/language-switcher/language-switcher.component';
 import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-qcm-quiz-mode',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule],
+  imports: [CommonModule, RouterModule, FormsModule, TranslateModule, LanguageSwitcherComponent],
   templateUrl: './qcm-quiz-mode.component.html'
 })
 export class QcmQuizModeComponent implements OnInit, OnDestroy {

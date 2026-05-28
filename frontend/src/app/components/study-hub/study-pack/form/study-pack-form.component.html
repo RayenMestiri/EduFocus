@@ -17,20 +17,19 @@
 
       <!-- Action Items & Navigation links -->
       <div class="flex items-center gap-2">
-        <!-- Back to Dashboard Link -->
         <a routerLink="/dashboard" class="px-3 py-1.5 rounded-xl bg-gray-50 hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 border border-gray-200/50 dark:border-gray-700 text-xs font-semibold flex items-center gap-1.5 transition-all shadow-sm">
           <span class="material-icons text-sm">home</span>
-          <span class="hidden sm:inline">Dashboard</span>
+          <span class="hidden sm:inline">{{ 'NAV.DASHBOARD' | translate }}</span>
         </a>
 
-        <!-- Back to Planner Link -->
         <a routerLink="/planner" class="px-3 py-1.5 rounded-xl bg-gray-50 hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 border border-gray-200/50 dark:border-gray-700 text-xs font-semibold flex items-center gap-1.5 transition-all shadow-sm">
           <span class="material-icons text-sm">event</span>
-          <span class="hidden sm:inline">Planner</span>
+          <span class="hidden sm:inline">{{ 'NAV.PLANNER' | translate }}</span>
         </a>
 
         <!-- Divider -->
         <span class="h-5 w-[1px] bg-gray-200 dark:bg-gray-700 mx-1"></span>
+        <app-language-switcher></app-language-switcher>
 
         <!-- Dark Mode Toggle Button -->
         <button 
@@ -56,26 +55,26 @@
         </svg>
       </a>
       <h1 class="text-2xl font-bold text-gray-900 dark:text-white">
-        {{ isEditing ? 'Edit Study Pack' : 'Create New Study Pack' }}
+        {{ isEditing ? ('FORM.EDIT_TITLE' | translate) : ('FORM.CREATE_TITLE' | translate) }}
       </h1>
     </div>
 
     <form (ngSubmit)="save()" class="space-y-6">
       
       <div>
-        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Title <span class="text-red-500">*</span></label>
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{{ 'FORM.TITLE' | translate }} <span class="text-red-500">*</span></label>
         <input 
           type="text" 
           name="title"
           [(ngModel)]="form.title"
           required
-          placeholder="e.g. Object Oriented Programming in Java"
+          [placeholder]="'FORM.TITLE_PLACEHOLDER' | translate"
           class="w-full px-4 py-3 rounded-xl bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all outline-none"
         >
       </div>
 
       <div>
-        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Subject <span class="text-red-500">*</span></label>
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{{ 'FORM.SUBJECT' | translate }} <span class="text-red-500">*</span></label>
         <select 
           name="subject"
           [(ngModel)]="form.subject"
@@ -88,26 +87,26 @@
       </div>
 
       <div>
-        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Description</label>
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{{ 'FORM.DESCRIPTION' | translate }}</label>
         <textarea 
           name="description"
           [(ngModel)]="form.description"
           rows="4"
-          placeholder="Brief description of what this pack covers..."
+          [placeholder]="'FORM.DESC_PLACEHOLDER' | translate"
           class="w-full px-4 py-3 rounded-xl bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all outline-none"
         ></textarea>
       </div>
 
       <div class="pt-4 flex justify-end gap-4">
         <a routerLink="/study-hub" class="px-6 py-3 rounded-xl font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-all">
-          Cancel
+          {{ 'FORM.CANCEL' | translate }}
         </a>
         <button 
           type="submit"
           [disabled]="!form.title || !form.subject"
           class="px-6 py-3 rounded-xl font-medium text-white bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-md shadow-indigo-200 dark:shadow-none"
         >
-          {{ isEditing ? 'Save Changes' : 'Create Pack' }}
+          {{ isEditing ? ('FORM.SAVE' | translate) : ('FORM.CREATE' | translate) }}
         </button>
       </div>
 

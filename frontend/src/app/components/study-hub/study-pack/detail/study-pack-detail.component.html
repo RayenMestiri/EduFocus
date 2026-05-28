@@ -20,17 +20,18 @@
         <!-- Back to Dashboard Link -->
         <a routerLink="/dashboard" class="px-3 py-1.5 rounded-xl bg-gray-50 hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 border border-gray-200/50 dark:border-gray-700 text-xs font-semibold flex items-center gap-1.5 transition-all shadow-sm">
           <span class="material-icons text-sm">home</span>
-          <span class="hidden sm:inline">Dashboard</span>
+          <span class="hidden sm:inline">{{ 'PACK_DETAIL.BACK_TO_DASHBOARD' | translate }}</span>
         </a>
 
         <!-- Back to Planner Link -->
         <a routerLink="/planner" class="px-3 py-1.5 rounded-xl bg-gray-50 hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 border border-gray-200/50 dark:border-gray-700 text-xs font-semibold flex items-center gap-1.5 transition-all shadow-sm">
           <span class="material-icons text-sm">event</span>
-          <span class="hidden sm:inline">Planner</span>
+          <span class="hidden sm:inline">{{ 'PACK_DETAIL.BACK_TO_PLANNER' | translate }}</span>
         </a>
 
         <!-- Divider -->
         <span class="h-5 w-[1px] bg-gray-200 dark:bg-gray-700 mx-1"></span>
+        <app-language-switcher></app-language-switcher>
 
         <!-- Dark Mode Toggle Button -->
         <button 
@@ -46,40 +47,42 @@
   </header>
 
   <!-- Workspace Content -->
-  <div class="max-w-[1800px] w-[98%] lg:w-[94%] mx-auto p-4 sm:p-6 md:p-8">
+  <div class="max-w-[1800px] w-[98%] lg:w-[94%] mx-auto p-2 sm:p-3 md:p-4">
     
     <!-- Header -->
-    <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-8 gap-4">
-    <div class="flex items-center gap-3 sm:gap-4">
-      <a routerLink="/study-hub" class="p-2 bg-white dark:bg-gray-800 rounded-full shadow-sm text-gray-500 dark:text-gray-300 hover:text-indigo-600 transition-colors border border-gray-100 dark:border-gray-700">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-        </svg>
-      </a>
-      <div>
-        <span class="inline-flex items-center rounded-md bg-indigo-50 dark:bg-indigo-900/30 px-2 py-1 text-xs font-medium text-indigo-700 dark:text-indigo-400 mb-1">
-          {{ pack.subject }}
-        </span>
-        <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white leading-tight">{{ pack.title }}</h1>
+    <div class="flex flex-col md:flex-row md:items-center justify-between mb-4 gap-4">
+      <div class="flex items-center gap-3 sm:gap-4 flex-1">
+        <a routerLink="/study-hub" class="p-2 bg-white dark:bg-gray-800 rounded-full shadow-sm text-gray-500 dark:text-gray-300 hover:text-indigo-600 transition-colors border border-gray-100 dark:border-gray-700">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+          </svg>
+        </a>
+        <div class="flex flex-col gap-1 flex-1">
+          <div class="flex items-center gap-2 flex-wrap">
+            <span class="inline-flex items-center rounded-md bg-indigo-50 dark:bg-indigo-900/30 px-2 py-0.5 text-[10px] font-bold text-indigo-700 dark:text-indigo-400 uppercase tracking-wide">
+              {{ pack.subject }}
+            </span>
+            <h1 class="text-lg sm:text-xl font-extrabold text-gray-900 dark:text-white leading-tight inline">{{ pack.title }}</h1>
+            <span class="text-xs text-gray-400 dark:text-gray-500 font-medium hidden sm:inline">&mdash;</span>
+            <span class="text-xs text-gray-500 dark:text-gray-400 font-medium line-clamp-1 flex-1 min-w-[200px]" [title]="pack.description">{{ pack.description || 'No description provided.' }}</span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="flex flex-wrap items-center gap-2 shrink-0">
+        <a [routerLink]="['/study-hub/edit', pack.id]" class="px-3 py-1.5 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-700 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-xs font-semibold shadow-sm flex items-center gap-1.5">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
+          {{ 'PACK_DETAIL.EDIT' | translate }}
+        </a>
+        <button (click)="deletePack()" class="px-3 py-1.5 bg-red-50 dark:bg-red-905/10 text-red-600 dark:text-red-400 border border-red-100 dark:border-red-900/30 rounded-xl hover:bg-red-100 dark:hover:bg-red-900/40 transition-colors text-xs font-semibold flex items-center gap-1.5">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+          {{ 'PACK_DETAIL.DELETE' | translate }}
+        </button>
       </div>
     </div>
-    
-    <div class="flex flex-wrap items-center gap-2 sm:gap-3">
-      <a [routerLink]="['/study-hub/edit', pack.id]" class="px-3.5 py-2 sm:px-4 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-700 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-xs sm:text-sm font-medium shadow-sm flex items-center gap-2">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
-        Edit Pack
-      </a>
-      <button (click)="deletePack()" class="px-3.5 py-2 sm:px-4 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 border border-red-100 dark:border-red-800/30 rounded-xl hover:bg-red-100 dark:hover:bg-red-900/40 transition-colors text-xs sm:text-sm font-medium flex items-center gap-2">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
-        Delete Pack
-      </button>
-    </div>
-  </div>
-
-  <p class="text-gray-600 dark:text-gray-400 mb-8 max-w-3xl">{{ pack.description || 'No description provided.' }}</p>
-
-  <!-- Workspace Section -->
-  <div class="bg-white/80 dark:bg-gray-800/80 backdrop-blur-md rounded-3xl border border-gray-200 dark:border-gray-700 shadow-xl overflow-hidden mb-8">
+  
+    <!-- Workspace Section -->
+    <div class="bg-white/80 dark:bg-gray-800/80 backdrop-blur-md rounded-3xl border border-gray-200 dark:border-gray-700 shadow-xl overflow-hidden mb-4">
     
     <!-- Workspace Navigation Tabs -->
     <div class="border-b border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-800/30 px-6 py-2 flex items-center justify-between overflow-x-auto whitespace-nowrap">
@@ -88,47 +91,47 @@
           (click)="selectTab('notes')"
           [class]="activeTab() === 'notes' ? 'px-4 py-3 text-indigo-600 dark:text-indigo-400 border-b-2 border-indigo-600 dark:border-indigo-400 font-bold flex items-center gap-2' : 'px-4 py-3 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 font-medium flex items-center gap-2'"
         >
-          📝 Notes 
+          📝 {{ 'PACK_DETAIL.NOTES' | translate }} 
           <span class="px-2 py-0.5 text-xs bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 rounded-full font-semibold">{{ pack.notes?.length || 0 }}</span>
         </button>
         <button 
           (click)="selectTab('flashcards')"
           [class]="activeTab() === 'flashcards' ? 'px-4 py-3 text-indigo-600 dark:text-indigo-400 border-b-2 border-indigo-600 dark:border-indigo-400 font-bold flex items-center gap-2' : 'px-4 py-3 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 font-medium flex items-center gap-2'"
         >
-          🎴 Flashcards
+          🎴 {{ 'PACK_DETAIL.FLASHCARDS' | translate }}
           <span class="px-2 py-0.5 text-xs bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 rounded-full font-semibold">{{ pack.flashcards?.length || 0 }}</span>
         </button>
         <button 
           (click)="selectTab('quiz')"
           [class]="activeTab() === 'quiz' ? 'px-4 py-3 text-indigo-600 dark:text-indigo-400 border-b-2 border-indigo-600 dark:border-indigo-400 font-bold flex items-center gap-2' : 'px-4 py-3 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 font-medium flex items-center gap-2'"
         >
-          ❓ Quizzes
+          ❓ {{ 'PACK_DETAIL.QCM' | translate }}
           <span class="px-2 py-0.5 text-xs bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 rounded-full font-semibold">{{ pack.qcm?.length || 0 }}</span>
         </button>
         <button 
           (click)="selectTab('cheatsheets')"
           [class]="activeTab() === 'cheatsheets' ? 'px-4 py-3 text-indigo-600 dark:text-indigo-400 border-b-2 border-indigo-600 dark:border-indigo-400 font-bold flex items-center gap-2' : 'px-4 py-3 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 font-medium flex items-center gap-2'"
         >
-          📜 Cheat Sheets
+          📜 {{ 'PACK_DETAIL.CHEATSHEETS' | translate }}
           <span class="px-2 py-0.5 text-xs bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 rounded-full font-semibold">{{ pack.cheatsheets?.length || 0 }}</span>
         </button>
         <button 
           (click)="selectTab('exercises')"
           [class]="activeTab() === 'exercises' ? 'px-4 py-3 text-indigo-600 dark:text-indigo-400 border-b-2 border-indigo-600 dark:border-indigo-400 font-bold flex items-center gap-2' : 'px-4 py-3 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 font-medium flex items-center gap-2'"
         >
-          💻 Coding Sandboxes
+          💻 {{ 'PACK_DETAIL.EXERCISES' | translate }}
           <span class="px-2 py-0.5 text-xs bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 rounded-full font-semibold">{{ pack.exercises?.length || 0 }}</span>
         </button>
       </div>
 
       <!-- Statistics Badge -->
       <div class="hidden sm:flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 pr-2 font-medium">
-        <span>Streak:</span>
+        <span>{{ 'PACK_DETAIL.STREAK' | translate }}:</span>
         <span class="flex items-center gap-0.5 text-orange-500 font-bold">
           🔥 {{ pack.streak || 0 }}d
         </span>
         <span class="text-gray-300">|</span>
-        <span>Progress:</span>
+        <span>{{ 'PACK_DETAIL.PROGRESS' | translate }}:</span>
         <span class="text-green-600 dark:text-green-400 font-bold">{{ pack.progress || 0 }}%</span>
       </div>
     </div>
@@ -139,18 +142,18 @@
       <div *ngIf="activeTab() === 'notes'" class="space-y-6">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4">
           <div>
-            <h2 class="text-xl font-bold text-gray-900 dark:text-white">Revision Notes</h2>
-            <p class="text-xs text-gray-400 dark:text-gray-500 font-medium">Summarize topics, formulate concepts and review guides.</p>
+            <h2 class="text-xl font-bold text-gray-900 dark:text-white">{{ 'PACK_DETAIL.REVISION_NOTES' | translate }}</h2>
+            <p class="text-xs text-gray-400 dark:text-gray-500 font-medium">{{ 'PACK_DETAIL.REVISION_NOTES_DESC' | translate }}</p>
           </div>
           <div class="flex flex-wrap items-center gap-2">
             <button (click)="openNoteImportModal()" class="px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm font-semibold border border-gray-200 dark:border-gray-700 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 flex items-center gap-1.5 shadow-sm transition-colors">
-              <span class="material-icons text-[14px] sm:text-sm">file_upload</span> Import
+              <span class="material-icons text-[14px] sm:text-sm">file_upload</span> {{ 'PACK_DETAIL.IMPORT' | translate }}
             </button>
             <button (click)="exportNotesAsJson()" [disabled]="!pack.notes || pack.notes.length === 0" class="px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm font-semibold border border-gray-200 dark:border-gray-700 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 flex items-center gap-1.5 shadow-sm transition-colors disabled:opacity-40 disabled:cursor-not-allowed">
-              <span class="material-icons text-[14px] sm:text-sm">file_download</span> Export
+              <span class="material-icons text-[14px] sm:text-sm">file_download</span> {{ 'PACK_DETAIL.EXPORT' | translate }}
             </button>
             <button (click)="openAddNoteModal()" class="px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm font-bold bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl flex items-center gap-1.5 shadow-md transition-colors">
-              <span class="material-icons text-[14px] sm:text-sm">add</span> Add Note
+              <span class="material-icons text-[14px] sm:text-sm">add</span> {{ 'PACK_DETAIL.ADD_NOTE' | translate }}
             </button>
           </div>
         </div>
@@ -160,11 +163,11 @@
           <div class="w-16 h-16 bg-blue-100 dark:bg-blue-900/20 text-blue-500 dark:text-blue-400 rounded-full flex items-center justify-center mb-4">
             <span class="material-icons text-2xl">sticky_note_2</span>
           </div>
-          <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-1">No Notes Saved</h3>
-          <p class="text-sm text-gray-500 dark:text-gray-400 text-center max-w-sm mb-4">Write summarize guides, paste notes, or use ChatGPT JSON quick imports to fill this pack.</p>
+          <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-1">{{ 'PACK_DETAIL.NO_NOTES' | translate }}</h3>
+          <p class="text-sm text-gray-500 dark:text-gray-400 text-center max-w-sm mb-4">{{ 'PACK_DETAIL.NO_NOTES_DESC' | translate }}</p>
           <div class="flex gap-2">
-            <button (click)="openAddNoteModal()" class="px-4 py-2 text-xs font-semibold bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors">Add Custom Note</button>
-            <button (click)="openNoteImportModal()" class="px-4 py-2 text-xs font-semibold bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition-colors">Import JSON</button>
+            <button (click)="openAddNoteModal()" class="px-4 py-2 text-xs font-semibold bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors">{{ 'PACK_DETAIL.ADD_NOTE' | translate }}</button>
+            <button (click)="openNoteImportModal()" class="px-4 py-2 text-xs font-semibold bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition-colors">{{ 'PACK_DETAIL.IMPORT' | translate }}</button>
           </div>
         </div>
 
@@ -235,8 +238,8 @@
       <div *ngIf="activeTab() === 'flashcards'" class="space-y-6">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <h2 class="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
-            <span>Flashcards Set</span>
-            <span class="text-sm font-normal text-gray-500 dark:text-gray-400">Flip cards to revision. Spaced repetition system.</span>
+            <span>{{ 'PACK_DETAIL.FLASHCARDS_TITLE' | translate }}</span>
+            <span class="text-sm font-normal text-gray-500 dark:text-gray-400">{{ 'PACK_DETAIL.FLASHCARDS_DESC' | translate }}</span>
           </h2>
           <div class="flex flex-wrap items-center gap-2">
             <a 
@@ -247,13 +250,13 @@
               <span class="material-icons text-[14px] sm:text-sm">play_arrow</span> Study
             </a>
             <button (click)="openFlashcardImportModal()" class="px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm font-semibold border border-gray-200 dark:border-gray-700 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 flex items-center gap-1.5 shadow-sm transition-colors">
-              <span class="material-icons text-[14px] sm:text-sm">file_upload</span> Import
+              <span class="material-icons text-[14px] sm:text-sm">file_upload</span> {{ 'PACK_DETAIL.IMPORT' | translate }}
             </button>
             <button (click)="exportFlashcardsAsJson()" [disabled]="!pack.flashcards || pack.flashcards.length === 0" class="px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm font-semibold border border-gray-200 dark:border-gray-700 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 flex items-center gap-1.5 shadow-sm transition-colors disabled:opacity-40 disabled:cursor-not-allowed">
-              <span class="material-icons text-[14px] sm:text-sm">file_download</span> Export
+              <span class="material-icons text-[14px] sm:text-sm">file_download</span> {{ 'PACK_DETAIL.EXPORT' | translate }}
             </button>
             <button (click)="openAddFlashcardModal()" class="px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm font-semibold bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl flex items-center gap-1.5 shadow-md transition-colors">
-              <span class="material-icons text-[14px] sm:text-sm">add</span> Add Card
+              <span class="material-icons text-[14px] sm:text-sm">add</span> {{ 'PACK_DETAIL.ADD_FLASHCARD' | translate }}
             </button>
           </div>
         </div>
@@ -263,11 +266,11 @@
           <div class="w-16 h-16 bg-purple-100 dark:bg-purple-900/20 text-purple-500 dark:text-purple-400 rounded-full flex items-center justify-center mb-4">
             <span class="material-icons text-2xl">style</span>
           </div>
-          <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-1">No Flashcards Available</h3>
-          <p class="text-sm text-gray-500 dark:text-gray-400 text-center max-w-sm mb-4">Create your study deck or import pre-made flashcards instantly using ChatGPT JSON export.</p>
+          <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-1">{{ 'PACK_DETAIL.NO_FLASHCARDS' | translate }}</h3>
+          <p class="text-sm text-gray-500 dark:text-gray-400 text-center max-w-sm mb-4">{{ 'PACK_DETAIL.NO_FLASHCARDS_DESC' | translate }}</p>
           <div class="flex gap-2">
-            <button (click)="openAddFlashcardModal()" class="px-4 py-2 text-xs font-semibold bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors">Add Custom Card</button>
-            <button (click)="openFlashcardImportModal()" class="px-4 py-2 text-xs font-semibold bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition-colors">Import JSON</button>
+            <button (click)="openAddFlashcardModal()" class="px-4 py-2 text-xs font-semibold bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors">{{ 'PACK_DETAIL.ADD_FLASHCARD' | translate }}</button>
+            <button (click)="openFlashcardImportModal()" class="px-4 py-2 text-xs font-semibold bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition-colors">{{ 'PACK_DETAIL.IMPORT' | translate }}</button>
           </div>
         </div>
 
@@ -319,8 +322,8 @@
         <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4">
           <div>
             <h2 class="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
-              <span>Question Bank</span>
-              <span class="text-sm font-normal text-gray-500 dark:text-gray-400">Generate tests and verify your weak topics.</span>
+              <span>{{ 'PACK_DETAIL.QCM_TITLE' | translate }}</span>
+              <span class="text-sm font-normal text-gray-500 dark:text-gray-400">{{ 'PACK_DETAIL.QCM_DESC' | translate }}</span>
             </h2>
           </div>
           <div class="flex flex-wrap items-center gap-2">
@@ -332,13 +335,13 @@
               <span class="material-icons text-[14px] sm:text-sm">play_arrow</span> Start Quiz
             </a>
             <button (click)="openQuizImportModal()" class="px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm font-semibold border border-gray-200 dark:border-gray-700 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 flex items-center gap-1.5 shadow-sm transition-colors">
-              <span class="material-icons text-[14px] sm:text-sm">file_upload</span> Import
+              <span class="material-icons text-[14px] sm:text-sm">file_upload</span> {{ 'PACK_DETAIL.IMPORT' | translate }}
             </button>
             <button (click)="exportQcmsAsJson()" [disabled]="!pack.qcm || pack.qcm.length === 0" class="px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm font-semibold border border-gray-200 dark:border-gray-700 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 flex items-center gap-1.5 shadow-sm transition-colors disabled:opacity-40 disabled:cursor-not-allowed">
-              <span class="material-icons text-[14px] sm:text-sm">file_download</span> Export
+              <span class="material-icons text-[14px] sm:text-sm">file_download</span> {{ 'PACK_DETAIL.EXPORT' | translate }}
             </button>
             <button (click)="openAddQuizModal()" class="px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm font-semibold bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl flex items-center gap-1.5 shadow-md transition-colors">
-              <span class="material-icons text-[14px] sm:text-sm">add</span> Add Q
+              <span class="material-icons text-[14px] sm:text-sm">add</span> {{ 'PACK_DETAIL.ADD_QCM' | translate }}
             </button>
           </div>
         </div>
@@ -348,11 +351,11 @@
           <div class="w-16 h-16 bg-emerald-100 dark:bg-emerald-900/20 text-emerald-500 dark:text-emerald-400 rounded-full flex items-center justify-center mb-4">
             <span class="material-icons text-2xl">quiz</span>
           </div>
-          <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-1">No Quiz Questions</h3>
-          <p class="text-sm text-gray-500 dark:text-gray-400 text-center max-w-sm mb-4">Créez des questions personnalisées ou importez un schéma JSON pour enrichir votre banque de quiz.</p>
+          <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-1">{{ 'PACK_DETAIL.NO_QCM' | translate }}</h3>
+          <p class="text-sm text-gray-500 dark:text-gray-400 text-center max-w-sm mb-4">{{ 'PACK_DETAIL.NO_QCM_DESC' | translate }}</p>
           <div class="flex gap-2">
-            <button (click)="openAddQuizModal()" class="px-4 py-2 text-xs font-semibold bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg transition-colors">Add Custom Question</button>
-            <button (click)="openQuizImportModal()" class="px-4 py-2 text-xs font-semibold bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition-colors">Import JSON</button>
+            <button (click)="openAddQuizModal()" class="px-4 py-2 text-xs font-semibold bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg transition-colors">{{ 'PACK_DETAIL.ADD_QCM' | translate }}</button>
+            <button (click)="openQuizImportModal()" class="px-4 py-2 text-xs font-semibold bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition-colors">{{ 'PACK_DETAIL.IMPORT' | translate }}</button>
           </div>
         </div>
         
@@ -458,7 +461,7 @@
         <div *ngIf="quizAttempts() && quizAttempts().length > 0" class="mt-12 pt-8 border-t border-gray-200 dark:border-gray-700/60 space-y-6">
           <div class="flex items-center gap-2">
             <span class="material-icons text-indigo-500">history</span>
-            <h3 class="text-lg font-black text-gray-900 dark:text-white uppercase tracking-wider font-mono">Historique de vos essais</h3>
+            <h3 class="text-lg font-black text-gray-900 dark:text-white uppercase tracking-wider font-mono">{{ 'PACK_DETAIL.ATTEMPT_HISTORY' | translate }}</h3>
           </div>
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -468,7 +471,7 @@
             >
               <div class="flex items-center justify-between gap-3 mb-4">
                 <div class="flex items-center gap-2">
-                  <span class="px-2 py-0.5 rounded bg-indigo-50 dark:bg-indigo-950 text-[10px] font-black text-indigo-600 dark:text-indigo-400 uppercase tracking-widest font-mono">Essai #{{ quizAttempts().length - attIdx }}</span>
+                  <span class="px-2 py-0.5 rounded bg-indigo-50 dark:bg-indigo-950 text-[10px] font-black text-indigo-600 dark:text-indigo-400 uppercase tracking-widest font-mono">{{ 'PACK_DETAIL.ATTEMPT' | translate }} #{{ quizAttempts().length - attIdx }}</span>
                   <span class="text-xs text-gray-400 font-medium flex items-center gap-1"><span class="material-icons text-[12px]">schedule</span> {{ attempt.completedAt | date:'medium' }}</span>
                 </div>
                 
@@ -484,7 +487,7 @@
               </div>
 
               <div class="flex justify-between items-center text-sm border-t border-gray-100 dark:border-zinc-800/40 pt-3">
-                <span class="text-gray-500 dark:text-zinc-400 font-semibold">Score obtenu :</span>
+                <span class="text-gray-500 dark:text-zinc-400 font-semibold">{{ 'PACK_DETAIL.SCORE_OBTAINED' | translate }}</span>
                 <span class="font-black text-lg text-gray-900 dark:text-white font-mono">{{ attempt.score }} / {{ attempt.totalQuestions }}</span>
               </div>
             </div>
@@ -498,18 +501,18 @@
       <div *ngIf="activeTab() === 'cheatsheets'" class="space-y-6">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <h2 class="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
-            <span>Reference Cheat Sheets</span>
-            <span class="text-sm font-normal text-gray-500 dark:text-gray-400">Keep key commands, syntax guides, and mappings.</span>
+            <span>{{ 'PACK_DETAIL.CHEATSHEETS_TITLE' | translate }}</span>
+            <span class="text-sm font-normal text-gray-500 dark:text-gray-400">{{ 'PACK_DETAIL.CHEATSHEETS_DESC' | translate }}</span>
           </h2>
           <div class="flex flex-wrap items-center gap-2">
             <button (click)="showCheatSheetImportModal.set(true)" class="px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm font-semibold border border-gray-200 dark:border-gray-700 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 flex items-center gap-1.5 shadow-sm transition-colors">
-              <span class="material-icons text-[14px] sm:text-sm">file_upload</span> Import
+              <span class="material-icons text-[14px] sm:text-sm">file_upload</span> {{ 'PACK_DETAIL.IMPORT' | translate }}
             </button>
             <button (click)="exportCheatsheetsAsJson()" [disabled]="!pack.cheatsheets || pack.cheatsheets.length === 0" class="px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm font-semibold border border-gray-200 dark:border-gray-700 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 flex items-center gap-1.5 shadow-sm transition-colors disabled:opacity-40 disabled:cursor-not-allowed">
-              <span class="material-icons text-[14px] sm:text-sm">file_download</span> Export
+              <span class="material-icons text-[14px] sm:text-sm">file_download</span> {{ 'PACK_DETAIL.EXPORT' | translate }}
             </button>
             <button (click)="openAddCheatSheetModal()" class="px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm font-semibold bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl flex items-center gap-1.5 shadow-md transition-colors">
-              <span class="material-icons text-[14px] sm:text-sm">add</span> Add Reference
+              <span class="material-icons text-[14px] sm:text-sm">add</span> {{ 'PACK_DETAIL.ADD_CHEATSHEET' | translate }}
             </button>
           </div>
         </div>
@@ -519,9 +522,9 @@
           <div class="w-16 h-16 bg-indigo-100 dark:bg-indigo-900/20 text-indigo-500 rounded-full flex items-center justify-center mb-4">
             <span class="material-icons text-2xl">assignment</span>
           </div>
-          <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-1">No Reference Sheets</h3>
-          <p class="text-sm text-gray-500 dark:text-gray-400 text-center max-w-sm mb-4">Store useful syntax, definitions, or custom quick-guides to review them easily.</p>
-          <button (click)="openAddCheatSheetModal()" class="px-4 py-2 text-xs font-semibold bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-colors">Add Reference</button>
+          <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-1">{{ 'PACK_DETAIL.NO_CHEATSHEETS' | translate }}</h3>
+          <p class="text-sm text-gray-500 dark:text-gray-400 text-center max-w-sm mb-4">{{ 'PACK_DETAIL.NO_CHEATSHEETS_DESC' | translate }}</p>
+          <button (click)="openAddCheatSheetModal()" class="px-4 py-2 text-xs font-semibold bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-colors">{{ 'PACK_DETAIL.ADD_CHEATSHEET' | translate }}</button>
         </div>
 
         <!-- List Grid (Flexible 3 items per row) -->
@@ -613,18 +616,18 @@
       <div *ngIf="activeTab() === 'exercises'" class="space-y-6">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <h2 class="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
-            <span>Coding Sandbox & Exercises</span>
-            <span class="text-sm font-normal text-gray-500 dark:text-gray-400">Practice writing query commands and code syntax.</span>
+            <span>{{ 'PACK_DETAIL.EXERCISES_TITLE' | translate }}</span>
+            <span class="text-sm font-normal text-gray-500 dark:text-gray-400">{{ 'PACK_DETAIL.EXERCISES_DESC' | translate }}</span>
           </h2>
           <div class="flex flex-wrap items-center gap-2">
             <button (click)="showExerciseImportModal.set(true)" class="px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm font-semibold border border-gray-200 dark:border-gray-700 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 flex items-center gap-1.5 shadow-sm transition-colors">
-              <span class="material-icons text-[14px] sm:text-sm">file_upload</span> Import
+              <span class="material-icons text-[14px] sm:text-sm">file_upload</span> {{ 'PACK_DETAIL.IMPORT' | translate }}
             </button>
             <button (click)="exportExercisesAsJson()" [disabled]="!pack.exercises || pack.exercises.length === 0" class="px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm font-semibold border border-gray-200 dark:border-gray-700 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 flex items-center gap-1.5 shadow-sm transition-colors disabled:opacity-40 disabled:cursor-not-allowed">
-              <span class="material-icons text-[14px] sm:text-sm">file_download</span> Export
+              <span class="material-icons text-[14px] sm:text-sm">file_download</span> {{ 'PACK_DETAIL.EXPORT' | translate }}
             </button>
             <button (click)="openAddExerciseModal()" class="px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm font-semibold bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl flex items-center gap-1.5 shadow-md transition-colors">
-              <span class="material-icons text-[14px] sm:text-sm">add</span> Add Exercise
+              <span class="material-icons text-[14px] sm:text-sm">add</span> {{ 'PACK_DETAIL.ADD_EXERCISE' | translate }}
             </button>
           </div>
         </div>
@@ -634,12 +637,12 @@
           <div class="w-16 h-16 bg-emerald-100 dark:bg-emerald-900/20 text-emerald-500 dark:text-emerald-400 rounded-full flex items-center justify-center mb-4">
             <span class="material-icons text-2xl">terminal</span>
           </div>
-          <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-1">No Coding Exercises</h3>
-          <p class="text-sm text-gray-500 dark:text-gray-400 text-center max-w-sm mb-4">Create sandbox exercises to practice query lines, index statements, or trigger logic inline.</p>
-          <button (click)="openAddExerciseModal()" class="px-4 py-2 text-xs font-semibold bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg transition-colors">Add Exercise</button>
+          <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-1">{{ 'PACK_DETAIL.NO_EXERCISES' | translate }}</h3>
+          <p class="text-sm text-gray-500 dark:text-gray-400 text-center max-w-sm mb-4">{{ 'PACK_DETAIL.NO_EXERCISES_DESC' | translate }}</p>
+          <button (click)="openAddExerciseModal()" class="px-4 py-2 text-xs font-semibold bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg transition-colors">{{ 'PACK_DETAIL.ADD_EXERCISE' | translate }}</button>
         </div>
 
-        <div *ngIf="pack.exercises && pack.exercises.length > 0" class="space-y-8 animate__animated animate__fadeInUp animate__faster">
+        <div *ngIf="pack.exercises && pack.exercises.length > 0" class="grid grid-cols-1 lg:grid-cols-2 gap-8 animate__animated animate__fadeInUp animate__faster">
           <div *ngFor="let ex of pack.exercises; let exIdx = index" class="bg-white dark:bg-slate-900/80 border border-gray-200 dark:border-slate-800 rounded-3xl p-6 md:p-8 shadow-md hover:shadow-[0_20px_50px_rgba(16,185,129,0.06)] dark:hover:shadow-[0_20px_50px_rgba(16,185,129,0.03)] hover:border-emerald-500/30 dark:hover:border-emerald-500/20 transition-all duration-350 ease-out flex flex-col gap-6 group relative overflow-hidden">
             
             <!-- Absolute background glow -->
@@ -717,7 +720,7 @@
                 <button (click)="toggleSolutionVisibility(ex.id)" 
                         class="px-5 py-2.5 text-xs font-black uppercase tracking-wider rounded-xl transition-all shadow-md flex items-center gap-1.5 border border-emerald-500/30 text-emerald-700 dark:text-emerald-450 bg-emerald-50/50 dark:bg-emerald-950/20 hover:bg-emerald-600 hover:text-white dark:hover:bg-emerald-500 dark:hover:text-black">
                   <span class="material-icons text-sm">{{ exerciseSolutionVisible()[ex.id] ? 'visibility_off' : 'visibility' }}</span>
-                  {{ exerciseSolutionVisible()[ex.id] ? 'Cacher solution' : 'Voir solution correcte' }}
+                   {{ exerciseSolutionVisible()[ex.id] ? ('MODALS.HIDE_SOLUTION' | translate) : ('MODALS.SHOW_SOLUTION' | translate) }}
                 </button>
               </div>
 
@@ -728,9 +731,9 @@
                   <div class="bg-emerald-100 dark:bg-emerald-950 px-4 py-2 border-b border-emerald-500/20 flex items-center justify-between text-emerald-800 dark:text-emerald-400 text-[10px] font-black tracking-widest font-mono">
                     <div class="flex items-center gap-1.5">
                       <span class="material-icons text-xs text-emerald-600 dark:text-emerald-400">check_circle</span>
-                      VERIFIED SOLUTION SYNTAX
+                      {{ 'MODALS.VERIFIED_SOLUTION' | translate }}
                     </div>
-                    <span class="px-1.5 py-0.5 rounded bg-emerald-200/50 dark:bg-emerald-500/20 text-[9px] border border-emerald-300 dark:border-emerald-500/30 font-black">COMPILER APPROVED</span>
+                    <span class="px-1.5 py-0.5 rounded bg-emerald-200/50 dark:bg-emerald-500/20 text-[9px] border border-emerald-300 dark:border-emerald-500/30 font-black">{{ 'MODALS.COMPILER_APPROVED' | translate }}</span>
                   </div>
                   <!-- solution pre -->
                   <pre class="bg-slate-50 dark:bg-zinc-950 text-slate-800 dark:text-gray-250 p-4 overflow-x-auto leading-relaxed font-mono text-[13px] whitespace-pre"><code [innerHTML]="highlightSQL(ex.correctSolution)"></code></pre>
@@ -739,7 +742,7 @@
                 <!-- Solution note if defined -->
                 <div *ngIf="ex.solutionNote" class="text-xs text-gray-600 dark:text-slate-400 leading-relaxed border-t border-emerald-500/10 pt-3 flex items-start gap-2">
                   <span class="material-icons text-sm text-emerald-500 shrink-0 mt-0.5">info</span>
-                  <div class="font-medium"><strong class="text-emerald-700 dark:text-emerald-400 font-extrabold">Explications :</strong> {{ ex.solutionNote }}</div>
+                  <div class="font-medium"><strong class="text-emerald-700 dark:text-emerald-400 font-extrabold">{{ 'MODALS.EXPLANATIONS' | translate }} :</strong> {{ ex.solutionNote }}</div>
                 </div>
               </div>
             </div>
@@ -766,7 +769,7 @@
     <div class="px-8 py-5 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center bg-gray-50/50 dark:bg-gray-800/50">
       <div class="flex items-center gap-2">
         <span class="material-icons text-indigo-500">article</span>
-        <h3 class="text-xl font-bold text-gray-900 dark:text-white line-clamp-1">Reading Note</h3>
+        <h3 class="text-xl font-bold text-gray-900 dark:text-white line-clamp-1">{{ 'PACK_DETAIL.READING_NOTE' | translate }}</h3>
       </div>
       <div class="flex items-center gap-2">
         <button (click)="openEditNoteModal(note); closeNoteReader()" class="p-2 text-gray-500 hover:text-indigo-600 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl transition-colors">
@@ -782,10 +785,10 @@
       <div>
         <h1 class="text-3xl font-extrabold text-gray-900 dark:text-white leading-tight mb-2">{{ note.title }}</h1>
         <div class="flex items-center gap-4 text-xs text-gray-400 dark:text-gray-500 font-semibold">
-          <span>Created: {{ note.createdAt | date:'mediumDate' }}</span>
+          <span>{{ 'MODALS.CREATED' | translate }}: {{ note.createdAt | date:'mediumDate' }}</span>
           <span>•</span>
           <span class="flex items-center gap-0.5 text-yellow-500" *ngIf="note.isPinned">
-            <span class="material-icons text-xs">push_pin</span> Pinned Note
+            <span class="material-icons text-xs">push_pin</span> {{ 'PACK_DETAIL.PINNED_NOTE' | translate }}
           </span>
         </div>
       </div>
@@ -807,7 +810,7 @@
     </div>
     
     <div class="px-8 py-4 border-t border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 flex justify-end">
-      <button (click)="closeNoteReader()" class="px-6 py-2.5 text-sm font-semibold bg-gray-900 hover:bg-gray-800 dark:bg-gray-700 dark:hover:bg-gray-600 text-white rounded-xl transition-colors shadow-md">Close Reader</button>
+      <button (click)="closeNoteReader()" class="px-6 py-2.5 text-sm font-semibold bg-gray-900 hover:bg-gray-800 dark:bg-gray-700 dark:hover:bg-gray-600 text-white rounded-xl transition-colors shadow-md">{{ 'MODALS.CLOSE' | translate }}</button>
     </div>
   </div>
 </div>
@@ -818,7 +821,7 @@
     <div class="px-8 py-5 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center bg-gray-50/50 dark:bg-gray-800/50">
       <div class="flex items-center gap-2">
         <span class="material-icons text-emerald-500">quiz</span>
-        <h3 class="text-xl font-bold text-gray-900 dark:text-white">Détails de la Question</h3>
+        <h3 class="text-xl font-bold text-gray-900 dark:text-white">{{ 'MODALS.QCM_DETAIL_TITLE' | translate }}</h3>
       </div>
       <div class="flex items-center gap-2">
         <button (click)="openEditQuizModal(q); closeQuizReader()" class="p-2 text-gray-500 hover:text-indigo-600 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl transition-colors">
@@ -837,19 +840,19 @@
           #{{ q.topic || 'General' }}
         </span>
         <span class="px-2.5 py-1 text-xs font-bold rounded-lg bg-gray-100 dark:bg-gray-750 text-gray-700 dark:text-gray-300 uppercase tracking-wider">
-          {{ q.type === 'multiple-choice' ? 'Choix multiples (QCM)' : q.type === 'true-false' ? 'Vrai / Faux' : 'Texte à trous' }}
+          {{ q.type === 'multiple-choice' ? ('MODALS.QCM_TYPE_MC' | translate) : q.type === 'true-false' ? ('MODALS.QCM_TYPE_TF' | translate) : ('MODALS.QCM_TYPE_FB' | translate) }}
         </span>
       </div>
 
       <!-- Question Content -->
       <div class="border-t border-gray-100 dark:border-gray-700 pt-6">
-        <span class="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest block mb-2">Question</span>
+        <span class="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest block mb-2">{{ 'MODALS.QCM_QUESTION' | translate }}</span>
         <h2 class="text-xl font-bold text-gray-950 dark:text-white leading-relaxed" [innerHTML]="q.question"></h2>
       </div>
 
             <!-- MCQ Options List -->
       <div *ngIf="q.type === 'multiple-choice' && q.options" class="space-y-3">
-        <span class="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest block mb-2">Options de rÃ©ponse</span>
+        <span class="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest block mb-2">{{ 'MODALS.QCM_OPTIONS_LABEL' | translate }}</span>
         <div *ngFor="let opt of q.options; let optIdx = index" 
              class="px-4 py-3 rounded-xl border flex items-center justify-between font-semibold text-sm shadow-sm"
              [ngClass]="{
@@ -866,25 +869,25 @@
             </span>
             <span [innerHTML]="opt"></span>
           </div>
-          <span *ngIf="String(optIdx) === String(q.correctAnswer)" class="px-2 py-0.5 rounded bg-green-500/20 text-green-600 dark:text-green-400 text-[10px] font-extrabold uppercase tracking-wider border border-green-500/30">Correct</span>
+          <span *ngIf="String(optIdx) === String(q.correctAnswer)" class="px-2 py-0.5 rounded bg-green-500/20 text-green-600 dark:text-green-400 text-[10px] font-extrabold uppercase tracking-wider border border-green-500/30">{{ 'MODALS.CORRECT' | translate }}</span>
         </div>
       </div>
 
       <!-- True / False Correct Answer -->
       <div *ngIf="q.type === 'true-false'" class="space-y-3">
-        <span class="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest block mb-1">Correct Value</span>
+        <span class="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest block mb-1">{{ 'MODALS.CORRECT_VALUE' | translate }}</span>
         <div class="px-4 py-3 rounded-xl border border-green-500 bg-green-50/40 dark:bg-green-950/20 text-green-800 dark:text-green-300 flex items-center justify-between font-semibold text-sm shadow-sm">
           <div class="flex items-center gap-3">
             <span class="material-icons text-green-500 text-lg">check_circle</span>
-            <span>{{ String(q.correctAnswer).toLowerCase() === 'true' ? 'Vrai (True)' : 'Faux (False)' }}</span>
+            <span>{{ String(q.correctAnswer).toLowerCase() === 'true' ? ('QCM.TRUE' | translate) : ('QCM.FALSE' | translate) }}</span>
           </div>
-          <span class="px-2 py-0.5 rounded bg-green-500/20 text-green-600 dark:text-green-400 text-[10px] font-extrabold uppercase tracking-wider border border-green-500/30">Correct</span>
+          <span class="px-2 py-0.5 rounded bg-green-500/20 text-green-600 dark:text-green-400 text-[10px] font-extrabold uppercase tracking-wider border border-green-500/30">{{ 'MODALS.CORRECT' | translate }}</span>
         </div>
       </div>
 
       <!-- Fill Blanks Correct Answer -->
       <div *ngIf="q.type === 'fill-blanks'" class="space-y-3">
-        <span class="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest block mb-1">Correct Answer Match</span>
+        <span class="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest block mb-1">{{ 'MODALS.CORRECT_ANSWER_MATCH' | translate }}</span>
         <div class="px-4 py-3 rounded-xl border border-green-500 bg-green-50/40 dark:bg-green-950/20 text-green-800 dark:text-green-300 font-bold font-mono text-center shadow-sm">
           {{ q.correctAnswer }}
         </div>
@@ -893,7 +896,7 @@
       <!-- Detailed Explanation (Always visible in reader) -->
       <div *ngIf="q.explanation" class="p-5 bg-indigo-50/40 dark:bg-indigo-950/20 backdrop-blur-sm border border-indigo-200/20 dark:border-indigo-850/20 border-l-4 border-l-indigo-500 dark:border-l-indigo-400 rounded-r-2xl rounded-l-md animate__animated animate__fadeIn animate__faster">
         <h4 class="font-extrabold text-indigo-700 dark:text-indigo-400 text-sm mb-2 flex items-center gap-2">
-          <span class="material-icons text-base">info</span> Explication détaillée
+          <span class="material-icons text-base">info</span> {{ 'MODALS.QCM_EXPLANATION' | translate }}
         </h4>
         <p class="text-indigo-900/90 dark:text-indigo-200/90 text-sm leading-relaxed" [innerHTML]="q.explanation"></p>
       </div>
@@ -901,14 +904,14 @@
       <!-- Trap Note (Always visible in reader if exists) -->
       <div *ngIf="q.trapNote" class="p-5 bg-amber-50/40 dark:bg-amber-950/20 backdrop-blur-sm border border-amber-200/20 dark:border-amber-850/20 border-l-4 border-l-amber-500 dark:border-l-amber-400 rounded-r-2xl rounded-l-md animate__animated animate__fadeIn animate__faster">
         <h4 class="font-extrabold text-amber-700 dark:text-amber-400 text-sm mb-2 flex items-center gap-2">
-          <span class="material-icons text-base">warning</span> Piège fréquent (Trap Note)
+          <span class="material-icons text-base">warning</span> {{ 'MODALS.TRAP_NOTE_LABEL' | translate }}
         </h4>
         <p class="text-amber-950/90 dark:text-amber-200/90 text-sm leading-relaxed" [innerHTML]="q.trapNote"></p>
       </div>
     </div>
     
     <div class="px-8 py-4 border-t border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 flex justify-end">
-      <button (click)="closeQuizReader()" class="px-6 py-2.5 text-sm font-semibold bg-gray-900 hover:bg-gray-800 dark:bg-gray-700 dark:hover:bg-gray-600 text-white rounded-xl transition-colors shadow-md">Fermer</button>
+      <button (click)="closeQuizReader()" class="px-6 py-2.5 text-sm font-semibold bg-gray-900 hover:bg-gray-800 dark:bg-gray-700 dark:hover:bg-gray-600 text-white rounded-xl transition-colors shadow-md">{{ 'MODALS.CLOSE' | translate }}</button>
     </div>
   </div>
 </div>
@@ -918,7 +921,7 @@
   <div class="bg-white dark:bg-gray-800 rounded-3xl shadow-2xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[90vh] animate__animated animate__zoomIn animate__faster">
     <div class="px-6 py-4 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center bg-gray-50/50 dark:bg-gray-800/30">
       <h3 class="text-lg font-extrabold text-gray-900 dark:text-white">
-        {{ isEditingNote() ? 'Modify Note' : 'Add Note to Pack' }}
+        {{ isEditingNote() ? ('MODALS.NOTE_MODAL_EDIT' | translate) : ('MODALS.NOTE_MODAL_ADD' | translate) }}
       </h3>
       <button (click)="showNoteModal.set(false)" class="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300">
         <span class="material-icons">close</span>
@@ -927,30 +930,30 @@
     
     <div class="p-6 flex-1 overflow-y-auto space-y-4">
       <div>
-        <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-1.5">Note Title</label>
+        <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-1.5">{{ 'MODALS.NOTE_TITLE' | translate }}</label>
         <input 
           type="text" 
           [(ngModel)]="noteForm.title" 
           class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-gray-900 dark:text-white outline-none font-semibold text-sm"
-          placeholder="e.g. Overview of Java Inheritance">
+          [placeholder]="'MODALS.NOTE_TITLE_PH' | translate">
       </div>
 
       <div>
-        <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-1.5">Note Content</label>
+        <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-1.5">{{ 'MODALS.NOTE_CONTENT' | translate }}</label>
         <textarea 
           [(ngModel)]="noteForm.content" 
           rows="10" 
           class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-gray-900 dark:text-white outline-none text-sm leading-relaxed"
-          placeholder="Paste or write your structured review notes here... Supports clean spacing."></textarea>
+          [placeholder]="'MODALS.NOTE_CONTENT_PH' | translate"></textarea>
       </div>
 
       <div>
-        <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-1.5">Tags (Comma-separated)</label>
+        <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-1.5">{{ 'MODALS.NOTE_TAGS' | translate }}</label>
         <input 
           type="text" 
           [(ngModel)]="noteForm.tagsString" 
           class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-gray-900 dark:text-white outline-none text-sm"
-          placeholder="e.g. exam2026, java, basic">
+          [placeholder]="'MODALS.NOTE_TAGS_PH' | translate">
       </div>
 
       <div class="flex items-center gap-2 pt-2">
@@ -959,13 +962,13 @@
           type="checkbox" 
           [(ngModel)]="noteForm.isPinned" 
           class="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500 bg-gray-50 dark:bg-gray-900 dark:border-gray-700">
-        <label for="pin-note" class="text-sm text-gray-700 dark:text-gray-300 font-semibold cursor-pointer">Pin this note to top of library</label>
+        <label for="pin-note" class="text-sm text-gray-700 dark:text-gray-300 font-semibold cursor-pointer">{{ 'MODALS.NOTE_PIN' | translate }}</label>
       </div>
     </div>
     
     <div class="px-6 py-4 border-t border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/30 flex justify-end gap-3">
-      <button (click)="showNoteModal.set(false)" class="px-4 py-2 text-sm font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl transition-colors">Cancel</button>
-      <button (click)="saveNote()" class="px-5 py-2 text-sm font-bold bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl transition-colors shadow-md shadow-indigo-100 dark:shadow-none">Save Note</button>
+      <button (click)="showNoteModal.set(false)" class="px-4 py-2 text-sm font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl transition-colors">{{ 'MODALS.CANCEL' | translate }}</button>
+      <button (click)="saveNote()" class="px-5 py-2 text-sm font-bold bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl transition-colors shadow-md shadow-indigo-100 dark:shadow-none">{{ 'MODALS.NOTE_SAVE' | translate }}</button>
     </div>
   </div>
 </div>
@@ -975,7 +978,7 @@
   <div class="bg-white dark:bg-gray-800 rounded-3xl shadow-2xl w-full max-w-xl overflow-hidden flex flex-col max-h-[90vh] animate__animated animate__zoomIn animate__faster">
     <div class="px-6 py-4 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center bg-gray-50/50 dark:bg-gray-800/30">
       <h3 class="text-lg font-extrabold text-gray-900 dark:text-white">
-        {{ isEditingFlashcard() ? 'Modify Flashcard' : 'Add Flashcard' }}
+        {{ isEditingFlashcard() ? ('MODALS.FLASH_MODAL_EDIT' | translate) : ('MODALS.FLASH_MODAL_ADD' | translate) }}
       </h3>
       <button (click)="showFlashcardModal.set(false)" class="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300">
         <span class="material-icons">close</span>
@@ -984,36 +987,36 @@
     
     <div class="p-6 flex-1 overflow-y-auto space-y-4">
       <div>
-        <label class="block text-xs font-bold uppercase tracking-wider text-indigo-500 mb-1.5">Card Front (Question/Prompt)</label>
+        <label class="block text-xs font-bold uppercase tracking-wider text-indigo-500 mb-1.5">{{ 'MODALS.FLASH_FRONT' | translate }}</label>
         <textarea 
           [(ngModel)]="flashcardForm.front" 
           rows="3" 
           class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-gray-900 dark:text-white outline-none font-semibold text-sm leading-relaxed"
-          placeholder="e.g. What is Polymorphism?"></textarea>
+          [placeholder]="'MODALS.FLASH_FRONT_PH' | translate"></textarea>
       </div>
 
       <div>
-        <label class="block text-xs font-bold uppercase tracking-wider text-purple-500 mb-1.5">Card Back (Correct Answer)</label>
+        <label class="block text-xs font-bold uppercase tracking-wider text-purple-500 mb-1.5">{{ 'MODALS.FLASH_BACK' | translate }}</label>
         <textarea 
           [(ngModel)]="flashcardForm.back" 
           rows="4" 
           class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-gray-900 dark:text-white outline-none text-sm leading-relaxed"
-          placeholder="e.g. The ability of an object to take on many forms in OOP, typically resolved dynamically at runtime."></textarea>
+          [placeholder]="'MODALS.FLASH_BACK_PH' | translate"></textarea>
       </div>
 
       <div>
-        <label class="block text-xs font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-450 mb-1.5">Code Sample / Reference (Optional)</label>
+        <label class="block text-xs font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-450 mb-1.5">{{ 'MODALS.FLASH_CODE' | translate }}</label>
         <textarea 
           [(ngModel)]="flashcardForm.code" 
           rows="3" 
           class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-gray-900 dark:text-white outline-none font-mono text-xs leading-relaxed"
-          placeholder="e.g. SELECT * FROM Users WHERE ID = 1;"></textarea>
+          [placeholder]="'MODALS.FLASH_CODE_PH' | translate"></textarea>
       </div>
     </div>
     
     <div class="px-6 py-4 border-t border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/30 flex justify-end gap-3">
-      <button (click)="showFlashcardModal.set(false)" class="px-4 py-2 text-sm font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl transition-colors">Cancel</button>
-      <button (click)="saveFlashcard()" class="px-5 py-2 text-sm font-bold bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl transition-colors shadow-md">Save Card</button>
+      <button (click)="showFlashcardModal.set(false)" class="px-4 py-2 text-sm font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl transition-colors">{{ 'MODALS.CANCEL' | translate }}</button>
+      <button (click)="saveFlashcard()" class="px-5 py-2 text-sm font-bold bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl transition-colors shadow-md">{{ 'MODALS.FLASH_SAVE' | translate }}</button>
     </div>
   </div>
 </div>
@@ -1023,7 +1026,7 @@
   <div class="bg-white dark:bg-gray-800 rounded-3xl shadow-2xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[90vh] animate__animated animate__zoomIn animate__faster">
     <div class="px-6 py-4 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center bg-gray-50/50 dark:bg-gray-800/30">
       <h3 class="text-lg font-extrabold text-gray-900 dark:text-white">
-        {{ isEditingQuiz() ? 'Modify Question' : 'Add Question' }}
+        {{ isEditingQuiz() ? ('MODALS.QCM_MODAL_EDIT' | translate) : ('MODALS.QCM_MODAL_ADD' | translate) }}
       </h3>
       <button (click)="showQuizModal.set(false)" class="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300">
         <span class="material-icons">close</span>
@@ -1034,91 +1037,89 @@
       
       <!-- Topic / Chapter -->
       <div>
-        <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-1.5">Topic / Chapter (e.g. Index, Vues)</label>
+        <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-1.5">{{ 'MODALS.QCM_TOPIC' | translate }}</label>
         <input 
           type="text" 
           [(ngModel)]="quizForm.topic" 
           class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-gray-900 dark:text-white outline-none font-semibold text-sm"
-          placeholder="e.g. Index">
+          [placeholder]="'MODALS.QCM_TOPIC_PH' | translate">
       </div>
 
       <!-- Type Select -->
       <div>
-        <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-1.5">Question Type</label>
+        <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-1.5">{{ 'MODALS.QCM_TYPE' | translate }}</label>
         <select 
           [(ngModel)]="quizForm.type"
           class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm font-semibold"
         >
-          <option value="multiple-choice">Multiple Choice (QCM)</option>
-          <option value="true-false">True / False</option>
-          <option value="fill-blanks">Fill in the Blanks</option>
+          <option value="multiple-choice">{{ 'MODALS.QCM_TYPE_MC' | translate }}</option>
+          <option value="true-false">{{ 'MODALS.QCM_TYPE_TF' | translate }}</option>
+          <option value="fill-blanks">{{ 'MODALS.QCM_TYPE_FB' | translate }}</option>
         </select>
       </div>
 
       <!-- Question Text -->
       <div>
-        <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-1.5">Question Text</label>
+        <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-1.5">{{ 'MODALS.QCM_QUESTION' | translate }}</label>
         <textarea 
           [(ngModel)]="quizForm.question" 
           rows="3" 
           class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-gray-900 dark:text-white outline-none text-sm font-semibold leading-relaxed"
-          placeholder="e.g. Which of the following is NOT an OOP principle?"></textarea>
+          [placeholder]="'MODALS.QCM_QUESTION_PH' | translate"></textarea>
       </div>
 
-      <!-- DYNAMIC CONDITIONAL OPTIONS BASE ON TYPE Selection -->
-      
       <!-- MC Multiple Choice options -->
       <div *ngIf="quizForm.type === 'multiple-choice'" class="space-y-3 pt-2 border-t border-gray-100 dark:border-gray-700">
-        <label class="block text-xs font-bold uppercase tracking-wider text-indigo-500">Provide 4 Choices</label>
+        <label class="block text-xs font-bold uppercase tracking-wider text-indigo-500">{{ 'MODALS.QCM_OPTIONS_LABEL' | translate }}</label>
         
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
-            <label class="block text-[11px] font-bold text-gray-400 mb-1">Option 1</label>
+            <label class="block text-[11px] font-bold text-gray-400 mb-1">{{ 'MODALS.QCM_OPTION' | translate }} 1</label>
             <input type="text" [(ngModel)]="quizForm.option1" class="w-full px-3 py-2 text-xs bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg outline-none text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500" placeholder="e.g. Inheritance">
           </div>
           <div>
-            <label class="block text-[11px] font-bold text-gray-400 mb-1">Option 2</label>
+            <label class="block text-[11px] font-bold text-gray-400 mb-1">{{ 'MODALS.QCM_OPTION' | translate }} 2</label>
             <input type="text" [(ngModel)]="quizForm.option2" class="w-full px-3 py-2 text-xs bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg outline-none text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500" placeholder="e.g. Encapsulation">
           </div>
           <div>
-            <label class="block text-[11px] font-bold text-gray-400 mb-1">Option 3</label>
+            <label class="block text-[11px] font-bold text-gray-400 mb-1">{{ 'MODALS.QCM_OPTION' | translate }} 3</label>
             <input type="text" [(ngModel)]="quizForm.option3" class="w-full px-3 py-2 text-xs bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg outline-none text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500" placeholder="e.g. Compilation (Correct)">
           </div>
           <div>
-            <label class="block text-[11px] font-bold text-gray-400 mb-1">Option 4</label>
+            <label class="block text-[11px] font-bold text-gray-400 mb-1">{{ 'MODALS.QCM_OPTION' | translate }} 4</label>
             <input type="text" [(ngModel)]="quizForm.option4" class="w-full px-3 py-2 text-xs bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg outline-none text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500" placeholder="e.g. Abstraction">
           </div>
         </div>
 
         <div>
-          <label class="block text-xs font-bold uppercase tracking-wider text-green-600 mb-1.5">Select Correct Answer</label>
+          <label class="block text-xs font-bold uppercase tracking-wider text-green-600 mb-1.5">{{ 'MODALS.QCM_CORRECT_MC' | translate }}</label>
           <select 
             [(ngModel)]="quizForm.correctAnswerMc" 
             class="w-full px-4 py-2 text-xs bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-indigo-500"
           >
-            <option [value]="0">Option 1</option>
-            <option [value]="1">Option 2</option>
-            <option [value]="2">Option 3</option>
-            <option [value]="3">Option 4</option>
+            <option [value]="0">{{ 'MODALS.QCM_OPTION' | translate }} 1</option>
+            <option [value]="1">{{ 'MODALS.QCM_OPTION' | translate }} 2</option>
+            <option [value]="2">{{ 'MODALS.QCM_OPTION' | translate }} 3</option>
+            <option [value]="3">{{ 'MODALS.QCM_OPTION' | translate }} 4</option>
           </select>
         </div>
       </div>
 
       <!-- TF True / False options -->
       <div *ngIf="quizForm.type === 'true-false'" class="space-y-3 pt-2 border-t border-gray-100 dark:border-gray-700">
-        <label class="block text-xs font-bold uppercase tracking-wider text-green-600">Select Correct Value</label>
+        <label class="block text-xs font-bold uppercase tracking-wider text-green-600">{{ 'MODALS.QCM_CORRECT_TF' | translate }}</label>
         <select 
           [(ngModel)]="quizForm.correctAnswerTf" 
           class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-indigo-500 text-sm font-semibold"
         >
-          <option value="True">True</option>
-          <option value="False">False</option>
+          <option value="True">{{ 'QCM.TRUE' | translate }}</option>
+          <option value="False">{{ 'QCM.FALSE' | translate }}</option>
         </select>
       </div>
 
       <!-- FB Fill in blanks -->
       <div *ngIf="quizForm.type === 'fill-blanks'" class="space-y-3 pt-2 border-t border-gray-100 dark:border-gray-700">
-        <label class="block text-xs font-bold uppercase tracking-wider text-green-600 mb-1.5">Specify Correct Answer Match (Case-Insensitive)</label>
+        <label class="block text-xs font-bold uppercase tracking-wider text-green-600 mb-1.5">{{ 'MODALS.QCM_CORRECT_FB' | translate }}</label>
         <input 
           type="text" 
           [(ngModel)]="quizForm.correctAnswerFb" 
@@ -1128,29 +1129,29 @@
 
       <!-- Explanation -->
       <div>
-        <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-1.5">Explanation (Optional)</label>
+        <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-1.5">{{ 'MODALS.QCM_EXPLANATION' | translate }}</label>
         <textarea 
           [(ngModel)]="quizForm.explanation" 
           rows="2" 
           class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-indigo-500 text-gray-900 dark:text-white outline-none text-xs leading-relaxed"
-          placeholder="Explain why this choice is correct to help yourself review later..."></textarea>
+          [placeholder]="'MODALS.QCM_EXPLANATION_PH' | translate"></textarea>
       </div>
 
       <!-- Trap Note -->
       <div>
-        <label class="block text-xs font-bold uppercase tracking-wider text-amber-500 dark:text-amber-400 mb-1.5">Trap Note / Pitfall Warning (Optional)</label>
+        <label class="block text-xs font-bold uppercase tracking-wider text-amber-500 dark:text-amber-400 mb-1.5">{{ 'MODALS.QCM_TRAP' | translate }}</label>
         <textarea 
           [(ngModel)]="quizForm.trapNote" 
           rows="2" 
           class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-900 border border-amber-300 dark:border-amber-750 rounded-xl focus:ring-2 focus:ring-amber-500 text-gray-900 dark:text-white outline-none text-xs leading-relaxed"
-          placeholder="Highlight any typical traps or common exam tricks here..."></textarea>
+          [placeholder]="'MODALS.QCM_TRAP_PH' | translate"></textarea>
       </div>
 
     </div>
     
     <div class="px-6 py-4 border-t border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/30 flex justify-end gap-3">
-      <button (click)="showQuizModal.set(false)" class="px-4 py-2 text-sm font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl transition-colors">Cancel</button>
-      <button (click)="saveQuiz()" class="px-5 py-2 text-sm font-bold bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl transition-colors shadow-md">Save Question</button>
+      <button (click)="showQuizModal.set(false)" class="px-4 py-2 text-sm font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl transition-colors">{{ 'MODALS.CANCEL' | translate }}</button>
+      <button (click)="saveQuiz()" class="px-5 py-2 text-sm font-bold bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl transition-colors shadow-md">{{ 'MODALS.QCM_SAVE' | translate }}</button>
     </div>
   </div>
 </div>
@@ -1164,7 +1165,7 @@
   <div class="bg-white dark:bg-gray-800 rounded-3xl shadow-2xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[90vh] animate__animated animate__zoomIn animate__faster">
     <div class="px-6 py-4 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center bg-gray-50/50 dark:bg-gray-800/30">
       <h3 class="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
-        <span class="material-icons text-blue-500">cloud_upload</span> Notes JSON Import
+        <span class="material-icons text-blue-500">cloud_upload</span> {{ 'MODALS.NOTE_IMPORT_TITLE' | translate }}
       </h3>
       <button (click)="showNoteImportModal.set(false)" class="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300">
         <span class="material-icons">close</span>
@@ -1174,15 +1175,15 @@
     <div class="p-6 flex-1 overflow-y-auto space-y-4">
       <div class="flex justify-between items-center flex-wrap gap-2">
         <p class="text-xs text-gray-500 dark:text-gray-400 leading-relaxed font-medium">
-          Importez vos notes en collant un tableau JSON valide. Respectez le format de schéma attendu :
+          {{ 'MODALS.NOTE_IMPORT_DESC' | translate }}
         </p>
         <button 
           (click)="copyNotesTemplateToClipboard()" 
           class="px-3 py-1.5 border border-gray-200 dark:border-gray-700 rounded-xl hover:border-indigo-500 text-xs font-bold flex items-center gap-1.5 text-gray-600 dark:text-gray-350 bg-gray-50 dark:bg-gray-800/40 transition-all shadow-sm"
         >
           <span class="material-icons text-xs">content_copy</span>
-          <span>Copier le modèle</span>
-          <span *ngIf="templateCopied() === 'notes'" class="text-green-500 font-bold ml-1 text-[10px] animate__animated animate__fadeIn flex items-center gap-0.5">✓ Copié !</span>
+          <span>{{ 'MODALS.COPY_TEMPLATE' | translate }}</span>
+          <span *ngIf="templateCopied() === 'notes'" class="text-green-500 font-bold ml-1 text-[10px] animate__animated animate__fadeIn flex items-center gap-0.5">{{ 'MODALS.COPIED' | translate }}</span>
         </button>
       </div>
       
@@ -1201,12 +1202,12 @@
         [(ngModel)]="noteImportData" 
         rows="10" 
         class="w-full font-mono text-xs p-4 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-gray-800 dark:text-gray-200 outline-none"
-        placeholder="Collez votre tableau JSON de notes ici..."></textarea>
+        [placeholder]="'MODALS.NOTE_IMPORT_PH' | translate"></textarea>
     </div>
     
     <div class="px-6 py-4 border-t border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/30 flex justify-end gap-3">
-      <button (click)="showNoteImportModal.set(false)" class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl transition-colors">Cancel</button>
-      <button (click)="importNotesFromJson()" [disabled]="!noteImportData.trim()" class="px-4 py-2 text-sm font-bold text-white bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-xl transition-colors shadow-md">Import Notes</button>
+      <button (click)="showNoteImportModal.set(false)" class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl transition-colors">{{ 'MODALS.CANCEL' | translate }}</button>
+      <button (click)="importNotesFromJson()" [disabled]="!noteImportData.trim()" class="px-4 py-2 text-sm font-bold text-white bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-xl transition-colors shadow-md">{{ 'MODALS.NOTE_IMPORT_BTN' | translate }}</button>
     </div>
   </div>
 </div>
@@ -1216,7 +1217,7 @@
   <div class="bg-white dark:bg-gray-800 rounded-3xl shadow-2xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[90vh] animate__animated animate__zoomIn animate__faster">
     <div class="px-6 py-4 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center bg-gray-50/50 dark:bg-gray-800/30">
       <h3 class="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
-        <span class="material-icons text-purple-500">cloud_upload</span> Flashcards JSON Import
+        <span class="material-icons text-purple-500">cloud_upload</span> {{ 'MODALS.FLASH_IMPORT_TITLE' | translate }}
       </h3>
       <button (click)="showFlashcardImportModal.set(false)" class="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300">
         <span class="material-icons">close</span>
@@ -1226,15 +1227,15 @@
     <div class="p-6 flex-1 overflow-y-auto space-y-4">
       <div class="flex justify-between items-center flex-wrap gap-2">
         <p class="text-xs text-gray-500 dark:text-gray-400 leading-relaxed font-medium">
-          Importez votre deck de cartes en collant un tableau JSON. Optionnel : un champ 'code' pour les blocs de syntaxe :
+          {{ 'MODALS.FLASH_IMPORT_DESC' | translate }}
         </p>
         <button 
           (click)="copyFlashcardsTemplateToClipboard()" 
           class="px-3 py-1.5 border border-gray-200 dark:border-gray-700 rounded-xl hover:border-indigo-500 text-xs font-bold flex items-center gap-1.5 text-gray-600 dark:text-gray-350 bg-gray-50 dark:bg-gray-800/40 transition-all shadow-sm"
         >
           <span class="material-icons text-xs">content_copy</span>
-          <span>Copier le modèle</span>
-          <span *ngIf="templateCopied() === 'flashcards'" class="text-green-500 font-bold ml-1 text-[10px] animate__animated animate__fadeIn flex items-center gap-0.5">✓ Copié !</span>
+          <span>{{ 'MODALS.COPY_TEMPLATE' | translate }}</span>
+          <span *ngIf="templateCopied() === 'flashcards'" class="text-green-500 font-bold ml-1 text-[10px] animate__animated animate__fadeIn flex items-center gap-0.5">{{ 'MODALS.COPIED' | translate }}</span>
         </button>
       </div>
       
@@ -1251,12 +1252,12 @@
         [(ngModel)]="flashcardImportData" 
         rows="10" 
         class="w-full font-mono text-xs p-4 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-gray-800 dark:text-gray-200 outline-none"
-        placeholder="Collez votre tableau JSON de flashcards ici..."></textarea>
+        [placeholder]="'MODALS.FLASH_IMPORT_PH' | translate"></textarea>
     </div>
     
     <div class="px-6 py-4 border-t border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/30 flex justify-end gap-3">
-      <button (click)="showFlashcardImportModal.set(false)" class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl transition-colors">Cancel</button>
-      <button (click)="importFlashcardsFromJson()" [disabled]="!flashcardImportData.trim()" class="px-4 py-2 text-sm font-bold text-white bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-xl transition-colors shadow-md">Import Deck</button>
+      <button (click)="showFlashcardImportModal.set(false)" class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl transition-colors">{{ 'MODALS.CANCEL' | translate }}</button>
+      <button (click)="importFlashcardsFromJson()" [disabled]="!flashcardImportData.trim()" class="px-4 py-2 text-sm font-bold text-white bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-xl transition-colors shadow-md">{{ 'MODALS.FLASH_IMPORT_BTN' | translate }}</button>
     </div>
   </div>
 </div>
@@ -1266,7 +1267,7 @@
   <div class="bg-white dark:bg-gray-800 rounded-3xl shadow-2xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[90vh] animate__animated animate__zoomIn animate__faster">
     <div class="px-6 py-4 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center bg-gray-50/50 dark:bg-gray-800/30">
       <h3 class="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
-        <span class="material-icons text-emerald-500">cloud_upload</span> Quizzes JSON Import
+        <span class="material-icons text-emerald-500">cloud_upload</span> {{ 'MODALS.QCM_IMPORT_TITLE' | translate }}
       </h3>
       <button (click)="showQuizImportModal.set(false)" class="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300">
         <span class="material-icons">close</span>
@@ -1276,15 +1277,15 @@
     <div class="p-6 flex-1 overflow-y-auto space-y-4">
       <div class="flex justify-between items-center flex-wrap gap-2">
         <p class="text-xs text-gray-500 dark:text-gray-400 leading-relaxed font-medium">
-          Importez votre banque de QCM. Supporte les types 'multiple-choice', 'true-false', et 'fill-blanks' :
+          {{ 'MODALS.QCM_IMPORT_DESC' | translate }}
         </p>
         <button 
           (click)="copyQuizzesTemplateToClipboard()" 
           class="px-3 py-1.5 border border-gray-200 dark:border-gray-700 rounded-xl hover:border-indigo-500 text-xs font-bold flex items-center gap-1.5 text-gray-600 dark:text-gray-355 bg-gray-50 dark:bg-gray-800/40 transition-all shadow-sm"
         >
           <span class="material-icons text-xs">content_copy</span>
-          <span>Copier le modèle</span>
-          <span *ngIf="templateCopied() === 'quiz'" class="text-green-500 font-bold ml-1 text-[10px] animate__animated animate__fadeIn flex items-center gap-0.5">✓ Copié !</span>
+          <span>{{ 'MODALS.COPY_TEMPLATE' | translate }}</span>
+          <span *ngIf="templateCopied() === 'quiz'" class="text-green-500 font-bold ml-1 text-[10px] animate__animated animate__fadeIn flex items-center gap-0.5">{{ 'MODALS.COPIED' | translate }}</span>
         </button>
       </div>
       
@@ -1312,12 +1313,12 @@
         [(ngModel)]="quizImportData" 
         rows="10" 
         class="w-full font-mono text-xs p-4 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-gray-800 dark:text-gray-200 outline-none"
-        placeholder="Collez votre tableau JSON de questions de quiz ici..."></textarea>
+        [placeholder]="'MODALS.QCM_IMPORT_PH' | translate"></textarea>
     </div>
     
     <div class="px-6 py-4 border-t border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/30 flex justify-end gap-3">
-      <button (click)="showQuizImportModal.set(false)" class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl transition-colors">Cancel</button>
-      <button (click)="importQuizzesFromJson()" [disabled]="!quizImportData.trim()" class="px-4 py-2 text-sm font-bold text-white bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-xl transition-colors shadow-md">Import Quiz</button>
+      <button (click)="showQuizImportModal.set(false)" class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl transition-colors">{{ 'MODALS.CANCEL' | translate }}</button>
+      <button (click)="importQuizzesFromJson()" [disabled]="!quizImportData.trim()" class="px-4 py-2 text-sm font-bold text-white bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-xl transition-colors shadow-md">{{ 'MODALS.QCM_IMPORT_BTN' | translate }}</button>
     </div>
   </div>
 </div>
@@ -1327,7 +1328,7 @@
   <div class="bg-white dark:bg-gray-800 rounded-3xl shadow-2xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[90vh] animate__animated animate__zoomIn animate__faster">
     <div class="px-6 py-4 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center bg-gray-50/50 dark:bg-gray-800/30">
       <h3 class="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
-        <span class="material-icons text-indigo-500">cloud_upload</span> Cheat Sheets JSON Import
+        <span class="material-icons text-indigo-500">cloud_upload</span> {{ 'MODALS.CS_IMPORT_TITLE' | translate }}
       </h3>
       <button (click)="showCheatSheetImportModal.set(false)" class="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300">
         <span class="material-icons">close</span>
@@ -1337,15 +1338,15 @@
     <div class="p-6 flex-1 overflow-y-auto space-y-4">
       <div class="flex justify-between items-center flex-wrap gap-2">
         <p class="text-xs text-gray-500 dark:text-gray-400 leading-relaxed font-medium">
-          Importez vos fiches de révision à l'aide d'un schéma JSON standard (items de correspondances et bloc de code optionnel) :
+          {{ 'MODALS.CS_IMPORT_DESC' | translate }}
         </p>
         <button 
           (click)="copyCheatsheetsTemplateToClipboard()" 
           class="px-3 py-1.5 border border-gray-200 dark:border-gray-700 rounded-xl hover:border-indigo-500 text-xs font-bold flex items-center gap-1.5 text-gray-600 dark:text-gray-355 bg-gray-50 dark:bg-gray-800/40 transition-all shadow-sm"
         >
           <span class="material-icons text-xs">content_copy</span>
-          <span>Copier le modèle</span>
-          <span *ngIf="templateCopied() === 'cheatsheets'" class="text-green-500 font-bold ml-1 text-[10px] animate__animated animate__fadeIn flex items-center gap-0.5">✓ Copié !</span>
+          <span>{{ 'MODALS.COPY_TEMPLATE' | translate }}</span>
+          <span *ngIf="templateCopied() === 'cheatsheets'" class="text-green-500 font-bold ml-1 text-[10px] animate__animated animate__fadeIn flex items-center gap-0.5">{{ 'MODALS.COPIED' | translate }}</span>
         </button>
       </div>
       
@@ -1366,12 +1367,12 @@
         [(ngModel)]="cheatSheetImportData" 
         rows="8" 
         class="w-full font-mono text-xs p-4 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-gray-800 dark:text-gray-200 outline-none"
-        placeholder="Collez votre JSON de fiches ici..."></textarea>
+        [placeholder]="'MODALS.CS_IMPORT_PH' | translate"></textarea>
     </div>
     
     <div class="px-6 py-4 border-t border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/30 flex justify-end gap-3">
-      <button (click)="showCheatSheetImportModal.set(false)" class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl transition-colors">Cancel</button>
-      <button (click)="importCheatsheetsFromJson()" [disabled]="!cheatSheetImportData.trim()" class="px-4 py-2 text-sm font-bold text-white bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-xl transition-colors shadow-md">Import Fiches</button>
+      <button (click)="showCheatSheetImportModal.set(false)" class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl transition-colors">{{ 'MODALS.CANCEL' | translate }}</button>
+      <button (click)="importCheatsheetsFromJson()" [disabled]="!cheatSheetImportData.trim()" class="px-4 py-2 text-sm font-bold text-white bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-xl transition-colors shadow-md">{{ 'MODALS.CS_IMPORT_BTN' | translate }}</button>
     </div>
   </div>
 </div>
@@ -1381,7 +1382,7 @@
   <div class="bg-white dark:bg-gray-800 rounded-3xl shadow-2xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[90vh] animate__animated animate__zoomIn animate__faster">
     <div class="px-6 py-4 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center bg-gray-50/50 dark:bg-gray-800/30">
       <h3 class="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
-        <span class="material-icons text-emerald-500">cloud_upload</span> Exercises JSON Import
+        <span class="material-icons text-emerald-500">cloud_upload</span> {{ 'MODALS.EX_IMPORT_TITLE' | translate }}
       </h3>
       <button (click)="showExerciseImportModal.set(false)" class="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300">
         <span class="material-icons">close</span>
@@ -1391,15 +1392,15 @@
     <div class="p-6 flex-1 overflow-y-auto space-y-4">
       <div class="flex justify-between items-center flex-wrap gap-2">
         <p class="text-xs text-gray-500 dark:text-gray-400 leading-relaxed font-medium">
-          Importez vos bacs à sable et exercices de programmation à l'aide du schéma JSON attendu :
+          {{ 'MODALS.EX_IMPORT_DESC' | translate }}
         </p>
         <button 
           (click)="copyExercisesTemplateToClipboard()" 
           class="px-3 py-1.5 border border-gray-200 dark:border-gray-700 rounded-xl hover:border-indigo-500 text-xs font-bold flex items-center gap-1.5 text-gray-600 dark:text-gray-355 bg-gray-50 dark:bg-gray-800/40 transition-all shadow-sm"
         >
           <span class="material-icons text-xs">content_copy</span>
-          <span>Copier le modèle</span>
-          <span *ngIf="templateCopied() === 'exercises'" class="text-green-500 font-bold ml-1 text-[10px] animate__animated animate__fadeIn flex items-center gap-0.5">✓ Copié !</span>
+          <span>{{ 'MODALS.COPY_TEMPLATE' | translate }}</span>
+          <span *ngIf="templateCopied() === 'exercises'" class="text-green-500 font-bold ml-1 text-[10px] animate__animated animate__fadeIn flex items-center gap-0.5">{{ 'MODALS.COPIED' | translate }}</span>
         </button>
       </div>
       
@@ -1419,12 +1420,12 @@
         [(ngModel)]="exerciseImportData" 
         rows="8" 
         class="w-full font-mono text-xs p-4 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-gray-800 dark:text-gray-200 outline-none"
-        placeholder="Collez votre JSON d'exercices ici..."></textarea>
+        [placeholder]="'MODALS.EX_IMPORT_PH' | translate"></textarea>
     </div>
     
     <div class="px-6 py-4 border-t border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/30 flex justify-end gap-3">
-      <button (click)="showExerciseImportModal.set(false)" class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl transition-colors">Cancel</button>
-      <button (click)="importExercisesFromJson()" [disabled]="!exerciseImportData.trim()" class="px-4 py-2 text-sm font-bold text-white bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-xl transition-colors shadow-md">Import Exercices</button>
+      <button (click)="showExerciseImportModal.set(false)" class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl transition-colors">{{ 'MODALS.CANCEL' | translate }}</button>
+      <button (click)="importExercisesFromJson()" [disabled]="!exerciseImportData.trim()" class="px-4 py-2 text-sm font-bold text-white bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-xl transition-colors shadow-md">{{ 'MODALS.EX_IMPORT_BTN' | translate }}</button>
     </div>
   </div>
 </div>
@@ -1434,7 +1435,7 @@
   <div class="bg-white dark:bg-gray-800 rounded-3xl shadow-2xl w-full max-w-xl overflow-hidden flex flex-col max-h-[90vh] animate__animated animate__zoomIn animate__faster">
     <div class="px-6 py-4 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center bg-gray-50/50 dark:bg-gray-800/30">
       <h3 class="text-lg font-extrabold text-gray-900 dark:text-white">
-        {{ isEditingCheatSheet() ? 'Modifier la Fiche' : 'Ajouter une Fiche de Référence' }}
+        {{ isEditingCheatSheet() ? ('MODALS.CS_MODAL_EDIT' | translate) : ('MODALS.CS_MODAL_ADD' | translate) }}
       </h3>
       <button (click)="showCheatSheetModal.set(false)" class="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300">
         <span class="material-icons">close</span>
@@ -1443,7 +1444,7 @@
     
     <div class="p-6 flex-1 overflow-y-auto space-y-4">
       <div>
-        <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-1.5">Category / Topic <span class="text-red-500">*</span></label>
+        <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-1.5">{{ 'MODALS.CS_CATEGORY' | translate }} <span class="text-red-500">*</span></label>
         <input 
           type="text" 
           [(ngModel)]="cheatSheetForm.category" 
@@ -1452,7 +1453,7 @@
       </div>
 
       <div>
-        <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-1.5">Title <span class="text-red-500">*</span></label>
+        <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-1.5">{{ 'MODALS.CS_TITLE' | translate }} <span class="text-red-500">*</span></label>
         <input 
           type="text" 
           [(ngModel)]="cheatSheetForm.title" 
@@ -1461,7 +1462,7 @@
       </div>
 
       <div>
-        <label class="block text-xs font-bold uppercase tracking-wider text-indigo-500 mb-1.5">References & Mappings (One line per mapping: "Term : Definition")</label>
+        <label class="block text-xs font-bold uppercase tracking-wider text-indigo-500 mb-1.5">{{ 'MODALS.CS_ITEMS' | translate }}</label>
         <textarea 
           [(ngModel)]="cheatSheetForm.itemsString" 
           rows="5" 
@@ -1470,7 +1471,7 @@
       </div>
 
       <div>
-        <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-1.5">Code Sample Block (Optional)</label>
+        <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-1.5">{{ 'MODALS.CS_CODE' | translate }}</label>
         <textarea 
           [(ngModel)]="cheatSheetForm.codeSample" 
           rows="4" 
@@ -1480,8 +1481,8 @@
     </div>
     
     <div class="px-6 py-4 border-t border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/30 flex justify-end gap-3">
-      <button (click)="showCheatSheetModal.set(false)" class="px-4 py-2 text-sm font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl transition-colors">Cancel</button>
-      <button (click)="saveCheatSheet()" [disabled]="!cheatSheetForm.title || !cheatSheetForm.category" class="px-5 py-2 text-sm font-bold bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white rounded-xl transition-colors shadow-md">Save Reference</button>
+      <button (click)="showCheatSheetModal.set(false)" class="px-4 py-2 text-sm font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl transition-colors">{{ 'MODALS.CANCEL' | translate }}</button>
+      <button (click)="saveCheatSheet()" [disabled]="!cheatSheetForm.title || !cheatSheetForm.category" class="px-5 py-2 text-sm font-bold bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white rounded-xl transition-colors shadow-md">{{ 'MODALS.CS_SAVE' | translate }}</button>
     </div>
   </div>
 </div>
@@ -1491,7 +1492,7 @@
   <div class="bg-white dark:bg-gray-800 rounded-3xl shadow-2xl w-full max-w-xl overflow-hidden flex flex-col max-h-[90vh] animate__animated animate__zoomIn animate__faster">
     <div class="px-6 py-4 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center bg-gray-50/50 dark:bg-gray-800/30">
       <h3 class="text-lg font-extrabold text-gray-900 dark:text-white">
-        {{ isEditingExercise() ? 'Modifier l\'Exercice' : 'Créer un Exercice de Code' }}
+        {{ isEditingExercise() ? ('MODALS.EX_MODAL_EDIT' | translate) : ('MODALS.EX_MODAL_ADD' | translate) }}
       </h3>
       <button (click)="showExerciseModal.set(false)" class="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300">
         <span class="material-icons">close</span>
@@ -1500,63 +1501,63 @@
     
     <div class="p-6 flex-1 overflow-y-auto space-y-4">
       <div>
-        <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-1.5">Exercise Title <span class="text-red-500">*</span></label>
+        <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-1.5">{{ 'MODALS.EX_TITLE' | translate }} <span class="text-red-500">*</span></label>
         <input 
           type="text" 
           [(ngModel)]="exerciseForm.title" 
           class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-indigo-500 text-gray-900 dark:text-white outline-none font-semibold text-sm"
-          placeholder="e.g. Practice INNER JOIN query">
+          [placeholder]="'MODALS.EX_TITLE_PH' | translate">
       </div>
 
       <div>
-        <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-1.5">Description <span class="text-red-500">*</span></label>
+        <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-1.5">{{ 'MODALS.EX_DESC' | translate }} <span class="text-red-500">*</span></label>
         <textarea 
           [(ngModel)]="exerciseForm.description" 
           rows="2" 
           class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-indigo-500 text-gray-900 dark:text-white outline-none text-xs leading-relaxed"
-          placeholder="e.g. Practice writing SQL joins to fetch matching rows from Users and Orders tables."></textarea>
+          [placeholder]="'MODALS.EX_DESC_PH' | translate"></textarea>
       </div>
 
       <div>
-        <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-1.5">Database Context / Table Schema (Optional)</label>
+        <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-1.5">{{ 'MODALS.EX_SCHEMA' | translate }}</label>
         <textarea 
           [(ngModel)]="exerciseForm.schemaContext" 
           rows="3" 
           class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-indigo-500 text-gray-900 dark:text-white outline-none font-mono text-xs leading-relaxed"
-          placeholder="Table Users: id, name, email&#10;Table Orders: id, user_id, product_name, price"></textarea>
+          [placeholder]="'MODALS.EX_SCHEMA_PH' | translate"></textarea>
       </div>
 
       <div>
-        <label class="block text-xs font-bold uppercase tracking-wider text-indigo-500 mb-1.5">Task Instructions <span class="text-red-500">*</span></label>
+        <label class="block text-xs font-bold uppercase tracking-wider text-indigo-500 mb-1.5">{{ 'MODALS.EX_TASK' | translate }} <span class="text-red-500">*</span></label>
         <input 
           type="text" 
           [(ngModel)]="exerciseForm.task" 
           class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-indigo-500 text-gray-900 dark:text-white outline-none font-semibold text-sm"
-          placeholder="e.g. Write a query to fetch the name of user and product_name for all matches.">
+          [placeholder]="'MODALS.EX_TASK_PH' | translate">
       </div>
 
       <div>
-        <label class="block text-xs font-bold uppercase tracking-wider text-green-600 mb-1.5">Correct Solution Syntax <span class="text-red-500">*</span></label>
+        <label class="block text-xs font-bold uppercase tracking-wider text-green-600 mb-1.5">{{ 'MODALS.EX_SOLUTION' | translate }} <span class="text-red-500">*</span></label>
         <textarea 
           [(ngModel)]="exerciseForm.correctSolution" 
           rows="3" 
           class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-900 border border-emerald-300 dark:border-emerald-700 rounded-xl focus:ring-2 focus:ring-emerald-500 text-gray-900 dark:text-white outline-none font-mono text-xs leading-relaxed"
-          placeholder="SELECT u.name, o.product_name FROM Users u&#10;INNER JOIN Orders o ON u.id = o.user_id;"></textarea>
+          [placeholder]="'MODALS.EX_SOLUTION_PH' | translate"></textarea>
       </div>
 
       <div>
-        <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-1.5">Additional Solution Explanations (Optional)</label>
+        <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-1.5">{{ 'MODALS.EX_NOTE' | translate }}</label>
         <textarea 
           [(ngModel)]="exerciseForm.solutionNote" 
           rows="2" 
           class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-indigo-500 text-gray-900 dark:text-white outline-none text-xs leading-relaxed"
-          placeholder="e.g. Make sure to specify the ON join condition mapping primary and foreign keys correctly."></textarea>
+          [placeholder]="'MODALS.EX_NOTE_PH' | translate"></textarea>
       </div>
     </div>
     
     <div class="px-6 py-4 border-t border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/30 flex justify-end gap-3">
-      <button (click)="showExerciseModal.set(false)" class="px-4 py-2 text-sm font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl transition-colors">Cancel</button>
-      <button (click)="saveExercise()" [disabled]="!exerciseForm.title || !exerciseForm.description || !exerciseForm.task || !exerciseForm.correctSolution" class="px-5 py-2 text-sm font-bold bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white rounded-xl transition-colors shadow-md">Save Exercise</button>
+      <button (click)="showExerciseModal.set(false)" class="px-4 py-2 text-sm font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl transition-colors">{{ 'MODALS.CANCEL' | translate }}</button>
+      <button (click)="saveExercise()" [disabled]="!exerciseForm.title || !exerciseForm.description || !exerciseForm.task || !exerciseForm.correctSolution" class="px-5 py-2 text-sm font-bold bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white rounded-xl transition-colors shadow-md">{{ 'MODALS.EX_SAVE' | translate }}</button>
     </div>
   </div>
 </div>

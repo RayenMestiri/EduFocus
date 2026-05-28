@@ -24,6 +24,8 @@
     "@fullcalendar/interaction": "^6.1.20",
     "@fullcalendar/list": "^6.1.20",
     "@fullcalendar/timegrid": "^6.1.20",
+    "@ngx-translate/core": "^17.0.0",
+    "@ngx-translate/http-loader": "^17.0.0",
     "@types/three": "^0.183.1",
     "animate.css": "^4.1.1",
     "gsap": "^3.14.2",

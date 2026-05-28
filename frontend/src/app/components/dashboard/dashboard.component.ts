@@ -1,4 +1,4 @@
-import { Component, OnInit, signal, computed } from '@angular/core';
+import { Component, OnInit, signal, computed, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -7,9 +7,12 @@ import { SubjectService } from '../../services/subject.service';
 import { DayPlanService } from '../../services/day-plan.service';
 import { TodoService } from '../../services/todo.service';
 import { ThemeService } from '../../services/theme.service';
+import { LanguageService } from '../../services/language.service';
 import { Subject, DayPlan, Todo } from '../../models';
 import Swal from 'sweetalert2';
 import { LottieComponent, AnimationOptions } from 'ngx-lottie';
+import { TranslateModule } from '@ngx-translate/core';
+import { LanguageSwitcherComponent } from '../shared/language-switcher/language-switcher.component';
 
 interface AiChatMessage {
   role: 'assistant';
@@ -48,7 +51,7 @@ interface AiStudyContext {
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, FormsModule, LottieComponent],
+  imports: [CommonModule, FormsModule, LottieComponent, TranslateModule, LanguageSwitcherComponent],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.css'
 })
@@ -200,15 +203,40 @@ export class DashboardComponent implements OnInit {
     private dayPlanService: DayPlanService,
     private todoService: TodoService,
     private router: Router,
-    public themeService: ThemeService
-  ) {}
+    public themeService: ThemeService,
+    public languageService: LanguageService
+  ) {
+    // React to language change to update AI welcome message if it hasn't been replaced by a smart analysis yet
+    effect(() => {
+      const lang = this.languageService.currentLanguage();
+      const currentContent = this.aiMessages()[0]?.content;
+      if (!currentContent || currentContent.includes('AI Study Coach') || currentContent.includes('AI Coach')) {
+        this.initWelcomeMessage();
+      }
+    });
+  }
 
   currentUser = computed(() => this.authService.currentUser());
 
   ngOnInit() {
+    this.initWelcomeMessage();
     this.loadData();
     this.loadYouTubeAPI();
     this.startDateCheck();
+  }
+
+  initWelcomeMessage() {
+    const isFr = this.languageService.currentLanguage() === 'fr';
+    const welcomeText = isFr
+      ? '👋 Salut ! Je suis ton AI Study Coach.\n\nClique sur « Analyser ma journée » pour recevoir une stratégie personnalisée basée sur ta progression, tes matières et tes tâches.'
+      : '👋 Hi! I am your AI Study Coach.\n\nClick on "Analyze my day" to receive a personalized strategy based on your progress, subjects, and tasks.';
+    
+    this.aiMessages.set([
+      {
+        role: 'assistant',
+        content: welcomeText
+      }
+    ]);
   }
 
   loadData() {
@@ -507,6 +535,7 @@ export class DashboardComponent implements OnInit {
   }
 
   private generateSmartAdvice(context: AiStudyContext): string {
+    const isFr = this.languageService.currentLanguage() === 'fr';
     const lines: string[] = [];
     const progress = context.progressPercentage;
     const goal = context.todayGoalMinutes;
@@ -520,25 +549,48 @@ export class DashboardComponent implements OnInit {
     const nowHour = context.nowHour;
 
     // — Greeting based on time of day
-    const greeting = nowHour < 12 ? '☀️ Bonjour' : nowHour < 18 ? '👋 Bon après-midi' : '🌙 Bonsoir';
-    lines.push(`${greeting} ! Voici ton analyse du jour.`);
+    let greeting = '';
+    if (isFr) {
+      greeting = nowHour < 12 ? '☀️ Bonjour' : nowHour < 18 ? '👋 Bon après-midi' : '🌙 Bonsoir';
+      lines.push(`${greeting} ! Voici ton analyse du jour.`);
+    } else {
+      greeting = nowHour < 12 ? '☀️ Good morning' : nowHour < 18 ? '👋 Good afternoon' : '🌙 Good evening';
+      lines.push(`${greeting}! Here is your analysis for today.`);
+    }
     lines.push('');
 
     // — Score & Status
     const scoreEmoji = score >= 85 ? '🏆' : score >= 70 ? '💪' : score >= 55 ? '📈' : '⚡';
-    const statusLabel = score >= 85 ? 'Excellent' : score >= 70 ? 'Bon rythme' : score >= 55 ? 'En cours' : 'À booster';
-    lines.push(`${scoreEmoji} Score du jour : ${score}/100 — ${statusLabel}`);
+    let statusLabel = '';
+    if (isFr) {
+      statusLabel = score >= 85 ? 'Excellent' : score >= 70 ? 'Bon rythme' : score >= 55 ? 'En cours' : 'À booster';
+      lines.push(`${scoreEmoji} Score du jour : ${score}/100 — ${statusLabel}`);
+    } else {
+      statusLabel = score >= 85 ? 'Excellent' : score >= 70 ? 'Good pace' : score >= 55 ? 'In progress' : 'To boost';
+      lines.push(`${scoreEmoji} Daily Score: ${score}/100 — ${statusLabel}`);
+    }
     lines.push('');
 
     // — Quick Overview (compact)
-    lines.push('📊 Résumé rapide');
-    lines.push(`  ▸ Progression : ${studied} min / ${goal} min (${progress}%)`);
-    lines.push(`  ▸ Sessions Pomodoro : ${sessionsCompleted}/${sessionGoal}`);
-    lines.push(`  ▸ Tâches : ${context.completedTodos}/${context.totalTodos} terminées`);
+    if (isFr) {
+      lines.push('📊 Résumé rapide');
+      lines.push(`  ▸ Progression : ${studied} min / ${goal} min (${progress}%)`);
+      lines.push(`  ▸ Sessions Pomodoro : ${sessionsCompleted}/${sessionGoal}`);
+      lines.push(`  ▸ Tâches : ${context.completedTodos}/${context.totalTodos} terminées`);
+    } else {
+      lines.push('📊 Quick summary');
+      lines.push(`  ▸ Progress: ${studied} min / ${goal} min (${progress}%)`);
+      lines.push(`  ▸ Pomodoro sessions: ${sessionsCompleted}/${sessionGoal}`);
+      lines.push(`  ▸ Tasks: ${context.completedTodos}/${context.totalTodos} completed`);
+    }
 
     if (weekTrend.trend !== 'stable') {
       const trendIcon = weekTrend.trend === 'up' ? '📈' : '📉';
-      lines.push(`  ▸ Tendance hebdo : ${trendIcon} ${weekTrend.deltaPct >= 0 ? '+' : ''}${weekTrend.deltaPct}%`);
+      if (isFr) {
+        lines.push(`  ▸ Tendance hebdo : ${trendIcon} ${weekTrend.deltaPct >= 0 ? '+' : ''}${weekTrend.deltaPct}%`);
+      } else {
+        lines.push(`  ▸ Weekly trend: ${trendIcon} ${weekTrend.deltaPct >= 0 ? '+' : ''}${weekTrend.deltaPct}%`);
+      }
     }
     lines.push('');
 
@@ -549,42 +601,82 @@ export class DashboardComponent implements OnInit {
       .slice(0, 3);
 
     if (behindSubjects.length > 0) {
-      lines.push('🎯 Matières prioritaires');
-      behindSubjects.forEach(s => {
-        const bar = s.progress >= 75 ? '🟢' : s.progress >= 40 ? '🟡' : '🔴';
-        lines.push(`  ${bar} ${s.name} — ${s.progress}% (${s.remainingMinutes} min restantes)`);
-      });
+      if (isFr) {
+        lines.push('🎯 Matières prioritaires');
+        behindSubjects.forEach(s => {
+          const bar = s.progress >= 75 ? '🟢' : s.progress >= 40 ? '🟡' : '🔴';
+          lines.push(`  ${bar} ${s.name} — ${s.progress}% (${s.remainingMinutes} min restantes)`);
+        });
+      } else {
+        lines.push('🎯 Priority subjects');
+        behindSubjects.forEach(s => {
+          const bar = s.progress >= 75 ? '🟢' : s.progress >= 40 ? '🟡' : '🔴';
+          lines.push(`  ${bar} ${s.name} — ${s.progress}% (${s.remainingMinutes} min remaining)`);
+        });
+      }
       lines.push('');
     }
 
     // — Smart recommendation (one clear action)
-    lines.push('💡 Recommandation');
-    if (progress >= 100) {
-      lines.push('  Bravo, objectif atteint ! 🎉 Tu peux consolider tes acquis avec un mini-quiz de révision, ou passer aux tâches restantes.');
-    } else if (progress >= 75) {
-      lines.push(`  Tu y es presque ! Encore ${remaining} min pour boucler. Lance un dernier bloc Pomodoro sur ta matière la plus en retard.`);
-    } else if (context.pendingUrgentTodos > 0) {
-      lines.push(`  ⚠️ ${context.pendingUrgentTodos} tâche(s) urgente(s) en attente. Traite-les d'abord, puis enchaîne avec un bloc d'étude de 25 min.`);
-    } else if (nowHour >= 20 && remaining > 60) {
-      lines.push(`  Il est tard et il reste ${remaining} min. Concentre-toi sur 1 seul bloc de 25 min sur ta matière clé, puis planifie le reste pour demain.`);
-    } else if (sessionsCompleted < Math.ceil(sessionGoal * 0.5)) {
-      lines.push(`  Cadence Pomodoro trop basse (${sessionsCompleted}/${sessionGoal}). Lance un timer maintenant : 25 min de focus sans interruption.`);
-    } else {
-      const topSubject = behindSubjects[0];
-      if (topSubject) {
-        lines.push(`  Commence par ${topSubject.name} (${topSubject.remainingMinutes} min restantes). Un bloc de 25 min avec exercices actifs sera le plus efficace.`);
+    if (isFr) {
+      lines.push('💡 Recommandation');
+      if (progress >= 100) {
+        lines.push('  Bravo, objectif atteint ! 🎉 Tu peux consolider tes acquis avec un mini-quiz de révision, ou passer aux tâches restantes.');
+      } else if (progress >= 75) {
+        lines.push(`  Tu y es presque ! Encore ${remaining} min pour boucler. Lance un dernier bloc Pomodoro sur ta matière la plus en retard.`);
+      } else if (context.pendingUrgentTodos > 0) {
+        lines.push(`  ⚠️ ${context.pendingUrgentTodos} tâche(s) urgente(s) en attente. Traite-les d'abord, puis enchaîne avec un bloc d'étude de 25 min.`);
+      } else if (nowHour >= 20 && remaining > 60) {
+        lines.push(`  Il est tard et il reste ${remaining} min. Concentre-toi sur 1 seul bloc de 25 min sur ta matière clé, puis planifie le reste pour demain.`);
+      } else if (sessionsCompleted < Math.ceil(sessionGoal * 0.5)) {
+        lines.push(`  Cadence Pomodoro trop basse (${sessionsCompleted}/${sessionGoal}). Lance un timer maintenant : 25 min de focus sans interruption.`);
       } else {
-        lines.push('  Bonne dynamique ! Continue avec un bloc Pomodoro sur ta matière principale.');
+        const topSubject = behindSubjects[0];
+        if (topSubject) {
+          lines.push(`  Commence par ${topSubject.name} (${topSubject.remainingMinutes} min restantes). Un bloc de 25 min avec exercices actifs sera le plus efficace.`);
+        } else {
+          lines.push('  Bonne dynamique ! Continue avec un bloc Pomodoro sur ta matière principale.');
+        }
+      }
+    } else {
+      lines.push('💡 Recommendation');
+      if (progress >= 100) {
+        lines.push('  Well done, goal achieved! 🎉 You can consolidate your learning with a quick revision quiz, or work on your remaining tasks.');
+      } else if (progress >= 75) {
+        lines.push(`  You're almost there! Only ${remaining} min left. Start one last Pomodoro block on your most behind subject.`);
+      } else if (context.pendingUrgentTodos > 0) {
+        lines.push(`  ⚠️ ${context.pendingUrgentTodos} urgent task(s) pending. Tackle them first, then continue with a 25-minute study block.`);
+      } else if (nowHour >= 20 && remaining > 60) {
+        lines.push(`  It's late and ${remaining} min remain. Focus on a single 25 min block on your key subject, then plan the rest for tomorrow.`);
+      } else if (sessionsCompleted < Math.ceil(sessionGoal * 0.5)) {
+        lines.push(`  Pomodoro pace is too low (${sessionsCompleted}/${sessionGoal}). Start a timer now: 25 minutes of uninterrupted focus.`);
+      } else {
+        const topSubject = behindSubjects[0];
+        if (topSubject) {
+          lines.push(`  Start with ${topSubject.name} (${topSubject.remainingMinutes} min remaining). A 25 min block with active exercises will be the most effective.`);
+        } else {
+          lines.push('  Good momentum! Continue with a Pomodoro block on your main subject.');
+        }
       }
     }
 
     // — Motivation
-    if (weekTrend.trend === 'up') {
-      lines.push('');
-      lines.push('🔥 Tu es en progression cette semaine, continue sur cette lancée !');
-    } else if (weekTrend.trend === 'down') {
-      lines.push('');
-      lines.push('💪 Ta semaine peut encore s\'améliorer. Chaque session compte !');
+    if (isFr) {
+      if (weekTrend.trend === 'up') {
+        lines.push('');
+        lines.push('🔥 Tu es en progression cette semaine, continue sur cette lancée !');
+      } else if (weekTrend.trend === 'down') {
+        lines.push('');
+        lines.push('💪 Ta semaine peut encore s\'améliorer. Chaque session compte !');
+      }
+    } else {
+      if (weekTrend.trend === 'up') {
+        lines.push('');
+        lines.push('🔥 You are progressing this week, keep it up!');
+      } else if (weekTrend.trend === 'down') {
+        lines.push('');
+        lines.push('💪 Your week can still improve. Every session counts!');
+      }
     }
 
     return lines.join('\n');
@@ -654,11 +746,12 @@ export class DashboardComponent implements OnInit {
   }
 
   saveSubject() {
+    const isFr = this.languageService.currentLanguage() === 'fr';
     if (!this.subjectForm.name.trim()) {
       Swal.fire({ 
         icon: 'error', 
-        title: 'Erreur', 
-        text: 'Le nom est requis'
+        title: isFr ? 'Erreur' : 'Error', 
+        text: isFr ? 'Le nom est requis' : 'Name is required'
       });
       return;
     }
@@ -672,8 +765,8 @@ export class DashboardComponent implements OnInit {
       next: () => {
         Swal.fire({ 
           icon: 'success', 
-          title: 'Succès', 
-          text: 'Matière enregistrée avec succès', 
+          title: isFr ? 'Succès' : 'Success', 
+          text: isFr ? 'Matière enregistrée avec succès' : 'Subject saved successfully', 
           timer: 1500, 
           showConfirmButton: false 
         });
@@ -684,8 +777,8 @@ export class DashboardComponent implements OnInit {
       error: (err) => {
         Swal.fire({ 
           icon: 'error', 
-          title: 'Erreur', 
-          text: err.error?.message || 'Une erreur est survenue'
+          title: isFr ? 'Erreur' : 'Error', 
+          text: err.error?.message || (isFr ? 'Une erreur est survenue' : 'An error occurred')
         });
       }
     });
@@ -857,20 +950,22 @@ export class DashboardComponent implements OnInit {
     }
 
     if (subjects.length === 0) {
+      const isFr = this.languageService.currentLanguage() === 'fr';
       Swal.fire({ 
         icon: 'error', 
-        title: 'Erreur', 
-        text: 'Ajoutez au moins une matière avec un objectif'
+        title: isFr ? 'Erreur' : 'Error', 
+        text: isFr ? 'Ajoutez au moins une matière avec un objectif' : 'Add at least one subject with a goal'
       });
       return;
     }
 
     this.dayPlanService.saveDayPlan({ date: this.today, subjects }).subscribe({
       next: () => {
+        const isFr = this.languageService.currentLanguage() === 'fr';
         Swal.fire({ 
           icon: 'success', 
-          title: '✅ Plan mis à jour', 
-          text: 'Sessions ajustées automatiquement',
+          title: isFr ? '✅ Plan mis à jour' : '✅ Plan updated', 
+          text: isFr ? 'Sessions ajustées automatiquement' : 'Sessions adjusted automatically',
           timer: 2000, 
           showConfirmButton: false
         });
@@ -878,9 +973,10 @@ export class DashboardComponent implements OnInit {
         this.loadDayPlan();
       },
       error: (err) => {
+        const isFr = this.languageService.currentLanguage() === 'fr';
         Swal.fire({ 
           icon: 'error', 
-          title: 'Erreur', 
+          title: isFr ? 'Erreur' : 'Error', 
           text: err.error?.message
         });
       }
@@ -888,22 +984,23 @@ export class DashboardComponent implements OnInit {
   }
 
   deleteSubject(subject: Subject) {
+    const isFr = this.languageService.currentLanguage() === 'fr';
     Swal.fire({
-      title: 'Supprimer?',
-      text: `Supprimer "${subject.name}"?`,
+      title: isFr ? 'Supprimer?' : 'Delete?',
+      text: isFr ? `Supprimer "${subject.name}"?` : `Delete "${subject.name}"?`,
       icon: 'warning',
       showCancelButton: true,
-      confirmButtonText: 'Supprimer',
-      cancelButtonText: 'Annuler'
+      confirmButtonText: isFr ? 'Supprimer' : 'Delete',
+      cancelButtonText: isFr ? 'Annuler' : 'Cancel'
     }).then((result) => {
       if (result.isConfirmed) {
         this.subjectService.deleteSubject(subject._id!).subscribe({
           next: () => {
-            Swal.fire({ icon: 'success', title: 'Supprimé', timer: 1500, showConfirmButton: false });
+            Swal.fire({ icon: 'success', title: isFr ? 'Supprimé' : 'Deleted', timer: 1500, showConfirmButton: false });
             this.loadSubjects();
           },
           error: (err) => {
-            Swal.fire({ icon: 'error', title: 'Erreur', text: err.error?.message });
+            Swal.fire({ icon: 'error', title: isFr ? 'Erreur' : 'Error', text: err.error?.message });
           }
         });
       }
@@ -996,28 +1093,31 @@ export class DashboardComponent implements OnInit {
       // Determine break type
       const needsLongBreak = newSessionCount % this.timerSettings.sessionsBeforeLongBreak === 0;
       const breakDuration = needsLongBreak ? this.timerSettings.longBreakDuration : this.timerSettings.shortBreakDuration;
-      const breakType = needsLongBreak ? 'longue pause' : 'courte pause';
+      const isFr = this.languageService.currentLanguage() === 'fr';
+      const breakType = needsLongBreak 
+        ? (isFr ? 'longue pause' : 'long break') 
+        : (isFr ? 'courte pause' : 'short break');
       
       // Offer break
       const result = await Swal.fire({
-        title: `☕ Temps de pause!`,
+        title: isFr ? `☕ Temps de pause!` : `☕ Break time!`,
         html: `
           <div class="text-center">
-            <p class="text-lg mb-4">Vous avez complété <strong class="text-yellow-400">${newSessionCount}</strong> session(s) aujourd'hui!</p>
-            <p class="text-gray-400 mb-2">Prenez une <strong>${breakType}</strong> de <strong class="text-green-400">${breakDuration} minutes</strong></p>
+            <p class="text-lg mb-4">${isFr ? `Vous avez complété <strong class="text-yellow-400">${newSessionCount}</strong> session(s) aujourd'hui!` : `You have completed <strong class="text-yellow-400">${newSessionCount}</strong> session(s) today!`}</p>
+            <p class="text-gray-400 mb-2">${isFr ? `Prenez une <strong>${breakType}</strong> de <strong class="text-green-400">${breakDuration} minutes</strong>` : `Take a <strong>${breakType}</strong> of <strong class="text-green-400">${breakDuration} minutes</strong>`}</p>
             <div class="mt-4 flex justify-center gap-4">
               <div class="text-center p-4 bg-blue-500/10 rounded-lg">
                 <div class="text-3xl mb-2">🎯</div>
                 <div class="text-sm text-gray-400">Session ${newSessionCount}/${this.currentSessionGoal()}</div>
               </div>
-              ${needsLongBreak ? '<div class="text-center p-4 bg-purple-500/10 rounded-lg"><div class="text-3xl mb-2">🌟</div><div class="text-sm text-gray-400">Pause longue!</div></div>' : ''}
+              ${needsLongBreak ? `<div class="text-center p-4 bg-purple-500/10 rounded-lg"><div class="text-3xl mb-2">🌟</div><div class="text-sm text-gray-400">${isFr ? 'Pause longue!' : 'Long break!'}</div></div>` : ''}
             </div>
           </div>
         `,
         icon: 'success',
         showCancelButton: true,
-        confirmButtonText: `🧘 Commencer la pause (${breakDuration}min)`,
-        cancelButtonText: '⏭️ Passer la pause',
+        confirmButtonText: isFr ? `🧘 Commencer la pause (${breakDuration}min)` : `🧘 Start break (${breakDuration}min)`,
+        cancelButtonText: isFr ? '⏭️ Passer la pause' : '⏭️ Skip break',
         background: '#1a1a1a',
         color: '#ffd700',
         confirmButtonColor: '#10b981',
@@ -1037,12 +1137,15 @@ export class DashboardComponent implements OnInit {
     } else {
       // Break completed
       const wasLongBreak = localStorage.getItem('currentBreakIsLong') === 'true';
+      const isFr = this.languageService.currentLanguage() === 'fr';
       
       Swal.fire({
-        title: '💪 Pause terminée!',
-        text: wasLongBreak ? 'Nouveau cycle! Sessions réinitialisées 🔄' : 'Prêt à reprendre le travail?',
+        title: isFr ? '💪 Pause terminée!' : '💪 Break finished!',
+        text: wasLongBreak 
+          ? (isFr ? 'Nouveau cycle! Sessions réinitialisées 🔄' : 'New cycle! Sessions reset 🔄') 
+          : (isFr ? 'Prêt à reprendre le travail?' : 'Ready to resume work?'),
         icon: 'info',
-        confirmButtonText: '🔥 Continuer!',
+        confirmButtonText: isFr ? '🔥 Continuer!' : '🔥 Continue!',
         background: '#1a1a1a',
         color: '#ffd700',
         confirmButtonColor: '#ffd700'
@@ -1068,14 +1171,23 @@ export class DashboardComponent implements OnInit {
   }
 
   async showFocusCompletionCelebration(minutes: number, sessionCount: number) {
-    const messages = [
+    const isFr = this.languageService.currentLanguage() === 'fr';
+    const messagesFr = [
       { title: '🎉 Excellent travail!', text: 'Vous restez concentré!' },
       { title: '⭐ Superbe!', text: 'Continuez comme ça!' },
       { title: '🔥 En feu!', text: 'Rien ne peut vous arrêter!' },
       { title: '💎 Brillant!', text: 'Votre focus est impressionnant!' },
       { title: '🚀 Incroyable!', text: 'Vous êtes une machine!' }
     ];
+    const messagesEn = [
+      { title: '🎉 Excellent work!', text: 'You stay focused!' },
+      { title: '⭐ Superb!', text: 'Keep it up!' },
+      { title: '🔥 On fire!', text: 'Nothing can stop you!' },
+      { title: '💎 Brilliant!', text: 'Your focus is impressive!' },
+      { title: '🚀 Amazing!', text: 'You are a machine!' }
+    ];
     
+    const messages = isFr ? messagesFr : messagesEn;
     const message = messages[Math.min(sessionCount - 1, messages.length - 1)];
     
     await Swal.fire({
@@ -1084,8 +1196,8 @@ export class DashboardComponent implements OnInit {
         <div class="text-center">
           <div class="text-6xl mb-4 animate-bounce">🏆</div>
           <p class="text-xl mb-2">${message.text}</p>
-          <p class="text-gray-400"><strong class="text-yellow-400">${minutes} minutes</strong> de focus complet</p>
-          <div class="mt-4 text-sm text-gray-500">+${minutes * 2} points 💰</div>
+          <p class="text-gray-400"><strong class="text-yellow-400">${minutes} minutes</strong> ${isFr ? 'de focus complet' : 'of complete focus'}</p>
+          <div class="mt-4 text-sm text-gray-500">+${minutes * 2} ${isFr ? 'points' : 'points'} 💰</div>
         </div>
       `,
       timer: 2500,
@@ -1131,11 +1243,12 @@ export class DashboardComponent implements OnInit {
       this.authService.awardPoints(pointsEarned).subscribe({
         next: (res) => {
           if (res.success) {
+            const isFr = this.languageService.currentLanguage() === 'fr';
             Swal.fire({
               icon: 'info',
-              title: 'Session interrompue',
+              title: isFr ? 'Session interrompue' : 'Session interrupted',
               html: `
-                <p>${minutesStudied} minutes complétées</p>
+                <p>${minutesStudied} ${isFr ? 'minutes complétées' : 'minutes completed'}</p>
                 <p class="text-sm text-yellow-400">+${pointsEarned} points</p>
               `,
               timer: 2000,
@@ -1206,12 +1319,13 @@ export class DashboardComponent implements OnInit {
   }
 
   saveTimerSettings() {
+    const isFr = this.languageService.currentLanguage() === 'fr';
     // Validate settings
     if (this.timerSettings.focusDuration < 1 || this.timerSettings.focusDuration > 60) {
       Swal.fire({
         icon: 'error',
-        title: 'Erreur',
-        text: 'La durée de focus doit être entre 1 et 60 minutes',
+        title: isFr ? 'Erreur' : 'Error',
+        text: isFr ? 'La durée de focus doit être entre 1 et 60 minutes' : 'Focus duration must be between 1 and 60 minutes',
         background: '#1a1a1a',
         color: '#ffd700',
         confirmButtonColor: '#ffd700'
@@ -1245,8 +1359,8 @@ export class DashboardComponent implements OnInit {
         console.log('✅ Tous les paramètres sauvegardés dans la base:', response.settings);
         Swal.fire({
           icon: 'success',
-          title: 'Paramètres sauvegardés!',
-          text: 'Synchronisés sur tous vos appareils',
+          title: isFr ? 'Paramètres sauvegardés!' : 'Settings saved!',
+          text: isFr ? 'Synchronisés sur tous vos appareils' : 'Synchronized across all your devices',
           timer: 1500,
           showConfirmButton: false,
           background: '#1a1a1a',
@@ -1257,8 +1371,8 @@ export class DashboardComponent implements OnInit {
         console.error('❌ Erreur sauvegarde base de données:', error);
         Swal.fire({
           icon: 'warning',
-          title: 'Paramètres sauvegardés localement',
-          text: 'Synchronisation avec le serveur échouée',
+          title: isFr ? 'Paramètres sauvegardés localement' : 'Settings saved locally',
+          text: isFr ? 'Synchronisation avec le serveur échouée' : 'Server synchronization failed',
           timer: 2000,
           showConfirmButton: false,
           background: '#1a1a1a',
@@ -1408,13 +1522,14 @@ export class DashboardComponent implements OnInit {
           // Award bonus points
           this.authService.awardPoints(bonusPoints).subscribe({
             next: (res) => {
+              const isFr = this.languageService.currentLanguage() === 'fr';
               Swal.fire({
                 title: `
                   <div style="margin-bottom: 1rem;">
                     <div style="font-size: 5em; animation: bounce 1s ease-in-out infinite;">${subjectIcon}</div>
                   </div>
                   <div style="font-size: 2em; font-weight: bold; background: linear-gradient(135deg, #ffd700, #ffed4e, #ffd700); -webkit-background-clip: text; -webkit-text-fill-color: transparent; animation: shine 2s linear infinite;">
-                    Objectif Atteint! 🎉
+                    ${isFr ? 'Objectif Atteint! 🎉' : 'Goal Achieved! 🎉'}
                   </div>
                 `,
                 html: `
@@ -1442,18 +1557,18 @@ export class DashboardComponent implements OnInit {
                         ✅ ${subjectName}
                       </div>
                       <div style="font-size: 1.2em; color: #10b981;">
-                        🎯 Objectif complété!
+                        🎯 ${isFr ? 'Objectif complété!' : 'Goal completed!'}
                       </div>
                     </div>
                     
                     <div style="background: linear-gradient(135deg, #ffd70030, #ffed4e30); border: 3px solid #ffd700; border-radius: 1.5rem; padding: 2rem; margin: 1.5rem 0; position: relative; overflow: hidden;">
                       <div style="position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.1) 50%, transparent 70%); animation: shine 3s linear infinite;"></div>
                       <div style="position: relative; z-index: 1;">
-                        <div style="font-size: 1.2em; color: #a0a0a0; margin-bottom: 0.5rem;">🎁 Récompense</div>
+                        <div style="font-size: 1.2em; color: #a0a0a0; margin-bottom: 0.5rem;">🎁 ${isFr ? 'Récompense' : 'Reward'}</div>
                         <div style="font-size: 4em; font-weight: bold; color: #ffd700; text-shadow: 0 0 30px rgba(255, 215, 0, 0.8), 0 0 60px rgba(255, 215, 0, 0.4);">
                           +${bonusPoints}
                         </div>
-                        <div style="font-size: 1.5em; color: #ffd700; font-weight: bold;">Points! 🏆</div>
+                        <div style="font-size: 1.5em; color: #ffd700; font-weight: bold;">${isFr ? 'Points! 🏆' : 'Points! 🏆'}</div>
                         <div style="font-size: 0.9em; color: #a0a0a0; margin-top: 0.5rem;">
                           Total: <span style="color: #ffd700; font-weight: bold;">${res.totalPoints}</span> points
                         </div>
@@ -1463,39 +1578,41 @@ export class DashboardComponent implements OnInit {
                     ${nextSubject ? `
                       <div style="background: linear-gradient(135deg, #3b82f620, #60a5fa20); border: 2px solid #3b82f6; border-radius: 1rem; padding: 1.5rem; margin-top: 1.5rem;">
                         <div style="font-size: 1.3em; color: #60a5fa; font-weight: bold; margin-bottom: 1rem;">
-                          🚀 Prêt pour la suite?
+                          🚀 ${isFr ? 'Prêt pour la suite?' : 'Ready for the next?'}
                         </div>
                         <div style="display: flex; align-items: center; justify-content: center; gap: 1rem; background: ${nextSubject.color}20; padding: 1rem; border-radius: 0.75rem; border: 2px solid ${nextSubject.color}40;">
                           <span style="font-size: 3em;">${nextSubject.icon}</span>
                           <div style="text-align: left;">
                             <div style="font-size: 1.2em; color: ${nextSubject.color}; font-weight: bold;">${nextSubject.name}</div>
-                            <div style="font-size: 0.9em; color: #9ca3af;">Prochaine matière</div>
+                            <div style="font-size: 0.9em; color: #9ca3af;">${isFr ? 'Prochaine matière' : 'Next subject'}</div>
                           </div>
                         </div>
                         <div style="margin-top: 1rem; font-size: 1.1em; color: #60a5fa;">
-                          💪 Continue sur cette lancée!
+                          💪 ${isFr ? "Continue sur cette lancée!" : "Keep up the momentum!"}
                         </div>
                       </div>
                     ` : `
                       <div style="background: linear-gradient(135deg, #10b98120, #34d39920); border: 2px solid #10b981; border-radius: 1rem; padding: 1.5rem; margin-top: 1.5rem;">
                         <div style="font-size: 2em; margin-bottom: 0.5rem;">🎊</div>
                         <div style="font-size: 1.3em; color: #10b981; font-weight: bold;">
-                          Toutes les matières complétées!
+                          ${isFr ? 'Toutes les matières complétées!' : 'All subjects completed!'}
                         </div>
                         <div style="font-size: 1em; color: #9ca3af; margin-top: 0.5rem;">
-                          Incroyable travail! 🌟
+                          ${isFr ? 'Incroyable travail! 🌟' : 'Amazing work! 🌟'}
                         </div>
                       </div>
                     `}
                     
                     <div style="margin-top: 1.5rem; padding: 1rem; background: rgba(59, 130, 246, 0.1); border-radius: 0.75rem; border: 1px solid rgba(59, 130, 246, 0.3);">
                       <div style="font-size: 1em; color: #60a5fa;">
-                        ⚡ Tu es une machine! Continue comme ça!
+                        ⚡ ${isFr ? "Tu es une machine! Continue comme ça!" : "You are a machine! Keep it up!"}
                       </div>
                     </div>
                   </div>
                 `,
-                confirmButtonText: nextSubject ? `🔥 Commencer ${nextSubject.name}!` : '🎉 Parfait!',
+                confirmButtonText: nextSubject 
+                  ? (isFr ? `🔥 Commencer ${nextSubject.name}!` : `🔥 Start ${nextSubject.name}!`) 
+                  : (isFr ? '🎉 Parfait!' : '🎉 Perfect!'),
                 background: '#0a0a0a',
                 color: '#ffffff',
                 confirmButtonColor: nextSubject ? nextSubject.color : '#ffd700',
@@ -1521,11 +1638,12 @@ export class DashboardComponent implements OnInit {
             error: (err) => {
               console.error('Error awarding bonus points:', err);
               // Still show celebration even if points fail
+              const isFr = this.languageService.currentLanguage() === 'fr';
               Swal.fire({
                 icon: 'success',
-                title: `🎉 Objectif atteint! 🎉`,
+                title: isFr ? `🎉 Objectif atteint! 🎉` : `🎉 Goal achieved! 🎉`,
                 html: `<div style="font-size: 1.2em;">
-                  <p>Félicitations! Vous avez complété <strong style="color: #ffd700;">${subjectName}</strong>!</p>
+                  <p>${isFr ? `Félicitations! Vous avez complété <strong style="color: #ffd700;">${subjectName}</strong>!` : `Congratulations! You have completed <strong style="color: #ffd700;">${subjectName}</strong>!`}</p>
                 </div>`,
                 background: '#1a1a1a',
                 color: '#ffd700',
@@ -1650,8 +1768,9 @@ export class DashboardComponent implements OnInit {
   }
 
   saveTodo() {
+    const isFr = this.languageService.currentLanguage() === 'fr';
     if (!this.todoForm.title.trim()) {
-      this.taskAlert({ icon: 'error', title: 'Erreur', text: 'Le titre est requis' });
+      this.taskAlert({ icon: 'error', title: isFr ? 'Erreur' : 'Error', text: isFr ? 'Le titre est requis' : 'Title is required' });
       return;
     }
 
@@ -1673,15 +1792,15 @@ export class DashboardComponent implements OnInit {
       this.todoService.updateTodo(editingTodo._id!, updatedTodo).subscribe({
         next: (response) => {
           console.log('Todo updated successfully:', response);
-          this.taskAlert({ icon: 'success', title: 'Tâche modifiée', timer: 1500, showConfirmButton: false });
+          this.taskAlert({ icon: 'success', title: isFr ? 'Tâche modifiée' : 'Task updated', timer: 1500, showConfirmButton: false });
           this.showTodoModal.set(false);
           this.editingTodo.set(null);
           this.loadTodos();
         },
         error: (err) => {
           console.error('Error updating todo:', err);
-          const errorMsg = err.error?.error || err.error?.message || err.message || 'Erreur lors de la modification de la tâche';
-          this.taskAlert({ icon: 'error', title: 'Erreur', text: errorMsg });
+          const errorMsg = err.error?.error || err.error?.message || err.message || (isFr ? 'Erreur lors de la modification de la tâche' : 'Error updating task');
+          this.taskAlert({ icon: 'error', title: isFr ? 'Erreur' : 'Error', text: errorMsg });
         }
       });
     } else {
@@ -1701,7 +1820,7 @@ export class DashboardComponent implements OnInit {
       this.todoService.createTodo(todo).subscribe({
         next: (response) => {
           console.log('Todo created successfully:', response);
-          this.taskAlert({ icon: 'success', title: 'Tâche ajoutée', timer: 1500, showConfirmButton: false });
+          this.taskAlert({ icon: 'success', title: isFr ? 'Tâche ajoutée' : 'Task added', timer: 1500, showConfirmButton: false });
           this.showTodoModal.set(false);
           this.loadTodos();
         },
@@ -1709,8 +1828,8 @@ export class DashboardComponent implements OnInit {
           console.error('Error creating todo:', err);
           console.error('Error status:', err.status);
           console.error('Error body:', err.error);
-          const errorMsg = err.error?.error || err.error?.message || err.message || 'Erreur lors de la création de la tâche';
-          this.taskAlert({ icon: 'error', title: 'Erreur', text: errorMsg });
+          const errorMsg = err.error?.error || err.error?.message || err.message || (isFr ? 'Erreur lors de la création de la tâche' : 'Error creating task');
+          this.taskAlert({ icon: 'error', title: isFr ? 'Erreur' : 'Error', text: errorMsg });
         }
       });
     }
@@ -1736,11 +1855,12 @@ export class DashboardComponent implements OnInit {
       const subjectColor = isLight ? '#64748b' : '#9ca3af';
       const borderColor = isLight ? '#c7d2fe' : '#374151';
       
+      const isFr = this.languageService.currentLanguage() === 'fr';
       const result = await this.taskAlert({
-        title: '⏱️ Temps d\'étude',
+        title: isFr ? '⏱️ Temps d\'étude' : '⏱️ Study Time',
         html: `
           <div style="text-align: left;">
-            <p style="margin-bottom: 1rem; color: ${textColor}; font-size: 0.95rem;">Combien de temps avez-vous passé sur cette tâche?</p>
+            <p style="margin-bottom: 1rem; color: ${textColor}; font-size: 0.95rem;">${isFr ? 'Combien de temps avez-vous passé sur cette tâche?' : 'How much time did you spend on this task?'}</p>
             <div style="display: flex; align-items: center; justify-content: center; gap: 0.75rem; margin-bottom: 1rem;">
               <button id="minus-btn" style="width: 2.75rem; height: 2.75rem; background: ${buttonBg}; border: 1.5px solid ${borderColor}; border-radius: 0.625rem; color: ${textColor}; font-size: 1.25rem; cursor: pointer; transition: all 0.2s; font-weight: 600;">−</button>
               <div style="padding: 0.75rem 1.5rem; background: ${panelBg}; border: 1.5px solid ${borderColor}; border-radius: 0.75rem;">
@@ -1749,12 +1869,12 @@ export class DashboardComponent implements OnInit {
               </div>
               <button id="plus-btn" style="width: 2.75rem; height: 2.75rem; background: ${buttonBg}; border: 1.5px solid ${borderColor}; border-radius: 0.625rem; color: ${textColor}; font-size: 1.25rem; cursor: pointer; transition: all 0.2s; font-weight: 600;">+</button>
             </div>
-            ${subject ? `<p style="text-align: center; font-size: 0.875rem; color: ${subjectColor};">Matière: ${subject.icon} ${subject.name}</p>` : ''}
+            ${subject ? `<p style="text-align: center; font-size: 0.875rem; color: ${subjectColor};">${isFr ? 'Matière' : 'Subject'}: ${subject.icon} ${subject.name}</p>` : ''}
           </div>
         `,
         showCancelButton: true,
-        confirmButtonText: '✅ Valider',
-        cancelButtonText: 'Annuler',
+        confirmButtonText: isFr ? '✅ Valider' : '✅ Submit',
+        cancelButtonText: isFr ? 'Annuler' : 'Cancel',
         reverseButtons: true,
         didOpen: () => {
           let minutes = 15;
@@ -1835,9 +1955,10 @@ export class DashboardComponent implements OnInit {
           // Get subject info for personalized message
           const normalizedSubjectId = this.getSubjectIdString(todo.subjectId as any);
           const subject = normalizedSubjectId ? this.subjects().find(s => s._id === normalizedSubjectId) : null;
+          const isFr = this.languageService.currentLanguage() === 'fr';
           
           // Array of encouraging messages
-          const encouragingMessages = [
+          const encouragingMessagesFr = [
             "Excellent travail! Continue comme ça! 🌟",
             "Bravo! Tu es sur la bonne voie! 🚀",
             "Fantastique! Chaque tâche complétée te rapproche de ton objectif! 💪",
@@ -1847,7 +1968,18 @@ export class DashboardComponent implements OnInit {
             "Impressionnant! Rien ne peut t'arrêter! 💎",
             "Génial! Tu es une machine à réussir! ⚡"
           ];
+          const encouragingMessagesEn = [
+            "Excellent work! Keep it up! 🌟",
+            "Well done! You are on the right track! 🚀",
+            "Fantastic! Every completed task gets you closer to your goal! 💪",
+            "Great! You are a productivity champion! 🏆",
+            "Amazing! Keep moving forward! ⭐",
+            "Wonderful! You are on fire! 🔥",
+            "Impressive! Nothing can stop you! 💎",
+            "Awesome! You are a success machine! ⚡"
+          ];
           
+          const encouragingMessages = isFr ? encouragingMessagesFr : encouragingMessagesEn;
           const randomMessage = encouragingMessages[Math.floor(Math.random() * encouragingMessages.length)];
           
           this.authService.awardPoints(totalPoints).subscribe({
@@ -1865,7 +1997,7 @@ export class DashboardComponent implements OnInit {
                 this.taskAlert({
                   title: `<div style="font-size: 2.25em; line-height: 1; margin: 0 0 0.25rem 0;">🎉✨🎊</div>
                           <div style="font-size: 1.65em; line-height: 1.1; font-weight: bold; margin: 0; background: linear-gradient(135deg, #ffd700, #ffed4e); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
-                            Tâche Complétée!
+                            ${isFr ? 'Tâche Complétée!' : 'Task Completed!'}
                           </div>`,
                   html: `
                     <div style="padding: 0.65rem;">
@@ -1884,12 +2016,12 @@ export class DashboardComponent implements OnInit {
                       
                       <div style="display: flex; justify-content: space-around; margin: 0.85rem 0; gap: 0.65rem;">
                         <div style="background: rgba(255, 215, 0, 0.1); padding: 0.75rem; border-radius: 0.75rem; flex: 1; border: 1px solid rgba(255, 215, 0, 0.3);">
-                          <div style="font-size: 0.86em; color: ${mutedText}; margin-bottom: 0.2rem;">Tâche</div>
+                          <div style="font-size: 0.86em; color: ${mutedText}; margin-bottom: 0.2rem;">${isFr ? 'Tâche' : 'Task'}</div>
                           <div style="font-size: 1.5em; color: #ffd700; font-weight: bold;">+${basePoints} 🏆</div>
                         </div>
                         ${studyMinutes > 0 ? `
                           <div style="background: rgba(16, 185, 129, 0.1); padding: 0.75rem; border-radius: 0.75rem; flex: 1; border: 1px solid rgba(16, 185, 129, 0.3);">
-                            <div style="font-size: 0.86em; color: ${mutedText}; margin-bottom: 0.2rem;">Étude (${studyMinutes}min)</div>
+                            <div style="font-size: 0.86em; color: ${mutedText}; margin-bottom: 0.2rem;">${isFr ? `Étude (${studyMinutes}min)` : `Study (${studyMinutes}min)`}</div>
                             <div style="font-size: 1.5em; color: #10b981; font-weight: bold;">+${timeBonus} ⏱️</div>
                           </div>
                         ` : ''}
@@ -1906,12 +2038,12 @@ export class DashboardComponent implements OnInit {
                       
                       <div style="margin-top: 0.85rem; padding: 0.75rem; background: rgba(59, 130, 246, 0.1); border-radius: 0.75rem; border: 1px solid rgba(59, 130, 246, 0.3);">
                         <div style="font-size: 1em; color: #60a5fa; line-height: 1.25;">
-                          💡 Continue sur cette lancée! La prochaine tâche t'attend! 
+                          💡 ${isFr ? "Continue sur cette lancée! La prochaine tâche t'attend!" : "Keep it up! The next task is waiting for you!"}
                         </div>
                       </div>
                     </div>
                   `,
-                  confirmButtonText: '🚀 Continuer!',
+                  confirmButtonText: isFr ? '🚀 Continuer!' : '🚀 Continue!',
                   confirmButtonColor: isLightTheme ? '#4f46e5' : '#ffd700',
                   width: '40vw',
                   customClass: {
@@ -1937,13 +2069,14 @@ export class DashboardComponent implements OnInit {
   }
 
   deleteTodo(todo: Todo) {
+    const isFr = this.languageService.currentLanguage() === 'fr';
     this.todoService.deleteTodo(todo._id!).subscribe({
       next: () => {
-        this.taskAlert({ icon: 'success', title: 'Supprimé', timer: 1500, showConfirmButton: false });
+        this.taskAlert({ icon: 'success', title: isFr ? 'Supprimé' : 'Deleted', timer: 1500, showConfirmButton: false });
         this.loadTodos();
       },
       error: (err) => {
-        this.taskAlert({ icon: 'error', title: 'Erreur', text: err.error?.message || 'Impossible de supprimer la tâche.' });
+        this.taskAlert({ icon: 'error', title: isFr ? 'Erreur' : 'Error', text: err.error?.message || (isFr ? 'Impossible de supprimer la tâche.' : 'Could not delete the task.') });
       }
     });
   }
@@ -2024,24 +2157,30 @@ export class DashboardComponent implements OnInit {
     }
     
     // If no sessions, redirect to calendar to create them
+    const isFr = this.languageService.currentLanguage() === 'fr';
     Swal.fire({
-      title: '📅 Utilisez le Calendrier',
+      title: isFr ? '📅 Utilisez le Calendrier' : '📅 Use the Calendar',
       html: `
         <div style="text-align: left;">
-          <p style="margin-bottom: 15px;">Pour ajouter du temps d'étude à cette matière, vous devez créer des sessions dans le <strong style="color: #ffd700;">Calendrier</strong>.</p>
-          <p style="color: #10b981; margin-bottom: 10px;">✅ Avantages du calendrier:</p>
+          <p style="margin-bottom: 15px;">${isFr ? 'Pour ajouter du temps d\'étude à cette matière, vous devez créer des sessions dans le <strong style="color: #ffd700;">Calendrier</strong>.' : 'To add study time for this subject, you must create sessions in the <strong style="color: #ffd700;">Calendar</strong>.'}</p>
+          <p style="color: #10b981; margin-bottom: 10px;">${isFr ? '✅ Avantages du calendrier:' : '✅ Calendar Benefits:'}</p>
           <ul style="list-style: none; padding-left: 0; color: #ffd700;">
-            <li>📍 Planifiez l'heure exacte de chaque session</li>
-            <li>⏱️ Définissez la durée précise</li>
-            <li>📊 Visualisez votre emploi du temps</li>
-            <li>✏️ Modifiez facilement par glisser-déposer</li>
+            ${isFr 
+              ? `<li>📍 Planifiez l'heure exacte de chaque session</li>
+                 <li>⏱️ Définissez la durée précise</li>
+                 <li>📊 Visualisez votre emploi du temps</li>
+                 <li>✏️ Modifiez facilement par glisser-déposer</li>`
+              : `<li>📍 Plan the exact time of each session</li>
+                 <li>⏱️ Set precise duration</li>
+                 <li>📊 Visualize your schedule</li>
+                 <li>✏️ Easily edit via drag-and-drop</li>`}
           </ul>
         </div>
       `,
       icon: 'info',
-      confirmButtonText: '📅 Aller au Calendrier',
+      confirmButtonText: isFr ? '📅 Aller au Calendrier' : '📅 Go to Calendar',
       showCancelButton: true,
-      cancelButtonText: 'Plus tard',
+      cancelButtonText: isFr ? 'Plus tard' : 'Later',
       confirmButtonColor: '#10b981',
       cancelButtonColor: '#6b7280',
       background: '#1a1a1a',
@@ -2200,10 +2339,11 @@ export class DashboardComponent implements OnInit {
         },
         onError: (event: any) => {
           console.error('❌ YouTube player error:', event.data);
+          const isFr = this.languageService.currentLanguage() === 'fr';
           Swal.fire({
             icon: 'error',
-            title: 'Erreur Audio',
-            text: 'Impossible de lire la vidéo YouTube. Vérifiez le lien.',
+            title: isFr ? 'Erreur Audio' : 'Audio Error',
+            text: isFr ? 'Impossible de lire la vidéo YouTube. Vérifiez le lien.' : 'Unable to play the YouTube video. Please check the link.',
             background: '#1a1a1a',
             color: '#ffd700',
             timer: 3000
@@ -2224,12 +2364,13 @@ export class DashboardComponent implements OnInit {
 
   testYouTubeUrl() {
     const videoId = this.extractYouTubeVideoId(this.timerSettings.relaxationAudioUrl);
+    const isFr = this.languageService.currentLanguage() === 'fr';
     
     if (!videoId) {
       Swal.fire({
         icon: 'error',
-        title: 'URL Invalide',
-        text: 'Le lien YouTube n\'est pas valide',
+        title: isFr ? 'URL Invalide' : 'Invalid URL',
+        text: isFr ? 'Le lien YouTube n\'est pas valide' : 'The YouTube link is not valid',
         background: '#1a1a1a',
         color: '#ffd700'
       });
@@ -2242,8 +2383,8 @@ export class DashboardComponent implements OnInit {
         if (response.ok) {
           Swal.fire({
             icon: 'success',
-            title: 'URL Valide!',
-            text: 'La vidéo YouTube existe et sera jouée pendant les pauses',
+            title: isFr ? 'URL Valide!' : 'Valid URL!',
+            text: isFr ? 'La vidéo YouTube existe et sera jouée pendant les pauses' : 'The YouTube video exists and will be played during breaks',
             background: '#1a1a1a',
             color: '#ffd700',
             timer: 2000
@@ -2255,8 +2396,8 @@ export class DashboardComponent implements OnInit {
       .catch(() => {
         Swal.fire({
           icon: 'error',
-          title: 'Vidéo Introuvable',
-          text: 'Cette vidéo YouTube n\'existe pas ou est privée',
+          title: isFr ? 'Vidéo Introuvable' : 'Video Not Found',
+          text: isFr ? 'Cette vidéo YouTube n\'existe pas ou est privée' : 'This YouTube video does not exist or is private',
           background: '#1a1a1a',
           color: '#ffd700'
         });
@@ -2277,14 +2418,15 @@ export class DashboardComponent implements OnInit {
   }
 
   logout() {
+    const isFr = this.languageService.currentLanguage() === 'fr';
     Swal.fire({
-      title: 'Se déconnecter?',
+      title: isFr ? 'Se déconnecter?' : 'Logout?',
       icon: 'question',
       showCancelButton: true,
       confirmButtonColor: '#ffd700',
       cancelButtonColor: '#6b7280',
-      confirmButtonText: 'Oui',
-      cancelButtonText: 'Non',
+      confirmButtonText: isFr ? 'Oui' : 'Yes',
+      cancelButtonText: isFr ? 'Non' : 'No',
       background: '#1a1a1a',
       color: '#ffd700'
     }).then((result) => {

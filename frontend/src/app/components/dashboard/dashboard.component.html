@@ -11,7 +11,7 @@
           </div>
           <div>
             <h1 class="text-xl sm:text-2xl lg:text-3xl font-extrabold tracking-tight dark:bg-gradient-to-r dark:from-yellow-300 dark:via-yellow-500 dark:to-yellow-600 light:bg-gradient-to-r light:from-indigo-600 light:via-violet-600 light:to-purple-600 bg-clip-text text-transparent">EduFocus</h1>
-            <p class="text-[10px] sm:text-[11px] font-medium dark:text-yellow-500/75 light:text-indigo-600/80 hidden sm:block">Premium Study Planner</p>
+            <p class="text-[10px] sm:text-[11px] font-medium dark:text-yellow-500/75 light:text-indigo-600/80 hidden sm:block">{{ 'MAIN_DASHBOARD.SUBTITLE' | translate }}</p>
           </div>
         </div>
 
@@ -21,29 +21,21 @@
           <button
             (click)="toggleMobileSubjectsMenu()"
             class="lg:hidden p-2 sm:p-2.5 dark:bg-yellow-500/20 dark:hover:bg-yellow-500/30 dark:border-yellow-500/30 light:bg-indigo-50 light:hover:bg-indigo-100 light:border-indigo-200 border rounded-xl dark:text-yellow-400 light:text-indigo-600 transition-all duration-300"
-            [attr.aria-label]="showMobileSubjectsMenu() ? 'Fermer le menu matières' : 'Ouvrir le menu matières'"
-            [title]="showMobileSubjectsMenu() ? 'Fermer' : 'Matières'">
+            [attr.aria-label]="showMobileSubjectsMenu() ? ('MAIN_DASHBOARD.CLOSE_SUBJECTS' | translate) : ('MAIN_DASHBOARD.OPEN_SUBJECTS' | translate)"
+            [title]="showMobileSubjectsMenu() ? ('MAIN_DASHBOARD.CLOSE' | translate) : ('MAIN_DASHBOARD.SUBJECTS' | translate)">
             <span class="material-icons text-[20px]">{{ showMobileSubjectsMenu() ? 'close' : 'menu' }}</span>
           </button>
+
+          <!-- Language Switcher -->
+          <app-language-switcher></app-language-switcher>
 
           <!-- Theme Toggle -->
           <button (click)="themeService.toggleTheme()" 
             class="p-2 sm:p-2.5 dark:bg-yellow-500/20 dark:hover:bg-yellow-500/30 dark:border-yellow-500/30 light:bg-indigo-50 light:hover:bg-indigo-100 light:border-indigo-200 border rounded-xl dark:text-yellow-400 light:text-indigo-600 transition-all duration-300 hover:scale-105"
-            [title]="themeService.isDark() ? 'Passer en mode clair' : 'Passer en mode sombre'">
+            [title]="themeService.isDark() ? ('MAIN_DASHBOARD.LIGHT_MODE' | translate) : ('MAIN_DASHBOARD.DARK_MODE' | translate)">
             <span class="material-icons text-[20px]">{{ themeService.isDark() ? 'light_mode' : 'dark_mode' }}</span>
           </button>
 
-          <!-- Planning (icon on mobile, icon+text on sm+) -->
-          <button (click)="goToPlanner()" class="p-2 sm:px-3 sm:py-2 dark:bg-yellow-500/20 dark:hover:bg-yellow-500/30 dark:border-yellow-500/30 light:bg-indigo-50 light:hover:bg-indigo-100 light:border-indigo-200 border rounded-xl dark:text-yellow-400 light:text-indigo-600 transition-all duration-300 flex items-center gap-1.5 text-sm" title="Planning">
-            <span class="material-icons text-[20px]">event</span>
-            <span class="hidden sm:inline">Planning</span>
-          </button>
-
-          <!-- Study Hub (icon on mobile, icon+text on sm+) -->
-          <button (click)="goToStudyHub()" class="p-2 sm:px-3 sm:py-2 dark:bg-yellow-500/20 dark:hover:bg-yellow-500/30 dark:border-yellow-500/30 light:bg-indigo-50 light:hover:bg-indigo-100 light:border-indigo-200 border rounded-xl dark:text-yellow-400 light:text-indigo-600 transition-all duration-300 flex items-center gap-1.5 text-sm" title="Study Hub">
-            <span class="material-icons text-[20px]">school</span>
-            <span class="hidden sm:inline">Study Hub</span>
-          </button>
           
           <!-- Points (compact on mobile) -->
           <div class="px-2 sm:px-3 py-1.5 sm:py-2 dark:bg-gradient-to-r dark:from-yellow-500/20 dark:to-yellow-600/20 dark:border-yellow-500/30 light:bg-gradient-to-r light:from-indigo-50 light:to-violet-50 light:border-indigo-200 border rounded-xl flex items-center gap-1.5 shadow-sm light:shadow-indigo-200/50">
@@ -60,9 +52,9 @@
           </div>
 
           <!-- Logout (icon on mobile, icon+text on sm+) -->
-          <button (click)="logout()" class="p-2 sm:px-3 sm:py-2 dark:bg-gray-800 dark:hover:bg-gray-700 light:bg-white light:hover:bg-slate-50 border light:border-slate-200 rounded-xl dark:text-white light:text-slate-700 transition-all duration-300 flex items-center gap-1.5 text-sm" title="Déconnexion">
+          <button (click)="logout()" class="p-2 sm:px-3 sm:py-2 dark:bg-gray-800 dark:hover:bg-gray-700 light:bg-white light:hover:bg-slate-50 border light:border-slate-200 rounded-xl dark:text-white light:text-slate-700 transition-all duration-300 flex items-center gap-1.5 text-sm" [title]="'MAIN_DASHBOARD.LOGOUT' | translate">
             <span class="material-icons text-[20px]">logout</span>
-            <span class="hidden sm:inline">Déconnexion</span>
+            <span class="hidden sm:inline">{{ 'MAIN_DASHBOARD.LOGOUT' | translate }}</span>
           </button>
         </div>
       </div>
@@ -86,7 +78,7 @@
           <div class="flex items-center justify-between mb-4 lg:hidden">
             <h2 class="text-xl font-bold dark:bg-gradient-to-r dark:from-yellow-400 dark:to-yellow-600 light:bg-gradient-to-r light:from-indigo-600 light:to-violet-600 bg-clip-text text-transparent flex items-center gap-2">
               <span class="material-icons">menu_book</span>
-              Matières
+              {{ 'MAIN_DASHBOARD.SUBJECTS' | translate }}
             </h2>
             <button (click)="closeMobileSubjectsMenu()" class="p-2 rounded-lg dark:hover:bg-white/10 light:hover:bg-slate-100 dark:text-gray-300 light:text-slate-600">
               <span class="material-icons">close</span>
@@ -95,13 +87,13 @@
 
           <h2 class="hidden lg:flex text-xl font-bold dark:bg-gradient-to-r dark:from-yellow-400 dark:to-yellow-600 light:bg-gradient-to-r light:from-indigo-600 light:to-violet-600 bg-clip-text text-transparent mb-4 items-center gap-2">
             <span class="material-icons">menu_book</span>
-            Matières
+            {{ 'MAIN_DASHBOARD.SUBJECTS' | translate }}
           </h2>
           
           <!-- Add Subject Button -->
           <button (click)="openSubjectModal()" class="w-full py-3 dark:bg-yellow-500/10 dark:hover:bg-yellow-500/20 dark:border-yellow-500/30 light:bg-indigo-50 light:hover:bg-indigo-100 light:border-indigo-200 border rounded-xl dark:text-yellow-500 light:text-indigo-600 font-medium transition-all duration-300 mb-4 flex items-center justify-center gap-2 hover:scale-105 shadow-sm light:shadow-indigo-100">
             <span class="material-icons">add</span>
-            Ajouter une matière
+            {{ 'MAIN_DASHBOARD.ADD_SUBJECT' | translate }}
           </button>
           
           <!-- Subject List -->
@@ -128,7 +120,7 @@
                 </div>
               </div>
             } @empty {
-              <p class="dark:text-gray-500 light:text-slate-400 text-center py-8">Aucune matière</p>
+              <p class="dark:text-gray-500 light:text-slate-400 text-center py-8">{{ 'MAIN_DASHBOARD.NO_SUBJECTS' | translate }}</p>
             }
           </div>
         </div>
@@ -147,8 +139,8 @@
                   <span class="material-icons text-3xl dark:text-black light:text-white">calendar_today</span>
                 </div>
                 <div>
-                  <h3 class="text-xl sm:text-2xl font-bold dark:bg-gradient-to-r dark:from-yellow-400 dark:to-yellow-600 light:bg-gradient-to-r light:from-indigo-600 light:to-violet-600 bg-clip-text text-transparent">Planning Journalier</h3>
-                  <p class="text-xs sm:text-sm dark:text-gray-400 light:text-slate-600 font-medium">Organisez vos sessions d'étude actives</p>
+                  <h3 class="text-xl sm:text-2xl font-bold dark:bg-gradient-to-r dark:from-yellow-400 dark:to-yellow-600 light:bg-gradient-to-r light:from-indigo-600 light:to-violet-600 bg-clip-text text-transparent">{{ 'MAIN_DASHBOARD.DAILY_PLANNER' | translate }}</h3>
+                  <p class="text-xs sm:text-sm dark:text-gray-400 light:text-slate-600 font-medium">{{ 'MAIN_DASHBOARD.DAILY_PLANNER_DESC' | translate }}</p>
                 </div>
               </div>
               <span class="material-icons text-2xl sm:text-3xl dark:text-yellow-400 light:text-indigo-500 group-hover:translate-x-2 transition-all duration-300 self-end sm:self-auto">arrow_forward</span>
@@ -163,8 +155,8 @@
                   <span class="material-icons text-3xl dark:text-white light:text-white">school</span>
                 </div>
                 <div>
-                  <h3 class="text-xl sm:text-2xl font-bold dark:bg-gradient-to-r dark:from-indigo-400 dark:to-purple-400 light:bg-gradient-to-r light:from-indigo-600 light:to-violet-600 bg-clip-text text-transparent">Study Hub</h3>
-                  <p class="text-xs sm:text-sm dark:text-gray-400 light:text-slate-600 font-medium">Notes, Flashcards & Quizzes intelligents</p>
+                  <h3 class="text-xl sm:text-2xl font-bold dark:bg-gradient-to-r dark:from-indigo-400 dark:to-purple-400 light:bg-gradient-to-r light:from-indigo-600 light:to-violet-600 bg-clip-text text-transparent">{{ 'MAIN_DASHBOARD.STUDY_HUB' | translate }}</h3>
+                  <p class="text-xs sm:text-sm dark:text-gray-400 light:text-slate-600 font-medium">{{ 'MAIN_DASHBOARD.STUDY_HUB_DESC' | translate }}</p>
                 </div>
               </div>
               <span class="material-icons text-2xl sm:text-3xl dark:text-indigo-400 light:text-indigo-500 group-hover:translate-x-2 transition-all duration-300 self-end sm:self-auto">arrow_forward</span>
@@ -179,12 +171,12 @@
             <div class="absolute top-0 right-0 w-32 h-32 dark:bg-yellow-500/10 light:bg-indigo-100 rounded-full blur-3xl dark:group-hover:bg-yellow-500/20 light:group-hover:bg-indigo-200 transition-all duration-500"></div>
             <div class="relative">
               <div class="text-3xl sm:text-5xl font-bold dark:bg-gradient-to-r dark:from-yellow-400 dark:to-yellow-600 dark:bg-clip-text dark:text-transparent light:bg-gradient-to-r light:from-indigo-600 light:to-violet-600 bg-clip-text text-transparent mb-2">{{ progressPercentage() }}%</div>
-              <div class="text-sm dark:text-gray-400 light:text-slate-600 font-medium">Objectif du jour</div>
+              <div class="text-sm dark:text-gray-400 light:text-slate-600 font-medium">{{ 'MAIN_DASHBOARD.DAILY_GOAL' | translate }}</div>
               <div class="mt-3 h-2 dark:bg-black light:bg-indigo-100 rounded-full overflow-hidden">
                 <div class="h-full dark:bg-gradient-to-r dark:from-yellow-500 dark:to-yellow-600 light:bg-gradient-to-r light:from-indigo-500 light:to-violet-600 rounded-full transition-all duration-500" 
                      [style.width.%]="progressPercentage()"></div>
               </div>
-              <div class="mt-2 text-xs dark:text-yellow-400 light:text-indigo-600 font-semibold">Cliquez pour planifier</div>
+              <div class="mt-2 text-xs dark:text-yellow-400 light:text-indigo-600 font-semibold">{{ 'MAIN_DASHBOARD.CLICK_TO_PLAN' | translate }}</div>
             </div>
           </div>
           
@@ -193,8 +185,8 @@
             <div class="absolute top-0 right-0 w-32 h-32 dark:bg-green-500/10 light:bg-emerald-100 rounded-full blur-3xl dark:group-hover:bg-green-500/20 light:group-hover:bg-emerald-200 transition-all duration-500"></div>
             <div class="relative">
               <div class="text-3xl sm:text-5xl font-bold dark:bg-gradient-to-r dark:from-green-400 dark:to-green-600 dark:bg-clip-text dark:text-transparent light:text-emerald-600 mb-2">{{ formatTime(totalStudiedMinutes()) }}</div>
-              <div class="text-sm dark:text-gray-400 light:text-slate-600 font-medium">Temps étudié</div>
-              <div class="mt-2 text-xs dark:text-green-400 light:text-emerald-600 font-semibold">Sur {{ formatTime(totalGoalMinutes()) }} planifié</div>
+              <div class="text-sm dark:text-gray-400 light:text-slate-600 font-medium">{{ 'MAIN_DASHBOARD.TIME_STUDIED' | translate }}</div>
+              <div class="mt-2 text-xs dark:text-green-400 light:text-emerald-600 font-semibold">{{ 'MAIN_DASHBOARD.OF' | translate }} {{ formatTime(totalGoalMinutes()) }} {{ 'MAIN_DASHBOARD.PLANNED' | translate }}</div>
             </div>
           </div>
           
@@ -203,8 +195,8 @@
             <div class="absolute top-0 right-0 w-32 h-32 dark:bg-blue-500/10 light:bg-indigo-100 rounded-full blur-3xl dark:group-hover:bg-blue-500/20 light:group-hover:bg-indigo-200 transition-all duration-500"></div>
             <div class="relative">
               <div class="text-3xl sm:text-5xl font-bold dark:bg-gradient-to-r dark:from-blue-400 dark:to-blue-600 dark:bg-clip-text dark:text-transparent light:text-indigo-600 mb-2">{{ completedTodos() }}/{{ totalTodos() }}</div>
-              <div class="text-sm dark:text-gray-400 light:text-slate-600 font-medium">Tâches complétées</div>
-              <div class="mt-2 text-xs dark:text-blue-400 light:text-indigo-600 font-semibold">{{ totalTodos() - completedTodos() }} restantes</div>
+              <div class="text-sm dark:text-gray-400 light:text-slate-600 font-medium">{{ 'MAIN_DASHBOARD.TASKS_COMPLETED' | translate }}</div>
+              <div class="mt-2 text-xs dark:text-blue-400 light:text-indigo-600 font-semibold">{{ totalTodos() - completedTodos() }} {{ 'MAIN_DASHBOARD.REMAINING' | translate }}</div>
             </div>
           </div>
 
@@ -215,8 +207,8 @@
               <div class="text-3xl sm:text-5xl font-bold dark:bg-gradient-to-r dark:from-purple-400 dark:to-purple-600 dark:bg-clip-text dark:text-transparent light:text-violet-600 mb-2 flex items-center gap-2">
                 <span class="material-icons text-3xl sm:text-5xl dark:text-orange-400 light:text-orange-500">local_fire_department</span> {{ studyStreak() }}
               </div>
-              <div class="text-sm dark:text-gray-400 light:text-slate-600 font-medium">Jours consécutifs</div>
-              <div class="mt-2 text-xs dark:text-purple-400 light:text-violet-600 font-semibold">Cliquez pour statistiques</div>
+              <div class="text-sm dark:text-gray-400 light:text-slate-600 font-medium">{{ 'MAIN_DASHBOARD.CONSECUTIVE_DAYS' | translate }}</div>
+              <div class="mt-2 text-xs dark:text-purple-400 light:text-violet-600 font-semibold">{{ 'MAIN_DASHBOARD.CLICK_FOR_STATS' | translate }}</div>
             </div>
           </div>
         </div>
@@ -231,10 +223,10 @@
             <div class="flex items-center gap-3">
               <span class="material-icons text-2xl dark:text-indigo-300 light:text-indigo-600">psychology</span>
               <div class="text-left">
-                <div class="font-bold dark:text-indigo-200 light:text-indigo-700">AI Study Assistant</div>
+                <div class="font-bold dark:text-indigo-200 light:text-indigo-700">{{ 'MAIN_DASHBOARD.AI_ASSISTANT' | translate }}</div>
                 <div class="text-xs dark:text-indigo-300/80 light:text-indigo-600 flex items-center gap-1">
                   <span class="material-icons text-sm">tips_and_updates</span>
-                  Cliquez pour voir les recommandations intelligentes
+                  {{ 'MAIN_DASHBOARD.AI_SUBTITLE' | translate }}
                 </div>
               </div>
             </div>
@@ -248,7 +240,7 @@
                   (click)="requestAIAdvice()"
                   [disabled]="aiLoading()"
                   class="px-3 py-2 rounded-xl text-sm font-semibold dark:bg-indigo-500/20 dark:hover:bg-indigo-500/30 dark:border-indigo-400/30 light:bg-indigo-50 light:hover:bg-indigo-100 light:border-indigo-200 border dark:text-indigo-300 light:text-indigo-700 transition-all duration-300 disabled:opacity-60 disabled:cursor-not-allowed">
-                  {{ aiLoading() ? 'Analyse...' : 'Analyser ma journée' }}
+                  {{ aiLoading() ? ('MAIN_DASHBOARD.AI_ANALYZING' | translate) : ('MAIN_DASHBOARD.AI_ANALYZE_BTN' | translate) }}
                 </button>
               </div>
 
@@ -266,7 +258,7 @@
                     [ngClass]="'dark:bg-indigo-500/10 light:bg-indigo-50 dark:text-indigo-100 light:text-slate-700'">
                     <div class="text-xs font-semibold mb-1 opacity-80 flex items-center gap-1">
                       <span class="material-icons text-sm">smart_toy</span>
-                      AI Coach
+                      {{ 'MAIN_DASHBOARD.AI_COACH' | translate }}
                     </div>
                     <div class="whitespace-pre-line">{{ message.content }}</div>
                   </div>
@@ -275,27 +267,26 @@
 
               <div class="mt-3 text-xs dark:text-indigo-300/80 light:text-indigo-600 flex items-center gap-2">
                 <span class="material-icons text-sm">insights</span>
-                Source: {{ aiLastSource() === 'smart' ? 'Smart AI local (règles intelligentes)' : 'Smart AI local' }}
+                {{ 'MAIN_DASHBOARD.AI_SOURCE' | translate }}
               </div>
             </div>
           }
         </div>
-
         <!-- Timer Section -->
         <div class="dark:bg-gradient-to-br dark:from-gray-900 dark:to-black light:bg-white/80 light:backdrop-blur-sm dark:border-yellow-500/20 light:border light:border-indigo-100 rounded-2xl p-6 dark:shadow-2xl dark:shadow-yellow-500/5 light:shadow-lg light:shadow-indigo-200/40">
           <div class="flex items-center justify-between mb-6">
             <h2 class="text-xl sm:text-2xl font-bold dark:bg-gradient-to-r dark:from-yellow-400 dark:to-yellow-600 light:bg-gradient-to-r light:from-indigo-600 light:to-violet-600 bg-clip-text text-transparent flex items-center gap-2">
               <span class="material-icons text-3xl">timer</span>
-              Timer Pomodoro
+              {{ 'MAIN_DASHBOARD.POMODORO_TITLE' | translate }}
             </h2>
             <div class="flex items-center gap-3">
               <!-- Session Counter -->
               <div class="flex items-center gap-2 px-3 py-1 dark:bg-blue-500/10 light:bg-indigo-50 dark:border-blue-500/30 light:border-indigo-200 border rounded-lg shadow-sm">
                 <span class="dark:text-blue-400 light:text-indigo-600 text-sm font-semibold">{{ sessionsCompleted() }}/{{ currentSessionGoal() }}</span>
-                <span class="text-xs dark:text-gray-400 light:text-slate-500">sessions</span>
+                <span class="text-xs dark:text-gray-400 light:text-slate-500">{{ 'MAIN_DASHBOARD.SESSIONS' | translate }}</span>
               </div>
               <!-- Settings Button -->
-              <button (click)="openTimerSettings()" class="p-2 dark:hover:bg-yellow-500/20 light:hover:bg-blue-500/20 rounded-lg dark:text-yellow-400 light:text-blue-600 transition-all" title="Paramètres du timer">
+              <button (click)="openTimerSettings()" class="p-2 dark:hover:bg-yellow-500/20 light:hover:bg-blue-500/20 rounded-lg dark:text-yellow-400 light:text-blue-600 transition-all" [title]="'MAIN_DASHBOARD.TIMER_SETTINGS' | translate">
                 <span class="material-icons">settings</span>
               </button>
             </div>
@@ -305,7 +296,7 @@
           @if (timerMode() === 'break') {
             <div class="mb-4 p-3 dark:bg-green-500/10 light:bg-green-100 dark:border-green-500/30 light:border-green-400 border rounded-xl flex items-center justify-center gap-2 shadow-lg light:shadow-green-200/50">
               <span class="material-icons text-3xl animate-pulse dark:text-green-400 light:text-green-600">self_improvement</span>
-              <span class="dark:text-green-400 light:text-green-700 font-semibold">Mode Pause - Détendez-vous!</span>
+              <span class="dark:text-green-400 light:text-green-700 font-semibold">{{ 'MAIN_DASHBOARD.TIMER_BREAK_MODE' | translate }}</span>
             </div>
           }
           
@@ -352,7 +343,7 @@
                     <span class="material-icons">remove</span>
                   </button>
                   <div class="px-4 sm:px-6 py-3 dark:bg-gray-800 light:bg-white border light:border-blue-300 rounded-xl shadow-sm light:shadow-blue-200/60 min-w-[130px]">
-                    <span class="text-xl sm:text-2xl font-bold dark:text-yellow-400 light:text-blue-700">{{ initialTimerMinutes() }} min</span>
+                    <span class="text-xl sm:text-2xl font-bold dark:text-yellow-400 light:text-blue-700">{{ initialTimerMinutes() }} {{ 'MAIN_DASHBOARD.TIMER_MINUTES' | translate }}</span>
                   </div>
                     <button (click)="adjustTimer(1)" 
                       class="w-10 h-10 dark:bg-gray-800 dark:hover:bg-gray-700 light:bg-white light:hover:bg-blue-50 border light:border-blue-300 rounded-lg flex items-center justify-center dark:text-white light:text-gray-800 transition-all duration-300 hover:scale-110 shadow-sm light:shadow-blue-200/60">
@@ -360,7 +351,7 @@
                   </button>
                 </div>
                 
-                <p class="dark:text-gray-400 light:text-gray-700 mb-4 font-medium">Sélectionnez une matière pour commencer</p>
+                <p class="dark:text-gray-400 light:text-gray-700 mb-4 font-medium">{{ 'MAIN_DASHBOARD.TIMER_START_PROMPT' | translate }}</p>
                 <div class="flex flex-wrap gap-2 justify-center">
                   @for (subject of subjects(); track subject._id) {
                     <button (click)="startTimer(subject)" 
@@ -395,10 +386,10 @@
           <div class="flex items-center justify-between mb-4">
             <h2 class="text-xl sm:text-2xl font-bold dark:bg-gradient-to-r dark:from-cyan-300 dark:to-cyan-500 light:bg-gradient-to-r light:from-cyan-600 light:to-blue-600 bg-clip-text text-transparent flex items-center gap-2">
               <span class="material-icons text-3xl">timelapse</span>
-              Chronomètre
+              {{ 'MAIN_DASHBOARD.CHRONO_TITLE' | translate }}
             </h2>
             <div class="text-xs px-2.5 py-1 rounded-full dark:bg-cyan-500/10 dark:text-cyan-300 light:bg-cyan-100 light:text-cyan-700 border dark:border-cyan-500/30 light:border-cyan-200">
-              Sans backend
+              {{ 'MAIN_DASHBOARD.CHRONO_NO_BACKEND' | translate }}
             </div>
           </div>
 
@@ -408,7 +399,7 @@
                 {{ formatChronometer(chronoElapsedSeconds()) }}
               </div>
               <div class="mt-1 text-xs dark:text-cyan-200/70 light:text-cyan-700/80">
-                Temps écoulé
+                {{ 'MAIN_DASHBOARD.CHRONO_ELAPSED' | translate }}
               </div>
             </div>
 
@@ -427,17 +418,17 @@
                       [class.light:hover:bg-slate-200]="chronoRunning()"
                       [class.light:text-cyan-700]="chronoRunning()">
                 <span class="material-icons text-lg">{{ chronoRunning() ? 'pause' : 'play_arrow' }}</span>
-                {{ chronoRunning() ? 'Pause' : 'Démarrer' }}
+                {{ chronoRunning() ? ('MAIN_DASHBOARD.CHRONO_PAUSE' | translate) : ('MAIN_DASHBOARD.CHRONO_START' | translate) }}
               </button>
 
               <button (click)="addChronoLap()" class="px-4 py-2 rounded-xl font-semibold dark:bg-indigo-500/20 dark:hover:bg-indigo-500/30 dark:text-indigo-300 light:bg-indigo-100 light:hover:bg-indigo-200 light:text-indigo-700 transition-all duration-300 flex items-center gap-2" [disabled]="chronoElapsedSeconds() === 0">
                 <span class="material-icons text-lg">flag</span>
-                Tour
+                {{ 'MAIN_DASHBOARD.CHRONO_LAP' | translate }}
               </button>
 
               <button (click)="resetChronometer()" class="px-4 py-2 rounded-xl font-semibold dark:bg-red-500/20 dark:hover:bg-red-500/30 dark:text-red-300 light:bg-red-100 light:hover:bg-red-200 light:text-red-700 transition-all duration-300 flex items-center gap-2" [disabled]="chronoElapsedSeconds() === 0">
                 <span class="material-icons text-lg">restart_alt</span>
-                Reset
+                {{ 'MAIN_DASHBOARD.CHRONO_RESET' | translate }}
               </button>
             </div>
           </div>
@@ -445,12 +436,12 @@
           @if (chronoLaps().length > 0) {
             <div class="mt-4 rounded-xl border dark:border-cyan-500/20 light:border-cyan-200/60 overflow-hidden">
               <div class="px-4 py-2 text-sm font-semibold dark:bg-cyan-500/10 dark:text-cyan-300 light:bg-cyan-100 light:text-cyan-700">
-                Tours enregistrés
+                {{ 'MAIN_DASHBOARD.CHRONO_SAVED_LAPS' | translate }}
               </div>
               <div class="max-h-40 overflow-y-auto divide-y dark:divide-cyan-500/10 light:divide-cyan-200/60">
                 @for (lap of chronoLaps(); track $index) {
                   <div class="px-4 py-2 flex items-center justify-between text-sm dark:bg-gray-900/40 light:bg-white/70">
-                    <span class="dark:text-gray-300 light:text-slate-700">Tour #{{ chronoLaps().length - $index }}</span>
+                    <span class="dark:text-gray-300 light:text-slate-700">{{ 'MAIN_DASHBOARD.CHRONO_LAP_NUM' | translate }}{{ chronoLaps().length - $index }}</span>
                     <div class="flex items-center gap-4">
                       <span class="font-mono dark:text-cyan-300 light:text-cyan-700">{{ formatChronometer(lap) }}</span>
                       <span class="font-mono text-xs dark:text-indigo-300 light:text-indigo-700">+{{ getChronoLapDuration($index) }}</span>
@@ -471,13 +462,13 @@
           <!-- Add Todo Button -->
           <button (click)="openTodoModal()" class="w-full py-3 dark:bg-yellow-500/10 dark:hover:bg-yellow-500/20 dark:border-yellow-500/30 light:bg-indigo-50 light:hover:bg-indigo-100 light:border-indigo-200 border rounded-xl dark:text-yellow-500 light:text-indigo-600 font-medium transition-all duration-300 mb-6 flex items-center justify-center gap-2 hover:scale-105 shadow-sm">
             <span class="material-icons text-xl">add_task</span>
-            Ajouter une tâche
+            {{ 'MAIN_DASHBOARD.ADD_TASK' | translate }}
           </button>
 
           <div class="flex items-center justify-between mb-4">
             <h2 class="text-xl font-bold dark:bg-gradient-to-r dark:from-yellow-400 dark:to-yellow-600 light:bg-gradient-to-r light:from-indigo-600 light:to-violet-600 bg-clip-text text-transparent flex items-center gap-2">
               <span class="material-icons">check_circle</span>
-              To-Do List
+              {{ 'MAIN_DASHBOARD.TODO_TITLE' | translate }}
             </h2>
           </div>
           
@@ -508,13 +499,13 @@
                     }
                     <div class="mt-1">
                       @if (todo.priority === 'urgent') {
-                        <span class="px-2 py-0.5 text-[10px] font-bold rounded-full dark:bg-purple-500/20 light:bg-rose-100 dark:text-purple-400 light:text-rose-700 animate-pulse inline-flex items-center gap-1"><span class="material-icons text-[10px] sm:text-xs">local_fire_department</span> Urgent</span>
+                        <span class="px-2 py-0.5 text-[10px] font-bold rounded-full dark:bg-purple-500/20 light:bg-rose-100 dark:text-purple-400 light:text-rose-700 animate-pulse inline-flex items-center gap-1"><span class="material-icons text-[10px] sm:text-xs">local_fire_department</span> {{ 'MAIN_DASHBOARD.TODO_URGENT' | translate }}</span>
                       } @else if (todo.priority === 'high') {
-                        <span class="px-2 py-0.5 text-[10px] font-bold rounded-full dark:bg-red-500/20 light:bg-orange-100 dark:text-red-400 light:text-orange-700">Haute</span>
+                        <span class="px-2 py-0.5 text-[10px] font-bold rounded-full dark:bg-red-500/20 light:bg-orange-100 dark:text-red-400 light:text-orange-700">{{ 'MAIN_DASHBOARD.TODO_HIGH' | translate }}</span>
                       } @else if (todo.priority === 'medium') {
-                        <span class="px-2 py-0.5 text-[10px] font-bold rounded-full dark:bg-yellow-500/20 light:bg-indigo-100 dark:text-yellow-400 light:text-indigo-700">Moyenne</span>
+                        <span class="px-2 py-0.5 text-[10px] font-bold rounded-full dark:bg-yellow-500/20 light:bg-indigo-100 dark:text-yellow-400 light:text-indigo-700">{{ 'MAIN_DASHBOARD.TODO_MEDIUM' | translate }}</span>
                       } @else {
-                        <span class="px-2 py-0.5 text-[10px] font-bold rounded-full dark:bg-green-500/20 light:bg-emerald-100 dark:text-green-400 light:text-emerald-700">Basse</span>
+                        <span class="px-2 py-0.5 text-[10px] font-bold rounded-full dark:bg-green-500/20 light:bg-emerald-100 dark:text-green-400 light:text-emerald-700">{{ 'MAIN_DASHBOARD.TODO_LOW' | translate }}</span>
                       }
                     </div>
                   </div>
@@ -532,7 +523,7 @@
             } @empty {
               <div class="dark:text-gray-500 light:text-slate-500 text-center py-8 text-sm flex flex-col items-center gap-2">
                 <span class="material-icons text-4xl opacity-50">task</span>
-                Aucune tâche
+                {{ 'MAIN_DASHBOARD.TODO_NO_TASKS' | translate }}
               </div>
             }
           </div>
@@ -547,20 +538,20 @@
     <div class="fixed inset-0 dark:bg-black/80 light:bg-black/60 backdrop-blur-sm flex items-start sm:items-center justify-center z-50 p-4 pt-8 sm:pt-4 overflow-y-auto" (click)="showSubjectModal.set(false)">
       <div class="dark:bg-gradient-to-br dark:from-gray-900 dark:to-black light:bg-white dark:border-yellow-500/20 light:border-2 light:border-indigo-300 rounded-2xl p-6 sm:p-8 max-w-md w-full dark:shadow-2xl light:shadow-2xl light:shadow-indigo-300/50 max-h-[85vh] overflow-y-auto my-auto" (click)="$event.stopPropagation()">
         <h3 class="text-2xl font-bold dark:bg-gradient-to-r dark:from-yellow-400 dark:to-yellow-600 light:bg-gradient-to-r light:from-blue-600 light:to-blue-700 bg-clip-text text-transparent mb-6">
-          {{ editingSubject() ? 'Modifier' : 'Ajouter' }} une matière
+          {{ (editingSubject() ? 'MAIN_DASHBOARD.EDIT_SUBJECT_TITLE' : 'MAIN_DASHBOARD.ADD_SUBJECT_TITLE') | translate }}
         </h3>
         
         <div class="space-y-4">
           <div>
-            <label class="text-sm font-semibold dark:text-gray-300 light:text-gray-800 block mb-2">Nom</label>
+            <label class="text-sm font-semibold dark:text-gray-300 light:text-gray-800 block mb-2">{{ 'MAIN_DASHBOARD.SUBJECT_NAME' | translate }}</label>
             <input type="text" 
                    [(ngModel)]="subjectForm.name"
-                   placeholder="Ex: Mathématiques"
+                   [placeholder]="'MAIN_DASHBOARD.SUBJECT_NAME_PH' | translate"
                    class="w-full px-4 py-3 dark:bg-black/50 light:bg-blue-50 dark:border-yellow-500/30 light:border-2 light:border-blue-300 rounded-xl dark:text-white light:text-gray-900 dark:placeholder-gray-500 light:placeholder-gray-500 focus:outline-none dark:focus:ring-2 dark:focus:ring-yellow-500 light:focus:ring-2 light:focus:ring-blue-500" />
           </div>
           
           <div>
-            <label class="text-sm font-semibold dark:text-gray-300 light:text-gray-700 block mb-2">Icône</label>
+            <label class="text-sm font-semibold dark:text-gray-300 light:text-gray-700 block mb-2">{{ 'MAIN_DASHBOARD.SUBJECT_ICON' | translate }}</label>
             <div class="grid grid-cols-6 gap-2">
               @for (icon of icons; track icon) {
                 <button type="button"
@@ -576,7 +567,7 @@
           </div>
           
           <div>
-            <label class="text-sm font-semibold dark:text-gray-300 light:text-gray-700 block mb-2">Couleur</label>
+            <label class="text-sm font-semibold dark:text-gray-300 light:text-gray-700 block mb-2">{{ 'MAIN_DASHBOARD.SUBJECT_COLOR' | translate }}</label>
             <div class="grid grid-cols-4 gap-3">
               @for (color of colors; track color) {
                 <button type="button"
@@ -599,7 +590,7 @@
             @if (subjectForm.color) {
               <div class="mt-3 p-3 rounded-lg dark:bg-gray-800 light:bg-blue-50 flex items-center gap-2">
                 <div class="w-8 h-8 rounded-lg" [style.background]="subjectForm.color"></div>
-                <span class="text-sm font-medium dark:text-gray-300 light:text-blue-700">Couleur sélectionnée</span>
+                <span class="text-sm font-medium dark:text-gray-300 light:text-blue-700">{{ 'MAIN_DASHBOARD.SELECTED_COLOR' | translate }}</span>
               </div>
             }
           </div>
@@ -607,10 +598,10 @@
         
         <div class="flex gap-3 mt-6">
           <button (click)="showSubjectModal.set(false)" class="flex-1 py-3 dark:bg-gray-800 dark:hover:bg-gray-700 light:bg-gray-200 light:hover:bg-gray-300 rounded-xl dark:text-white light:text-gray-900 font-semibold transition-all">
-            Annuler
+            {{ 'MAIN_DASHBOARD.CANCEL' | translate }}
           </button>
           <button (click)="saveSubject()" class="flex-1 py-3 dark:bg-gradient-to-r dark:from-yellow-400 dark:to-yellow-600 dark:hover:from-yellow-500 dark:hover:to-yellow-700 light:bg-gradient-to-r light:from-blue-500 light:to-blue-700 light:hover:from-blue-600 light:hover:to-blue-800 rounded-xl dark:text-black light:text-white font-semibold transition-all">
-            Enregistrer
+            {{ 'MAIN_DASHBOARD.SAVE' | translate }}
           </button>
         </div>
       </div>
@@ -622,34 +613,34 @@
     <div class="fixed inset-0 dark:bg-black/80 light:bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 overflow-y-auto" (click)="showTodoModal.set(false)">
       <div class="dark:bg-gradient-to-br dark:from-gray-900 dark:to-black light:bg-gradient-to-br light:from-white light:to-indigo-50/70 dark:border-yellow-500/20 light:border light:border-indigo-200/80 border rounded-2xl p-6 sm:p-8 max-w-md w-full dark:shadow-2xl light:shadow-2xl light:shadow-indigo-200/50 max-h-[92vh] overflow-y-auto" (click)="$event.stopPropagation()">
         <h3 class="text-2xl font-bold dark:bg-gradient-to-r dark:from-yellow-400 dark:to-yellow-600 light:bg-gradient-to-r light:from-indigo-600 light:to-violet-600 bg-clip-text text-transparent mb-6">
-          {{ editingTodo() ? 'Modifier la tâche' : 'Ajouter une tâche' }}
+          {{ (editingTodo() ? 'MAIN_DASHBOARD.EDIT_TODO_TITLE' : 'MAIN_DASHBOARD.ADD_TODO_TITLE') | translate }}
         </h3>
         
         <div class="space-y-4">
           <div>
-                 <label class="text-sm font-semibold dark:text-gray-300 light:text-slate-700 block mb-2">Titre</label>
+            <label class="text-sm font-semibold dark:text-gray-300 light:text-slate-700 block mb-2">{{ 'MAIN_DASHBOARD.TODO_TITLE_LABEL' | translate }}</label>
             <input type="text" 
                    [(ngModel)]="todoForm.title"
-                   placeholder="Ex: Réviser chapitre 3"
+                   [placeholder]="'MAIN_DASHBOARD.TODO_TITLE_PH' | translate"
                    class="w-full px-4 py-3 dark:bg-black/50 light:bg-white dark:border-yellow-500/30 light:border-indigo-200 border rounded-xl dark:text-white light:text-slate-900 dark:placeholder-gray-500 light:placeholder-slate-400 focus:outline-none dark:focus:ring-2 dark:focus:ring-yellow-500 light:focus:ring-2 light:focus:ring-indigo-500 light:shadow-inner" />
           </div>
           
           <div>
-                <label class="text-sm font-semibold dark:text-gray-300 light:text-slate-700 block mb-2">Priorité</label>
+            <label class="text-sm font-semibold dark:text-gray-300 light:text-slate-700 block mb-2">{{ 'MAIN_DASHBOARD.TODO_PRIORITY_LABEL' | translate }}</label>
             <select [(ngModel)]="todoForm.priority" 
                   class="w-full px-4 py-3 dark:bg-black/50 light:bg-white dark:border-yellow-500/30 light:border-indigo-200 border rounded-xl dark:text-white light:text-slate-900 focus:outline-none dark:focus:ring-2 dark:focus:ring-yellow-500 light:focus:ring-2 light:focus:ring-indigo-500">
-              <option value="low">Basse</option>
-              <option value="medium">Moyenne</option>
-              <option value="high">Haute</option>
-              <option value="urgent">Urgente</option>
+              <option value="low">{{ 'MAIN_DASHBOARD.TODO_LOW' | translate }}</option>
+              <option value="medium">{{ 'MAIN_DASHBOARD.TODO_MEDIUM' | translate }}</option>
+              <option value="high">{{ 'MAIN_DASHBOARD.TODO_HIGH' | translate }}</option>
+              <option value="urgent">{{ 'MAIN_DASHBOARD.TODO_URGENT' | translate }}</option>
             </select>
           </div>
           
           <div>
-            <label class="text-sm font-semibold dark:text-gray-300 light:text-slate-700 block mb-2">Matière (optionnel)</label>
+            <label class="text-sm font-semibold dark:text-gray-300 light:text-slate-700 block mb-2">{{ 'MAIN_DASHBOARD.TODO_SUBJECT_OPTIONAL' | translate }}</label>
             <select [(ngModel)]="todoForm.subjectId" 
                     class="w-full px-4 py-3 dark:bg-black/50 light:bg-white dark:border-yellow-500/30 light:border-indigo-200 border rounded-xl dark:text-white light:text-slate-900 focus:outline-none dark:focus:ring-2 dark:focus:ring-yellow-500 light:focus:ring-2 light:focus:ring-indigo-500">
-              <option value="">Aucune</option>
+              <option value="">{{ 'MAIN_DASHBOARD.NONE' | translate }}</option>
               @for (subject of subjects(); track subject._id) {
                 <option [value]="subject._id">{{ subject.name }}</option>
               }
@@ -659,10 +650,10 @@
         
         <div class="flex gap-3 mt-6">
           <button (click)="showTodoModal.set(false)" class="flex-1 py-3 dark:bg-gray-800 dark:hover:bg-gray-700 light:bg-slate-100 light:hover:bg-slate-200 rounded-xl dark:text-white light:text-slate-800 font-semibold transition-all">
-            Annuler
+            {{ 'MAIN_DASHBOARD.CANCEL' | translate }}
           </button>
           <button (click)="saveTodo()" class="flex-1 py-3 dark:bg-gradient-to-r dark:from-yellow-400 dark:to-yellow-600 dark:hover:from-yellow-500 dark:hover:to-yellow-700 light:bg-gradient-to-r light:from-indigo-500 light:to-violet-600 light:hover:from-indigo-600 light:hover:to-violet-700 rounded-xl dark:text-black light:text-white font-semibold transition-all">
-            {{ editingTodo() ? 'Modifier' : 'Ajouter' }}
+            {{ (editingTodo() ? 'MAIN_DASHBOARD.EDIT' : 'MAIN_DASHBOARD.ADD') | translate }}
           </button>
         </div>
       </div>
@@ -674,26 +665,26 @@
     <div class="fixed inset-0 dark:bg-black/80 light:bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 overflow-y-auto" (click)="showPlanModal.set(false)">
       <div class="dark:bg-gradient-to-br dark:from-gray-900 dark:to-black light:bg-white dark:border-yellow-500/20 light:border-blue-500/20 border rounded-2xl p-6 sm:p-8 max-w-2xl w-full dark:shadow-2xl light:shadow-2xl max-h-[92vh] overflow-y-auto" (click)="$event.stopPropagation()">
         <h3 class="text-2xl font-bold dark:bg-gradient-to-r dark:from-yellow-400 dark:to-yellow-600 light:bg-gradient-to-r light:from-blue-500 light:to-blue-700 bg-clip-text text-transparent mb-6 flex items-center gap-2">
-          <span class="material-icons text-3xl">calendar_today</span> Planifier ma journée
+          <span class="material-icons text-3xl">calendar_today</span> {{ 'MAIN_DASHBOARD.PLAN_TITLE' | translate }}
         </h3>
         
         <div class="mb-4 p-4 dark:bg-blue-500/10 light:bg-blue-500/10 dark:border-blue-500/30 light:border-blue-500/30 border rounded-xl">
           <div class="flex items-start gap-3">
             <span class="material-icons text-3xl dark:text-blue-400 light:text-blue-600">info</span>
             <div class="flex-1 text-sm dark:text-gray-300 light:text-gray-700">
-              <p class="font-semibold dark:text-blue-400 light:text-blue-600 mb-2 flex items-center gap-1"><span class="material-icons text-lg">lightbulb</span> Comment ça marche:</p>
+              <p class="font-semibold dark:text-blue-400 light:text-blue-600 mb-2 flex items-center gap-1"><span class="material-icons text-lg">lightbulb</span> {{ 'MAIN_DASHBOARD.PLAN_HOW_IT_WORKS' | translate }}</p>
               <ul class="space-y-1 list-none">
                 <li class="flex items-start gap-2">
                   <span class="dark:text-green-400 light:text-green-600"><span class="material-icons text-sm">check_circle</span></span>
-                  <span>Matières <strong class="dark:text-green-400 light:text-green-600">avec <span class="material-icons text-sm align-middle">calendar_today</span></strong>: Vous pouvez <strong>augmenter</strong> ou <strong>diminuer</strong> le temps</span>
+                  <span>{{ 'MAIN_DASHBOARD.PLAN_TIP_1' | translate }}</span>
                 </li>
                 <li class="flex items-start gap-2">
                   <span class="dark:text-blue-400 light:text-blue-600"><span class="material-icons text-sm">add_circle</span></span>
-                  <span>Matières <strong>sans sessions</strong>: Cliquez sur <strong class="dark:text-blue-400 light:text-blue-600">+</strong> pour créer des sessions dans le Calendrier</span>
+                  <span>{{ 'MAIN_DASHBOARD.PLAN_TIP_2' | translate }}</span>
                 </li>
                 <li class="flex items-start gap-2">
                   <span class="dark:text-yellow-400 light:text-orange-600"><span class="material-icons text-sm">calendar_today</span></span>
-                  <span>Dans le <strong>Calendrier</strong>, créez des sessions en glissant sur l'horaire désiré</span>
+                  <span>{{ 'MAIN_DASHBOARD.PLAN_TIP_3' | translate }}</span>
                 </li>
               </ul>
             </div>
@@ -714,15 +705,15 @@
                       <div [style.color]="subject.color" class="font-semibold">{{ subject.name }}</div>
                       @if (hasSubjectSessions(subject._id!)) {
                         <span class="px-2 py-0.5 text-xs font-semibold rounded-full dark:bg-green-500/20 light:bg-green-500/20 dark:text-green-400 light:text-green-600 flex items-center gap-1">
-                          <span class="material-icons text-xs">calendar_today</span> {{ getSubjectSessionCount(subject._id!) }} session(s)
+                          <span class="material-icons text-xs">calendar_today</span> {{ getSubjectSessionCount(subject._id!) }} {{ 'MAIN_DASHBOARD.SESSIONS' | translate }}
                         </span>
                       }
                     </div>
                     <div class="text-xs">
                       @if (hasSubjectSessions(subject._id!)) {
-                        <span class="dark:text-green-400 light:text-green-600"><span class="material-icons text-xs align-middle">check_circle</span> Peut augmenter ou diminuer</span>
+                        <span class="dark:text-green-400 light:text-green-600"><span class="material-icons text-xs align-middle">check_circle</span> {{ 'MAIN_DASHBOARD.PLAN_CAN_ADJUST' | translate }}</span>
                       } @else {
-                        <span class="dark:text-blue-400 light:text-blue-600"><span class="material-icons text-xs align-middle">calendar_today</span> Cliquez + pour créer dans le Calendrier</span>
+                        <span class="dark:text-blue-400 light:text-blue-600"><span class="material-icons text-xs align-middle">calendar_today</span> {{ 'MAIN_DASHBOARD.PLAN_CLICK_ADD' | translate }}</span>
                       }
                     </div>
                   </div>
@@ -750,7 +741,7 @@
                          class="w-20 px-3 py-2 dark:bg-black/50 light:bg-gray-200 dark:border-yellow-500/30 light:border-blue-500/30 border rounded-lg dark:text-white light:text-gray-900 text-center cursor-not-allowed" />
                   <button type="button"
                           (click)="incrementPlan(subject._id!)"
-                          [title]="!hasSubjectSessions(subject._id!) ? 'Cliquez pour créer des sessions dans le calendrier' : 'Augmenter le temps'"
+                          [title]="!hasSubjectSessions(subject._id!) ? ('MAIN_DASHBOARD.PLAN_CLICK_ADD' | translate) : ('MAIN_DASHBOARD.EDIT' | translate)"
                           class="w-10 h-10 rounded-lg font-bold transition-all relative group"
                           [class.dark:bg-yellow-500]="hasSubjectSessions(subject._id!)"
                           [class.dark:hover:bg-yellow-600]="hasSubjectSessions(subject._id!)"
@@ -776,13 +767,13 @@
           }
           
           @if (subjects().length === 0) {
-            <p class="dark:text-gray-500 light:text-gray-400 text-center py-8">Ajoutez d'abord des matières</p>
+            <p class="dark:text-gray-500 light:text-gray-400 text-center py-8">{{ 'MAIN_DASHBOARD.PLAN_ADD_SUBJECTS_FIRST' | translate }}</p>
           }
         </div>
         
         <div class="mt-6 p-4 dark:bg-yellow-500/10 light:bg-blue-500/10 dark:border-yellow-500/30 light:border-blue-500/30 border rounded-xl">
           <div class="flex items-center justify-between">
-            <span class="dark:text-yellow-400 light:text-blue-600 font-semibold">Total prévu:</span>
+            <span class="dark:text-yellow-400 light:text-blue-600 font-semibold">{{ 'MAIN_DASHBOARD.PLAN_TOTAL_PLANNED' | translate }}</span>
             <span class="text-2xl font-bold dark:bg-gradient-to-r dark:from-yellow-400 dark:to-yellow-600 light:bg-gradient-to-r light:from-blue-500 light:to-blue-700 bg-clip-text text-transparent">
               {{ formatTime(getTotalPlanMinutes()) }}
             </span>
@@ -791,10 +782,10 @@
         
         <div class="flex gap-3 mt-6">
           <button (click)="showPlanModal.set(false)" class="flex-1 py-3 dark:bg-gray-800 dark:hover:bg-gray-700 light:bg-gray-200 light:hover:bg-gray-300 rounded-xl dark:text-white light:text-gray-900 font-semibold transition-all">
-            Annuler
+            {{ 'MAIN_DASHBOARD.CANCEL' | translate }}
           </button>
           <button (click)="saveDayPlan()" class="flex-1 py-3 dark:bg-gradient-to-r dark:from-yellow-400 dark:to-yellow-600 dark:hover:from-yellow-500 dark:hover:to-yellow-700 light:bg-gradient-to-r light:from-blue-500 light:to-blue-700 light:hover:from-blue-600 light:hover:to-blue-800 rounded-xl dark:text-black light:text-white font-semibold transition-all flex items-center justify-center gap-2">
-            <span class="material-icons">save</span> Enregistrer le plan
+            <span class="material-icons">save</span> {{ 'MAIN_DASHBOARD.PLAN_SAVE_PLAN' | translate }}
           </button>
         </div>
       </div>
@@ -806,7 +797,7 @@
     <div class="fixed inset-0 dark:bg-black/80 light:bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 overflow-y-auto" (click)="showStatsModal.set(false)">
       <div class="dark:bg-gradient-to-br dark:from-gray-900 dark:to-black light:bg-white dark:border-yellow-500/20 light:border-blue-500/20 border rounded-2xl p-6 sm:p-8 max-w-4xl w-full dark:shadow-2xl light:shadow-2xl max-h-[92vh] overflow-y-auto" (click)="$event.stopPropagation()">
         <h3 class="text-2xl font-bold dark:bg-gradient-to-r dark:from-yellow-400 dark:to-yellow-600 light:bg-gradient-to-r light:from-blue-500 light:to-blue-700 bg-clip-text text-transparent mb-6 flex items-center gap-2">
-          <span class="material-icons text-3xl">bar_chart</span> Statistiques de la semaine
+          <span class="material-icons text-3xl">bar_chart</span> {{ 'MAIN_DASHBOARD.STATS_WEEK_TITLE' | translate }}
         </h3>
         
         <!-- Week Chart -->
@@ -830,7 +821,7 @@
 
         <!-- Subject Breakdown -->
         <div class="space-y-3">
-          <h4 class="text-lg font-semibold dark:text-yellow-400 light:text-blue-600 mb-4">Répartition par matière aujourd'hui</h4>
+          <h4 class="text-lg font-semibold dark:text-yellow-400 light:text-blue-600 mb-4">{{ 'MAIN_DASHBOARD.STATS_BREAKDOWN_TITLE' | translate }}</h4>
           @for (subjectTime of dayPlan()?.subjects || []; track $index) {
             @if (getSubjectById(getSubjectIdString(subjectTime.subjectId)); as subject) {
               <div class="p-4 dark:bg-gray-800/50 light:bg-gray-100/50 dark:border-gray-700 light:border-gray-300 border rounded-xl">
@@ -861,7 +852,7 @@
         
         <div class="flex gap-3 mt-6">
           <button (click)="showStatsModal.set(false)" class="flex-1 py-3 dark:bg-gradient-to-r dark:from-yellow-400 dark:to-yellow-600 dark:hover:from-yellow-500 dark:hover:to-yellow-700 light:bg-gradient-to-r light:from-blue-500 light:to-blue-700 light:hover:from-blue-600 light:hover:to-blue-800 rounded-xl dark:text-black light:text-white font-semibold transition-all">
-            Fermer
+            {{ 'MAIN_DASHBOARD.CLOSE' | translate }}
           </button>
         </div>
       </div>
@@ -873,7 +864,7 @@
     <div class="fixed inset-0 dark:bg-black/80 light:bg-black/60 backdrop-blur-sm flex items-start sm:items-center justify-center z-50 p-4 pt-6 sm:pt-4 overflow-y-auto" (click)="showTimerSettings.set(false)">
       <div class="dark:bg-gradient-to-br dark:from-gray-900 dark:to-black light:bg-white dark:border-yellow-500/20 light:border-indigo-200 border rounded-2xl p-5 sm:p-8 max-w-2xl w-full dark:shadow-2xl light:shadow-2xl max-h-[88vh] sm:max-h-[95vh] flex flex-col my-auto" (click)="$event.stopPropagation()">
         <h3 class="text-2xl font-bold dark:bg-gradient-to-r dark:from-yellow-400 dark:to-yellow-600 light:bg-gradient-to-r light:from-blue-500 light:to-blue-700 bg-clip-text text-transparent mb-4 sm:mb-6 flex items-center gap-2 shrink-0">
-          <span class="material-icons text-3xl">settings</span> Paramètres du Timer Pomodoro
+          <span class="material-icons text-3xl">settings</span> {{ 'MAIN_DASHBOARD.TIMER_SETTINGS_TITLE' | translate }}
         </h3>
         
         <div class="space-y-6 overflow-y-auto pr-1 sm:pr-2">
@@ -882,7 +873,7 @@
             <!-- Focus Duration -->
             <div class="p-4 dark:bg-gray-800/50 light:bg-gray-100 dark:border-gray-700 light:border-gray-300 border rounded-xl dark:hover:border-yellow-500/30 light:hover:border-blue-500/30 transition-all">
               <label class="text-sm font-semibold dark:text-yellow-400 light:text-blue-600 mb-3 flex items-center gap-2">
-                <span class="material-icons text-lg">target</span> Durée de Focus
+                <span class="material-icons text-lg">target</span> {{ 'MAIN_DASHBOARD.TIMER_FOCUS_LABEL' | translate }}
               </label>
               <div class="flex items-center gap-3 mb-2">
                 <input type="range" 
@@ -893,16 +884,16 @@
                        class="flex-1 h-2 dark:bg-gray-700 light:bg-gray-300 rounded-lg appearance-none cursor-pointer slider-thumb" />
                 <div class="px-3 py-1.5 dark:bg-yellow-500/20 light:bg-blue-500/20 dark:border-yellow-500/30 light:border-blue-500/30 border rounded-lg min-w-[70px] text-center">
                   <span class="text-xl font-bold dark:text-yellow-400 light:text-blue-600">{{ timerSettings.focusDuration }}</span>
-                  <span class="text-xs dark:text-gray-400 light:text-gray-600 ml-0.5">min</span>
+                  <span class="text-xs dark:text-gray-400 light:text-gray-600 ml-0.5">{{ 'MAIN_DASHBOARD.TIMER_MINUTES' | translate }}</span>
                 </div>
               </div>
-              <p class="text-xs dark:text-gray-400 light:text-gray-600">Session de travail concentré</p>
+              <p class="text-xs dark:text-gray-400 light:text-gray-600">{{ 'MAIN_DASHBOARD.TIMER_FOCUS_DESC' | translate }}</p>
             </div>
 
             <!-- Short Break -->
             <div class="p-4 dark:bg-gray-800/50 light:bg-gray-100 dark:border-gray-700 light:border-gray-300 border rounded-xl dark:hover:border-green-500/30 light:hover:border-green-500/30 transition-all">
               <label class="text-sm font-semibold dark:text-green-400 light:text-green-600 mb-3 flex items-center gap-2">
-                <span class="material-icons text-lg">coffee</span> Pause Courte
+                <span class="material-icons text-lg">coffee</span> {{ 'MAIN_DASHBOARD.TIMER_SHORT_BREAK_LABEL' | translate }}
               </label>
               <div class="flex items-center gap-3 mb-2">
                 <input type="range" 
@@ -913,16 +904,16 @@
                        class="flex-1 h-2 dark:bg-gray-700 light:bg-gray-300 rounded-lg appearance-none cursor-pointer" />
                 <div class="px-3 py-1.5 dark:bg-green-500/20 light:bg-green-500/20 dark:border-green-500/30 light:border-green-500/30 border rounded-lg min-w-[70px] text-center">
                   <span class="text-xl font-bold dark:text-green-400 light:text-green-600">{{ timerSettings.shortBreakDuration }}</span>
-                  <span class="text-xs dark:text-gray-400 light:text-gray-600 ml-0.5">min</span>
+                  <span class="text-xs dark:text-gray-400 light:text-gray-600 ml-0.5">{{ 'MAIN_DASHBOARD.TIMER_MINUTES' | translate }}</span>
                 </div>
               </div>
-              <p class="text-xs dark:text-gray-400 light:text-gray-600">Pause après chaque session</p>
+              <p class="text-xs dark:text-gray-400 light:text-gray-600">{{ 'MAIN_DASHBOARD.TIMER_SHORT_BREAK_DESC' | translate }}</p>
             </div>
 
             <!-- Long Break -->
             <div class="p-4 dark:bg-gray-800/50 light:bg-gray-100 dark:border-gray-700 light:border-gray-300 border rounded-xl dark:hover:border-purple-500/30 light:hover:border-purple-500/30 transition-all">
               <label class="text-sm font-semibold dark:text-purple-400 light:text-purple-600 mb-3 flex items-center gap-2">
-                <span class="material-icons text-lg">star</span> Pause Longue
+                <span class="material-icons text-lg">star</span> {{ 'MAIN_DASHBOARD.TIMER_LONG_BREAK_LABEL' | translate }}
               </label>
               <div class="flex items-center gap-3 mb-2">
                 <input type="range" 
@@ -933,16 +924,16 @@
                        class="flex-1 h-2 dark:bg-gray-700 light:bg-gray-300 rounded-lg appearance-none cursor-pointer" />
                 <div class="px-3 py-1.5 dark:bg-purple-500/20 light:bg-purple-500/20 dark:border-purple-500/30 light:border-purple-500/30 border rounded-lg min-w-[70px] text-center">
                   <span class="text-xl font-bold dark:text-purple-400 light:text-purple-600">{{ timerSettings.longBreakDuration }}</span>
-                  <span class="text-xs dark:text-gray-400 light:text-gray-600 ml-0.5">min</span>
+                  <span class="text-xs dark:text-gray-400 light:text-gray-600 ml-0.5">{{ 'MAIN_DASHBOARD.TIMER_MINUTES' | translate }}</span>
                 </div>
               </div>
-              <p class="text-xs dark:text-gray-400 light:text-gray-600">Pause après plusieurs sessions</p>
+              <p class="text-xs dark:text-gray-400 light:text-gray-600">{{ 'MAIN_DASHBOARD.TIMER_LONG_BREAK_DESC' | translate }}</p>
             </div>
 
             <!-- Sessions Before Long Break -->
             <div class="p-4 dark:bg-gray-800/50 light:bg-gray-100 dark:border-gray-700 light:border-gray-300 border rounded-xl dark:hover:border-blue-500/30 light:hover:border-blue-500/30 transition-all">
               <label class="text-sm font-semibold dark:text-blue-400 light:text-blue-600 mb-3 flex items-center gap-2">
-                <span class="material-icons text-lg">repeat</span> Sessions avant Pause Longue
+                <span class="material-icons text-lg">repeat</span> {{ 'MAIN_DASHBOARD.TIMER_SESS_BEFORE_LONG_LABEL' | translate }}
               </label>
               <div class="flex items-center gap-3 mb-2">
                 <input type="range" 
@@ -956,14 +947,14 @@
                   <span class="text-xs dark:text-gray-400 light:text-gray-600 ml-0.5">sess</span>
                 </div>
               </div>
-              <p class="text-xs dark:text-gray-400 light:text-gray-600">Nombre de sessions avant pause longue</p>
+              <p class="text-xs dark:text-gray-400 light:text-gray-600">{{ 'MAIN_DASHBOARD.TIMER_SESS_BEFORE_LONG_DESC' | translate }}</p>
             </div>
           </div>
 
           <!-- Session Goal - Full Width -->
           <div class="p-5 dark:bg-gradient-to-r dark:from-yellow-500/10 dark:to-yellow-600/10 light:bg-gradient-to-r light:from-blue-500/10 light:to-blue-600/10 dark:border-yellow-500/30 light:border-blue-500/30 border-2 rounded-xl dark:hover:border-yellow-500/50 light:hover:border-blue-500/50 transition-all">
             <label class="text-base font-bold dark:text-yellow-400 light:text-blue-600 mb-4 flex items-center gap-2">
-              <span class="material-icons">emoji_events</span> Objectif de Sessions Quotidiennes
+              <span class="material-icons">emoji_events</span> {{ 'MAIN_DASHBOARD.TIMER_DAILY_GOAL_LABEL' | translate }}
             </label>
             <div class="flex items-center gap-4">
               <input type="range" 
@@ -974,10 +965,10 @@
                      class="flex-1 h-3 dark:bg-gray-700 light:bg-gray-300 rounded-lg appearance-none cursor-pointer" />
               <div class="px-6 py-3 dark:bg-yellow-500/20 light:bg-blue-500/20 dark:border-yellow-500/40 light:border-blue-500/40 border-2 rounded-xl min-w-[100px] text-center">
                 <span class="text-3xl font-bold dark:text-yellow-400 light:text-blue-600">{{ currentSessionGoal() }}</span>
-                <span class="text-sm dark:text-gray-400 light:text-gray-600 ml-1">sessions</span>
+                <span class="text-sm dark:text-gray-400 light:text-gray-600 ml-1">{{ 'MAIN_DASHBOARD.SESSIONS' | translate }}</span>
               </div>
             </div>
-            <p class="text-sm dark:text-gray-400 light:text-gray-600 mt-3 flex items-center gap-1"><span class="material-icons text-sm">emoji_events</span> Combien de sessions Pomodoro voulez-vous compléter aujourd'hui?</p>
+            <p class="text-sm dark:text-gray-400 light:text-gray-600 mt-3 flex items-center gap-1"><span class="material-icons text-sm">emoji_events</span> {{ 'MAIN_DASHBOARD.TIMER_DAILY_GOAL_QUESTION' | translate }}</p>
           </div>
 
           <!-- Auto Start Options -->
@@ -985,7 +976,7 @@
             <div class="p-4 dark:bg-gray-800/50 light:bg-gray-100 dark:border-gray-700 light:border-gray-300 border rounded-xl">
               <label class="flex items-center justify-between cursor-pointer">
                 <span class="text-sm dark:text-gray-300 light:text-gray-700 flex items-center gap-2">
-                  <span class="material-icons text-lg">rocket_launch</span> Auto-démarrer les pauses
+                  <span class="material-icons text-lg">rocket_launch</span> {{ 'MAIN_DASHBOARD.TIMER_AUTO_START_BREAKS' | translate }}
                 </span>
                 <input type="checkbox" 
                        [(ngModel)]="timerSettings.autoStartBreaks"
@@ -996,7 +987,7 @@
             <div class="p-4 dark:bg-gray-800/50 light:bg-gray-100 dark:border-gray-700 light:border-gray-300 border rounded-xl">
               <label class="flex items-center justify-between cursor-pointer">
                 <span class="text-sm dark:text-gray-300 light:text-gray-700 flex items-center gap-2">
-                  <span class="material-icons text-lg">flash_on</span> Auto-démarrer le focus
+                  <span class="material-icons text-lg">flash_on</span> {{ 'MAIN_DASHBOARD.TIMER_AUTO_START_FOCUS' | translate }}
                 </span>
                 <input type="checkbox" 
                        [(ngModel)]="timerSettings.autoStartFocus"
@@ -1008,27 +999,27 @@
           <!-- YouTube Relaxation Audio URL -->
           <div class="p-5 dark:bg-gradient-to-r dark:from-purple-500/10 dark:to-pink-500/10 light:bg-gradient-to-r light:from-purple-500/10 light:to-pink-500/10 dark:border-purple-500/30 light:border-purple-500/30 border-2 rounded-xl dark:hover:border-purple-500/50 light:hover:border-purple-500/50 transition-all">
             <label class="text-base font-bold dark:text-purple-400 light:text-purple-600 mb-4 flex items-center gap-2">
-              <span class="material-icons">music_note</span> Audio de Relaxation YouTube
+              <span class="material-icons">music_note</span> {{ 'MAIN_DASHBOARD.TIMER_RELAX_AUDIO_LABEL' | translate }}
             </label>
             <div class="space-y-3">
               <div class="flex flex-col sm:flex-row gap-2">
                 <input 
                   type="text" 
                   [(ngModel)]="timerSettings.relaxationAudioUrl"
-                  placeholder="https://youtube.com/watch?v=..."
+                  [placeholder]="'MAIN_DASHBOARD.TIMER_RELAX_AUDIO_PH' | translate"
                   class="flex-1 px-4 py-3 dark:bg-gray-800 light:bg-white dark:border-purple-500/30 light:border-purple-500/30 border rounded-xl dark:text-white light:text-gray-900 dark:placeholder-gray-500 light:placeholder-gray-400 dark:focus:border-purple-500 light:focus:border-purple-500 focus:ring-2 dark:focus:ring-purple-500/20 light:focus:ring-purple-500/20 outline-none transition-all"
                 />
                 <button 
                   (click)="testYouTubeUrl()"
                   class="w-full sm:w-auto justify-center px-6 py-3 dark:bg-purple-600 dark:hover:bg-purple-700 light:bg-purple-500 light:hover:bg-purple-600 rounded-xl dark:text-white light:text-white font-semibold transition-all flex items-center gap-1">
-                  <span class="material-icons">search</span> Tester
+                  <span class="material-icons">search</span> {{ 'MAIN_DASHBOARD.TIMER_TEST' | translate }}
                 </button>
               </div>
               <p class="text-xs dark:text-gray-400 light:text-gray-600 flex items-center gap-1">
-                <span class="material-icons text-sm">headphones</span> Entrez un lien YouTube. L'audio sera joué en arrière-plan pendant vos pauses de relaxation.
+                <span class="material-icons text-sm">headphones</span> {{ 'MAIN_DASHBOARD.TIMER_RELAX_AUDIO_INFO' | translate }}
               </p>
               <div class="flex gap-2 text-xs dark:text-gray-500 light:text-gray-600">
-                <span>Exemples:</span>
+                <span>{{ 'MAIN_DASHBOARD.EXAMPLES' | translate }}</span>
                 <code class="px-2 py-1 dark:bg-gray-800 light:bg-gray-200 rounded">youtube.com/watch?v=ID</code>
                 <code class="px-2 py-1 dark:bg-gray-800 light:bg-gray-200 rounded">youtu.be/ID</code>
               </div>
@@ -1040,8 +1031,8 @@
             <div class="flex items-start gap-3">
               <span class="material-icons text-3xl dark:text-blue-400 light:text-blue-600">lightbulb</span>
               <div class="flex-1 text-sm dark:text-gray-300 light:text-gray-700">
-                <p class="font-semibold dark:text-blue-400 light:text-blue-600 mb-2">Technique Pomodoro</p>
-                <p>Travaillez par intervalles de focus intense suivis de courtes pauses. Cette méthode améliore la concentration et la productivité!</p>
+                <p class="font-semibold dark:text-blue-400 light:text-blue-600 mb-2">{{ 'MAIN_DASHBOARD.TIMER_TECHNIQUE_TITLE' | translate }}</p>
+                <p>{{ 'MAIN_DASHBOARD.TIMER_TECHNIQUE_DESC' | translate }}</p>
               </div>
             </div>
           </div>
@@ -1049,10 +1040,10 @@
         
         <div class="flex gap-3 mt-6 shrink-0">
           <button (click)="showTimerSettings.set(false)" class="flex-1 py-3 dark:bg-gray-800 dark:hover:bg-gray-700 light:bg-gray-200 light:hover:bg-gray-300 rounded-xl dark:text-white light:text-gray-900 font-semibold transition-all">
-            Annuler
+            {{ 'MAIN_DASHBOARD.CANCEL' | translate }}
           </button>
           <button (click)="saveTimerSettings()" class="flex-1 py-3 dark:bg-gradient-to-r dark:from-yellow-400 dark:to-yellow-600 dark:hover:from-yellow-500 dark:hover:to-yellow-700 light:bg-gradient-to-r light:from-blue-500 light:to-blue-700 light:hover:from-blue-600 light:hover:to-blue-800 rounded-xl dark:text-black light:text-white font-semibold transition-all flex items-center justify-center gap-2">
-            <span class="material-icons">save</span> Enregistrer
+            <span class="material-icons">save</span> {{ 'MAIN_DASHBOARD.SAVE' | translate }}
           </button>
         </div>
       </div>
@@ -1075,56 +1066,56 @@
           </div>
           
           <h3 class="text-2xl sm:text-4xl font-bold dark:bg-gradient-to-r dark:from-green-400 dark:to-blue-400 light:bg-gradient-to-r light:from-green-600 light:to-blue-600 bg-clip-text text-transparent mb-4">
-            Temps de Pause
+            {{ 'MAIN_DASHBOARD.RELAX_TITLE' | translate }}
           </h3>
           
           <!-- Audio Indicator -->
           @if (timerSettings.relaxationAudioUrl) {
             <div class="mb-4 flex items-center justify-center gap-2 dark:text-purple-400 light:text-purple-600">
               <span class="material-icons animate-pulse">music_note</span>
-              <span class="text-sm">Audio de relaxation en cours...</span>
+              <span class="text-sm">{{ 'MAIN_DASHBOARD.RELAX_AUDIO_PLAYING' | translate }}</span>
             </div>
           }
           
-          <p class="text-lg sm:text-2xl dark:text-gray-300 light:text-gray-700 mb-8">Détendez-vous et rechargez vos batteries</p>
+          <p class="text-lg sm:text-2xl dark:text-gray-300 light:text-gray-700 mb-8">{{ 'MAIN_DASHBOARD.RELAX_SUBTITLE' | translate }}</p>
           
           <!-- Break Timer Display -->
           <div class="mb-8 p-6 dark:bg-green-500/10 light:bg-green-500/10 dark:border-green-500/30 light:border-green-500/30 border rounded-2xl">
             <div class="text-5xl sm:text-7xl font-bold dark:bg-gradient-to-r dark:from-green-400 dark:to-blue-400 light:bg-gradient-to-r light:from-green-600 light:to-blue-600 bg-clip-text text-transparent">
               {{ timerMinutes().toString().padStart(2, '0') }}:{{ timerSeconds().toString().padStart(2, '0') }}
             </div>
-            <div class="text-sm dark:text-gray-400 light:text-gray-600 mt-2">Temps de pause restant</div>
+            <div class="text-sm dark:text-gray-400 light:text-gray-600 mt-2">{{ 'MAIN_DASHBOARD.RELAX_TIME_REMAINING' | translate }}</div>
           </div>
           
           <!-- Relaxation Tips -->
           <div class="grid grid-cols-2 gap-4 mb-8">
             <div class="p-4 dark:bg-blue-500/10 light:bg-blue-500/10 dark:border-blue-500/20 light:border-blue-500/20 border rounded-xl dark:hover:bg-blue-500/20 light:hover:bg-blue-500/20 transition-all">
               <div class="mb-2"><span class="material-icons text-4xl dark:text-blue-400 light:text-blue-600">water_drop</span></div>
-              <div class="text-sm dark:text-gray-300 light:text-gray-700">Buvez de l'eau</div>
+              <div class="text-sm dark:text-gray-300 light:text-gray-700">{{ 'MAIN_DASHBOARD.RELAX_TIP_DRINK' | translate }}</div>
             </div>
             <div class="p-4 dark:bg-green-500/10 light:bg-green-500/10 dark:border-green-500/20 light:border-green-500/20 border rounded-xl dark:hover:bg-green-500/20 light:hover:bg-green-500/20 transition-all">
               <div class="mb-2"><span class="material-icons text-4xl dark:text-green-400 light:text-green-600">directions_walk</span></div>
-              <div class="text-sm dark:text-gray-300 light:text-gray-700">Marchez un peu</div>
+              <div class="text-sm dark:text-gray-300 light:text-gray-700">{{ 'MAIN_DASHBOARD.RELAX_TIP_WALK' | translate }}</div>
             </div>
             <div class="p-4 dark:bg-purple-500/10 light:bg-purple-500/10 dark:border-purple-500/20 light:border-purple-500/20 border rounded-xl dark:hover:bg-purple-500/20 light:hover:bg-purple-500/20 transition-all">
               <div class="mb-2"><span class="material-icons text-4xl dark:text-purple-400 light:text-purple-600">visibility</span></div>
-              <div class="text-sm dark:text-gray-300 light:text-gray-700">Reposez vos yeux</div>
+              <div class="text-sm dark:text-gray-300 light:text-gray-700">{{ 'MAIN_DASHBOARD.RELAX_TIP_REST_EYES' | translate }}</div>
             </div>
             <div class="p-4 dark:bg-yellow-500/10 light:bg-yellow-500/10 dark:border-yellow-500/20 light:border-yellow-500/20 border rounded-xl dark:hover:bg-yellow-500/20 light:hover:bg-yellow-500/20 transition-all">
               <div class="mb-2"><span class="material-icons text-4xl dark:text-yellow-400 light:text-yellow-600">air</span></div>
-              <div class="text-sm dark:text-gray-300 light:text-gray-700">Respirez profondément</div>
+              <div class="text-sm dark:text-gray-300 light:text-gray-700">{{ 'MAIN_DASHBOARD.RELAX_TIP_BREATHE' | translate }}</div>
             </div>
           </div>
           
           <!-- Breathing Animation -->
           <div class="flex items-center justify-center gap-2 dark:text-gray-400 light:text-gray-600 text-sm">
             <div class="w-3 h-3 dark:bg-green-400 light:bg-green-600 rounded-full animate-ping"></div>
-            <span>Inspirez... Expirez... Détendez-vous</span>
+            <span>{{ 'MAIN_DASHBOARD.RELAX_BREATHE_IN_OUT' | translate }}</span>
             <div class="w-3 h-3 dark:bg-blue-400 light:bg-blue-600 rounded-full animate-ping animation-delay-1000"></div>
           </div>
           
           <button (click)="stopTimer()" class="mt-8 px-6 py-3 dark:bg-red-600/20 dark:hover:bg-red-600/30 light:bg-red-500/20 light:hover:bg-red-500/30 dark:border-red-500/30 light:border-red-500/30 border rounded-xl dark:text-red-400 light:text-red-600 font-semibold transition-all hover:scale-105 flex items-center gap-2 mx-auto">
-            <span class="material-icons">stop</span> Arrêter la pause
+            <span class="material-icons">stop</span> {{ 'MAIN_DASHBOARD.RELAX_STOP_BREAK' | translate }}
           </button>
         </div>
       </div>
@@ -1134,8 +1125,10 @@
   <!-- Footer -->
   <footer class="dark:bg-black/50 light:bg-white/50 dark:border-yellow-500/20 light:border-blue-500/20 border-t mt-16">
     <div class="container mx-auto px-4 py-6 text-center">
-      <p class="dark:text-gray-500 light:text-gray-600 text-sm flex items-center justify-center gap-1">Built with <span class="material-icons text-sm dark:text-red-400 light:text-red-500">favorite</span> using Angular 18 + MongoDB + Tailwind CSS</p>
-      <div class="mt-2 text-xs dark:text-yellow-500/60 light:text-blue-500/60">EduFocus © 2026 - Master Your Learning Journey</div>
+      <p class="dark:text-gray-500 light:text-gray-600 text-sm flex items-center justify-center gap-1">
+        {{ 'MAIN_DASHBOARD.BUILT_WITH' | translate }} <span class="material-icons text-sm dark:text-red-400 light:text-red-500">favorite</span> {{ 'MAIN_DASHBOARD.USING' | translate }} Angular 18 + MongoDB + Tailwind CSS
+      </p>
+      <div class="mt-2 text-xs dark:text-yellow-500/60 light:text-blue-500/60">{{ 'MAIN_DASHBOARD.FOOTER_TEXT' | translate }}</div>
     </div>
   </footer>
 </div>

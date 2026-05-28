@@ -4,12 +4,14 @@ import { RouterModule } from '@angular/router';
 import { StudyHubService } from '../../../services/study-hub.service';
 import { ThemeService } from '../../../services/theme.service';
 import { FormsModule } from '@angular/forms';
+import { TranslateModule } from '@ngx-translate/core';
+import { LanguageSwitcherComponent } from '../../shared/language-switcher/language-switcher.component';
 import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-study-hub-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule],
+  imports: [CommonModule, RouterModule, FormsModule, TranslateModule, LanguageSwitcherComponent],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css']
 })
