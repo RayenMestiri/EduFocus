@@ -1,0 +1,383 @@
+/* =============================================
+   PREMIUM STUDY HUB CARDS — Advanced CSS
+   ============================================= */
+
+/* ---- Staggered entrance animations ---- */
+@keyframes cardSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(28px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes shimmerSweep {
+  0%   { transform: translateX(-100%) skewX(-12deg); }
+  100% { transform: translateX(250%) skewX(-12deg); }
+}
+
+@keyframes pulseGlow {
+  0%, 100% { opacity: 0.5; }
+  50%       { opacity: 1; }
+}
+
+@keyframes borderFlow {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Stagger delays for grid items */
+.sh-card:nth-child(1)  { animation-delay: 0ms; }
+.sh-card:nth-child(2)  { animation-delay: 60ms; }
+.sh-card:nth-child(3)  { animation-delay: 120ms; }
+.sh-card:nth-child(4)  { animation-delay: 180ms; }
+.sh-card:nth-child(5)  { animation-delay: 240ms; }
+.sh-card:nth-child(6)  { animation-delay: 300ms; }
+.sh-card:nth-child(7)  { animation-delay: 360ms; }
+.sh-card:nth-child(8)  { animation-delay: 420ms; }
+.sh-card:nth-child(9)  { animation-delay: 480ms; }
+.sh-card:nth-child(10) { animation-delay: 540ms; }
+.sh-card:nth-child(11) { animation-delay: 600ms; }
+.sh-card:nth-child(12) { animation-delay: 660ms; }
+
+/* Base card */
+.sh-card {
+  position: relative;
+  border-radius: 20px;
+  overflow: hidden;
+  cursor: pointer;
+  animation: cardSlideUp 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+  transition:
+    transform 0.28s cubic-bezier(0.34, 1.56, 0.64, 1),
+    box-shadow 0.28s ease,
+    border-color 0.28s ease;
+  will-change: transform, box-shadow;
+}
+
+/* Shimmer sweep on hover */
+.sh-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    105deg,
+    transparent 40%,
+    rgba(255,255,255,0.18) 50%,
+    transparent 60%
+  );
+  transform: translateX(-100%) skewX(-12deg);
+  transition: none;
+  pointer-events: none;
+  z-index: 2;
+}
+.sh-card:hover::before {
+  animation: shimmerSweep 0.6s ease forwards;
+}
+
+/* Lift on hover */
+.sh-card:hover {
+  transform: translateY(-6px) scale(1.012);
+}
+
+/* =============================================
+   NOTE CARDS
+   ============================================= */
+.sh-note-card {
+  background: #ffffff;
+  border: 1.5px solid rgba(226,232,240,0.8);
+  box-shadow:
+    0 2px 8px rgba(79,70,229,0.04),
+    0 1px 2px rgba(0,0,0,0.04);
+}
+.sh-note-card:hover {
+  border-color: rgba(99,102,241,0.45);
+  box-shadow:
+    0 20px 48px rgba(79,70,229,0.13),
+    0 6px 16px rgba(79,70,229,0.07),
+    0 0 0 1px rgba(99,102,241,0.15);
+}
+
+/* Dark mode */
+:host-context(.dark) .sh-note-card,
+.dark .sh-note-card {
+  background: linear-gradient(145deg, #1e1b4b08, #1e293b);
+  border-color: rgba(99,102,241,0.18);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+:host-context(.dark) .sh-note-card:hover,
+.dark .sh-note-card:hover {
+  border-color: rgba(129,140,248,0.5);
+  box-shadow:
+    0 20px 48px rgba(99,102,241,0.15),
+    0 0 0 1px rgba(129,140,248,0.2);
+}
+
+/* Top accent bar */
+.sh-note-card .sh-card-accent {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #6366f1, #a78bfa, #818cf8);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+  border-radius: 20px 20px 0 0;
+}
+.sh-note-card:hover .sh-card-accent {
+  transform: scaleX(1);
+}
+
+/* =============================================
+   FLASHCARD CARDS
+   ============================================= */
+.sh-flash-card {
+  background: #ffffff;
+  border: 1.5px solid rgba(226,232,240,0.8);
+  box-shadow:
+    0 2px 8px rgba(168,85,247,0.04),
+    0 1px 2px rgba(0,0,0,0.04);
+}
+.sh-flash-card:hover {
+  border-color: rgba(168,85,247,0.45);
+  box-shadow:
+    0 20px 48px rgba(168,85,247,0.13),
+    0 6px 16px rgba(168,85,247,0.07),
+    0 0 0 1px rgba(168,85,247,0.2);
+}
+:host-context(.dark) .sh-flash-card,
+.dark .sh-flash-card {
+  background: linear-gradient(145deg, #1e1033, #1e293b);
+  border-color: rgba(168,85,247,0.18);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+:host-context(.dark) .sh-flash-card:hover,
+.dark .sh-flash-card:hover {
+  border-color: rgba(192,132,252,0.5);
+  box-shadow:
+    0 20px 48px rgba(168,85,247,0.2),
+    0 0 0 1px rgba(192,132,252,0.25);
+}
+.sh-flash-card .sh-card-accent {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #a855f7, #ec4899, #d946ef);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+  border-radius: 20px 20px 0 0;
+}
+.sh-flash-card:hover .sh-card-accent {
+  transform: scaleX(1);
+}
+
+/* Card number badge */
+.sh-flash-card .sh-card-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px; height: 28px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #a855f7, #7c3aed);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 900;
+  font-family: 'Inter', monospace;
+  flex-shrink: 0;
+  box-shadow: 0 4px 10px rgba(168,85,247,0.35);
+  letter-spacing: 0.02em;
+}
+
+/* =============================================
+   QCM / QUIZ CARDS
+   ============================================= */
+.sh-quiz-card {
+  background: #ffffff;
+  border: 1.5px solid rgba(226,232,240,0.8);
+  box-shadow:
+    0 2px 8px rgba(16,185,129,0.04),
+    0 1px 2px rgba(0,0,0,0.04);
+}
+.sh-quiz-card:hover {
+  border-color: rgba(16,185,129,0.45);
+  box-shadow:
+    0 20px 48px rgba(16,185,129,0.12),
+    0 6px 16px rgba(16,185,129,0.06),
+    0 0 0 1px rgba(16,185,129,0.18);
+}
+:host-context(.dark) .sh-quiz-card,
+.dark .sh-quiz-card {
+  background: linear-gradient(145deg, #052e1612, #1e293b);
+  border-color: rgba(16,185,129,0.18);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+:host-context(.dark) .sh-quiz-card:hover,
+.dark .sh-quiz-card:hover {
+  border-color: rgba(52,211,153,0.5);
+  box-shadow:
+    0 20px 48px rgba(16,185,129,0.18),
+    0 0 0 1px rgba(52,211,153,0.22);
+}
+.sh-quiz-card .sh-card-accent {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #10b981, #34d399, #6ee7b7);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+  border-radius: 20px 20px 0 0;
+}
+.sh-quiz-card:hover .sh-card-accent {
+  transform: scaleX(1);
+}
+
+/* =============================================
+   CARD INNER ELEMENTS
+   ============================================= */
+
+/* Floating action button on hover */
+.sh-card .sh-card-actions {
+  opacity: 0;
+  transform: translateY(4px);
+  transition: opacity 0.22s ease, transform 0.22s ease;
+}
+.sh-card:hover .sh-card-actions {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Gradient icon container */
+.sh-icon-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  flex-shrink: 0;
+}
+.sh-icon-wrap-note {
+  background: linear-gradient(135deg, rgba(99,102,241,0.12), rgba(129,140,248,0.08));
+  color: #6366f1;
+}
+.dark .sh-icon-wrap-note {
+  background: linear-gradient(135deg, rgba(99,102,241,0.2), rgba(129,140,248,0.12));
+  color: #a5b4fc;
+}
+
+/* Pinned state glow */
+.sh-pin-active {
+  color: #f59e0b;
+  filter: drop-shadow(0 0 6px rgba(245,158,11,0.6));
+}
+
+/* Correct answer option highlight */
+.sh-correct-option {
+  background: linear-gradient(135deg, rgba(16,185,129,0.08), rgba(52,211,153,0.05));
+  border-color: rgba(16,185,129,0.5) !important;
+  color: #065f46;
+}
+.dark .sh-correct-option {
+  background: linear-gradient(135deg, rgba(16,185,129,0.12), rgba(52,211,153,0.06));
+  border-color: rgba(52,211,153,0.4) !important;
+  color: #6ee7b7;
+}
+
+/* Tag chips */
+.sh-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  background: rgba(99,102,241,0.08);
+  color: #4f46e5;
+  border: 1px solid rgba(99,102,241,0.18);
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+.sh-tag:hover { background: rgba(99,102,241,0.15); transform: scale(1.05); }
+.dark .sh-tag {
+  background: rgba(129,140,248,0.12);
+  color: #a5b4fc;
+  border-color: rgba(129,140,248,0.22);
+}
+
+/* Section label text */
+.sh-section-label {
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+/* Flashcard divider with gradient */
+.sh-fc-divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(168,85,247,0.25), transparent);
+  margin: 0 1rem;
+}
+
+/* =============================================
+   GRID LAYOUT
+   ============================================= */
+.sh-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+  gap: 1.5rem;
+}
+@media (max-width: 768px) {
+  .sh-cards-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+}
+
+/* =============================================
+   SELECTION MODE ANIMATIONS
+   ============================================= */
+
+@keyframes checkboxPop {
+  0%   { transform: scale(0) rotate(-20deg); opacity: 0; }
+  60%  { transform: scale(1.2) rotate(5deg);  opacity: 1; }
+  100% { transform: scale(1)   rotate(0deg);  opacity: 1; }
+}
+
+@keyframes floatingBarUp {
+  from { transform: translateY(100%); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+
+@keyframes selectedPulse {
+  0%,100% { box-shadow: 0 0 0 0 rgba(239,68,68,0.35); }
+  50%     { box-shadow: 0 0 0 6px rgba(239,68,68,0);  }
+}
+
+.sh-checkbox-overlay {
+  animation: checkboxPop 0.3s cubic-bezier(0.34,1.56,0.64,1) both;
+}
+
+.sh-floating-bar {
+  animation: floatingBarUp 0.35s cubic-bezier(0.34,1.56,0.64,1) both;
+}
+
+/* When a card is selected */
+.sh-card.selected {
+  transform: scale(0.97) !important;
+  border-color: rgba(239,68,68,0.5) !important;
+  box-shadow: 0 0 0 2px rgba(239,68,68,0.4), 0 8px 24px rgba(239,68,68,0.12) !important;
+  animation: selectedPulse 1s ease;
+}
+
+/* Optional dimming for unselected cards when selecting (requires parent class) */
+.selecting .sh-card:not(.selected) {
+  opacity: 0.65;
+  transform: scale(0.99);
+}

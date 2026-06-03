@@ -13,7 +13,8 @@ import Swal from 'sweetalert2';
   selector: 'app-qcm-quiz-mode',
   standalone: true,
   imports: [CommonModule, RouterModule, FormsModule, TranslateModule, LanguageSwitcherComponent],
-  templateUrl: './qcm-quiz-mode.component.html'
+  templateUrl: './qcm-quiz-mode.component.html',
+  styleUrl: './qcm-quiz-mode.component.css'
 })
 export class QcmQuizModeComponent implements OnInit, OnDestroy {
   studyHubService = inject(StudyHubService);
@@ -71,7 +72,7 @@ export class QcmQuizModeComponent implements OnInit, OnDestroy {
   bookmarkedIds = signal<Set<string>>(new Set());
 
   // Registry of answered questions: { [qId]: { selected, hasAnswered, isCorrect } }
-  userAnswers = signal<Record<string, { selected: string | number; hasAnswered: boolean; isCorrect: boolean }>>({});
+  userAnswers = signal<Record<string, { selected: string | number; hasAnswered: boolean; isCorrect: boolean } | undefined>>({});
 
   // Dynamic list of unique topics derived from pack
   topics = computed(() => {
@@ -292,7 +293,7 @@ export class QcmQuizModeComponent implements OnInit, OnDestroy {
     } else {
       if (this.selectedAnswer() === null) return;
       answerVal = this.selectedAnswer()!;
-      isCorrect = String(answerVal) === String(this.currentQuestion.correctAnswer);
+      isCorrect = String(answerVal).trim().toLowerCase() === String(this.currentQuestion.correctAnswer).trim().toLowerCase();
     }
 
     // Commit to registry
@@ -424,15 +425,17 @@ export class QcmQuizModeComponent implements OnInit, OnDestroy {
       );
     }
 
-    const answers = Object.entries(this.userAnswers()).map(([qId, ans]) => {
-      const q = this.pack?.qcm.find(item => item.id === qId);
-      return {
-        questionId: qId,
-        selectedAnswer: String(ans.selected),
-        isCorrect: ans.isCorrect,
-        topic: q?.topic || 'General'
-      };
-    });
+    const answers = Object.entries(this.userAnswers())
+      .filter(([_, ans]) => ans !== undefined)
+      .map(([qId, ans]) => {
+        const q = this.pack?.qcm.find(item => item.id === qId);
+        return {
+          questionId: qId,
+          selectedAnswer: String(ans!.selected),
+          isCorrect: ans!.isCorrect,
+          topic: q?.topic || 'General'
+        };
+      });
 
     if (this.pack) {
       this.studyHubService.saveQuizAttempt(this.pack.id, {

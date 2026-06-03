@@ -14,6 +14,7 @@ import Swal from 'sweetalert2';
   standalone: true,
   imports: [CommonModule, RouterModule, FormsModule, TranslateModule, LanguageSwitcherComponent],
   templateUrl: './study-pack-detail.component.html',
+  styleUrl: './study-pack-detail.component.css',
 })
 export class StudyPackDetailComponent implements OnInit {
   studyHubService = inject(StudyHubService);
@@ -105,6 +106,98 @@ export class StudyPackDetailComponent implements OnInit {
 
   activeTab = signal<'notes' | 'flashcards' | 'quiz' | 'cheatsheets' | 'exercises'>('notes');
 
+  // ── Selection mode ──────────────────────────────────────────────────────────
+  isSelecting = signal(false);
+  selectedIds = signal<Set<string>>(new Set());
+
+
+
+  toggleSelectionMode() {
+    this.isSelecting.update(v => !v);
+    this.selectedIds.set(new Set());
+  }
+
+  exitSelectionMode() {
+    this.isSelecting.set(false);
+    this.selectedIds.set(new Set());
+  }
+
+  toggleItemSelection(id: string, event: Event) {
+    event.preventDefault();
+    event.stopPropagation();
+    this.selectedIds.update(set => {
+      const next = new Set(set);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }
+
+  isItemSelected(id: string): boolean {
+    return this.selectedIds().has(id);
+  }
+
+  selectAllItems() {
+    const currentPack = this.pack();
+    if (!currentPack) return;
+    const tab = this.activeTab();
+    let ids: string[] = [];
+    if (tab === 'notes') ids = currentPack.notes?.map(n => n.id) || [];
+    else if (tab === 'flashcards') ids = currentPack.flashcards?.map(f => f.id) || [];
+    else if (tab === 'quiz') ids = currentPack.qcm?.map(q => q.id) || [];
+    else if (tab === 'cheatsheets') ids = currentPack.cheatsheets?.map(c => c.id) || [];
+    else if (tab === 'exercises') ids = currentPack.exercises?.map(e => e.id) || [];
+    this.selectedIds.set(new Set(ids));
+  }
+
+  deselectAllItems() {
+    this.selectedIds.set(new Set());
+  }
+
+  allSelected(): boolean {
+    const currentPack = this.pack();
+    if (!currentPack) return false;
+    const tab = this.activeTab();
+    let len = 0;
+    if (tab === 'notes') len = currentPack.notes?.length || 0;
+    else if (tab === 'flashcards') len = currentPack.flashcards?.length || 0;
+    else if (tab === 'quiz') len = currentPack.qcm?.length || 0;
+    else if (tab === 'cheatsheets') len = currentPack.cheatsheets?.length || 0;
+    else if (tab === 'exercises') len = currentPack.exercises?.length || 0;
+    return len > 0 && this.selectedIds().size === len;
+  }
+
+  selectedCount(): number {
+    return this.selectedIds().size;
+  }
+
+  async deleteSelectedItems() {
+    const count = this.selectedCount();
+    if (count === 0) return;
+
+    const confirm = await this.confirmDelete(`Supprimer ${count} élément(s) ?`, 'Cette action est irréversible.');
+    if (!confirm) return;
+
+    const currentPack = this.pack();
+    if (!currentPack) return;
+
+    const tab = this.activeTab();
+    const idsToRemove = this.selectedIds();
+    const updates: Partial<StudyPack> = {};
+
+    if (tab === 'notes') updates.notes = currentPack.notes?.filter(n => !idsToRemove.has(n.id));
+    else if (tab === 'flashcards') updates.flashcards = currentPack.flashcards?.filter(f => !idsToRemove.has(f.id));
+    else if (tab === 'quiz') updates.qcm = currentPack.qcm?.filter(q => !idsToRemove.has(q.id));
+    else if (tab === 'cheatsheets') updates.cheatsheets = currentPack.cheatsheets?.filter(c => !idsToRemove.has(c.id));
+    else if (tab === 'exercises') updates.exercises = currentPack.exercises?.filter(e => !idsToRemove.has(e.id));
+
+    this.studyHubService.updatePack(currentPack.id, updates, () => {
+      this.showToast(`${count} élément(s) supprimé(s) !`, 'success');
+      this.exitSelectionMode();
+    });
+  }
+
+
   viewingNote = signal<Note | null>(null);
   viewingQuiz = signal<QCM | null>(null);
 
@@ -189,7 +282,30 @@ export class StudyPackDetailComponent implements OnInit {
   hoveredIndex = signal<number | null>(null);
   hoveredCopyIndex = signal<number | null>(null);
   quizAttempts = signal<QuizAttempt[]>([]);
+  showShareModal = signal(false);
   String = String;
+
+  toggleShare() {
+    const currentPack = this.pack();
+    if (!currentPack) return;
+    const newIsPublic = !currentPack.isPublic;
+    this.studyHubService.updatePack(currentPack.id, { isPublic: newIsPublic }, () => {
+      this.showToast(newIsPublic ? 'Le pack est désormais public !' : 'Le pack est désormais privé !', 'success');
+    });
+  }
+
+  getShareLink(): string {
+    const currentPack = this.pack();
+    if (!currentPack) return '';
+    return `${window.location.origin}/study-hub/share/${currentPack.id}`;
+  }
+
+  copyShareLink() {
+    const link = this.getShareLink();
+    navigator.clipboard.writeText(link).then(() => {
+      this.showToast('Lien de partage copié !', 'success');
+    });
+  }
 
   ngOnInit() {
     const id = this.route.snapshot.paramMap.get('id');
@@ -460,6 +576,7 @@ export class StudyPackDetailComponent implements OnInit {
 
   selectTab(tab: 'notes' | 'flashcards' | 'quiz' | 'cheatsheets' | 'exercises') {
     this.activeTab.set(tab);
+    this.exitSelectionMode();
     if (tab === 'quiz') {
       this.loadQuizAttempts();
     }
@@ -844,17 +961,42 @@ export class StudyPackDetailComponent implements OnInit {
     try {
       const parsed = JSON.parse(this.quizImportData);
       if (Array.isArray(parsed)) {
-        const validatedQcms: QCM[] = parsed.map(q => ({
-          id: q.id || crypto.randomUUID(),
-          question: q.question || 'New Question?',
-          type: q.type || 'multiple-choice',
-          options: Array.isArray(q.options) ? q.options : undefined,
-          correctAnswer: q.correctAnswer !== undefined ? q.correctAnswer : '',
-          explanation: q.explanation || undefined,
-          trapNote: q.trapNote || undefined,
-          topic: q.topic || undefined,
-          createdAt: new Date()
-        }));
+        const validatedQcms: QCM[] = parsed.map(q => {
+          let correctAnswer = q.correctAnswer !== undefined ? q.correctAnswer : '';
+          
+          // Normalize correctAnswer for multiple-choice (ensure it's a number if it represents a number)
+          if (q.type === 'multiple-choice') {
+            if (typeof correctAnswer === 'string' && !isNaN(Number(correctAnswer.trim())) && correctAnswer.trim() !== '') {
+              correctAnswer = Number(correctAnswer.trim());
+            }
+          }
+          
+          // Normalize correctAnswer for true-false (ensure it's 'True' or 'False')
+          if (q.type === 'true-false') {
+            if (typeof correctAnswer === 'boolean') {
+              correctAnswer = correctAnswer ? 'True' : 'False';
+            } else if (typeof correctAnswer === 'string') {
+              const lower = correctAnswer.trim().toLowerCase();
+              if (lower === 'true' || lower === 'vrai') {
+                correctAnswer = 'True';
+              } else if (lower === 'false' || lower === 'faux') {
+                correctAnswer = 'False';
+              }
+            }
+          }
+
+          return {
+            id: q.id || crypto.randomUUID(),
+            question: q.question || 'New Question?',
+            type: q.type || 'multiple-choice',
+            options: Array.isArray(q.options) ? q.options : undefined,
+            correctAnswer,
+            explanation: q.explanation || undefined,
+            trapNote: q.trapNote || undefined,
+            topic: q.topic || undefined,
+            createdAt: new Date()
+          };
+        });
 
         const updatedQcms = [...(currentPack.qcm || []), ...validatedQcms];
         this.studyHubService.updatePack(currentPack.id, { qcm: updatedQcms });

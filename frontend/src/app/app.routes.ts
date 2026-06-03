@@ -10,6 +10,7 @@ import { StudyPackFormComponent } from './components/study-hub/study-pack/form/s
 import { StudyPackDetailComponent } from './components/study-hub/study-pack/detail/study-pack-detail.component';
 import { FlashcardsStudyModeComponent } from './components/study-hub/flashcards/study-mode/flashcards-study-mode.component';
 import { QcmQuizModeComponent } from './components/study-hub/qcm/quiz-mode/qcm-quiz-mode.component';
+import { StudyPackShareComponent } from './components/study-hub/study-pack/share/study-pack-share.component';
 import { authGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
@@ -22,6 +23,7 @@ export const routes: Routes = [
   { path: 'study-hub', component: StudyHubDashboardComponent, canActivate: [authGuard] },
   { path: 'study-hub/new', component: StudyPackFormComponent, canActivate: [authGuard] },
   { path: 'study-hub/edit/:id', component: StudyPackFormComponent, canActivate: [authGuard] },
+  { path: 'study-hub/share/:id', component: StudyPackShareComponent },
   { path: 'study-hub/:id', component: StudyPackDetailComponent, canActivate: [authGuard] },
   { path: 'study-hub/:packId/flashcards', component: FlashcardsStudyModeComponent, canActivate: [authGuard] },
   { path: 'study-hub/:packId/quiz', component: QcmQuizModeComponent, canActivate: [authGuard] },

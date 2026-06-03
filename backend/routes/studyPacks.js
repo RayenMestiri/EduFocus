@@ -5,7 +5,25 @@ const StudyPack = require('../models/StudyPack');
 const QuizAttempt = require('../models/QuizAttempt');
 const { protect } = require('../middleware/auth');
 
-// Protect all routes
+// ============================================================
+// PUBLIC ROUTES (no auth required)
+// ============================================================
+
+// @desc    Get a public study pack by ID
+// @route   GET /api/study-packs/public/:id
+router.get('/public/:id', async (req, res) => {
+  try {
+    const pack = await StudyPack.findById(req.params.id);
+    if (!pack || !pack.isPublic) {
+      return res.status(404).json({ success: false, message: 'Pack d\'étude public non trouvé ou privé' });
+    }
+    res.json({ success: true, data: pack });
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Erreur lors de la récupération du pack public', error: error.message });
+  }
+});
+
+// Protect all other routes
 router.use(protect);
 
 // ============================================================
@@ -142,9 +160,118 @@ router.post('/import', async (req, res) => {
   }
 });
 
+// @desc    Clone a public study pack to user's library
+// @route   POST /api/study-packs/clone/:id
+router.post('/clone/:id', async (req, res) => {
+  try {
+    const originalPack = await StudyPack.findById(req.params.id);
+    if (!originalPack) {
+      return res.status(404).json({ success: false, message: 'Pack d\'étude d\'origine non trouvé' });
+    }
+
+    // Only allow cloning if it is public OR if the current user is the owner
+    if (!originalPack.isPublic && originalPack.user.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ success: false, message: 'Vous n\'avez pas la permission de cloner ce pack d\'étude privé' });
+    }
+
+    // Deep copy notes, flashcards, QCMs, cheatsheets, and exercises with new UUIDs
+    const notes = (originalPack.notes || []).map(n => ({
+      id: crypto.randomUUID(),
+      title: n.title,
+      content: n.content,
+      tags: n.tags,
+      isPinned: false,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    }));
+
+    const flashcards = (originalPack.flashcards || []).map(f => ({
+      id: crypto.randomUUID(),
+      front: f.front,
+      back: f.back,
+      code: f.code,
+      difficulty: null,
+      createdAt: new Date()
+    }));
+
+    const qcm = (originalPack.qcm || []).map(q => ({
+      id: crypto.randomUUID(),
+      question: q.question,
+      type: q.type,
+      options: q.options,
+      correctAnswer: q.correctAnswer,
+      explanation: q.explanation,
+      trapNote: q.trapNote,
+      topic: q.topic,
+      createdAt: new Date()
+    }));
+
+    const cheatsheets = (originalPack.cheatsheets || []).map(cs => ({
+      id: crypto.randomUUID(),
+      title: cs.title,
+      category: cs.category,
+      items: (cs.items || []).map(item => ({ key: item.key, value: item.value })),
+      codeSample: cs.codeSample,
+      createdAt: new Date()
+    }));
+
+    const exercises = (originalPack.exercises || []).map(ex => ({
+      id: crypto.randomUUID(),
+      title: ex.title,
+      description: ex.description,
+      schemaContext: ex.schemaContext,
+      task: ex.task,
+      correctSolution: ex.correctSolution,
+      solutionNote: ex.solutionNote,
+      createdAt: new Date()
+    }));
+
+    const clonedPack = await StudyPack.create({
+      user: req.user._id,
+      title: originalPack.title,
+      subject: originalPack.subject,
+      description: originalPack.description || '',
+      notes,
+      flashcards,
+      qcm,
+      cheatsheets,
+      exercises,
+      progress: 0,
+      streak: 0,
+      isPublic: false
+    });
+
+    res.status(201).json({ success: true, data: clonedPack });
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Erreur lors du clonage du pack', error: error.message });
+  }
+});
+
 // ============================================================
 // DYNAMIC /:id ROUTES — come after all static routes
 // ============================================================
+
+// @desc    Bulk delete multiple study packs
+// @route   DELETE /api/study-packs/bulk
+router.delete('/bulk', async (req, res) => {
+  try {
+    const { ids } = req.body;
+    if (!Array.isArray(ids) || ids.length === 0) {
+      return res.status(400).json({ success: false, message: 'Veuillez fournir une liste d\'IDs à supprimer.' });
+    }
+
+    // Only delete packs that belong to the current user
+    const result = await StudyPack.deleteMany({ _id: { $in: ids }, user: req.user._id });
+
+    // Cascade delete quiz attempts for all deleted packs
+    await QuizAttempt.deleteMany({ pack: { $in: ids }, user: req.user._id });
+
+    res.json({ success: true, message: `${result.deletedCount} pack(s) supprimé(s) avec succès.`, deletedCount: result.deletedCount });
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Erreur lors de la suppression des packs', error: error.message });
+  }
+});
+
 
 // @desc    Get a single study pack by ID
 // @route   GET /api/study-packs/:id
@@ -169,13 +296,14 @@ router.put('/:id', async (req, res) => {
       return res.status(404).json({ success: false, message: 'Pack d\'étude non trouvé' });
     }
 
-    const { title, subject, description, progress, streak, notes, flashcards, qcm, cheatsheets, exercises } = req.body;
+    const { title, subject, description, progress, streak, isPublic, notes, flashcards, qcm, cheatsheets, exercises } = req.body;
 
     if (title !== undefined) pack.title = title;
     if (subject !== undefined) pack.subject = subject;
     if (description !== undefined) pack.description = description;
     if (progress !== undefined) pack.progress = progress;
     if (streak !== undefined) pack.streak = streak;
+    if (isPublic !== undefined) pack.isPublic = isPublic;
 
     // Normalize sub-arrays to strip Mongoose internal fields and ensure clean IDs
     if (notes !== undefined) {

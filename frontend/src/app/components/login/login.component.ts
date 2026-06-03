@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterModule } from '@angular/router';
+import { Router, RouterModule, ActivatedRoute } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import Swal from 'sweetalert2';
 
@@ -27,7 +27,8 @@ export class LoginComponent {
 
   constructor(
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private route: ActivatedRoute
   ) {}
 
   get passwordStrength(): { score: number; label: string; color: string } {
@@ -51,7 +52,8 @@ export class LoginComponent {
     this.authService.login(this.email, this.password).subscribe({
       next: () => {
         Swal.fire({ icon: 'success', title: 'Bienvenue !', text: 'Connexion réussie', background: '#0d0900', color: '#fbbf24', confirmButtonColor: '#f59e0b', timer: 1400, showConfirmButton: false });
-        this.router.navigate(['/dashboard']);
+        const redirectUrl = this.route.snapshot.queryParams['redirect'] || '/dashboard';
+        this.router.navigateByUrl(redirectUrl);
       },
       error: (err) => {
         this.isLoading = false;

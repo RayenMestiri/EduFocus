@@ -19,6 +19,9 @@ export class StudyHubService {
   // Computed views
   public studyPacks = computed(() => this.studyPacksSignal());
   public totalPacks = computed(() => this.studyPacksSignal().length);
+  public totalNotes = computed(() => this.studyPacksSignal().reduce((s, p) => s + (p.notes?.length || 0), 0));
+  public totalFlashcards = computed(() => this.studyPacksSignal().reduce((s, p) => s + (p.flashcards?.length || 0), 0));
+  public totalQcms = computed(() => this.studyPacksSignal().reduce((s, p) => s + (p.qcm?.length || 0), 0));
   public recentPacks = computed(() => {
     return [...this.studyPacksSignal()]
       .sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime())
@@ -143,6 +146,24 @@ export class StudyHubService {
       });
   }
 
+  public bulkDeletePacks(ids: string[], callback?: () => void): void {
+    if (!ids.length) return;
+
+    // Optimistic local removal
+    this.studyPacksSignal.update(packs => packs.filter(p => !ids.includes(p.id)));
+
+    this.http.delete<{ success: boolean; deletedCount: number }>(`${this.apiUrl}/bulk`, { body: { ids } })
+      .subscribe({
+        next: (res) => {
+          if (res?.success && callback) callback();
+        },
+        error: (err) => {
+          console.error('[StudyHub] Failed to bulk delete packs:', err);
+          this.refreshPacks(); // restore on error
+        }
+      });
+  }
+
   // ─── Quiz Attempts ───────────────────────────────────────────────────────────
 
   public saveQuizAttempt(packId: string, attempt: Omit<QuizAttempt, 'completedAt'>): Observable<any> {
@@ -178,6 +199,14 @@ export class StudyHubService {
 
   public getQuizAttempts(packId: string): Observable<{ success: boolean; data: QuizAttempt[] }> {
     return this.http.get<{ success: boolean; data: QuizAttempt[] }>(`${this.apiUrl}/${packId}/attempts`);
+  }
+
+  public getPublicPackById(id: string): Observable<{ success: boolean; data: any }> {
+    return this.http.get<{ success: boolean; data: any }>(`${this.apiUrl}/public/${id}`);
+  }
+
+  public clonePack(id: string): Observable<{ success: boolean; data: any }> {
+    return this.http.post<{ success: boolean; data: any }>(`${this.apiUrl}/clone/${id}`, {});
   }
 
   // ─── JSON Import / Export ────────────────────────────────────────────────────

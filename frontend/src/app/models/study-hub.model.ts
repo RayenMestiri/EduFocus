@@ -10,6 +10,7 @@ export interface StudyPack {
   exercises?: CodingExercise[];
   progress?: number;
   streak?: number;
+  isPublic?: boolean;
   lastStudied?: Date;
   createdAt: Date;
   updatedAt: Date;
