@@ -36,12 +36,13 @@
 
 /* Dark Mode SweetAlert - Modals */
 .dark .study-hub-swal-modal {
-  background: linear-gradient(135deg, #111827 0%, #0f172a 100%) !important;
-  border: 1px solid rgba(99, 102, 241, 0.25) !important;
+  background: linear-gradient(135deg, #0e1229 0%, #0b0f24 100%) !important;
+  border: 1px solid rgba(139, 92, 246, 0.25) !important;
+  box-shadow: 0 25px 50px rgba(0,0,0,0.5), 0 0 0 1px rgba(139,92,246,.08) !important;
 }
 
 .dark .study-hub-swal-modal .swal2-title {
-  color: #818cf8 !important;
+  color: #a78bfa !important;
   font-size: 1.5rem !important;
   font-weight: 800 !important;
   margin-bottom: 1rem !important;
@@ -57,9 +58,9 @@
 .dark .study-hub-swal-modal .swal2-input,
 .dark .study-hub-swal-modal .swal2-select,
 .dark .study-hub-swal-modal .swal2-textarea {
-  background: rgba(15, 23, 42, 0.6) !important;
-  border: 1px solid rgba(99, 102, 241, 0.3) !important;
-  color: #ffffff !important;
+  background: rgba(8, 11, 24, 0.7) !important;
+  border: 1px solid rgba(139, 92, 246, 0.3) !important;
+  color: #f1f5f9 !important;
   border-radius: 0.75rem !important;
   padding: 0.75rem 1rem !important;
   font-size: 0.95rem !important;
@@ -68,19 +69,19 @@
 .dark .study-hub-swal-modal .swal2-input::placeholder,
 .dark .study-hub-swal-modal .swal2-select::placeholder,
 .dark .study-hub-swal-modal .swal2-textarea::placeholder {
-  color: #6b7280 !important;
+  color: #64748b !important;
 }
 
 .dark .study-hub-swal-modal .swal2-input:focus,
 .dark .study-hub-swal-modal .swal2-select:focus,
 .dark .study-hub-swal-modal .swal2-textarea:focus {
   outline: none !important;
-  border-color: #6366f1 !important;
-  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2) !important;
+  border-color: #8b5cf6 !important;
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2) !important;
 }
 
 .dark .study-hub-swal-modal .swal2-confirm {
-  background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%) !important;
+  background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%) !important;
   color: #ffffff !important;
   border: none !important;
   border-radius: 0.75rem !important;
@@ -88,18 +89,28 @@
   font-weight: 700 !important;
   font-size: 0.95rem !important;
   transition: all 0.3s ease !important;
-  box-shadow: 0 4px 14px rgba(99, 102, 241, 0.35) !important;
+  box-shadow: 0 4px 14px rgba(139, 92, 246, 0.35) !important;
 }
 
 .dark .study-hub-swal-modal .swal2-confirm:hover {
   transform: translateY(-2px) !important;
-  box-shadow: 0 6px 16px rgba(99, 102, 241, 0.45) !important;
+  box-shadow: 0 6px 20px rgba(139, 92, 246, 0.45) !important;
+}
+
+.dark .study-hub-swal-modal .swal2-deny {
+  background: rgba(239, 68, 68, 0.15) !important;
+  color: #f87171 !important;
+  border: 1px solid rgba(239, 68, 68, 0.3) !important;
+  border-radius: 0.75rem !important;
+  padding: 0.75rem 2rem !important;
+  font-weight: 600 !important;
+  font-size: 0.95rem !important;
 }
 
 .dark .study-hub-swal-modal .swal2-cancel {
-  background: rgba(75, 85, 99, 0.4) !important;
-  color: #9ca3af !important;
-  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  background: rgba(255,255,255,.05) !important;
+  color: #94a3b8 !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
   border-radius: 0.75rem !important;
   padding: 0.75rem 2rem !important;
   font-weight: 600 !important;
@@ -107,8 +118,26 @@
 }
 
 .dark .study-hub-swal-modal .swal2-cancel:hover {
-  background: rgba(75, 85, 99, 0.6) !important;
-  color: #ffffff !important;
+  background: rgba(255,255,255,.1) !important;
+  color: #fff !important;
+}
+
+.dark .study-hub-swal-modal .swal2-validation-message {
+  background: rgba(239, 68, 68, 0.1) !important;
+  color: #f87171 !important;
+  border: 1px solid rgba(239, 68, 68, 0.25) !important;
+  border-radius: 0.5rem !important;
+}
+
+/* Dark Toast */
+.dark .study-hub-swal-toast {
+  background: linear-gradient(135deg, #0e1229, #0b0f24) !important;
+  border: 1px solid rgba(139, 92, 246, 0.25) !important;
+  box-shadow: 0 8px 24px rgba(0,0,0,.4) !important;
+  color: #e2e8f0 !important;
+}
+.dark .study-hub-swal-toast .swal2-title {
+  color: #f1f5f9 !important; font-size: 0.875rem !important; font-weight: 600 !important;
 }
 
 /* Light Mode SweetAlert - Modals */

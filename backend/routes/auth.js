@@ -32,7 +32,7 @@ router.post('/register', [
     if (user) {
       return res.status(400).json({
         success: false,
-        message: 'User already exists'
+        message: 'Cet email est déjà utilisé.'
       });
     }
 
@@ -206,7 +206,7 @@ router.post('/login', [
     if (!user) {
       return res.status(401).json({
         success: false,
-        message: 'Invalid credentials'
+        message: 'Email ou mot de passe incorrect.'
       });
     }
 
@@ -215,7 +215,7 @@ router.post('/login', [
     if (!isMatch) {
       return res.status(401).json({
         success: false,
-        message: 'Invalid credentials'
+        message: 'Email ou mot de passe incorrect.'
       });
     }
 

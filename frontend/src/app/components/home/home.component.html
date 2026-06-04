@@ -1,11 +1,21 @@
+<div class="home-root" [class.dark]="themeService.isDark()" [class.light]="!themeService.isDark()">
+
 <!-- ═══════════════════════════════════════════ TOP NAV ═══ -->
 <header class="home-header">
   <div class="header-inner">
     <div class="header-brand">
-      <img src="assets/images/logoEdu.jpg" alt="EduFocus Logo" class="home-logo-img">
+      <div class="home-logo-icon">
+        <span class="material-icons">school</span>
+      </div>
       <span class="header-logo-text">Edu<strong>Focus</strong></span>
     </div>
     <div class="header-actions">
+      <!-- Theme toggle -->
+      <button (click)="themeService.toggleTheme()"
+        class="home-theme-btn"
+        [title]="themeService.isDark() ? 'Mode Clair' : 'Mode Sombre'">
+        <span class="material-icons">{{ themeService.isDark() ? 'light_mode' : 'dark_mode' }}</span>
+      </button>
       <a routerLink="/login" class="header-link">Connexion</a>
     </div>
   </div>
@@ -83,7 +93,7 @@
         <!-- mini subject bars -->
         <div class="vm-subjects">
           <div class="vm-subj" *ngFor="let s of [
-            {label:'Mathématiques', pct:82, color:'#facc15'},
+            {label:'Mathématiques', pct:82, color:'#8b5cf6'},
             {label:'Physique',       pct:67, color:'#6366f1'},
             {label:'Informatique',   pct:91, color:'#22c55e'}
           ]">
@@ -261,7 +271,9 @@
 <footer class="home-footer">
   <div class="footer-inner">
     <div class="footer-brand">
-      <img src="assets/images/logoEdu.jpg" alt="EduFocus Logo" class="footer-logo-img">
+      <div class="home-logo-icon small">
+        <span class="material-icons">school</span>
+      </div>
       <span class="footer-logo-text">Edu<strong>Focus</strong></span>
     </div>
     <nav class="footer-links">
@@ -273,3 +285,5 @@
     <p class="footer-copy">&copy; 2026 EduFocus &middot; Tous droits r&eacute;serv&eacute;s</p>
   </div>
 </footer>
+
+</div>

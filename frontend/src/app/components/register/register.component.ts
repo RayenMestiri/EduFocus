@@ -67,34 +67,73 @@ export class RegisterComponent {
     const hasLetter = /[A-Za-z]/.test(this.password);
 
     if (!cleanName || !cleanEmail || !this.password || !this.confirmPassword) {
-      Swal.fire({ icon: 'error', title: 'Champs manquants', text: 'Veuillez remplir tous les champs.', background: '#0d0900', color: '#fbbf24', confirmButtonColor: '#f59e0b' });
+      Swal.fire({ 
+        icon: 'warning', 
+        title: 'Champs manquants', 
+        text: 'Veuillez remplir tous les champs.', 
+        customClass: { popup: 'study-hub-swal-modal' },
+        confirmButtonText: 'Compris'
+      });
       return;
     }
 
     if (this.passwordsMismatch) {
-      Swal.fire({ icon: 'error', title: 'Mots de passe différents', text: 'Les mots de passe ne correspondent pas.', background: '#0d0900', color: '#fbbf24', confirmButtonColor: '#f59e0b' });
+      Swal.fire({ 
+        icon: 'error', 
+        title: 'Mots de passe différents', 
+        text: 'Les mots de passe ne correspondent pas.', 
+        customClass: { popup: 'study-hub-swal-modal' },
+        confirmButtonText: 'Corriger'
+      });
       return;
     }
 
     if (!this.passwordChecks.length || !hasLetter || !this.passwordChecks.number) {
-      Swal.fire({ icon: 'error', title: 'Mot de passe trop faible', text: 'Utilisez au moins 8 caractères avec des lettres et des chiffres.', background: '#0d0900', color: '#fbbf24', confirmButtonColor: '#f59e0b' });
+      Swal.fire({ 
+        icon: 'error', 
+        title: 'Mot de passe trop faible', 
+        text: 'Utilisez au moins 8 caractères avec des lettres et des chiffres.', 
+        customClass: { popup: 'study-hub-swal-modal' },
+        confirmButtonText: 'Compris'
+      });
       return;
     }
 
     if (!this.acceptTerms) {
-      Swal.fire({ icon: 'info', title: 'Conditions requises', text: 'Veuillez accepter les conditions d’utilisation.', background: '#0d0900', color: '#fbbf24', confirmButtonColor: '#f59e0b' });
+      Swal.fire({ 
+        icon: 'info', 
+        title: 'Conditions requises', 
+        text: 'Veuillez accepter les conditions d’utilisation.', 
+        customClass: { popup: 'study-hub-swal-modal' },
+        confirmButtonText: 'Compris'
+      });
       return;
     }
 
     this.isLoading = true;
     this.authService.register(cleanName, cleanEmail, this.password).subscribe({
       next: () => {
-        Swal.fire({ icon: 'success', title: 'Compte créé !', text: 'Inscription réussie', background: '#0d0900', color: '#fbbf24', confirmButtonColor: '#f59e0b', timer: 1400, showConfirmButton: false });
+        Swal.fire({ 
+          toast: true,
+          position: 'top-end',
+          icon: 'success', 
+          title: 'Compte créé !', 
+          text: 'Inscription réussie', 
+          customClass: { popup: 'study-hub-swal-toast' },
+          timer: 2000, 
+          showConfirmButton: false 
+        });
         this.router.navigate(['/dashboard']);
       },
       error: (err) => {
         this.isLoading = false;
-        Swal.fire({ icon: 'error', title: 'Échec', text: err.error?.message || 'Une erreur est survenue.', background: '#0d0900', color: '#fbbf24', confirmButtonColor: '#f59e0b' });
+        Swal.fire({ 
+          icon: 'error', 
+          title: 'Échec', 
+          text: err.error?.message || 'Une erreur est survenue.', 
+          customClass: { popup: 'study-hub-swal-modal' },
+          confirmButtonText: 'Réessayer'
+        });
       },
       complete: () => {
         this.isLoading = false;

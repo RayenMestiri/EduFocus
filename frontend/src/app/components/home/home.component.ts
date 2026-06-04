@@ -1,12 +1,13 @@
 import {
   Component, OnInit, AfterViewInit, OnDestroy,
-  ElementRef, ViewChild, NgZone, HostListener
+  ElementRef, ViewChild, NgZone, HostListener, ViewEncapsulation
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import * as THREE from 'three';
+import { ThemeService } from '../../services/theme.service';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -47,6 +48,7 @@ interface Testimonial {
   imports: [CommonModule, RouterModule],
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css'],
+  encapsulation: ViewEncapsulation.None
 })
 export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
 
@@ -147,7 +149,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     return s.current.toFixed(s.end < 10 ? 1 : 0) + s.suffix;
   }
 
-  constructor(private zone: NgZone) {}
+  constructor(private zone: NgZone, public themeService: ThemeService) {}
 
   ngOnInit(): void {}
 
@@ -198,11 +200,11 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     const colors    = new Float32Array(COUNT * 3);
 
     const palette = [
-      new THREE.Color('#facc15'),
-      new THREE.Color('#fde047'),
       new THREE.Color('#6366f1'),
       new THREE.Color('#8b5cf6'),
-      new THREE.Color('#22c55e'),
+      new THREE.Color('#a78bfa'),
+      new THREE.Color('#4f46e5'),
+      new THREE.Color('#06b6d4'),
     ];
 
     for (let i = 0; i < COUNT; i++) {
@@ -235,7 +237,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
           lp.push(positions[i*3], positions[i*3+1], positions[i*3+2],
                   positions[j*3], positions[j*3+1], positions[j*3+2]);
           const a = (1 - dist / 28) * 0.5;
-          lc.push(0.96*a, 0.62*a, 0.14*a, 0.96*a, 0.62*a, 0.14*a);
+          lc.push(0.45*a, 0.38*a, 0.95*a, 0.45*a, 0.38*a, 0.95*a);
         }
       }
     }

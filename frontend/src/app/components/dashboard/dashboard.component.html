@@ -1,450 +1,610 @@
-<div class="min-h-screen dark:bg-black dark:text-white light:bg-gradient-to-br light:from-indigo-50/50 light:via-white light:to-violet-50/50 light:text-slate-800 transition-colors duration-300">
-  <!-- Premium Header -->
-  <header class="sticky top-0 z-50 dark:bg-black/80 light:bg-white/90 backdrop-blur-xl dark:border-b dark:border-yellow-500/20 light:border-b light:border-indigo-200/60 dark:shadow-2xl dark:shadow-yellow-500/10 light:shadow-xl light:shadow-indigo-500/8">
-    <div class="w-[98%] lg:w-[94%] max-w-[1800px] mx-auto py-3 lg:py-4">
-      <!-- Mobile: two-row layout / Desktop: single row -->
-      <div class="flex items-center justify-between gap-2">
-        <!-- Logo -->
-        <div class="flex items-center gap-2 sm:gap-4 lg:gap-5 shrink-0">
-          <div class="w-10 h-10 sm:w-12 sm:h-12 lg:w-14 lg:h-14 rounded-xl dark:bg-gradient-to-br dark:from-yellow-400 dark:to-yellow-600 light:bg-gradient-to-br light:from-indigo-500 light:to-violet-600 flex items-center justify-center dark:shadow-lg dark:shadow-yellow-500/50 light:shadow-lg light:shadow-indigo-500/40">
-            <span class="material-icons text-xl sm:text-2xl lg:text-[26px] dark:text-black light:text-white">school</span>
-          </div>
-          <div>
-            <h1 class="text-xl sm:text-2xl lg:text-3xl font-extrabold tracking-tight dark:bg-gradient-to-r dark:from-yellow-300 dark:via-yellow-500 dark:to-yellow-600 light:bg-gradient-to-r light:from-indigo-600 light:via-violet-600 light:to-purple-600 bg-clip-text text-transparent">EduFocus</h1>
-            <p class="text-[10px] sm:text-[11px] font-medium dark:text-yellow-500/75 light:text-indigo-600/80 hidden sm:block">{{ 'MAIN_DASHBOARD.SUBTITLE' | translate }}</p>
-          </div>
+<div class="db-root" [class.dark]="themeService.isDark()" [class.light]="!themeService.isDark()">
+  <!-- ═══════════════════════════════════════════
+       PREMIUM HEADER
+  ═══════════════════════════════════════════ -->
+  <header class="db-header">
+    <div class="db-header-inner">
+      <!-- Logo -->
+      <div class="db-logo-group">
+        <div class="db-logo-icon">
+          <span class="material-icons">school</span>
+        </div>
+        <div>
+          <h1 class="db-logo-text">EduFocus</h1>
+          <p class="db-logo-sub">{{ 'MAIN_DASHBOARD.SUBTITLE' | translate }}</p>
+        </div>
+      </div>
+
+      <!-- Header Actions -->
+      <div class="db-header-actions">
+        <!-- Mobile subjects toggle -->
+        <button
+          (click)="toggleMobileSubjectsMenu()"
+          class="db-icon-btn lg-hidden"
+          [attr.aria-label]="showMobileSubjectsMenu() ? ('MAIN_DASHBOARD.CLOSE_SUBJECTS' | translate) : ('MAIN_DASHBOARD.OPEN_SUBJECTS' | translate)">
+          <span class="material-icons">{{ showMobileSubjectsMenu() ? 'close' : 'menu' }}</span>
+        </button>
+
+        <!-- Language switcher -->
+        <app-language-switcher></app-language-switcher>
+
+        <!-- Theme toggle -->
+        <button (click)="themeService.toggleTheme()"
+          class="db-icon-btn"
+          [title]="themeService.isDark() ? ('MAIN_DASHBOARD.LIGHT_MODE' | translate) : ('MAIN_DASHBOARD.DARK_MODE' | translate)">
+          <span class="material-icons">{{ themeService.isDark() ? 'light_mode' : 'dark_mode' }}</span>
+        </button>
+
+        <!-- Points badge -->
+        <div class="db-points-badge">
+          <span class="material-icons">emoji_events</span>
+          <span class="db-points-value">{{ currentUser()?.stats?.points || 0 }}</span>
         </div>
 
-        <!-- Right side — compact on mobile -->
-        <div class="flex items-center gap-1.5 sm:gap-2 lg:gap-3">
-          <!-- Subjects menu toggle (mobile only) -->
-          <button
-            (click)="toggleMobileSubjectsMenu()"
-            class="lg:hidden p-2 sm:p-2.5 dark:bg-yellow-500/20 dark:hover:bg-yellow-500/30 dark:border-yellow-500/30 light:bg-indigo-50 light:hover:bg-indigo-100 light:border-indigo-200 border rounded-xl dark:text-yellow-400 light:text-indigo-600 transition-all duration-300"
-            [attr.aria-label]="showMobileSubjectsMenu() ? ('MAIN_DASHBOARD.CLOSE_SUBJECTS' | translate) : ('MAIN_DASHBOARD.OPEN_SUBJECTS' | translate)"
-            [title]="showMobileSubjectsMenu() ? ('MAIN_DASHBOARD.CLOSE' | translate) : ('MAIN_DASHBOARD.SUBJECTS' | translate)">
-            <span class="material-icons text-[20px]">{{ showMobileSubjectsMenu() ? 'close' : 'menu' }}</span>
-          </button>
-
-          <!-- Language Switcher -->
-          <app-language-switcher></app-language-switcher>
-
-          <!-- Theme Toggle -->
-          <button (click)="themeService.toggleTheme()" 
-            class="p-2 sm:p-2.5 dark:bg-yellow-500/20 dark:hover:bg-yellow-500/30 dark:border-yellow-500/30 light:bg-indigo-50 light:hover:bg-indigo-100 light:border-indigo-200 border rounded-xl dark:text-yellow-400 light:text-indigo-600 transition-all duration-300 hover:scale-105"
-            [title]="themeService.isDark() ? ('MAIN_DASHBOARD.LIGHT_MODE' | translate) : ('MAIN_DASHBOARD.DARK_MODE' | translate)">
-            <span class="material-icons text-[20px]">{{ themeService.isDark() ? 'light_mode' : 'dark_mode' }}</span>
-          </button>
-
-          
-          <!-- Points (compact on mobile) -->
-          <div class="px-2 sm:px-3 py-1.5 sm:py-2 dark:bg-gradient-to-r dark:from-yellow-500/20 dark:to-yellow-600/20 dark:border-yellow-500/30 light:bg-gradient-to-r light:from-indigo-50 light:to-violet-50 light:border-indigo-200 border rounded-xl flex items-center gap-1.5 shadow-sm light:shadow-indigo-200/50">
-            <span class="material-icons text-lg sm:text-2xl dark:text-yellow-400 light:text-indigo-500">emoji_events</span>
-            <span class="text-sm sm:text-lg font-bold dark:text-yellow-400 light:text-indigo-700">{{ currentUser()?.stats?.points || 0 }}</span>
+        <!-- User avatar -->
+        <div class="db-user-chip">
+          <div class="db-avatar">
+            {{ currentUser()?.name ? currentUser()!.name.charAt(0).toUpperCase() : 'U' }}
           </div>
-          
-          <!-- User avatar + name (hidden on mobile, visible sm+) -->
-          <div class="hidden lg:flex items-center gap-2">
-            <div class="w-10 h-10 dark:bg-gradient-to-br dark:from-yellow-400 dark:to-yellow-600 light:bg-gradient-to-br light:from-indigo-500 light:to-violet-600 rounded-full flex items-center justify-center dark:text-black light:text-white font-bold">
-              {{ currentUser()?.name ? currentUser()!.name.charAt(0).toUpperCase() : 'U' }}
-            </div>
-            <span class="dark:text-yellow-400 light:text-indigo-700 font-semibold">{{ currentUser()?.name }}</span>
-          </div>
-
-          <!-- Logout (icon on mobile, icon+text on sm+) -->
-          <button (click)="logout()" class="p-2 sm:px-3 sm:py-2 dark:bg-gray-800 dark:hover:bg-gray-700 light:bg-white light:hover:bg-slate-50 border light:border-slate-200 rounded-xl dark:text-white light:text-slate-700 transition-all duration-300 flex items-center gap-1.5 text-sm" [title]="'MAIN_DASHBOARD.LOGOUT' | translate">
-            <span class="material-icons text-[20px]">logout</span>
-            <span class="hidden sm:inline">{{ 'MAIN_DASHBOARD.LOGOUT' | translate }}</span>
-          </button>
+          <span class="db-username">{{ currentUser()?.name }}</span>
         </div>
+
+        <!-- Logout -->
+        <button (click)="logout()" class="db-logout-btn" [title]="'MAIN_DASHBOARD.LOGOUT' | translate">
+          <span class="material-icons">logout</span>
+          <span class="db-logout-text">{{ 'MAIN_DASHBOARD.LOGOUT' | translate }}</span>
+        </button>
       </div>
     </div>
   </header>
 
-  <!-- Main Content -->
-  <main class="w-[98%] lg:w-[94%] max-w-[1800px] mx-auto py-6">
-    <div class="grid grid-cols-1 lg:grid-cols-5 gap-4 lg:gap-5">
+  <!-- ═══════════════════════════════════════════
+       MOBILE OVERLAY
+  ═══════════════════════════════════════════ -->
+  @if (showMobileSubjectsMenu()) {
+    <div class="db-overlay" (click)="closeMobileSubjectsMenu()"></div>
+  }
 
-      @if (showMobileSubjectsMenu()) {
-        <div class="fixed inset-0 z-40 bg-black/50 backdrop-blur-[1px] lg:hidden" (click)="closeMobileSubjectsMenu()"></div>
-      }
-      
-      <!-- Sidebar - Subjects -->
-      <aside
-        class="lg:col-span-1 fixed lg:static inset-y-0 left-0 z-50 lg:z-auto w-[85vw] max-w-sm lg:w-auto transform transition-transform duration-300 ease-out lg:transform-none"
-        [class.-translate-x-full]="!showMobileSubjectsMenu()"
-        [class.translate-x-0]="showMobileSubjectsMenu()">
-        <div class="h-full lg:h-auto overflow-y-auto dark:bg-gradient-to-br dark:from-gray-900 dark:to-black light:bg-white/95 lg:light:bg-white/80 light:backdrop-blur-sm dark:border-yellow-500/20 light:border light:border-indigo-100 rounded-r-2xl lg:rounded-2xl p-4 sm:p-6 dark:shadow-2xl dark:shadow-yellow-500/5 light:shadow-lg light:shadow-indigo-200/40 lg:sticky lg:top-24">
-          <div class="flex items-center justify-between mb-4 lg:hidden">
-            <h2 class="text-xl font-bold dark:bg-gradient-to-r dark:from-yellow-400 dark:to-yellow-600 light:bg-gradient-to-r light:from-indigo-600 light:to-violet-600 bg-clip-text text-transparent flex items-center gap-2">
+  <!-- ═══════════════════════════════════════════
+       MAIN LAYOUT
+  ═══════════════════════════════════════════ -->
+  <main class="db-main">
+    <div class="db-layout">
+
+      <!-- ┌───────────────────────────────────────
+           │ LEFT SIDEBAR — SUBJECTS
+           └─────────────────────────────────────── -->
+      <aside class="db-sidebar-left"
+        [class.db-sidebar-open]="showMobileSubjectsMenu()"
+        [class.db-sidebar-closed]="!showMobileSubjectsMenu()">
+
+        <div class="db-sidebar-card">
+          <!-- Mobile header -->
+          <div class="db-sidebar-mobile-header">
+            <h2 class="db-section-title">
               <span class="material-icons">menu_book</span>
               {{ 'MAIN_DASHBOARD.SUBJECTS' | translate }}
             </h2>
-            <button (click)="closeMobileSubjectsMenu()" class="p-2 rounded-lg dark:hover:bg-white/10 light:hover:bg-slate-100 dark:text-gray-300 light:text-slate-600">
+            <button (click)="closeMobileSubjectsMenu()" class="db-close-btn">
               <span class="material-icons">close</span>
             </button>
           </div>
 
-          <h2 class="hidden lg:flex text-xl font-bold dark:bg-gradient-to-r dark:from-yellow-400 dark:to-yellow-600 light:bg-gradient-to-r light:from-indigo-600 light:to-violet-600 bg-clip-text text-transparent mb-4 items-center gap-2">
+          <!-- Desktop title -->
+          <h2 class="db-section-title db-desktop-only">
             <span class="material-icons">menu_book</span>
             {{ 'MAIN_DASHBOARD.SUBJECTS' | translate }}
           </h2>
-          
+
+          <!-- Onboarding tip when no subjects -->
+          @if (subjects().length === 0) {
+            <div class="db-tip-banner db-tip-primary">
+              <span class="material-icons db-tip-icon">lightbulb</span>
+              <div>
+                <div class="db-tip-title">{{ 'MAIN_DASHBOARD.GET_STARTED' | translate }}</div>
+                <div class="db-tip-body">{{ 'MAIN_DASHBOARD.ADD_FIRST_SUBJECT' | translate }}</div>
+              </div>
+            </div>
+          }
+
           <!-- Add Subject Button -->
-          <button (click)="openSubjectModal()" class="w-full py-3 dark:bg-yellow-500/10 dark:hover:bg-yellow-500/20 dark:border-yellow-500/30 light:bg-indigo-50 light:hover:bg-indigo-100 light:border-indigo-200 border rounded-xl dark:text-yellow-500 light:text-indigo-600 font-medium transition-all duration-300 mb-4 flex items-center justify-center gap-2 hover:scale-105 shadow-sm light:shadow-indigo-100">
+          <button (click)="openSubjectModal()" class="db-add-btn db-add-subject-btn">
             <span class="material-icons">add</span>
             {{ 'MAIN_DASHBOARD.ADD_SUBJECT' | translate }}
           </button>
-          
+
           <!-- Subject List -->
-          <div class="grid grid-cols-2 lg:grid-cols-1 gap-3">
+          <div class="db-subject-grid">
             @for (subject of subjects(); track subject._id) {
-              <div [style.background]="'linear-gradient(to right, ' + subject.color + '15, ' + subject.color + '08)'" 
-                   [style.border-color]="subject.color + '50'"
-                   class="p-3 sm:p-4 border-2 rounded-xl hover:scale-102 transition-all duration-300 cursor-pointer group shadow-sm hover:shadow-md">
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                  <div class="flex items-center gap-2 sm:gap-3 flex-1 min-w-0">
-                    <span class="material-icons text-2xl sm:text-3xl" [style.color]="subject.color" [style.filter]="themeService.isLight() ? 'saturate(1.2) brightness(0.9)' : ''">{{ subject.icon }}</span>
-                    <div class="flex-1">
-                      <div [style.color]="subject.color" [style.filter]="themeService.isLight() ? 'saturate(1.3) brightness(0.85)' : ''" class="font-semibold text-sm sm:text-base truncate">{{ subject.name }}</div>
-                    </div>
+              <div class="db-subject-card"
+                   [style.background]="'linear-gradient(135deg, ' + subject.color + '18, ' + subject.color + '08)'"
+                   [style.border-color]="subject.color + '50'">
+                <div class="db-subject-inner">
+                  <div class="db-subject-info">
+                    <span class="material-icons db-subject-icon"
+                          [style.color]="subject.color"
+                          [style.filter]="themeService.isLight() ? 'saturate(1.2) brightness(0.85)' : ''">
+                      {{ subject.icon }}
+                    </span>
+                    <div [style.color]="subject.color"
+                         [style.filter]="themeService.isLight() ? 'saturate(1.3) brightness(0.8)' : ''"
+                         class="db-subject-name">{{ subject.name }}</div>
                   </div>
-                  <div class="flex gap-1 sm:gap-2 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity self-end sm:self-auto">
-                    <button (click)="openSubjectModal(subject)" class="p-1 dark:hover:bg-white/10 light:hover:bg-slate-200/80 rounded">
-                      <span class="material-icons text-base sm:text-lg dark:text-white light:text-slate-600">edit</span>
+                  <div class="db-subject-actions">
+                    <button (click)="openSubjectModal(subject)" class="db-action-btn">
+                      <span class="material-icons">edit</span>
                     </button>
-                    <button (click)="deleteSubject(subject)" class="p-1 hover:bg-red-500/20 rounded text-red-500">
-                      <span class="material-icons text-base sm:text-lg">delete</span>
+                    <button (click)="deleteSubject(subject)" class="db-action-btn db-action-delete">
+                      <span class="material-icons">delete</span>
                     </button>
                   </div>
                 </div>
               </div>
             } @empty {
-              <p class="dark:text-gray-500 light:text-slate-400 text-center py-8">{{ 'MAIN_DASHBOARD.NO_SUBJECTS' | translate }}</p>
+              <p class="db-empty-msg">{{ 'MAIN_DASHBOARD.NO_SUBJECTS' | translate }}</p>
             }
           </div>
         </div>
       </aside>
 
-      <!-- Main Dashboard -->
-      <div class="lg:col-span-3 space-y-6">
-        
-        <!-- Quick Access Grid -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <!-- Quick Access Card - Planning -->
-          <div class="dark:bg-gradient-to-br dark:from-yellow-500/10 dark:to-yellow-600/10 dark:border-yellow-500/30 light:bg-white/80 light:backdrop-blur-sm light:border light:border-indigo-200 rounded-2xl p-6 dark:hover:border-yellow-500/50 light:hover:border-indigo-400 transition-all duration-300 group cursor-pointer shadow-lg light:shadow-indigo-200/40" (click)="goToPlanner()">
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-              <div class="flex items-center gap-4">
-                <div class="w-14 h-14 sm:w-16 sm:h-16 dark:bg-gradient-to-br dark:from-yellow-400 dark:to-yellow-600 light:bg-gradient-to-br light:from-indigo-500 light:to-violet-600 rounded-xl flex items-center justify-center dark:shadow-lg dark:shadow-yellow-500/50 light:shadow-lg light:shadow-indigo-500/40 group-hover:scale-110 transition-all duration-300">
-                  <span class="material-icons text-3xl dark:text-black light:text-white">calendar_today</span>
-                </div>
-                <div>
-                  <h3 class="text-xl sm:text-2xl font-bold dark:bg-gradient-to-r dark:from-yellow-400 dark:to-yellow-600 light:bg-gradient-to-r light:from-indigo-600 light:to-violet-600 bg-clip-text text-transparent">{{ 'MAIN_DASHBOARD.DAILY_PLANNER' | translate }}</h3>
-                  <p class="text-xs sm:text-sm dark:text-gray-400 light:text-slate-600 font-medium">{{ 'MAIN_DASHBOARD.DAILY_PLANNER_DESC' | translate }}</p>
-                </div>
+      <!-- ┌───────────────────────────────────────
+           │ MAIN CONTENT AREA
+           └─────────────────────────────────────── -->
+      <div class="db-content">
+
+        <!-- ══ HERO WELCOME BANNER ══ -->
+        <div class="db-hero">
+          <div class="db-hero-bg"></div>
+          <div class="db-hero-content">
+            <div class="db-hero-text">
+              <div class="db-hero-badge">
+                <span class="material-icons">auto_awesome</span>
+                EduFocus Dashboard
               </div>
-              <span class="material-icons text-2xl sm:text-3xl dark:text-yellow-400 light:text-indigo-500 group-hover:translate-x-2 transition-all duration-300 self-end sm:self-auto">arrow_forward</span>
+              <h2 class="db-hero-greeting">
+                {{ 'MAIN_DASHBOARD.WELCOME_BACK' | translate }}, <span class="db-hero-name">{{ currentUser()?.name || 'Student' }}</span> 👋
+              </h2>
+              <p class="db-hero-sub">{{ 'MAIN_DASHBOARD.HERO_SUB' | translate }}</p>
+            </div>
+            <div class="db-hero-stats">
+              <div class="db-hero-stat">
+                <div class="db-hero-stat-val">{{ progressPercentage() }}%</div>
+                <div class="db-hero-stat-lbl">{{ 'MAIN_DASHBOARD.DAILY_GOAL' | translate }}</div>
+              </div>
+              <div class="db-hero-divider"></div>
+              <div class="db-hero-stat">
+                <div class="db-hero-stat-val">{{ sessionsCompleted() }}</div>
+                <div class="db-hero-stat-lbl">{{ 'MAIN_DASHBOARD.SESSIONS' | translate }}</div>
+              </div>
+              <div class="db-hero-divider"></div>
+              <div class="db-hero-stat">
+                <div class="db-hero-stat-val">🔥 {{ studyStreak() }}</div>
+                <div class="db-hero-stat-lbl">{{ 'MAIN_DASHBOARD.STREAK_DAYS' | translate }}</div>
+              </div>
+            </div>
+          </div>
+          <!-- Progress bar -->
+          <div class="db-hero-progress">
+            <div class="db-hero-progress-bar" [style.width.%]="progressPercentage()"></div>
+          </div>
+        </div>
+
+        <!-- ══ CONTEXTUAL ALERTS ══ -->
+        <!-- Alert: No plan yet -->
+        @if (totalGoalMinutes() === 0 && subjects().length > 0) {
+          <div class="db-alert db-alert-warning">
+            <span class="material-icons db-alert-icon">calendar_today</span>
+            <div class="db-alert-body">
+              <div class="db-alert-title">{{ 'MAIN_DASHBOARD.ALERT_NO_PLAN_TITLE' | translate }}</div>
+              <div class="db-alert-msg">{{ 'MAIN_DASHBOARD.ALERT_NO_PLAN_MSG' | translate }}</div>
+            </div>
+            <button class="db-alert-action" (click)="openPlanModal()">
+              {{ 'MAIN_DASHBOARD.DAILY_PLANNER' | translate }}
+              <span class="material-icons">arrow_forward</span>
+            </button>
+          </div>
+        }
+
+        <!-- Alert: Urgent todos -->
+        @if (urgentTodosCount() > 0) {
+          <div class="db-alert db-alert-danger">
+            <span class="material-icons db-alert-icon animate-pulse">priority_high</span>
+            <div class="db-alert-body">
+              <div class="db-alert-title">{{ 'MAIN_DASHBOARD.ALERT_URGENT_TITLE' | translate }}</div>
+              <div class="db-alert-msg">{{ 'MAIN_DASHBOARD.ALERT_URGENT_MSG' | translate: { count: urgentTodosCount() } }}</div>
+            </div>
+            <button class="db-alert-action" (click)="scrollToTodos()">
+              {{ 'MAIN_DASHBOARD.VIEW_TODOS' | translate }}
+              <span class="material-icons">arrow_forward</span>
+            </button>
+          </div>
+        }
+
+        <!-- Alert: Goal achieved! -->
+        @if (progressPercentage() >= 100 && totalGoalMinutes() > 0) {
+          <div class="db-alert db-alert-success">
+            <span class="material-icons db-alert-icon">celebration</span>
+            <div class="db-alert-body">
+              <div class="db-alert-title">{{ 'MAIN_DASHBOARD.ALERT_GOAL_TITLE' | translate }}</div>
+              <div class="db-alert-msg">{{ 'MAIN_DASHBOARD.ALERT_GOAL_MSG' | translate }}</div>
+            </div>
+          </div>
+        }
+
+        <!-- Alert: Good progress -->
+        @if (progressPercentage() >= 50 && progressPercentage() < 100 && totalGoalMinutes() > 0) {
+          <div class="db-alert db-alert-info">
+            <span class="material-icons db-alert-icon">trending_up</span>
+            <div class="db-alert-body">
+              <div class="db-alert-title">{{ 'MAIN_DASHBOARD.ALERT_PROGRESS_TITLE' | translate }}</div>
+              <div class="db-alert-msg">{{ 'MAIN_DASHBOARD.ALERT_PROGRESS_MSG' | translate }}</div>
+            </div>
+          </div>
+        }
+
+        <!-- ══ QUICK ACCESS CARDS ══ -->
+        <div class="db-quick-grid">
+          <!-- Daily Planner -->
+          <div class="db-quick-card db-quick-planner" (click)="goToPlanner()">
+            <div class="db-quick-glow"></div>
+            <div class="db-quick-inner">
+              <div class="db-quick-icon-wrap">
+                <span class="material-icons">calendar_today</span>
+              </div>
+              <div class="db-quick-text">
+                <h3 class="db-quick-title">{{ 'MAIN_DASHBOARD.DAILY_PLANNER' | translate }}</h3>
+                <p class="db-quick-desc">{{ 'MAIN_DASHBOARD.DAILY_PLANNER_DESC' | translate }}</p>
+              </div>
+            </div>
+            <span class="material-icons db-quick-arrow">arrow_forward</span>
+          </div>
+
+          <!-- Study Hub -->
+          <div class="db-quick-card db-quick-study" (click)="goToStudyHub()">
+            <div class="db-quick-glow"></div>
+            <div class="db-quick-inner">
+              <div class="db-quick-icon-wrap db-quick-icon-study">
+                <span class="material-icons">school</span>
+              </div>
+              <div class="db-quick-text">
+                <h3 class="db-quick-title db-quick-title-study">{{ 'MAIN_DASHBOARD.STUDY_HUB' | translate }}</h3>
+                <p class="db-quick-desc">{{ 'MAIN_DASHBOARD.STUDY_HUB_DESC' | translate }}</p>
+              </div>
+            </div>
+            <span class="material-icons db-quick-arrow db-quick-arrow-study">arrow_forward</span>
+          </div>
+        </div>
+
+        <!-- ══ STATS CARDS ══ -->
+        <div class="db-stats-grid">
+          <!-- Daily Goal -->
+          <div class="db-stat-card db-stat-progress" (click)="openPlanModal()">
+            <div class="db-stat-blur"></div>
+            <div class="db-stat-body">
+              <div class="db-stat-icon-row">
+                <span class="material-icons db-stat-icon">track_changes</span>
+                <span class="db-stat-click-hint">{{ 'MAIN_DASHBOARD.CLICK_TO_PLAN' | translate }}</span>
+              </div>
+              <div class="db-stat-value">{{ progressPercentage() }}%</div>
+              <div class="db-stat-label">{{ 'MAIN_DASHBOARD.DAILY_GOAL' | translate }}</div>
+              <div class="db-stat-bar-wrap">
+                <div class="db-stat-bar db-stat-bar-primary" [style.width.%]="progressPercentage()"></div>
+              </div>
             </div>
           </div>
 
-          <!-- Quick Access Card - Study Hub -->
-          <div class="dark:bg-gradient-to-br dark:from-indigo-500/10 dark:to-purple-600/10 dark:border-indigo-500/30 light:bg-white/80 light:backdrop-blur-sm light:border light:border-indigo-200 rounded-2xl p-6 dark:hover:border-indigo-500/50 light:hover:border-indigo-400 transition-all duration-300 group cursor-pointer shadow-lg light:shadow-indigo-200/40" (click)="goToStudyHub()">
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-              <div class="flex items-center gap-4">
-                <div class="w-14 h-14 sm:w-16 sm:h-16 dark:bg-gradient-to-br dark:from-indigo-400 dark:to-purple-600 light:bg-gradient-to-br light:from-indigo-500 light:to-violet-600 rounded-xl flex items-center justify-center dark:shadow-lg dark:shadow-indigo-500/50 light:shadow-lg light:shadow-indigo-500/40 group-hover:scale-110 transition-all duration-300">
-                  <span class="material-icons text-3xl dark:text-white light:text-white">school</span>
-                </div>
-                <div>
-                  <h3 class="text-xl sm:text-2xl font-bold dark:bg-gradient-to-r dark:from-indigo-400 dark:to-purple-400 light:bg-gradient-to-r light:from-indigo-600 light:to-violet-600 bg-clip-text text-transparent">{{ 'MAIN_DASHBOARD.STUDY_HUB' | translate }}</h3>
-                  <p class="text-xs sm:text-sm dark:text-gray-400 light:text-slate-600 font-medium">{{ 'MAIN_DASHBOARD.STUDY_HUB_DESC' | translate }}</p>
-                </div>
+          <!-- Time Studied -->
+          <div class="db-stat-card db-stat-time">
+            <div class="db-stat-blur"></div>
+            <div class="db-stat-body">
+              <div class="db-stat-icon-row">
+                <span class="material-icons db-stat-icon db-stat-icon-green">schedule</span>
               </div>
-              <span class="material-icons text-2xl sm:text-3xl dark:text-indigo-400 light:text-indigo-500 group-hover:translate-x-2 transition-all duration-300 self-end sm:self-auto">arrow_forward</span>
+              <div class="db-stat-value db-stat-value-green">{{ formatTime(totalStudiedMinutes()) }}</div>
+              <div class="db-stat-label">{{ 'MAIN_DASHBOARD.TIME_STUDIED' | translate }}</div>
+              <div class="db-stat-sub db-stat-sub-green">{{ 'MAIN_DASHBOARD.OF' | translate }} {{ formatTime(totalGoalMinutes()) }} {{ 'MAIN_DASHBOARD.PLANNED' | translate }}</div>
             </div>
           </div>
-        </div>
-        
-        <!-- Stats Cards -->
-        <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-          <!-- Today's Progress -->
-          <div class="relative overflow-hidden dark:bg-gradient-to-br dark:from-yellow-500/10 dark:to-yellow-600/10 light:bg-gradient-to-br light:from-indigo-50 light:to-violet-50 dark:border-yellow-500/30 light:border-indigo-200 border rounded-2xl p-4 sm:p-6 dark:hover:border-yellow-500/50 light:hover:border-indigo-400 transition-all duration-300 group cursor-pointer shadow-lg light:shadow-indigo-200/40" (click)="openPlanModal()">
-            <div class="absolute top-0 right-0 w-32 h-32 dark:bg-yellow-500/10 light:bg-indigo-100 rounded-full blur-3xl dark:group-hover:bg-yellow-500/20 light:group-hover:bg-indigo-200 transition-all duration-500"></div>
-            <div class="relative">
-              <div class="text-3xl sm:text-5xl font-bold dark:bg-gradient-to-r dark:from-yellow-400 dark:to-yellow-600 dark:bg-clip-text dark:text-transparent light:bg-gradient-to-r light:from-indigo-600 light:to-violet-600 bg-clip-text text-transparent mb-2">{{ progressPercentage() }}%</div>
-              <div class="text-sm dark:text-gray-400 light:text-slate-600 font-medium">{{ 'MAIN_DASHBOARD.DAILY_GOAL' | translate }}</div>
-              <div class="mt-3 h-2 dark:bg-black light:bg-indigo-100 rounded-full overflow-hidden">
-                <div class="h-full dark:bg-gradient-to-r dark:from-yellow-500 dark:to-yellow-600 light:bg-gradient-to-r light:from-indigo-500 light:to-violet-600 rounded-full transition-all duration-500" 
-                     [style.width.%]="progressPercentage()"></div>
-              </div>
-              <div class="mt-2 text-xs dark:text-yellow-400 light:text-indigo-600 font-semibold">{{ 'MAIN_DASHBOARD.CLICK_TO_PLAN' | translate }}</div>
-            </div>
-          </div>
-          
-          <!-- Studied Time -->
-          <div class="relative overflow-hidden dark:bg-gradient-to-br dark:from-green-500/10 dark:to-green-600/10 light:bg-gradient-to-br light:from-emerald-50 light:to-teal-50 dark:border-green-500/30 light:border-emerald-200 border rounded-2xl p-4 sm:p-6 dark:hover:border-green-500/50 light:hover:border-emerald-400 transition-all duration-300 group shadow-lg light:shadow-emerald-200/40">
-            <div class="absolute top-0 right-0 w-32 h-32 dark:bg-green-500/10 light:bg-emerald-100 rounded-full blur-3xl dark:group-hover:bg-green-500/20 light:group-hover:bg-emerald-200 transition-all duration-500"></div>
-            <div class="relative">
-              <div class="text-3xl sm:text-5xl font-bold dark:bg-gradient-to-r dark:from-green-400 dark:to-green-600 dark:bg-clip-text dark:text-transparent light:text-emerald-600 mb-2">{{ formatTime(totalStudiedMinutes()) }}</div>
-              <div class="text-sm dark:text-gray-400 light:text-slate-600 font-medium">{{ 'MAIN_DASHBOARD.TIME_STUDIED' | translate }}</div>
-              <div class="mt-2 text-xs dark:text-green-400 light:text-emerald-600 font-semibold">{{ 'MAIN_DASHBOARD.OF' | translate }} {{ formatTime(totalGoalMinutes()) }} {{ 'MAIN_DASHBOARD.PLANNED' | translate }}</div>
-            </div>
-          </div>
-          
+
           <!-- Tasks -->
-          <div class="relative overflow-hidden dark:bg-gradient-to-br dark:from-blue-500/10 dark:to-blue-600/10 light:bg-gradient-to-br light:from-indigo-50 light:to-violet-50 dark:border-blue-500/30 light:border-indigo-200 border rounded-2xl p-4 sm:p-6 dark:hover:border-blue-500/50 light:hover:border-indigo-400 transition-all duration-300 group shadow-lg light:shadow-indigo-200/40">
-            <div class="absolute top-0 right-0 w-32 h-32 dark:bg-blue-500/10 light:bg-indigo-100 rounded-full blur-3xl dark:group-hover:bg-blue-500/20 light:group-hover:bg-indigo-200 transition-all duration-500"></div>
-            <div class="relative">
-              <div class="text-3xl sm:text-5xl font-bold dark:bg-gradient-to-r dark:from-blue-400 dark:to-blue-600 dark:bg-clip-text dark:text-transparent light:text-indigo-600 mb-2">{{ completedTodos() }}/{{ totalTodos() }}</div>
-              <div class="text-sm dark:text-gray-400 light:text-slate-600 font-medium">{{ 'MAIN_DASHBOARD.TASKS_COMPLETED' | translate }}</div>
-              <div class="mt-2 text-xs dark:text-blue-400 light:text-indigo-600 font-semibold">{{ totalTodos() - completedTodos() }} {{ 'MAIN_DASHBOARD.REMAINING' | translate }}</div>
+          <div class="db-stat-card db-stat-tasks">
+            <div class="db-stat-blur"></div>
+            <div class="db-stat-body">
+              <div class="db-stat-icon-row">
+                <span class="material-icons db-stat-icon db-stat-icon-blue">task_alt</span>
+              </div>
+              <div class="db-stat-value db-stat-value-blue">{{ completedTodos() }}/{{ totalTodos() }}</div>
+              <div class="db-stat-label">{{ 'MAIN_DASHBOARD.TASKS_COMPLETED' | translate }}</div>
+              <div class="db-stat-sub db-stat-sub-blue">{{ totalTodos() - completedTodos() }} {{ 'MAIN_DASHBOARD.REMAINING' | translate }}</div>
             </div>
           </div>
 
           <!-- Study Streak -->
-          <div class="relative overflow-hidden dark:bg-gradient-to-br dark:from-purple-500/10 dark:to-purple-600/10 light:bg-gradient-to-br light:from-violet-50 light:to-purple-50 dark:border-purple-500/30 light:border-violet-200 border rounded-2xl p-4 sm:p-6 dark:hover:border-purple-500/50 light:hover:border-violet-400 transition-all duration-300 group cursor-pointer shadow-lg light:shadow-violet-200/40" (click)="openStatsModal()">
-            <div class="absolute top-0 right-0 w-32 h-32 dark:bg-purple-500/10 light:bg-violet-100 rounded-full blur-3xl dark:group-hover:bg-purple-500/20 light:group-hover:bg-violet-200 transition-all duration-500"></div>
-            <div class="relative">
-              <div class="text-3xl sm:text-5xl font-bold dark:bg-gradient-to-r dark:from-purple-400 dark:to-purple-600 dark:bg-clip-text dark:text-transparent light:text-violet-600 mb-2 flex items-center gap-2">
-                <span class="material-icons text-3xl sm:text-5xl dark:text-orange-400 light:text-orange-500">local_fire_department</span> {{ studyStreak() }}
+          <div class="db-stat-card db-stat-streak" (click)="openStatsModal()">
+            <div class="db-stat-blur"></div>
+            <div class="db-stat-body">
+              <div class="db-stat-icon-row">
+                <span class="material-icons db-stat-icon db-stat-icon-orange">local_fire_department</span>
+                <span class="db-stat-click-hint db-stat-click-hint-purple">{{ 'MAIN_DASHBOARD.CLICK_FOR_STATS' | translate }}</span>
               </div>
-              <div class="text-sm dark:text-gray-400 light:text-slate-600 font-medium">{{ 'MAIN_DASHBOARD.CONSECUTIVE_DAYS' | translate }}</div>
-              <div class="mt-2 text-xs dark:text-purple-400 light:text-violet-600 font-semibold">{{ 'MAIN_DASHBOARD.CLICK_FOR_STATS' | translate }}</div>
+              <div class="db-stat-value db-stat-value-purple">{{ studyStreak() }}</div>
+              <div class="db-stat-label">{{ 'MAIN_DASHBOARD.CONSECUTIVE_DAYS' | translate }}</div>
+              <div class="db-stat-sub db-stat-sub-purple">{{ 'MAIN_DASHBOARD.STREAK_LABEL' | translate }}</div>
             </div>
           </div>
         </div>
 
-        <!-- AI Study Assistant -->
-        <div class="dark:bg-gradient-to-br dark:from-indigo-500/10 dark:to-purple-600/10 light:bg-white/80 light:backdrop-blur-sm dark:border-indigo-500/30 light:border light:border-indigo-200 rounded-2xl p-4 sm:p-6 shadow-xl light:shadow-indigo-200/40">
-          <button
-            type="button"
-            (click)="toggleAiPanel()"
-            class="w-full flex items-center justify-between gap-3 rounded-xl px-4 py-3 dark:bg-indigo-500/10 light:bg-indigo-50 border dark:border-indigo-400/30 light:border-indigo-200 hover:scale-[1.01] transition-all duration-300"
-            [class.animate-pulse]="!showAiPanel()">
-            <div class="flex items-center gap-3">
-              <span class="material-icons text-2xl dark:text-indigo-300 light:text-indigo-600">psychology</span>
-              <div class="text-left">
-                <div class="font-bold dark:text-indigo-200 light:text-indigo-700">{{ 'MAIN_DASHBOARD.AI_ASSISTANT' | translate }}</div>
-                <div class="text-xs dark:text-indigo-300/80 light:text-indigo-600 flex items-center gap-1">
-                  <span class="material-icons text-sm">tips_and_updates</span>
+        <!-- ══ HOW TO USE — ONBOARDING TIPS ══ -->
+        @if (subjects().length === 0 || totalGoalMinutes() === 0) {
+          <div class="db-onboarding">
+            <div class="db-onboarding-header">
+              <span class="material-icons">rocket_launch</span>
+              <h3>{{ 'MAIN_DASHBOARD.HOW_TO_USE' | translate }}</h3>
+            </div>
+            <div class="db-steps">
+              <div class="db-step" [class.db-step-done]="subjects().length > 0">
+                <div class="db-step-num">{{ subjects().length > 0 ? '✓' : '1' }}</div>
+                <div class="db-step-body">
+                  <div class="db-step-title">{{ 'MAIN_DASHBOARD.STEP1_TITLE' | translate }}</div>
+                  <div class="db-step-desc">{{ 'MAIN_DASHBOARD.STEP1_DESC' | translate }}</div>
+                </div>
+                @if (subjects().length === 0) {
+                  <button class="db-step-btn" (click)="openSubjectModal()">
+                    <span class="material-icons">add</span>
+                    {{ 'MAIN_DASHBOARD.ADD_SUBJECT' | translate }}
+                  </button>
+                }
+              </div>
+
+              <div class="db-step" [class.db-step-done]="totalGoalMinutes() > 0">
+                <div class="db-step-num">{{ totalGoalMinutes() > 0 ? '✓' : '2' }}</div>
+                <div class="db-step-body">
+                  <div class="db-step-title">{{ 'MAIN_DASHBOARD.STEP2_TITLE' | translate }}</div>
+                  <div class="db-step-desc">{{ 'MAIN_DASHBOARD.STEP2_DESC' | translate }}</div>
+                </div>
+                @if (subjects().length > 0 && totalGoalMinutes() === 0) {
+                  <button class="db-step-btn" (click)="openPlanModal()">
+                    <span class="material-icons">calendar_today</span>
+                    {{ 'MAIN_DASHBOARD.PLAN_DAY' | translate }}
+                  </button>
+                }
+              </div>
+
+              <div class="db-step">
+                <div class="db-step-num">3</div>
+                <div class="db-step-body">
+                  <div class="db-step-title">{{ 'MAIN_DASHBOARD.STEP3_TITLE' | translate }}</div>
+                  <div class="db-step-desc">{{ 'MAIN_DASHBOARD.STEP3_DESC' | translate }}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        }
+
+        <!-- ══ AI STUDY ASSISTANT ══ -->
+        <div class="db-card db-ai-panel">
+          <button type="button" (click)="toggleAiPanel()" class="db-ai-toggle" [class.db-ai-pulse]="!showAiPanel()">
+            <div class="db-ai-toggle-left">
+              <div class="db-ai-orb">
+                <span class="material-icons">psychology</span>
+              </div>
+              <div>
+                <div class="db-ai-name">{{ 'MAIN_DASHBOARD.AI_ASSISTANT' | translate }}</div>
+                <div class="db-ai-sub">
+                  <span class="material-icons">tips_and_updates</span>
                   {{ 'MAIN_DASHBOARD.AI_SUBTITLE' | translate }}
                 </div>
               </div>
             </div>
-            <span class="material-icons dark:text-indigo-300 light:text-indigo-600">{{ showAiPanel() ? 'expand_less' : 'expand_more' }}</span>
+            <div class="db-ai-toggle-right">
+              <span class="db-ai-badge">AI</span>
+              <span class="material-icons db-ai-chevron">{{ showAiPanel() ? 'expand_less' : 'expand_more' }}</span>
+            </div>
           </button>
 
           @if (showAiPanel()) {
-            <div class="mt-4">
-              <div class="flex items-center justify-end gap-3 mb-4">
-                <button
-                  (click)="requestAIAdvice()"
-                  [disabled]="aiLoading()"
-                  class="px-3 py-2 rounded-xl text-sm font-semibold dark:bg-indigo-500/20 dark:hover:bg-indigo-500/30 dark:border-indigo-400/30 light:bg-indigo-50 light:hover:bg-indigo-100 light:border-indigo-200 border dark:text-indigo-300 light:text-indigo-700 transition-all duration-300 disabled:opacity-60 disabled:cursor-not-allowed">
-                  {{ aiLoading() ? ('MAIN_DASHBOARD.AI_ANALYZING' | translate) : ('MAIN_DASHBOARD.AI_ANALYZE_BTN' | translate) }}
+            <div class="db-ai-body">
+              <div class="db-ai-toolbar">
+                <button (click)="requestAIAdvice()" [disabled]="aiLoading()" class="db-ai-analyze-btn">
+                  @if (aiLoading()) {
+                    <span class="material-icons db-spin">sync</span>
+                    {{ 'MAIN_DASHBOARD.AI_ANALYZING' | translate }}
+                  } @else {
+                    <span class="material-icons">auto_awesome</span>
+                    {{ 'MAIN_DASHBOARD.AI_ANALYZE_BTN' | translate }}
+                  }
                 </button>
               </div>
 
               @if (aiNotice()) {
-                <div class="mb-4 p-3 rounded-xl dark:bg-amber-500/10 light:bg-amber-50 dark:border-amber-400/30 light:border-amber-200 border text-sm dark:text-amber-200 light:text-amber-700 flex items-center gap-2">
-                  <span class="material-icons text-base">info</span>
-                  {{ aiNotice() }}
+                <div class="db-alert db-alert-warning db-ai-notice">
+                  <span class="material-icons db-alert-icon">info</span>
+                  <div class="db-alert-body">{{ aiNotice() }}</div>
                 </div>
               }
 
-              <div class="max-h-72 overflow-y-auto space-y-3 pr-1 mb-4">
+              <div class="db-ai-messages">
                 @for (message of aiMessages(); track $index) {
-                  <div
-                    class="rounded-2xl p-3 text-sm leading-relaxed"
-                    [ngClass]="'dark:bg-indigo-500/10 light:bg-indigo-50 dark:text-indigo-100 light:text-slate-700'">
-                    <div class="text-xs font-semibold mb-1 opacity-80 flex items-center gap-1">
-                      <span class="material-icons text-sm">smart_toy</span>
+                  <div class="db-ai-message">
+                    <div class="db-ai-msg-header">
+                      <span class="material-icons">smart_toy</span>
                       {{ 'MAIN_DASHBOARD.AI_COACH' | translate }}
                     </div>
-                    <div class="whitespace-pre-line">{{ message.content }}</div>
+                    <div class="db-ai-msg-body whitespace-pre-line">{{ message.content }}</div>
                   </div>
                 }
               </div>
 
-              <div class="mt-3 text-xs dark:text-indigo-300/80 light:text-indigo-600 flex items-center gap-2">
-                <span class="material-icons text-sm">insights</span>
+              <div class="db-ai-footer">
+                <span class="material-icons">insights</span>
                 {{ 'MAIN_DASHBOARD.AI_SOURCE' | translate }}
               </div>
             </div>
           }
         </div>
-        <!-- Timer Section -->
-        <div class="dark:bg-gradient-to-br dark:from-gray-900 dark:to-black light:bg-white/80 light:backdrop-blur-sm dark:border-yellow-500/20 light:border light:border-indigo-100 rounded-2xl p-6 dark:shadow-2xl dark:shadow-yellow-500/5 light:shadow-lg light:shadow-indigo-200/40">
-          <div class="flex items-center justify-between mb-6">
-            <h2 class="text-xl sm:text-2xl font-bold dark:bg-gradient-to-r dark:from-yellow-400 dark:to-yellow-600 light:bg-gradient-to-r light:from-indigo-600 light:to-violet-600 bg-clip-text text-transparent flex items-center gap-2">
-              <span class="material-icons text-3xl">timer</span>
+
+        <!-- ══ POMODORO TIMER ══ -->
+        <div class="db-card db-timer-card">
+          <div class="db-card-header">
+            <h2 class="db-card-title">
+              <span class="material-icons">timer</span>
               {{ 'MAIN_DASHBOARD.POMODORO_TITLE' | translate }}
             </h2>
-            <div class="flex items-center gap-3">
-              <!-- Session Counter -->
-              <div class="flex items-center gap-2 px-3 py-1 dark:bg-blue-500/10 light:bg-indigo-50 dark:border-blue-500/30 light:border-indigo-200 border rounded-lg shadow-sm">
-                <span class="dark:text-blue-400 light:text-indigo-600 text-sm font-semibold">{{ sessionsCompleted() }}/{{ currentSessionGoal() }}</span>
-                <span class="text-xs dark:text-gray-400 light:text-slate-500">{{ 'MAIN_DASHBOARD.SESSIONS' | translate }}</span>
+            <div class="db-timer-header-right">
+              <div class="db-session-badge">
+                <span class="material-icons">local_cafe</span>
+                {{ sessionsCompleted() }}/{{ currentSessionGoal() }}
+                <span class="db-session-label">{{ 'MAIN_DASHBOARD.SESSIONS' | translate }}</span>
               </div>
-              <!-- Settings Button -->
-              <button (click)="openTimerSettings()" class="p-2 dark:hover:bg-yellow-500/20 light:hover:bg-blue-500/20 rounded-lg dark:text-yellow-400 light:text-blue-600 transition-all" [title]="'MAIN_DASHBOARD.TIMER_SETTINGS' | translate">
+              <button (click)="openTimerSettings()" class="db-icon-btn" [title]="'MAIN_DASHBOARD.TIMER_SETTINGS' | translate">
                 <span class="material-icons">settings</span>
               </button>
             </div>
           </div>
-          
-          <!-- Mode Indicator -->
+
+          <!-- Break Mode Banner -->
           @if (timerMode() === 'break') {
-            <div class="mb-4 p-3 dark:bg-green-500/10 light:bg-green-100 dark:border-green-500/30 light:border-green-400 border rounded-xl flex items-center justify-center gap-2 shadow-lg light:shadow-green-200/50">
-              <span class="material-icons text-3xl animate-pulse dark:text-green-400 light:text-green-600">self_improvement</span>
-              <span class="dark:text-green-400 light:text-green-700 font-semibold">{{ 'MAIN_DASHBOARD.TIMER_BREAK_MODE' | translate }}</span>
+            <div class="db-break-banner">
+              <span class="material-icons db-break-icon">self_improvement</span>
+              <span>{{ 'MAIN_DASHBOARD.TIMER_BREAK_MODE' | translate }}</span>
+              <div class="db-break-dots">
+                <span></span><span></span><span></span>
+              </div>
             </div>
           }
-          
-          <div class="flex flex-col items-center justify-center py-8">
-            <div class="relative w-48 h-48 sm:w-64 sm:h-64 mb-6">
-              <!-- Circle Progress -->
-              <svg class="transform -rotate-90 w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet">
-                <circle cx="50" cy="50" r="44" stroke="currentColor" stroke-width="8" fill="none" class="dark:text-gray-800 light:text-indigo-100" />
-                <circle cx="50" cy="50" r="44" 
-                        [attr.stroke]="themeService.isDark() ? 'url(#goldGradient)' : 'url(#indigoGradient)'"
-                        stroke-width="8" 
-                        fill="none" 
-                        stroke-linecap="round" 
-                        class="transition-all duration-1000"
+
+          <!-- Timer display -->
+          <div class="db-timer-display">
+            <div class="db-timer-ring-wrap">
+              <svg class="db-timer-svg" viewBox="0 0 100 100">
+                <circle cx="50" cy="50" r="44" stroke="currentColor" stroke-width="6" fill="none" class="db-ring-track"/>
+                <circle cx="50" cy="50" r="44"
+                        [attr.stroke]="themeService.isDark() ? 'url(#timerViolet)' : 'url(#timerIndigo)'"
+                        stroke-width="6"
+                        fill="none"
+                        stroke-linecap="round"
+                        class="db-ring-progress"
                         [attr.stroke-dasharray]="276.46"
                         [attr.stroke-dashoffset]="276.46 * (1 - ((timerMinutes() * 60 + timerSeconds()) / (initialTimerMinutes() * 60)))" />
                 <defs>
-                  <linearGradient id="goldGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" style="stop-color:#ffd700;stop-opacity:1" />
-                    <stop offset="100%" style="stop-color:#ffb300;stop-opacity:1" />
+                  <linearGradient id="timerViolet" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" style="stop-color:#a78bfa;stop-opacity:1"/>
+                    <stop offset="100%" style="stop-color:#7c3aed;stop-opacity:1"/>
                   </linearGradient>
-                  <linearGradient id="indigoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" style="stop-color:#6366f1;stop-opacity:1" />
-                    <stop offset="100%" style="stop-color:#8b5cf6;stop-opacity:1" />
+                  <linearGradient id="timerIndigo" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" style="stop-color:#6366f1;stop-opacity:1"/>
+                    <stop offset="100%" style="stop-color:#8b5cf6;stop-opacity:1"/>
                   </linearGradient>
                 </defs>
               </svg>
-              <div class="absolute inset-0 flex flex-col items-center justify-center">
-                <div class="text-4xl sm:text-6xl font-bold dark:bg-gradient-to-r dark:from-yellow-400 dark:to-yellow-600 light:bg-gradient-to-r light:from-blue-500 light:to-blue-700 bg-clip-text text-transparent">
+              <div class="db-timer-center">
+                <div class="db-timer-time">
                   {{ timerMinutes().toString().padStart(2, '0') }}:{{ timerSeconds().toString().padStart(2, '0') }}
                 </div>
                 @if (selectedSubjectForTimer()) {
-                  <div class="text-sm dark:text-gray-400 light:text-gray-600 mt-2">{{ selectedSubjectForTimer()!.name }}</div>
+                  <div class="db-timer-subject">{{ selectedSubjectForTimer()!.name }}</div>
                 }
               </div>
             </div>
-            
+
+            <!-- No subject selected state -->
             @if (!isTimerRunning() && !selectedSubjectForTimer()) {
-              <div class="text-center w-full">
-                <!-- Timer Duration Adjuster -->
-                <div class="flex items-center justify-center gap-2 sm:gap-3 mb-6 flex-wrap">
-                    <button (click)="adjustTimer(-1)" 
-                      class="w-10 h-10 dark:bg-gray-800 dark:hover:bg-gray-700 light:bg-white light:hover:bg-blue-50 border light:border-blue-300 rounded-lg flex items-center justify-center dark:text-white light:text-gray-800 transition-all duration-300 hover:scale-110 shadow-sm light:shadow-blue-200/60">
+              <div class="db-timer-idle">
+                <div class="db-timer-adjuster">
+                  <button (click)="adjustTimer(-1)" class="db-timer-adj-btn">
                     <span class="material-icons">remove</span>
                   </button>
-                  <div class="px-4 sm:px-6 py-3 dark:bg-gray-800 light:bg-white border light:border-blue-300 rounded-xl shadow-sm light:shadow-blue-200/60 min-w-[130px]">
-                    <span class="text-xl sm:text-2xl font-bold dark:text-yellow-400 light:text-blue-700">{{ initialTimerMinutes() }} {{ 'MAIN_DASHBOARD.TIMER_MINUTES' | translate }}</span>
+                  <div class="db-timer-min-display">
+                    <span class="db-timer-min-val">{{ initialTimerMinutes() }}</span>
+                    <span class="db-timer-min-lbl">{{ 'MAIN_DASHBOARD.TIMER_MINUTES' | translate }}</span>
                   </div>
-                    <button (click)="adjustTimer(1)" 
-                      class="w-10 h-10 dark:bg-gray-800 dark:hover:bg-gray-700 light:bg-white light:hover:bg-blue-50 border light:border-blue-300 rounded-lg flex items-center justify-center dark:text-white light:text-gray-800 transition-all duration-300 hover:scale-110 shadow-sm light:shadow-blue-200/60">
+                  <button (click)="adjustTimer(1)" class="db-timer-adj-btn">
                     <span class="material-icons">add</span>
                   </button>
                 </div>
-                
-                <p class="dark:text-gray-400 light:text-gray-700 mb-4 font-medium">{{ 'MAIN_DASHBOARD.TIMER_START_PROMPT' | translate }}</p>
-                <div class="flex flex-wrap gap-2 justify-center">
+
+                <p class="db-timer-prompt">{{ 'MAIN_DASHBOARD.TIMER_START_PROMPT' | translate }}</p>
+
+                @if (subjects().length === 0) {
+                  <div class="db-tip-banner db-tip-info">
+                    <span class="material-icons db-tip-icon">lightbulb</span>
+                    <div class="db-tip-body">{{ 'MAIN_DASHBOARD.TIMER_ADD_SUBJECT_FIRST' | translate }}</div>
+                  </div>
+                }
+
+                <div class="db-subject-pills">
                   @for (subject of subjects(); track subject._id) {
-                    <button (click)="startTimer(subject)" 
-                            [style.background]="'linear-gradient(to right, ' + subject.color + ', ' + subject.color + 'dd)'"
-                            class="px-4 py-2 rounded-xl dark:text-black light:text-white font-semibold hover:scale-105 transition-all duration-300 shadow-lg flex items-center gap-2">
-                      <span class="material-icons" [style.color]="'inherit'">{{ subject.icon }}</span> {{ subject.name }}
+                    <button (click)="startTimer(subject)"
+                            class="db-subject-pill"
+                            [style.background]="'linear-gradient(135deg, ' + subject.color + 'dd, ' + subject.color + 'aa)'"
+                            [style.box-shadow]="'0 4px 16px ' + subject.color + '44'">
+                      <span class="material-icons">{{ subject.icon }}</span>
+                      {{ subject.name }}
                     </button>
                   }
                 </div>
               </div>
             } @else {
-              <div class="flex items-center gap-3 sm:gap-4 flex-wrap justify-center">
+              <div class="db-timer-controls">
                 @if (isTimerRunning()) {
-                  <button (click)="pauseTimer()" class="w-14 h-14 sm:w-16 sm:h-16 dark:bg-gray-800 dark:hover:bg-gray-700 light:bg-white light:hover:bg-blue-50 border light:border-blue-300 rounded-full flex items-center justify-center shadow-lg transition-all duration-300 hover:scale-110">
-                    <span class="material-icons text-2xl sm:text-3xl dark:text-white light:text-gray-800">pause</span>
+                  <button (click)="pauseTimer()" class="db-ctrl-btn db-ctrl-pause">
+                    <span class="material-icons">pause</span>
                   </button>
                 } @else {
-                  <button (click)="startTimer(selectedSubjectForTimer()!)" class="w-14 h-14 sm:w-16 sm:h-16 dark:bg-gradient-to-br dark:from-yellow-500 dark:to-yellow-600 dark:hover:from-yellow-400 dark:hover:to-yellow-500 light:bg-gradient-to-br light:from-blue-500 light:to-blue-600 light:hover:from-blue-400 light:hover:to-blue-500 rounded-full flex items-center justify-center dark:shadow-lg dark:shadow-yellow-500/50 light:shadow-lg light:shadow-blue-500/50 transition-all duration-300 hover:scale-110">
-                    <span class="material-icons text-2xl sm:text-3xl dark:text-black light:text-white">play_arrow</span>
+                  <button (click)="startTimer(selectedSubjectForTimer()!)" class="db-ctrl-btn db-ctrl-play">
+                    <span class="material-icons">play_arrow</span>
                   </button>
                 }
-                <button (click)="stopTimer()" class="w-11 h-11 sm:w-12 sm:h-12 dark:bg-red-600 dark:hover:bg-red-500 light:bg-red-500 light:hover:bg-red-600 rounded-full flex items-center justify-center transition-all duration-300">
-                  <span class="material-icons dark:text-white light:text-white">stop</span>
+                <button (click)="stopTimer()" class="db-ctrl-btn db-ctrl-stop">
+                  <span class="material-icons">stop</span>
                 </button>
               </div>
             }
           </div>
         </div>
 
-        <!-- Chronometer Section -->
-        <div class="mt-5 dark:bg-gradient-to-br dark:from-gray-900 dark:to-black light:bg-white/80 light:backdrop-blur-sm dark:border-cyan-500/20 light:border light:border-cyan-100 rounded-2xl p-6 dark:shadow-2xl dark:shadow-cyan-500/5 light:shadow-lg light:shadow-cyan-200/40">
-          <div class="flex items-center justify-between mb-4">
-            <h2 class="text-xl sm:text-2xl font-bold dark:bg-gradient-to-r dark:from-cyan-300 dark:to-cyan-500 light:bg-gradient-to-r light:from-cyan-600 light:to-blue-600 bg-clip-text text-transparent flex items-center gap-2">
-              <span class="material-icons text-3xl">timelapse</span>
+        <!-- ══ CHRONOMETER ══ -->
+        <div class="db-card db-chrono-card">
+          <div class="db-card-header">
+            <h2 class="db-card-title db-card-title-cyan">
+              <span class="material-icons">timelapse</span>
               {{ 'MAIN_DASHBOARD.CHRONO_TITLE' | translate }}
             </h2>
-            <div class="text-xs px-2.5 py-1 rounded-full dark:bg-cyan-500/10 dark:text-cyan-300 light:bg-cyan-100 light:text-cyan-700 border dark:border-cyan-500/30 light:border-cyan-200">
-              {{ 'MAIN_DASHBOARD.CHRONO_NO_BACKEND' | translate }}
-            </div>
+            <div class="db-chrono-badge">{{ 'MAIN_DASHBOARD.CHRONO_NO_BACKEND' | translate }}</div>
           </div>
 
-          <div class="rounded-2xl dark:bg-cyan-500/5 light:bg-cyan-50/70 border dark:border-cyan-500/20 light:border-cyan-200/70 p-5">
-            <div class="text-center mb-4">
-              <div class="text-4xl sm:text-5xl font-black tracking-wider dark:text-cyan-300 light:text-cyan-700 font-mono">
-                {{ formatChronometer(chronoElapsedSeconds()) }}
-              </div>
-              <div class="mt-1 text-xs dark:text-cyan-200/70 light:text-cyan-700/80">
-                {{ 'MAIN_DASHBOARD.CHRONO_ELAPSED' | translate }}
-              </div>
-            </div>
+          <div class="db-chrono-display">
+            <div class="db-chrono-time">{{ formatChronometer(chronoElapsedSeconds()) }}</div>
+            <div class="db-chrono-sub">{{ 'MAIN_DASHBOARD.CHRONO_ELAPSED' | translate }}</div>
+          </div>
 
-            <div class="flex flex-wrap gap-2 justify-center">
-              <button (click)="toggleChronometer()" class="px-4 py-2 rounded-xl font-semibold transition-all duration-300 flex items-center gap-2 shadow-sm dark:shadow-cyan-900/30"
-                      [class.dark:bg-cyan-500]="!chronoRunning()"
-                      [class.dark:hover:bg-cyan-400]="!chronoRunning()"
-                      [class.dark:text-black]="!chronoRunning()"
-                      [class.light:bg-cyan-600]="!chronoRunning()"
-                      [class.light:hover:bg-cyan-500]="!chronoRunning()"
-                      [class.light:text-white]="!chronoRunning()"
-                      [class.dark:bg-gray-800]="chronoRunning()"
-                      [class.dark:hover:bg-gray-700]="chronoRunning()"
-                      [class.dark:text-cyan-300]="chronoRunning()"
-                      [class.light:bg-slate-100]="chronoRunning()"
-                      [class.light:hover:bg-slate-200]="chronoRunning()"
-                      [class.light:text-cyan-700]="chronoRunning()">
-                <span class="material-icons text-lg">{{ chronoRunning() ? 'pause' : 'play_arrow' }}</span>
-                {{ chronoRunning() ? ('MAIN_DASHBOARD.CHRONO_PAUSE' | translate) : ('MAIN_DASHBOARD.CHRONO_START' | translate) }}
-              </button>
-
-              <button (click)="addChronoLap()" class="px-4 py-2 rounded-xl font-semibold dark:bg-indigo-500/20 dark:hover:bg-indigo-500/30 dark:text-indigo-300 light:bg-indigo-100 light:hover:bg-indigo-200 light:text-indigo-700 transition-all duration-300 flex items-center gap-2" [disabled]="chronoElapsedSeconds() === 0">
-                <span class="material-icons text-lg">flag</span>
-                {{ 'MAIN_DASHBOARD.CHRONO_LAP' | translate }}
-              </button>
-
-              <button (click)="resetChronometer()" class="px-4 py-2 rounded-xl font-semibold dark:bg-red-500/20 dark:hover:bg-red-500/30 dark:text-red-300 light:bg-red-100 light:hover:bg-red-200 light:text-red-700 transition-all duration-300 flex items-center gap-2" [disabled]="chronoElapsedSeconds() === 0">
-                <span class="material-icons text-lg">restart_alt</span>
-                {{ 'MAIN_DASHBOARD.CHRONO_RESET' | translate }}
-              </button>
-            </div>
+          <div class="db-chrono-controls">
+            <button (click)="toggleChronometer()" class="db-chrono-btn"
+                    [class.db-chrono-btn-start]="!chronoRunning()"
+                    [class.db-chrono-btn-pause]="chronoRunning()">
+              <span class="material-icons">{{ chronoRunning() ? 'pause' : 'play_arrow' }}</span>
+              {{ chronoRunning() ? ('MAIN_DASHBOARD.CHRONO_PAUSE' | translate) : ('MAIN_DASHBOARD.CHRONO_START' | translate) }}
+            </button>
+            <button (click)="addChronoLap()" class="db-chrono-btn db-chrono-btn-lap" [disabled]="chronoElapsedSeconds() === 0">
+              <span class="material-icons">flag</span>
+              {{ 'MAIN_DASHBOARD.CHRONO_LAP' | translate }}
+            </button>
+            <button (click)="resetChronometer()" class="db-chrono-btn db-chrono-btn-reset" [disabled]="chronoElapsedSeconds() === 0">
+              <span class="material-icons">restart_alt</span>
+              {{ 'MAIN_DASHBOARD.CHRONO_RESET' | translate }}
+            </button>
           </div>
 
           @if (chronoLaps().length > 0) {
-            <div class="mt-4 rounded-xl border dark:border-cyan-500/20 light:border-cyan-200/60 overflow-hidden">
-              <div class="px-4 py-2 text-sm font-semibold dark:bg-cyan-500/10 dark:text-cyan-300 light:bg-cyan-100 light:text-cyan-700">
-                {{ 'MAIN_DASHBOARD.CHRONO_SAVED_LAPS' | translate }}
-              </div>
-              <div class="max-h-40 overflow-y-auto divide-y dark:divide-cyan-500/10 light:divide-cyan-200/60">
+            <div class="db-chrono-laps">
+              <div class="db-chrono-laps-title">{{ 'MAIN_DASHBOARD.CHRONO_SAVED_LAPS' | translate }}</div>
+              <div class="db-chrono-laps-list">
                 @for (lap of chronoLaps(); track $index) {
-                  <div class="px-4 py-2 flex items-center justify-between text-sm dark:bg-gray-900/40 light:bg-white/70">
-                    <span class="dark:text-gray-300 light:text-slate-700">{{ 'MAIN_DASHBOARD.CHRONO_LAP_NUM' | translate }}{{ chronoLaps().length - $index }}</span>
-                    <div class="flex items-center gap-4">
-                      <span class="font-mono dark:text-cyan-300 light:text-cyan-700">{{ formatChronometer(lap) }}</span>
-                      <span class="font-mono text-xs dark:text-indigo-300 light:text-indigo-700">+{{ getChronoLapDuration($index) }}</span>
+                  <div class="db-chrono-lap">
+                    <span class="db-lap-num">{{ 'MAIN_DASHBOARD.CHRONO_LAP_NUM' | translate }}{{ chronoLaps().length - $index }}</span>
+                    <div class="db-lap-times">
+                      <span class="db-lap-total">{{ formatChronometer(lap) }}</span>
+                      <span class="db-lap-delta">+{{ getChronoLapDuration($index) }}</span>
                     </div>
                   </div>
                 }
@@ -452,194 +612,209 @@
             </div>
           }
         </div>
-
       </div>
 
-      <!-- Sidebar - Right (To-Do List Full) -->
-      <aside class="lg:col-span-1 w-full mt-6 lg:mt-0">
-        <div class="h-full lg:h-auto overflow-y-auto w-full dark:bg-gradient-to-br dark:from-gray-900 dark:to-black light:bg-white/95 lg:light:bg-white/80 light:backdrop-blur-sm dark:border-yellow-500/20 light:border light:border-indigo-100 rounded-l-2xl lg:rounded-2xl p-4 sm:p-6 dark:shadow-2xl dark:shadow-yellow-500/5 light:shadow-lg light:shadow-indigo-200/40 lg:sticky lg:top-24 lg:max-h-[85vh]">
-          
-          <!-- Add Todo Button -->
-          <button (click)="openTodoModal()" class="w-full py-3 dark:bg-yellow-500/10 dark:hover:bg-yellow-500/20 dark:border-yellow-500/30 light:bg-indigo-50 light:hover:bg-indigo-100 light:border-indigo-200 border rounded-xl dark:text-yellow-500 light:text-indigo-600 font-medium transition-all duration-300 mb-6 flex items-center justify-center gap-2 hover:scale-105 shadow-sm">
-            <span class="material-icons text-xl">add_task</span>
-            {{ 'MAIN_DASHBOARD.ADD_TASK' | translate }}
-          </button>
-
-          <div class="flex items-center justify-between mb-4">
-            <h2 class="text-xl font-bold dark:bg-gradient-to-r dark:from-yellow-400 dark:to-yellow-600 light:bg-gradient-to-r light:from-indigo-600 light:to-violet-600 bg-clip-text text-transparent flex items-center gap-2">
+      <!-- ┌───────────────────────────────────────
+           │ RIGHT SIDEBAR — TO-DO
+           └─────────────────────────────────────── -->
+      <aside class="db-sidebar-right">
+        <div id="db-todo-card" class="db-sidebar-card db-todo-card">
+          <!-- Header -->
+          <div class="db-todo-header">
+            <h2 class="db-section-title">
               <span class="material-icons">check_circle</span>
               {{ 'MAIN_DASHBOARD.TODO_TITLE' | translate }}
             </h2>
+            <div class="db-todo-count">
+              <span class="db-todo-done-count">{{ completedTodos() }}</span>/<span>{{ totalTodos() }}</span>
+            </div>
           </div>
-          
-          <div class="space-y-3">
+
+          <!-- Onboarding tip -->
+          @if (todos().length === 0) {
+            <div class="db-tip-banner db-tip-accent">
+              <span class="material-icons db-tip-icon">tips_and_updates</span>
+              <div>
+                <div class="db-tip-title">{{ 'MAIN_DASHBOARD.TODO_TIP_TITLE' | translate }}</div>
+                <div class="db-tip-body">{{ 'MAIN_DASHBOARD.TODO_TIP_MSG' | translate }}</div>
+              </div>
+            </div>
+          }
+
+          <!-- Add Task Button -->
+          <button (click)="openTodoModal()" class="db-add-btn db-add-todo-btn">
+            <span class="material-icons">add_task</span>
+            {{ 'MAIN_DASHBOARD.ADD_TASK' | translate }}
+          </button>
+
+          <!-- Task List -->
+          <div class="db-todo-list">
             @for (todo of todos(); track todo._id) {
-              <div class="p-3 sm:p-4 dark:bg-gray-800/50 light:bg-white/90 dark:border-gray-700 light:border-indigo-100 border-2 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-2 dark:hover:border-yellow-500/30 light:hover:border-indigo-300 transition-all duration-300 group shadow-sm hover:shadow-md"
-                   [class.opacity-60]="todo.done"
-                   [class.border-green-500]="todo.done"
-                   [class.light:bg-emerald-50]="todo.done">
-                   
-                <div class="flex items-center gap-2 sm:gap-3 flex-1 min-w-0">
-                  <input type="checkbox" 
-                    [ngModel]="todo.done"
-                    (ngModelChange)="toggleTodo(todo, $event)"
-                    class="w-5 h-5 rounded dark:border-yellow-500 light:border-indigo-500 dark:text-yellow-500 light:text-indigo-600 focus:ring-2 dark:focus:ring-yellow-500 light:focus:ring-indigo-500 cursor-pointer" />
-                  
-                  <div class="flex flex-col flex-1 min-w-0">
-                    <div [class.line-through]="todo.done" 
-                         [class.text-gray-500]="todo.done"
-                         class="text-sm sm:text-base dark:text-white light:text-slate-800 dark:group-hover:text-yellow-400 light:group-hover:text-indigo-700 transition-colors font-semibold break-words">
-                      {{ todo.title }}
+              <div class="db-todo-item"
+                   [class.db-todo-done]="todo.done"
+                   [class.db-todo-urgent]="!todo.done && todo.priority === 'urgent'">
+                <input type="checkbox"
+                       [ngModel]="todo.done"
+                       (ngModelChange)="toggleTodo(todo, $event)"
+                       class="db-todo-check"/>
+
+                <div class="db-todo-info">
+                  <div class="db-todo-title" [class.db-todo-title-done]="todo.done">{{ todo.title }}</div>
+
+                  @if (getTodoSubject(todo); as todoSubject) {
+                    <div class="db-todo-subject">
+                      <span class="material-icons">menu_book</span>
+                      {{ todoSubject.name }}
                     </div>
-                    @if (getTodoSubject(todo); as todoSubject) {
-                      <div class="mt-1 text-[11px] font-medium inline-flex items-center gap-1 dark:text-cyan-300 light:text-cyan-700">
-                        <span class="material-icons text-[12px]">menu_book</span>
-                        {{ todoSubject.name }}
-                      </div>
+                  }
+
+                  <div class="db-todo-tags">
+                    @if (todo.priority === 'urgent') {
+                      <span class="db-priority-tag db-priority-urgent">
+                        <span class="material-icons">local_fire_department</span>
+                        {{ 'MAIN_DASHBOARD.TODO_URGENT' | translate }}
+                      </span>
+                    } @else if (todo.priority === 'high') {
+                      <span class="db-priority-tag db-priority-high">{{ 'MAIN_DASHBOARD.TODO_HIGH' | translate }}</span>
+                    } @else if (todo.priority === 'medium') {
+                      <span class="db-priority-tag db-priority-medium">{{ 'MAIN_DASHBOARD.TODO_MEDIUM' | translate }}</span>
+                    } @else {
+                      <span class="db-priority-tag db-priority-low">{{ 'MAIN_DASHBOARD.TODO_LOW' | translate }}</span>
                     }
-                    <div class="mt-1">
-                      @if (todo.priority === 'urgent') {
-                        <span class="px-2 py-0.5 text-[10px] font-bold rounded-full dark:bg-purple-500/20 light:bg-rose-100 dark:text-purple-400 light:text-rose-700 animate-pulse inline-flex items-center gap-1"><span class="material-icons text-[10px] sm:text-xs">local_fire_department</span> {{ 'MAIN_DASHBOARD.TODO_URGENT' | translate }}</span>
-                      } @else if (todo.priority === 'high') {
-                        <span class="px-2 py-0.5 text-[10px] font-bold rounded-full dark:bg-red-500/20 light:bg-orange-100 dark:text-red-400 light:text-orange-700">{{ 'MAIN_DASHBOARD.TODO_HIGH' | translate }}</span>
-                      } @else if (todo.priority === 'medium') {
-                        <span class="px-2 py-0.5 text-[10px] font-bold rounded-full dark:bg-yellow-500/20 light:bg-indigo-100 dark:text-yellow-400 light:text-indigo-700">{{ 'MAIN_DASHBOARD.TODO_MEDIUM' | translate }}</span>
-                      } @else {
-                        <span class="px-2 py-0.5 text-[10px] font-bold rounded-full dark:bg-green-500/20 light:bg-emerald-100 dark:text-green-400 light:text-emerald-700">{{ 'MAIN_DASHBOARD.TODO_LOW' | translate }}</span>
-                      }
-                    </div>
                   </div>
                 </div>
 
-                <div class="flex gap-1 sm:gap-2 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity self-end sm:self-auto">
-                  <button (click)="editTodo(todo)" class="p-1 dark:hover:bg-white/10 light:hover:bg-slate-200/80 rounded">
-                    <span class="material-icons text-base sm:text-lg dark:text-gray-300 light:text-slate-600">edit</span>
+                <div class="db-todo-actions">
+                  <button (click)="editTodo(todo)" class="db-action-btn">
+                    <span class="material-icons">edit</span>
                   </button>
-                  <button (click)="deleteTodo(todo)" class="p-1 hover:bg-red-500/20 rounded text-red-500">
-                    <span class="material-icons text-base sm:text-lg">delete</span>
+                  <button (click)="deleteTodo(todo)" class="db-action-btn db-action-delete">
+                    <span class="material-icons">delete</span>
                   </button>
                 </div>
               </div>
             } @empty {
-              <div class="dark:text-gray-500 light:text-slate-500 text-center py-8 text-sm flex flex-col items-center gap-2">
-                <span class="material-icons text-4xl opacity-50">task</span>
-                {{ 'MAIN_DASHBOARD.TODO_NO_TASKS' | translate }}
+              <div class="db-empty-todo">
+                <span class="material-icons">task_alt</span>
+                <p>{{ 'MAIN_DASHBOARD.TODO_NO_TASKS' | translate }}</p>
               </div>
             }
           </div>
         </div>
       </aside>
-      
-    </div>
+
+    </div><!-- /db-layout -->
   </main>
 
-  <!-- Subject Modal -->
+  <!-- ═══════════════════════════════════════════
+       FOOTER
+  ═══════════════════════════════════════════ -->
+  <footer class="db-footer">
+    <p class="db-footer-text">
+      {{ 'MAIN_DASHBOARD.BUILT_WITH' | translate }}
+      <span class="material-icons db-footer-heart">favorite</span>
+      {{ 'MAIN_DASHBOARD.USING' | translate }} Angular 18 + MongoDB + Tailwind CSS
+    </p>
+    <div class="db-footer-sub">{{ 'MAIN_DASHBOARD.FOOTER_TEXT' | translate }}</div>
+  </footer>
+
+  <!-- ═══════════════════════════════════════════
+       SUBJECT MODAL
+  ═══════════════════════════════════════════ -->
   @if (showSubjectModal()) {
-    <div class="fixed inset-0 dark:bg-black/80 light:bg-black/60 backdrop-blur-sm flex items-start sm:items-center justify-center z-50 p-4 pt-8 sm:pt-4 overflow-y-auto" (click)="showSubjectModal.set(false)">
-      <div class="dark:bg-gradient-to-br dark:from-gray-900 dark:to-black light:bg-white dark:border-yellow-500/20 light:border-2 light:border-indigo-300 rounded-2xl p-6 sm:p-8 max-w-md w-full dark:shadow-2xl light:shadow-2xl light:shadow-indigo-300/50 max-h-[85vh] overflow-y-auto my-auto" (click)="$event.stopPropagation()">
-        <h3 class="text-2xl font-bold dark:bg-gradient-to-r dark:from-yellow-400 dark:to-yellow-600 light:bg-gradient-to-r light:from-blue-600 light:to-blue-700 bg-clip-text text-transparent mb-6">
-          {{ (editingSubject() ? 'MAIN_DASHBOARD.EDIT_SUBJECT_TITLE' : 'MAIN_DASHBOARD.ADD_SUBJECT_TITLE') | translate }}
-        </h3>
-        
-        <div class="space-y-4">
-          <div>
-            <label class="text-sm font-semibold dark:text-gray-300 light:text-gray-800 block mb-2">{{ 'MAIN_DASHBOARD.SUBJECT_NAME' | translate }}</label>
-            <input type="text" 
-                   [(ngModel)]="subjectForm.name"
+    <div class="db-modal-overlay" (click)="showSubjectModal.set(false)">
+      <div class="db-modal" (click)="$event.stopPropagation()">
+        <div class="db-modal-header">
+          <h3 class="db-modal-title">
+            {{ (editingSubject() ? 'MAIN_DASHBOARD.EDIT_SUBJECT_TITLE' : 'MAIN_DASHBOARD.ADD_SUBJECT_TITLE') | translate }}
+          </h3>
+          <button (click)="showSubjectModal.set(false)" class="db-modal-close">
+            <span class="material-icons">close</span>
+          </button>
+        </div>
+
+        <div class="db-modal-body">
+          <div class="db-field">
+            <label class="db-label">{{ 'MAIN_DASHBOARD.SUBJECT_NAME' | translate }}</label>
+            <input type="text" [(ngModel)]="subjectForm.name"
                    [placeholder]="'MAIN_DASHBOARD.SUBJECT_NAME_PH' | translate"
-                   class="w-full px-4 py-3 dark:bg-black/50 light:bg-blue-50 dark:border-yellow-500/30 light:border-2 light:border-blue-300 rounded-xl dark:text-white light:text-gray-900 dark:placeholder-gray-500 light:placeholder-gray-500 focus:outline-none dark:focus:ring-2 dark:focus:ring-yellow-500 light:focus:ring-2 light:focus:ring-blue-500" />
+                   class="db-input"/>
           </div>
-          
-          <div>
-            <label class="text-sm font-semibold dark:text-gray-300 light:text-gray-700 block mb-2">{{ 'MAIN_DASHBOARD.SUBJECT_ICON' | translate }}</label>
-            <div class="grid grid-cols-6 gap-2">
+
+          <div class="db-field">
+            <label class="db-label">{{ 'MAIN_DASHBOARD.SUBJECT_ICON' | translate }}</label>
+            <div class="db-icon-grid">
               @for (icon of icons; track icon) {
-                <button type="button"
-                        (click)="subjectForm.icon = icon"
-                        [class.ring-2]="subjectForm.icon === icon"
-                        [class.ring-yellow-500]="subjectForm.icon === icon && themeService.isDark()"
-                        [class.ring-blue-500]="subjectForm.icon === icon && themeService.isLight()"
-                        class="p-2 dark:bg-gray-800 dark:hover:bg-gray-700 light:bg-gray-100 light:hover:bg-gray-200 rounded-lg transition-all flex items-center justify-center">
-                  <span class="material-icons text-2xl dark:text-yellow-400 light:text-blue-600">{{ icon }}</span>
+                <button type="button" (click)="subjectForm.icon = icon"
+                        class="db-icon-pick"
+                        [class.db-icon-pick-active]="subjectForm.icon === icon">
+                  <span class="material-icons">{{ icon }}</span>
                 </button>
               }
             </div>
           </div>
-          
-          <div>
-            <label class="text-sm font-semibold dark:text-gray-300 light:text-gray-700 block mb-2">{{ 'MAIN_DASHBOARD.SUBJECT_COLOR' | translate }}</label>
-            <div class="grid grid-cols-4 gap-3">
+
+          <div class="db-field">
+            <label class="db-label">{{ 'MAIN_DASHBOARD.SUBJECT_COLOR' | translate }}</label>
+            <div class="db-color-grid">
               @for (color of colors; track color) {
-                <button type="button"
-                        (click)="subjectForm.color = color"
-                        [class.ring-4]="subjectForm.color === color"
-                        [class.ring-white]="subjectForm.color === color && themeService.isDark()"
-                        [class.ring-blue-600]="subjectForm.color === color && themeService.isLight()"
-                        [class.scale-110]="subjectForm.color === color"
-                        [class.shadow-2xl]="subjectForm.color === color"
-                        class="relative w-full h-14 rounded-xl transition-all hover:scale-105 hover:shadow-lg border-2 dark:border-transparent light:border-gray-200"
+                <button type="button" (click)="subjectForm.color = color"
+                        class="db-color-pick"
+                        [class.db-color-pick-active]="subjectForm.color === color"
                         [style.background]="color">
                   @if (subjectForm.color === color) {
-                    <div class="absolute inset-0 flex items-center justify-center">
-                      <span class="material-icons text-3xl" [class.text-white]="color !== '#ffd700'" [class.text-black]="color === '#ffd700'">check_circle</span>
-                    </div>
+                    <span class="material-icons" [class.text-black]="color === '#ffd700'" [class.text-white]="color !== '#ffd700'">check</span>
                   }
                 </button>
               }
             </div>
-            @if (subjectForm.color) {
-              <div class="mt-3 p-3 rounded-lg dark:bg-gray-800 light:bg-blue-50 flex items-center gap-2">
-                <div class="w-8 h-8 rounded-lg" [style.background]="subjectForm.color"></div>
-                <span class="text-sm font-medium dark:text-gray-300 light:text-blue-700">{{ 'MAIN_DASHBOARD.SELECTED_COLOR' | translate }}</span>
-              </div>
-            }
           </div>
         </div>
-        
-        <div class="flex gap-3 mt-6">
-          <button (click)="showSubjectModal.set(false)" class="flex-1 py-3 dark:bg-gray-800 dark:hover:bg-gray-700 light:bg-gray-200 light:hover:bg-gray-300 rounded-xl dark:text-white light:text-gray-900 font-semibold transition-all">
-            {{ 'MAIN_DASHBOARD.CANCEL' | translate }}
-          </button>
-          <button (click)="saveSubject()" class="flex-1 py-3 dark:bg-gradient-to-r dark:from-yellow-400 dark:to-yellow-600 dark:hover:from-yellow-500 dark:hover:to-yellow-700 light:bg-gradient-to-r light:from-blue-500 light:to-blue-700 light:hover:from-blue-600 light:hover:to-blue-800 rounded-xl dark:text-black light:text-white font-semibold transition-all">
-            {{ 'MAIN_DASHBOARD.SAVE' | translate }}
-          </button>
+
+        <div class="db-modal-footer">
+          <button (click)="showSubjectModal.set(false)" class="db-btn-ghost">{{ 'MAIN_DASHBOARD.CANCEL' | translate }}</button>
+          <button (click)="saveSubject()" class="db-btn-primary">{{ 'MAIN_DASHBOARD.SAVE' | translate }}</button>
         </div>
       </div>
     </div>
   }
 
-  <!-- Todo Modal -->
+  <!-- ═══════════════════════════════════════════
+       TODO MODAL
+  ═══════════════════════════════════════════ -->
   @if (showTodoModal()) {
-    <div class="fixed inset-0 dark:bg-black/80 light:bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 overflow-y-auto" (click)="showTodoModal.set(false)">
-      <div class="dark:bg-gradient-to-br dark:from-gray-900 dark:to-black light:bg-gradient-to-br light:from-white light:to-indigo-50/70 dark:border-yellow-500/20 light:border light:border-indigo-200/80 border rounded-2xl p-6 sm:p-8 max-w-md w-full dark:shadow-2xl light:shadow-2xl light:shadow-indigo-200/50 max-h-[92vh] overflow-y-auto" (click)="$event.stopPropagation()">
-        <h3 class="text-2xl font-bold dark:bg-gradient-to-r dark:from-yellow-400 dark:to-yellow-600 light:bg-gradient-to-r light:from-indigo-600 light:to-violet-600 bg-clip-text text-transparent mb-6">
-          {{ (editingTodo() ? 'MAIN_DASHBOARD.EDIT_TODO_TITLE' : 'MAIN_DASHBOARD.ADD_TODO_TITLE') | translate }}
-        </h3>
-        
-        <div class="space-y-4">
-          <div>
-            <label class="text-sm font-semibold dark:text-gray-300 light:text-slate-700 block mb-2">{{ 'MAIN_DASHBOARD.TODO_TITLE_LABEL' | translate }}</label>
-            <input type="text" 
-                   [(ngModel)]="todoForm.title"
+    <div class="db-modal-overlay" (click)="showTodoModal.set(false)">
+      <div class="db-modal" (click)="$event.stopPropagation()">
+        <div class="db-modal-header">
+          <h3 class="db-modal-title">
+            {{ (editingTodo() ? 'MAIN_DASHBOARD.EDIT_TODO_TITLE' : 'MAIN_DASHBOARD.ADD_TODO_TITLE') | translate }}
+          </h3>
+          <button (click)="showTodoModal.set(false)" class="db-modal-close">
+            <span class="material-icons">close</span>
+          </button>
+        </div>
+
+        <div class="db-modal-body">
+          <div class="db-field">
+            <label class="db-label">{{ 'MAIN_DASHBOARD.TODO_TITLE_LABEL' | translate }}</label>
+            <input type="text" [(ngModel)]="todoForm.title"
                    [placeholder]="'MAIN_DASHBOARD.TODO_TITLE_PH' | translate"
-                   class="w-full px-4 py-3 dark:bg-black/50 light:bg-white dark:border-yellow-500/30 light:border-indigo-200 border rounded-xl dark:text-white light:text-slate-900 dark:placeholder-gray-500 light:placeholder-slate-400 focus:outline-none dark:focus:ring-2 dark:focus:ring-yellow-500 light:focus:ring-2 light:focus:ring-indigo-500 light:shadow-inner" />
+                   class="db-input"/>
           </div>
-          
-          <div>
-            <label class="text-sm font-semibold dark:text-gray-300 light:text-slate-700 block mb-2">{{ 'MAIN_DASHBOARD.TODO_PRIORITY_LABEL' | translate }}</label>
-            <select [(ngModel)]="todoForm.priority" 
-                  class="w-full px-4 py-3 dark:bg-black/50 light:bg-white dark:border-yellow-500/30 light:border-indigo-200 border rounded-xl dark:text-white light:text-slate-900 focus:outline-none dark:focus:ring-2 dark:focus:ring-yellow-500 light:focus:ring-2 light:focus:ring-indigo-500">
+
+          <div class="db-field">
+            <label class="db-label">{{ 'MAIN_DASHBOARD.TODO_PRIORITY_LABEL' | translate }}</label>
+            <select [(ngModel)]="todoForm.priority" class="db-input">
               <option value="low">{{ 'MAIN_DASHBOARD.TODO_LOW' | translate }}</option>
               <option value="medium">{{ 'MAIN_DASHBOARD.TODO_MEDIUM' | translate }}</option>
               <option value="high">{{ 'MAIN_DASHBOARD.TODO_HIGH' | translate }}</option>
               <option value="urgent">{{ 'MAIN_DASHBOARD.TODO_URGENT' | translate }}</option>
             </select>
           </div>
-          
-          <div>
-            <label class="text-sm font-semibold dark:text-gray-300 light:text-slate-700 block mb-2">{{ 'MAIN_DASHBOARD.TODO_SUBJECT_OPTIONAL' | translate }}</label>
-            <select [(ngModel)]="todoForm.subjectId" 
-                    class="w-full px-4 py-3 dark:bg-black/50 light:bg-white dark:border-yellow-500/30 light:border-indigo-200 border rounded-xl dark:text-white light:text-slate-900 focus:outline-none dark:focus:ring-2 dark:focus:ring-yellow-500 light:focus:ring-2 light:focus:ring-indigo-500">
+
+          <div class="db-field">
+            <label class="db-label">{{ 'MAIN_DASHBOARD.TODO_SUBJECT_OPTIONAL' | translate }}</label>
+            <select [(ngModel)]="todoForm.subjectId" class="db-input">
               <option value="">{{ 'MAIN_DASHBOARD.NONE' | translate }}</option>
               @for (subject of subjects(); track subject._id) {
                 <option [value]="subject._id">{{ subject.name }}</option>
@@ -647,12 +822,10 @@
             </select>
           </div>
         </div>
-        
-        <div class="flex gap-3 mt-6">
-          <button (click)="showTodoModal.set(false)" class="flex-1 py-3 dark:bg-gray-800 dark:hover:bg-gray-700 light:bg-slate-100 light:hover:bg-slate-200 rounded-xl dark:text-white light:text-slate-800 font-semibold transition-all">
-            {{ 'MAIN_DASHBOARD.CANCEL' | translate }}
-          </button>
-          <button (click)="saveTodo()" class="flex-1 py-3 dark:bg-gradient-to-r dark:from-yellow-400 dark:to-yellow-600 dark:hover:from-yellow-500 dark:hover:to-yellow-700 light:bg-gradient-to-r light:from-indigo-500 light:to-violet-600 light:hover:from-indigo-600 light:hover:to-violet-700 rounded-xl dark:text-black light:text-white font-semibold transition-all">
+
+        <div class="db-modal-footer">
+          <button (click)="showTodoModal.set(false)" class="db-btn-ghost">{{ 'MAIN_DASHBOARD.CANCEL' | translate }}</button>
+          <button (click)="saveTodo()" class="db-btn-primary">
             {{ (editingTodo() ? 'MAIN_DASHBOARD.EDIT' : 'MAIN_DASHBOARD.ADD') | translate }}
           </button>
         </div>
@@ -660,475 +833,352 @@
     </div>
   }
 
-  <!-- Day Plan Modal -->
+  <!-- ═══════════════════════════════════════════
+       DAY PLAN MODAL
+  ═══════════════════════════════════════════ -->
   @if (showPlanModal()) {
-    <div class="fixed inset-0 dark:bg-black/80 light:bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 overflow-y-auto" (click)="showPlanModal.set(false)">
-      <div class="dark:bg-gradient-to-br dark:from-gray-900 dark:to-black light:bg-white dark:border-yellow-500/20 light:border-blue-500/20 border rounded-2xl p-6 sm:p-8 max-w-2xl w-full dark:shadow-2xl light:shadow-2xl max-h-[92vh] overflow-y-auto" (click)="$event.stopPropagation()">
-        <h3 class="text-2xl font-bold dark:bg-gradient-to-r dark:from-yellow-400 dark:to-yellow-600 light:bg-gradient-to-r light:from-blue-500 light:to-blue-700 bg-clip-text text-transparent mb-6 flex items-center gap-2">
-          <span class="material-icons text-3xl">calendar_today</span> {{ 'MAIN_DASHBOARD.PLAN_TITLE' | translate }}
-        </h3>
-        
-        <div class="mb-4 p-4 dark:bg-blue-500/10 light:bg-blue-500/10 dark:border-blue-500/30 light:border-blue-500/30 border rounded-xl">
-          <div class="flex items-start gap-3">
-            <span class="material-icons text-3xl dark:text-blue-400 light:text-blue-600">info</span>
-            <div class="flex-1 text-sm dark:text-gray-300 light:text-gray-700">
-              <p class="font-semibold dark:text-blue-400 light:text-blue-600 mb-2 flex items-center gap-1"><span class="material-icons text-lg">lightbulb</span> {{ 'MAIN_DASHBOARD.PLAN_HOW_IT_WORKS' | translate }}</p>
-              <ul class="space-y-1 list-none">
-                <li class="flex items-start gap-2">
-                  <span class="dark:text-green-400 light:text-green-600"><span class="material-icons text-sm">check_circle</span></span>
-                  <span>{{ 'MAIN_DASHBOARD.PLAN_TIP_1' | translate }}</span>
-                </li>
-                <li class="flex items-start gap-2">
-                  <span class="dark:text-blue-400 light:text-blue-600"><span class="material-icons text-sm">add_circle</span></span>
-                  <span>{{ 'MAIN_DASHBOARD.PLAN_TIP_2' | translate }}</span>
-                </li>
-                <li class="flex items-start gap-2">
-                  <span class="dark:text-yellow-400 light:text-orange-600"><span class="material-icons text-sm">calendar_today</span></span>
-                  <span>{{ 'MAIN_DASHBOARD.PLAN_TIP_3' | translate }}</span>
-                </li>
+    <div class="db-modal-overlay" (click)="showPlanModal.set(false)">
+      <div class="db-modal db-modal-wide" (click)="$event.stopPropagation()">
+        <div class="db-modal-header">
+          <h3 class="db-modal-title">
+            <span class="material-icons">calendar_today</span>
+            {{ 'MAIN_DASHBOARD.PLAN_TITLE' | translate }}
+          </h3>
+          <button (click)="showPlanModal.set(false)" class="db-modal-close">
+            <span class="material-icons">close</span>
+          </button>
+        </div>
+
+        <div class="db-modal-body">
+          <div class="db-alert db-alert-info db-mb4">
+            <span class="material-icons db-alert-icon">lightbulb</span>
+            <div class="db-alert-body">
+              <div class="db-alert-title">{{ 'MAIN_DASHBOARD.PLAN_HOW_IT_WORKS' | translate }}</div>
+              <ul class="db-plan-tips">
+                <li><span class="material-icons">check_circle</span> {{ 'MAIN_DASHBOARD.PLAN_TIP_1' | translate }}</li>
+                <li><span class="material-icons">add_circle</span> {{ 'MAIN_DASHBOARD.PLAN_TIP_2' | translate }}</li>
+                <li><span class="material-icons">calendar_today</span> {{ 'MAIN_DASHBOARD.PLAN_TIP_3' | translate }}</li>
               </ul>
             </div>
           </div>
-        </div>
-        
-        <div class="space-y-4">
-          @for (subject of subjects(); track subject._id) {
-            <div class="p-4 dark:bg-gray-800/50 light:bg-gray-100/50 border rounded-xl"
-                 [class.border-green-500]="hasSubjectSessions(subject._id!)"
-                 [class.dark:border-gray-700]="!hasSubjectSessions(subject._id!)"
-                 [class.light:border-gray-300]="!hasSubjectSessions(subject._id!)">
-              <div class="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
-                <div class="flex items-center gap-3 flex-1">
-                  <span class="material-icons text-4xl" [style.color]="subject.color">{{ subject.icon }}</span>
+
+          <div class="db-plan-subjects">
+            @for (subject of subjects(); track subject._id) {
+              <div class="db-plan-row" [class.db-plan-row-active]="hasSubjectSessions(subject._id!)">
+                <div class="db-plan-subject-info">
+                  <span class="material-icons db-plan-icon" [style.color]="subject.color">{{ subject.icon }}</span>
                   <div>
-                    <div class="flex items-center gap-2">
-                      <div [style.color]="subject.color" class="font-semibold">{{ subject.name }}</div>
-                      @if (hasSubjectSessions(subject._id!)) {
-                        <span class="px-2 py-0.5 text-xs font-semibold rounded-full dark:bg-green-500/20 light:bg-green-500/20 dark:text-green-400 light:text-green-600 flex items-center gap-1">
-                          <span class="material-icons text-xs">calendar_today</span> {{ getSubjectSessionCount(subject._id!) }} {{ 'MAIN_DASHBOARD.SESSIONS' | translate }}
-                        </span>
-                      }
-                    </div>
-                    <div class="text-xs">
-                      @if (hasSubjectSessions(subject._id!)) {
-                        <span class="dark:text-green-400 light:text-green-600"><span class="material-icons text-xs align-middle">check_circle</span> {{ 'MAIN_DASHBOARD.PLAN_CAN_ADJUST' | translate }}</span>
-                      } @else {
-                        <span class="dark:text-blue-400 light:text-blue-600"><span class="material-icons text-xs align-middle">calendar_today</span> {{ 'MAIN_DASHBOARD.PLAN_CLICK_ADD' | translate }}</span>
-                      }
-                    </div>
-                  </div>
-                </div>
-                <div class="flex items-center justify-between sm:justify-end gap-2 w-full sm:w-auto">
-                  <button type="button" 
-                          (click)="decrementPlan(subject._id!)"
-                          [disabled]="!canDecrementSubject(subject._id!)"
-                          class="w-10 h-10 rounded-lg dark:text-white light:text-gray-900 font-bold transition-all"
-                          [class.dark:bg-gray-700]="canDecrementSubject(subject._id!)"
-                          [class.dark:hover:bg-gray-600]="canDecrementSubject(subject._id!)"
-                          [class.light:bg-gray-300]="canDecrementSubject(subject._id!)"
-                          [class.light:hover:bg-gray-400]="canDecrementSubject(subject._id!)"
-                          [class.dark:bg-gray-800]="!canDecrementSubject(subject._id!)"
-                          [class.light:bg-gray-200]="!canDecrementSubject(subject._id!)"
-                          [class.cursor-not-allowed]="!canDecrementSubject(subject._id!)"
-                          [class.opacity-50]="!canDecrementSubject(subject._id!)">
-                    -
-                  </button>
-                  <input type="number" 
-                         [(ngModel)]="planForm[subject._id!]"
-                         min="0"
-                         step="15"
-                         readonly
-                         class="w-20 px-3 py-2 dark:bg-black/50 light:bg-gray-200 dark:border-yellow-500/30 light:border-blue-500/30 border rounded-lg dark:text-white light:text-gray-900 text-center cursor-not-allowed" />
-                  <button type="button"
-                          (click)="incrementPlan(subject._id!)"
-                          [title]="!hasSubjectSessions(subject._id!) ? ('MAIN_DASHBOARD.PLAN_CLICK_ADD' | translate) : ('MAIN_DASHBOARD.EDIT' | translate)"
-                          class="w-10 h-10 rounded-lg font-bold transition-all relative group"
-                          [class.dark:bg-yellow-500]="hasSubjectSessions(subject._id!)"
-                          [class.dark:hover:bg-yellow-600]="hasSubjectSessions(subject._id!)"
-                          [class.light:bg-blue-500]="hasSubjectSessions(subject._id!)"
-                          [class.light:hover:bg-blue-600]="hasSubjectSessions(subject._id!)"
-                          [class.dark:text-black]="hasSubjectSessions(subject._id!)"
-                          [class.light:text-white]="hasSubjectSessions(subject._id!)"
-                          [class.dark:bg-blue-500]="!hasSubjectSessions(subject._id!)"
-                          [class.dark:hover:bg-blue-600]="!hasSubjectSessions(subject._id!)"
-                          [class.light:bg-green-500]="!hasSubjectSessions(subject._id!)"
-                          [class.light:hover:bg-green-600]="!hasSubjectSessions(subject._id!)"
-                          [class.dark:text-white]="!hasSubjectSessions(subject._id!)"
-                          [class.light:text-white]="!hasSubjectSessions(subject._id!)">
-                    +
-                    @if (!hasSubjectSessions(subject._id!)) {
-                      <span class="absolute -top-1 -right-1 w-5 h-5 bg-green-500 rounded-full flex items-center justify-center"><span class="material-icons text-xs text-white">calendar_today</span></span>
+                    <div class="db-plan-subject-name" [style.color]="subject.color">{{ subject.name }}</div>
+                    @if (hasSubjectSessions(subject._id!)) {
+                      <span class="db-plan-session-count">
+                        <span class="material-icons">calendar_today</span>
+                        {{ getSubjectSessionCount(subject._id!) }} {{ 'MAIN_DASHBOARD.SESSIONS' | translate }}
+                      </span>
                     }
-                  </button>
-                  <span class="text-sm dark:text-gray-400 light:text-gray-600 min-w-[64px] text-right sm:text-left">{{ formatTime(planForm[subject._id!] || 0) }}</span>
+                  </div>
+                </div>
+
+                <div class="db-plan-controls">
+                  <button type="button" (click)="decrementPlan(subject._id!)"
+                          [disabled]="!canDecrementSubject(subject._id!)"
+                          class="db-plan-btn db-plan-btn-minus">-</button>
+                  <input type="number" [(ngModel)]="planForm[subject._id!]"
+                         min="0" step="15" readonly class="db-plan-input"/>
+                  <button type="button" (click)="incrementPlan(subject._id!)" class="db-plan-btn db-plan-btn-plus">+</button>
+                  <span class="db-plan-time">{{ formatTime(planForm[subject._id!] || 0) }}</span>
                 </div>
               </div>
-            </div>
-          }
-          
-          @if (subjects().length === 0) {
-            <p class="dark:text-gray-500 light:text-gray-400 text-center py-8">{{ 'MAIN_DASHBOARD.PLAN_ADD_SUBJECTS_FIRST' | translate }}</p>
-          }
-        </div>
-        
-        <div class="mt-6 p-4 dark:bg-yellow-500/10 light:bg-blue-500/10 dark:border-yellow-500/30 light:border-blue-500/30 border rounded-xl">
-          <div class="flex items-center justify-between">
-            <span class="dark:text-yellow-400 light:text-blue-600 font-semibold">{{ 'MAIN_DASHBOARD.PLAN_TOTAL_PLANNED' | translate }}</span>
-            <span class="text-2xl font-bold dark:bg-gradient-to-r dark:from-yellow-400 dark:to-yellow-600 light:bg-gradient-to-r light:from-blue-500 light:to-blue-700 bg-clip-text text-transparent">
-              {{ formatTime(getTotalPlanMinutes()) }}
-            </span>
+            }
+
+            @if (subjects().length === 0) {
+              <div class="db-empty-msg db-center">{{ 'MAIN_DASHBOARD.PLAN_ADD_SUBJECTS_FIRST' | translate }}</div>
+            }
+          </div>
+
+          <div class="db-plan-total">
+            <span>{{ 'MAIN_DASHBOARD.PLAN_TOTAL_PLANNED' | translate }}</span>
+            <span class="db-plan-total-val">{{ formatTime(getTotalPlanMinutes()) }}</span>
           </div>
         </div>
-        
-        <div class="flex gap-3 mt-6">
-          <button (click)="showPlanModal.set(false)" class="flex-1 py-3 dark:bg-gray-800 dark:hover:bg-gray-700 light:bg-gray-200 light:hover:bg-gray-300 rounded-xl dark:text-white light:text-gray-900 font-semibold transition-all">
-            {{ 'MAIN_DASHBOARD.CANCEL' | translate }}
-          </button>
-          <button (click)="saveDayPlan()" class="flex-1 py-3 dark:bg-gradient-to-r dark:from-yellow-400 dark:to-yellow-600 dark:hover:from-yellow-500 dark:hover:to-yellow-700 light:bg-gradient-to-r light:from-blue-500 light:to-blue-700 light:hover:from-blue-600 light:hover:to-blue-800 rounded-xl dark:text-black light:text-white font-semibold transition-all flex items-center justify-center gap-2">
-            <span class="material-icons">save</span> {{ 'MAIN_DASHBOARD.PLAN_SAVE_PLAN' | translate }}
+
+        <div class="db-modal-footer">
+          <button (click)="showPlanModal.set(false)" class="db-btn-ghost">{{ 'MAIN_DASHBOARD.CANCEL' | translate }}</button>
+          <button (click)="saveDayPlan()" class="db-btn-primary">
+            <span class="material-icons">save</span>
+            {{ 'MAIN_DASHBOARD.PLAN_SAVE_PLAN' | translate }}
           </button>
         </div>
       </div>
     </div>
   }
 
-  <!-- Statistics Modal -->
+  <!-- ═══════════════════════════════════════════
+       STATS MODAL
+  ═══════════════════════════════════════════ -->
   @if (showStatsModal()) {
-    <div class="fixed inset-0 dark:bg-black/80 light:bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 overflow-y-auto" (click)="showStatsModal.set(false)">
-      <div class="dark:bg-gradient-to-br dark:from-gray-900 dark:to-black light:bg-white dark:border-yellow-500/20 light:border-blue-500/20 border rounded-2xl p-6 sm:p-8 max-w-4xl w-full dark:shadow-2xl light:shadow-2xl max-h-[92vh] overflow-y-auto" (click)="$event.stopPropagation()">
-        <h3 class="text-2xl font-bold dark:bg-gradient-to-r dark:from-yellow-400 dark:to-yellow-600 light:bg-gradient-to-r light:from-blue-500 light:to-blue-700 bg-clip-text text-transparent mb-6 flex items-center gap-2">
-          <span class="material-icons text-3xl">bar_chart</span> {{ 'MAIN_DASHBOARD.STATS_WEEK_TITLE' | translate }}
-        </h3>
-        
-        <!-- Week Chart -->
-          <div class="mb-8">
-          <div class="flex items-end justify-between gap-1 sm:gap-2 h-56 sm:h-64 dark:bg-gray-800/30 light:bg-gray-100 rounded-xl p-2 sm:p-4">
+    <div class="db-modal-overlay" (click)="showStatsModal.set(false)">
+      <div class="db-modal db-modal-wide" (click)="$event.stopPropagation()">
+        <div class="db-modal-header">
+          <h3 class="db-modal-title">
+            <span class="material-icons">bar_chart</span>
+            {{ 'MAIN_DASHBOARD.STATS_WEEK_TITLE' | translate }}
+          </h3>
+          <button (click)="showStatsModal.set(false)" class="db-modal-close">
+            <span class="material-icons">close</span>
+          </button>
+        </div>
+
+        <div class="db-modal-body">
+          <!-- Week chart -->
+          <div class="db-week-chart">
             @for (stat of weekStats(); track stat.date) {
-              <div class="flex-1 flex flex-col items-center gap-1 sm:gap-2">
-                  <div class="w-full dark:bg-gray-800 light:bg-gray-200 rounded-lg overflow-hidden relative h-40 sm:h-52">
-                  <div class="absolute bottom-0 w-full dark:bg-gradient-to-t dark:from-yellow-500 dark:to-yellow-600 light:bg-gradient-to-t light:from-blue-500 light:to-blue-600 transition-all duration-500 rounded-t-lg"
-                       [style.height.%]="(stat.minutes / getMaxWeekMinutes()) * 100">
+              <div class="db-chart-col">
+                <div class="db-chart-bar-wrap">
+                  <div class="db-chart-bar" [style.height.%]="(stat.minutes / getMaxWeekMinutes()) * 100"></div>
+                </div>
+                <div class="db-chart-label">{{ stat.day }}</div>
+                <div class="db-chart-val">{{ formatTime(stat.minutes) }}</div>
+              </div>
+            }
+          </div>
+
+          <!-- Subject breakdown -->
+          <h4 class="db-breakdown-title">{{ 'MAIN_DASHBOARD.STATS_BREAKDOWN_TITLE' | translate }}</h4>
+          <div class="db-breakdown-list">
+            @for (subjectTime of dayPlan()?.subjects || []; track $index) {
+              @if (getSubjectById(getSubjectIdString(subjectTime.subjectId)); as subject) {
+                <div class="db-breakdown-row">
+                  <div class="db-breakdown-info">
+                    <span class="material-icons" [style.color]="subject.color">{{ subject.icon }}</span>
+                    <div>
+                      <div [style.color]="subject.color" class="db-breakdown-name">{{ subject.name }}</div>
+                      <div class="db-breakdown-time">{{ formatTime(subjectTime.studiedMinutes) }} / {{ formatTime(subjectTime.goalMinutes) }}</div>
+                    </div>
+                  </div>
+                  <div class="db-breakdown-pct" [style.color]="subject.color">
+                    {{ getSubjectProgress(subjectTime.studiedMinutes, subjectTime.goalMinutes) }}%
+                  </div>
+                  <div class="db-breakdown-bar-wrap">
+                    <div class="db-breakdown-bar" [style.background]="subject.color"
+                         [style.width.%]="subjectTime.goalMinutes > 0 ? (subjectTime.studiedMinutes / subjectTime.goalMinutes) * 100 : 0"></div>
                   </div>
                 </div>
-                <div class="text-center w-full">
-                  <div class="text-[10px] sm:text-xs dark:text-gray-400 light:text-gray-600 truncate">{{ stat.day }}</div>
-                  <div class="text-[10px] sm:text-sm font-semibold dark:text-yellow-400 light:text-blue-600 whitespace-nowrap">{{ formatTime(stat.minutes) }}</div>
-                </div>
-              </div>
+              }
             }
           </div>
         </div>
 
-        <!-- Subject Breakdown -->
-        <div class="space-y-3">
-          <h4 class="text-lg font-semibold dark:text-yellow-400 light:text-blue-600 mb-4">{{ 'MAIN_DASHBOARD.STATS_BREAKDOWN_TITLE' | translate }}</h4>
-          @for (subjectTime of dayPlan()?.subjects || []; track $index) {
-            @if (getSubjectById(getSubjectIdString(subjectTime.subjectId)); as subject) {
-              <div class="p-4 dark:bg-gray-800/50 light:bg-gray-100/50 dark:border-gray-700 light:border-gray-300 border rounded-xl">
-                <div class="flex items-center justify-between mb-2">
-                  <div class="flex items-center gap-3">
-                    <span class="material-icons text-3xl" [style.color]="subject.color">{{ subject.icon }}</span>
-                    <div>
-                      <div [style.color]="subject.color" class="font-semibold">{{ subject.name }}</div>
-                      <div class="text-xs dark:text-gray-500 light:text-gray-600">{{ formatTime(subjectTime.studiedMinutes) }} / {{ formatTime(subjectTime.goalMinutes) }}</div>
-                    </div>
-                  </div>
-                  <div class="text-right">
-                    <div class="text-2xl font-bold" [style.color]="subject.color">
-                      {{ getSubjectProgress(subjectTime.studiedMinutes, subjectTime.goalMinutes) }}%
-                    </div>
-                  </div>
-                </div>
-                <div class="h-2 dark:bg-gray-800 light:bg-gray-200 rounded-full overflow-hidden">
-                  <div class="h-full rounded-full transition-all duration-500"
-                       [style.background]="subject.color"
-                       [style.width.%]="subjectTime.goalMinutes > 0 ? (subjectTime.studiedMinutes / subjectTime.goalMinutes) * 100 : 0">
-                  </div>
-                </div>
-              </div>
-            }
-          }
-        </div>
-        
-        <div class="flex gap-3 mt-6">
-          <button (click)="showStatsModal.set(false)" class="flex-1 py-3 dark:bg-gradient-to-r dark:from-yellow-400 dark:to-yellow-600 dark:hover:from-yellow-500 dark:hover:to-yellow-700 light:bg-gradient-to-r light:from-blue-500 light:to-blue-700 light:hover:from-blue-600 light:hover:to-blue-800 rounded-xl dark:text-black light:text-white font-semibold transition-all">
-            {{ 'MAIN_DASHBOARD.CLOSE' | translate }}
-          </button>
+        <div class="db-modal-footer">
+          <button (click)="showStatsModal.set(false)" class="db-btn-primary">{{ 'MAIN_DASHBOARD.CLOSE' | translate }}</button>
         </div>
       </div>
     </div>
   }
 
-  <!-- Timer Settings Modal -->
+  <!-- ═══════════════════════════════════════════
+       TIMER SETTINGS MODAL
+  ═══════════════════════════════════════════ -->
   @if (showTimerSettings()) {
-    <div class="fixed inset-0 dark:bg-black/80 light:bg-black/60 backdrop-blur-sm flex items-start sm:items-center justify-center z-50 p-4 pt-6 sm:pt-4 overflow-y-auto" (click)="showTimerSettings.set(false)">
-      <div class="dark:bg-gradient-to-br dark:from-gray-900 dark:to-black light:bg-white dark:border-yellow-500/20 light:border-indigo-200 border rounded-2xl p-5 sm:p-8 max-w-2xl w-full dark:shadow-2xl light:shadow-2xl max-h-[88vh] sm:max-h-[95vh] flex flex-col my-auto" (click)="$event.stopPropagation()">
-        <h3 class="text-2xl font-bold dark:bg-gradient-to-r dark:from-yellow-400 dark:to-yellow-600 light:bg-gradient-to-r light:from-blue-500 light:to-blue-700 bg-clip-text text-transparent mb-4 sm:mb-6 flex items-center gap-2 shrink-0">
-          <span class="material-icons text-3xl">settings</span> {{ 'MAIN_DASHBOARD.TIMER_SETTINGS_TITLE' | translate }}
-        </h3>
-        
-        <div class="space-y-6 overflow-y-auto pr-1 sm:pr-2">
-          <!-- Grid 2x2 for timer durations -->
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div class="db-modal-overlay" (click)="showTimerSettings.set(false)">
+      <div class="db-modal db-modal-wide" (click)="$event.stopPropagation()">
+        <div class="db-modal-header">
+          <h3 class="db-modal-title">
+            <span class="material-icons">settings</span>
+            {{ 'MAIN_DASHBOARD.TIMER_SETTINGS_TITLE' | translate }}
+          </h3>
+          <button (click)="showTimerSettings.set(false)" class="db-modal-close">
+            <span class="material-icons">close</span>
+          </button>
+        </div>
+
+        <div class="db-modal-body">
+          <div class="db-settings-grid">
             <!-- Focus Duration -->
-            <div class="p-4 dark:bg-gray-800/50 light:bg-gray-100 dark:border-gray-700 light:border-gray-300 border rounded-xl dark:hover:border-yellow-500/30 light:hover:border-blue-500/30 transition-all">
-              <label class="text-sm font-semibold dark:text-yellow-400 light:text-blue-600 mb-3 flex items-center gap-2">
-                <span class="material-icons text-lg">target</span> {{ 'MAIN_DASHBOARD.TIMER_FOCUS_LABEL' | translate }}
+            <div class="db-setting-card db-setting-focus">
+              <label class="db-setting-label">
+                <span class="material-icons">target</span>
+                {{ 'MAIN_DASHBOARD.TIMER_FOCUS_LABEL' | translate }}
               </label>
-              <div class="flex items-center gap-3 mb-2">
-                <input type="range" 
-                       [(ngModel)]="timerSettings.focusDuration"
-                       min="1" 
-                       max="60" 
-                       step="1"
-                       class="flex-1 h-2 dark:bg-gray-700 light:bg-gray-300 rounded-lg appearance-none cursor-pointer slider-thumb" />
-                <div class="px-3 py-1.5 dark:bg-yellow-500/20 light:bg-blue-500/20 dark:border-yellow-500/30 light:border-blue-500/30 border rounded-lg min-w-[70px] text-center">
-                  <span class="text-xl font-bold dark:text-yellow-400 light:text-blue-600">{{ timerSettings.focusDuration }}</span>
-                  <span class="text-xs dark:text-gray-400 light:text-gray-600 ml-0.5">{{ 'MAIN_DASHBOARD.TIMER_MINUTES' | translate }}</span>
-                </div>
+              <div class="db-slider-row">
+                <input type="range" [(ngModel)]="timerSettings.focusDuration" min="1" max="60" step="1" class="db-slider"/>
+                <div class="db-slider-val">{{ timerSettings.focusDuration }}<span>{{ 'MAIN_DASHBOARD.TIMER_MINUTES' | translate }}</span></div>
               </div>
-              <p class="text-xs dark:text-gray-400 light:text-gray-600">{{ 'MAIN_DASHBOARD.TIMER_FOCUS_DESC' | translate }}</p>
+              <p class="db-setting-desc">{{ 'MAIN_DASHBOARD.TIMER_FOCUS_DESC' | translate }}</p>
             </div>
 
             <!-- Short Break -->
-            <div class="p-4 dark:bg-gray-800/50 light:bg-gray-100 dark:border-gray-700 light:border-gray-300 border rounded-xl dark:hover:border-green-500/30 light:hover:border-green-500/30 transition-all">
-              <label class="text-sm font-semibold dark:text-green-400 light:text-green-600 mb-3 flex items-center gap-2">
-                <span class="material-icons text-lg">coffee</span> {{ 'MAIN_DASHBOARD.TIMER_SHORT_BREAK_LABEL' | translate }}
+            <div class="db-setting-card db-setting-break">
+              <label class="db-setting-label db-setting-label-green">
+                <span class="material-icons">coffee</span>
+                {{ 'MAIN_DASHBOARD.TIMER_SHORT_BREAK_LABEL' | translate }}
               </label>
-              <div class="flex items-center gap-3 mb-2">
-                <input type="range" 
-                       [(ngModel)]="timerSettings.shortBreakDuration"
-                       min="1" 
-                       max="15" 
-                       step="1"
-                       class="flex-1 h-2 dark:bg-gray-700 light:bg-gray-300 rounded-lg appearance-none cursor-pointer" />
-                <div class="px-3 py-1.5 dark:bg-green-500/20 light:bg-green-500/20 dark:border-green-500/30 light:border-green-500/30 border rounded-lg min-w-[70px] text-center">
-                  <span class="text-xl font-bold dark:text-green-400 light:text-green-600">{{ timerSettings.shortBreakDuration }}</span>
-                  <span class="text-xs dark:text-gray-400 light:text-gray-600 ml-0.5">{{ 'MAIN_DASHBOARD.TIMER_MINUTES' | translate }}</span>
-                </div>
+              <div class="db-slider-row">
+                <input type="range" [(ngModel)]="timerSettings.shortBreakDuration" min="1" max="15" step="1" class="db-slider"/>
+                <div class="db-slider-val db-slider-val-green">{{ timerSettings.shortBreakDuration }}<span>{{ 'MAIN_DASHBOARD.TIMER_MINUTES' | translate }}</span></div>
               </div>
-              <p class="text-xs dark:text-gray-400 light:text-gray-600">{{ 'MAIN_DASHBOARD.TIMER_SHORT_BREAK_DESC' | translate }}</p>
+              <p class="db-setting-desc">{{ 'MAIN_DASHBOARD.TIMER_SHORT_BREAK_DESC' | translate }}</p>
             </div>
 
             <!-- Long Break -->
-            <div class="p-4 dark:bg-gray-800/50 light:bg-gray-100 dark:border-gray-700 light:border-gray-300 border rounded-xl dark:hover:border-purple-500/30 light:hover:border-purple-500/30 transition-all">
-              <label class="text-sm font-semibold dark:text-purple-400 light:text-purple-600 mb-3 flex items-center gap-2">
-                <span class="material-icons text-lg">star</span> {{ 'MAIN_DASHBOARD.TIMER_LONG_BREAK_LABEL' | translate }}
+            <div class="db-setting-card">
+              <label class="db-setting-label db-setting-label-purple">
+                <span class="material-icons">star</span>
+                {{ 'MAIN_DASHBOARD.TIMER_LONG_BREAK_LABEL' | translate }}
               </label>
-              <div class="flex items-center gap-3 mb-2">
-                <input type="range" 
-                       [(ngModel)]="timerSettings.longBreakDuration"
-                       min="10" 
-                       max="30" 
-                       step="5"
-                       class="flex-1 h-2 dark:bg-gray-700 light:bg-gray-300 rounded-lg appearance-none cursor-pointer" />
-                <div class="px-3 py-1.5 dark:bg-purple-500/20 light:bg-purple-500/20 dark:border-purple-500/30 light:border-purple-500/30 border rounded-lg min-w-[70px] text-center">
-                  <span class="text-xl font-bold dark:text-purple-400 light:text-purple-600">{{ timerSettings.longBreakDuration }}</span>
-                  <span class="text-xs dark:text-gray-400 light:text-gray-600 ml-0.5">{{ 'MAIN_DASHBOARD.TIMER_MINUTES' | translate }}</span>
-                </div>
+              <div class="db-slider-row">
+                <input type="range" [(ngModel)]="timerSettings.longBreakDuration" min="10" max="30" step="5" class="db-slider"/>
+                <div class="db-slider-val db-slider-val-purple">{{ timerSettings.longBreakDuration }}<span>{{ 'MAIN_DASHBOARD.TIMER_MINUTES' | translate }}</span></div>
               </div>
-              <p class="text-xs dark:text-gray-400 light:text-gray-600">{{ 'MAIN_DASHBOARD.TIMER_LONG_BREAK_DESC' | translate }}</p>
+              <p class="db-setting-desc">{{ 'MAIN_DASHBOARD.TIMER_LONG_BREAK_DESC' | translate }}</p>
             </div>
 
-            <!-- Sessions Before Long Break -->
-            <div class="p-4 dark:bg-gray-800/50 light:bg-gray-100 dark:border-gray-700 light:border-gray-300 border rounded-xl dark:hover:border-blue-500/30 light:hover:border-blue-500/30 transition-all">
-              <label class="text-sm font-semibold dark:text-blue-400 light:text-blue-600 mb-3 flex items-center gap-2">
-                <span class="material-icons text-lg">repeat</span> {{ 'MAIN_DASHBOARD.TIMER_SESS_BEFORE_LONG_LABEL' | translate }}
+            <!-- Sessions before long break -->
+            <div class="db-setting-card">
+              <label class="db-setting-label db-setting-label-blue">
+                <span class="material-icons">repeat</span>
+                {{ 'MAIN_DASHBOARD.TIMER_SESS_BEFORE_LONG_LABEL' | translate }}
               </label>
-              <div class="flex items-center gap-3 mb-2">
-                <input type="range" 
-                       [(ngModel)]="timerSettings.sessionsBeforeLongBreak"
-                       min="2" 
-                       max="8" 
-                       step="1"
-                       class="flex-1 h-2 dark:bg-gray-700 light:bg-gray-300 rounded-lg appearance-none cursor-pointer" />
-                <div class="px-3 py-1.5 dark:bg-blue-500/20 light:bg-blue-500/20 dark:border-blue-500/30 light:border-blue-500/30 border rounded-lg min-w-[70px] text-center">
-                  <span class="text-xl font-bold dark:text-blue-400 light:text-blue-600">{{ timerSettings.sessionsBeforeLongBreak }}</span>
-                  <span class="text-xs dark:text-gray-400 light:text-gray-600 ml-0.5">sess</span>
-                </div>
+              <div class="db-slider-row">
+                <input type="range" [(ngModel)]="timerSettings.sessionsBeforeLongBreak" min="2" max="8" step="1" class="db-slider"/>
+                <div class="db-slider-val db-slider-val-blue">{{ timerSettings.sessionsBeforeLongBreak }}<span>sess</span></div>
               </div>
-              <p class="text-xs dark:text-gray-400 light:text-gray-600">{{ 'MAIN_DASHBOARD.TIMER_SESS_BEFORE_LONG_DESC' | translate }}</p>
+              <p class="db-setting-desc">{{ 'MAIN_DASHBOARD.TIMER_SESS_BEFORE_LONG_DESC' | translate }}</p>
             </div>
           </div>
 
-          <!-- Session Goal - Full Width -->
-          <div class="p-5 dark:bg-gradient-to-r dark:from-yellow-500/10 dark:to-yellow-600/10 light:bg-gradient-to-r light:from-blue-500/10 light:to-blue-600/10 dark:border-yellow-500/30 light:border-blue-500/30 border-2 rounded-xl dark:hover:border-yellow-500/50 light:hover:border-blue-500/50 transition-all">
-            <label class="text-base font-bold dark:text-yellow-400 light:text-blue-600 mb-4 flex items-center gap-2">
-              <span class="material-icons">emoji_events</span> {{ 'MAIN_DASHBOARD.TIMER_DAILY_GOAL_LABEL' | translate }}
+          <!-- Daily Session Goal -->
+          <div class="db-setting-card db-setting-goal">
+            <label class="db-setting-label">
+              <span class="material-icons">emoji_events</span>
+              {{ 'MAIN_DASHBOARD.TIMER_DAILY_GOAL_LABEL' | translate }}
             </label>
-            <div class="flex items-center gap-4">
-              <input type="range" 
-                     [(ngModel)]="currentSessionGoal"
-                     min="1" 
-                     max="30" 
-                     step="1"
-                     class="flex-1 h-3 dark:bg-gray-700 light:bg-gray-300 rounded-lg appearance-none cursor-pointer" />
-              <div class="px-6 py-3 dark:bg-yellow-500/20 light:bg-blue-500/20 dark:border-yellow-500/40 light:border-blue-500/40 border-2 rounded-xl min-w-[100px] text-center">
-                <span class="text-3xl font-bold dark:text-yellow-400 light:text-blue-600">{{ currentSessionGoal() }}</span>
-                <span class="text-sm dark:text-gray-400 light:text-gray-600 ml-1">{{ 'MAIN_DASHBOARD.SESSIONS' | translate }}</span>
-              </div>
-            </div>
-            <p class="text-sm dark:text-gray-400 light:text-gray-600 mt-3 flex items-center gap-1"><span class="material-icons text-sm">emoji_events</span> {{ 'MAIN_DASHBOARD.TIMER_DAILY_GOAL_QUESTION' | translate }}</p>
-          </div>
-
-          <!-- Auto Start Options -->
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div class="p-4 dark:bg-gray-800/50 light:bg-gray-100 dark:border-gray-700 light:border-gray-300 border rounded-xl">
-              <label class="flex items-center justify-between cursor-pointer">
-                <span class="text-sm dark:text-gray-300 light:text-gray-700 flex items-center gap-2">
-                  <span class="material-icons text-lg">rocket_launch</span> {{ 'MAIN_DASHBOARD.TIMER_AUTO_START_BREAKS' | translate }}
-                </span>
-                <input type="checkbox" 
-                       [(ngModel)]="timerSettings.autoStartBreaks"
-                       class="w-5 h-5 rounded dark:border-yellow-500 light:border-blue-500 dark:text-yellow-500 light:text-blue-500 focus:ring-2 dark:focus:ring-yellow-500 light:focus:ring-blue-500 cursor-pointer" />
-              </label>
-            </div>
-            
-            <div class="p-4 dark:bg-gray-800/50 light:bg-gray-100 dark:border-gray-700 light:border-gray-300 border rounded-xl">
-              <label class="flex items-center justify-between cursor-pointer">
-                <span class="text-sm dark:text-gray-300 light:text-gray-700 flex items-center gap-2">
-                  <span class="material-icons text-lg">flash_on</span> {{ 'MAIN_DASHBOARD.TIMER_AUTO_START_FOCUS' | translate }}
-                </span>
-                <input type="checkbox" 
-                       [(ngModel)]="timerSettings.autoStartFocus"
-                       class="w-5 h-5 rounded dark:border-yellow-500 light:border-blue-500 dark:text-yellow-500 light:text-blue-500 focus:ring-2 dark:focus:ring-yellow-500 light:focus:ring-blue-500 cursor-pointer" />
-              </label>
+            <div class="db-slider-row">
+              <input type="range" [(ngModel)]="currentSessionGoal" min="1" max="30" step="1" class="db-slider"/>
+              <div class="db-slider-val-lg">{{ currentSessionGoal() }}<span>{{ 'MAIN_DASHBOARD.SESSIONS' | translate }}</span></div>
             </div>
           </div>
 
-          <!-- YouTube Relaxation Audio URL -->
-          <div class="p-5 dark:bg-gradient-to-r dark:from-purple-500/10 dark:to-pink-500/10 light:bg-gradient-to-r light:from-purple-500/10 light:to-pink-500/10 dark:border-purple-500/30 light:border-purple-500/30 border-2 rounded-xl dark:hover:border-purple-500/50 light:hover:border-purple-500/50 transition-all">
-            <label class="text-base font-bold dark:text-purple-400 light:text-purple-600 mb-4 flex items-center gap-2">
-              <span class="material-icons">music_note</span> {{ 'MAIN_DASHBOARD.TIMER_RELAX_AUDIO_LABEL' | translate }}
+          <!-- Auto start toggles -->
+          <div class="db-settings-grid">
+            <div class="db-setting-toggle">
+              <label class="db-toggle-label">
+                <span class="material-icons">rocket_launch</span>
+                {{ 'MAIN_DASHBOARD.TIMER_AUTO_START_BREAKS' | translate }}
+              </label>
+              <input type="checkbox" [(ngModel)]="timerSettings.autoStartBreaks" class="db-checkbox"/>
+            </div>
+            <div class="db-setting-toggle">
+              <label class="db-toggle-label">
+                <span class="material-icons">flash_on</span>
+                {{ 'MAIN_DASHBOARD.TIMER_AUTO_START_FOCUS' | translate }}
+              </label>
+              <input type="checkbox" [(ngModel)]="timerSettings.autoStartFocus" class="db-checkbox"/>
+            </div>
+          </div>
+
+          <!-- Relaxation Audio -->
+          <div class="db-setting-card db-setting-audio">
+            <label class="db-setting-label db-setting-label-purple">
+              <span class="material-icons">music_note</span>
+              {{ 'MAIN_DASHBOARD.TIMER_RELAX_AUDIO_LABEL' | translate }}
             </label>
-            <div class="space-y-3">
-              <div class="flex flex-col sm:flex-row gap-2">
-                <input 
-                  type="text" 
-                  [(ngModel)]="timerSettings.relaxationAudioUrl"
-                  [placeholder]="'MAIN_DASHBOARD.TIMER_RELAX_AUDIO_PH' | translate"
-                  class="flex-1 px-4 py-3 dark:bg-gray-800 light:bg-white dark:border-purple-500/30 light:border-purple-500/30 border rounded-xl dark:text-white light:text-gray-900 dark:placeholder-gray-500 light:placeholder-gray-400 dark:focus:border-purple-500 light:focus:border-purple-500 focus:ring-2 dark:focus:ring-purple-500/20 light:focus:ring-purple-500/20 outline-none transition-all"
-                />
-                <button 
-                  (click)="testYouTubeUrl()"
-                  class="w-full sm:w-auto justify-center px-6 py-3 dark:bg-purple-600 dark:hover:bg-purple-700 light:bg-purple-500 light:hover:bg-purple-600 rounded-xl dark:text-white light:text-white font-semibold transition-all flex items-center gap-1">
-                  <span class="material-icons">search</span> {{ 'MAIN_DASHBOARD.TIMER_TEST' | translate }}
-                </button>
-              </div>
-              <p class="text-xs dark:text-gray-400 light:text-gray-600 flex items-center gap-1">
-                <span class="material-icons text-sm">headphones</span> {{ 'MAIN_DASHBOARD.TIMER_RELAX_AUDIO_INFO' | translate }}
-              </p>
-              <div class="flex gap-2 text-xs dark:text-gray-500 light:text-gray-600">
-                <span>{{ 'MAIN_DASHBOARD.EXAMPLES' | translate }}</span>
-                <code class="px-2 py-1 dark:bg-gray-800 light:bg-gray-200 rounded">youtube.com/watch?v=ID</code>
-                <code class="px-2 py-1 dark:bg-gray-800 light:bg-gray-200 rounded">youtu.be/ID</code>
-              </div>
+            <div class="db-audio-row">
+              <input type="text" [(ngModel)]="timerSettings.relaxationAudioUrl"
+                     [placeholder]="'MAIN_DASHBOARD.TIMER_RELAX_AUDIO_PH' | translate"
+                     class="db-input db-input-grow"/>
+              <button (click)="testYouTubeUrl()" class="db-btn-purple">
+                <span class="material-icons">search</span>
+                {{ 'MAIN_DASHBOARD.TIMER_TEST' | translate }}
+              </button>
             </div>
+            <p class="db-setting-desc">
+              <span class="material-icons">headphones</span>
+              {{ 'MAIN_DASHBOARD.TIMER_RELAX_AUDIO_INFO' | translate }}
+            </p>
           </div>
 
-          <!-- Info Box -->
-          <div class="p-4 dark:bg-blue-500/10 light:bg-blue-500/10 dark:border-blue-500/30 light:border-blue-500/30 border rounded-xl">
-            <div class="flex items-start gap-3">
-              <span class="material-icons text-3xl dark:text-blue-400 light:text-blue-600">lightbulb</span>
-              <div class="flex-1 text-sm dark:text-gray-300 light:text-gray-700">
-                <p class="font-semibold dark:text-blue-400 light:text-blue-600 mb-2">{{ 'MAIN_DASHBOARD.TIMER_TECHNIQUE_TITLE' | translate }}</p>
-                <p>{{ 'MAIN_DASHBOARD.TIMER_TECHNIQUE_DESC' | translate }}</p>
-              </div>
+          <!-- Info -->
+          <div class="db-alert db-alert-info">
+            <span class="material-icons db-alert-icon">lightbulb</span>
+            <div class="db-alert-body">
+              <div class="db-alert-title">{{ 'MAIN_DASHBOARD.TIMER_TECHNIQUE_TITLE' | translate }}</div>
+              <div class="db-alert-msg">{{ 'MAIN_DASHBOARD.TIMER_TECHNIQUE_DESC' | translate }}</div>
             </div>
           </div>
         </div>
-        
-        <div class="flex gap-3 mt-6 shrink-0">
-          <button (click)="showTimerSettings.set(false)" class="flex-1 py-3 dark:bg-gray-800 dark:hover:bg-gray-700 light:bg-gray-200 light:hover:bg-gray-300 rounded-xl dark:text-white light:text-gray-900 font-semibold transition-all">
-            {{ 'MAIN_DASHBOARD.CANCEL' | translate }}
-          </button>
-          <button (click)="saveTimerSettings()" class="flex-1 py-3 dark:bg-gradient-to-r dark:from-yellow-400 dark:to-yellow-600 dark:hover:from-yellow-500 dark:hover:to-yellow-700 light:bg-gradient-to-r light:from-blue-500 light:to-blue-700 light:hover:from-blue-600 light:hover:to-blue-800 rounded-xl dark:text-black light:text-white font-semibold transition-all flex items-center justify-center gap-2">
-            <span class="material-icons">save</span> {{ 'MAIN_DASHBOARD.SAVE' | translate }}
+
+        <div class="db-modal-footer">
+          <button (click)="showTimerSettings.set(false)" class="db-btn-ghost">{{ 'MAIN_DASHBOARD.CANCEL' | translate }}</button>
+          <button (click)="saveTimerSettings()" class="db-btn-primary">
+            <span class="material-icons">save</span>
+            {{ 'MAIN_DASHBOARD.SAVE' | translate }}
           </button>
         </div>
       </div>
     </div>
   }
 
-  <!-- Relaxation Modal (During Break) -->
+  <!-- ═══════════════════════════════════════════
+       RELAXATION MODAL
+  ═══════════════════════════════════════════ -->
   @if (showRelaxationModal()) {
-    <div class="fixed inset-0 dark:bg-gradient-to-br dark:from-green-900/50 dark:to-blue-900/50 light:bg-gradient-to-br light:from-green-100/90 light:to-blue-100/90 backdrop-blur-md flex items-center justify-center z-50 p-4 overflow-y-auto">
-      <div class="dark:bg-gradient-to-br dark:from-gray-900/95 dark:to-black/95 light:bg-white/95 dark:border-green-500/30 light:border-green-500/30 border-2 rounded-3xl p-6 sm:p-12 max-w-2xl w-full dark:shadow-2xl light:shadow-2xl max-h-[92vh] overflow-y-auto">
-        <div class="text-center">
-          <!-- Lottie Animation avec ng-lottie -->
-          <div class="mb-8 relative flex justify-center">
-            <div class="lottie-relax-wrapper">
-              <ng-lottie 
-                [options]="lottieOptions"
-                (animationCreated)="onAnimationCreated($event)">
-              </ng-lottie>
-            </div>
+    <div class="db-relax-overlay">
+      <div class="db-relax-modal">
+        <div class="db-relax-lottie">
+          <div class="lottie-relax-wrapper">
+            <ng-lottie [options]="lottieOptions" (animationCreated)="onAnimationCreated($event)"></ng-lottie>
           </div>
-          
-          <h3 class="text-2xl sm:text-4xl font-bold dark:bg-gradient-to-r dark:from-green-400 dark:to-blue-400 light:bg-gradient-to-r light:from-green-600 light:to-blue-600 bg-clip-text text-transparent mb-4">
-            {{ 'MAIN_DASHBOARD.RELAX_TITLE' | translate }}
-          </h3>
-          
-          <!-- Audio Indicator -->
-          @if (timerSettings.relaxationAudioUrl) {
-            <div class="mb-4 flex items-center justify-center gap-2 dark:text-purple-400 light:text-purple-600">
-              <span class="material-icons animate-pulse">music_note</span>
-              <span class="text-sm">{{ 'MAIN_DASHBOARD.RELAX_AUDIO_PLAYING' | translate }}</span>
-            </div>
-          }
-          
-          <p class="text-lg sm:text-2xl dark:text-gray-300 light:text-gray-700 mb-8">{{ 'MAIN_DASHBOARD.RELAX_SUBTITLE' | translate }}</p>
-          
-          <!-- Break Timer Display -->
-          <div class="mb-8 p-6 dark:bg-green-500/10 light:bg-green-500/10 dark:border-green-500/30 light:border-green-500/30 border rounded-2xl">
-            <div class="text-5xl sm:text-7xl font-bold dark:bg-gradient-to-r dark:from-green-400 dark:to-blue-400 light:bg-gradient-to-r light:from-green-600 light:to-blue-600 bg-clip-text text-transparent">
-              {{ timerMinutes().toString().padStart(2, '0') }}:{{ timerSeconds().toString().padStart(2, '0') }}
-            </div>
-            <div class="text-sm dark:text-gray-400 light:text-gray-600 mt-2">{{ 'MAIN_DASHBOARD.RELAX_TIME_REMAINING' | translate }}</div>
-          </div>
-          
-          <!-- Relaxation Tips -->
-          <div class="grid grid-cols-2 gap-4 mb-8">
-            <div class="p-4 dark:bg-blue-500/10 light:bg-blue-500/10 dark:border-blue-500/20 light:border-blue-500/20 border rounded-xl dark:hover:bg-blue-500/20 light:hover:bg-blue-500/20 transition-all">
-              <div class="mb-2"><span class="material-icons text-4xl dark:text-blue-400 light:text-blue-600">water_drop</span></div>
-              <div class="text-sm dark:text-gray-300 light:text-gray-700">{{ 'MAIN_DASHBOARD.RELAX_TIP_DRINK' | translate }}</div>
-            </div>
-            <div class="p-4 dark:bg-green-500/10 light:bg-green-500/10 dark:border-green-500/20 light:border-green-500/20 border rounded-xl dark:hover:bg-green-500/20 light:hover:bg-green-500/20 transition-all">
-              <div class="mb-2"><span class="material-icons text-4xl dark:text-green-400 light:text-green-600">directions_walk</span></div>
-              <div class="text-sm dark:text-gray-300 light:text-gray-700">{{ 'MAIN_DASHBOARD.RELAX_TIP_WALK' | translate }}</div>
-            </div>
-            <div class="p-4 dark:bg-purple-500/10 light:bg-purple-500/10 dark:border-purple-500/20 light:border-purple-500/20 border rounded-xl dark:hover:bg-purple-500/20 light:hover:bg-purple-500/20 transition-all">
-              <div class="mb-2"><span class="material-icons text-4xl dark:text-purple-400 light:text-purple-600">visibility</span></div>
-              <div class="text-sm dark:text-gray-300 light:text-gray-700">{{ 'MAIN_DASHBOARD.RELAX_TIP_REST_EYES' | translate }}</div>
-            </div>
-            <div class="p-4 dark:bg-yellow-500/10 light:bg-yellow-500/10 dark:border-yellow-500/20 light:border-yellow-500/20 border rounded-xl dark:hover:bg-yellow-500/20 light:hover:bg-yellow-500/20 transition-all">
-              <div class="mb-2"><span class="material-icons text-4xl dark:text-yellow-400 light:text-yellow-600">air</span></div>
-              <div class="text-sm dark:text-gray-300 light:text-gray-700">{{ 'MAIN_DASHBOARD.RELAX_TIP_BREATHE' | translate }}</div>
-            </div>
-          </div>
-          
-          <!-- Breathing Animation -->
-          <div class="flex items-center justify-center gap-2 dark:text-gray-400 light:text-gray-600 text-sm">
-            <div class="w-3 h-3 dark:bg-green-400 light:bg-green-600 rounded-full animate-ping"></div>
-            <span>{{ 'MAIN_DASHBOARD.RELAX_BREATHE_IN_OUT' | translate }}</span>
-            <div class="w-3 h-3 dark:bg-blue-400 light:bg-blue-600 rounded-full animate-ping animation-delay-1000"></div>
-          </div>
-          
-          <button (click)="stopTimer()" class="mt-8 px-6 py-3 dark:bg-red-600/20 dark:hover:bg-red-600/30 light:bg-red-500/20 light:hover:bg-red-500/30 dark:border-red-500/30 light:border-red-500/30 border rounded-xl dark:text-red-400 light:text-red-600 font-semibold transition-all hover:scale-105 flex items-center gap-2 mx-auto">
-            <span class="material-icons">stop</span> {{ 'MAIN_DASHBOARD.RELAX_STOP_BREAK' | translate }}
-          </button>
         </div>
+
+        <h3 class="db-relax-title">{{ 'MAIN_DASHBOARD.RELAX_TITLE' | translate }}</h3>
+
+        @if (timerSettings.relaxationAudioUrl) {
+          <div class="db-relax-audio-badge">
+            <span class="material-icons">music_note</span>
+            {{ 'MAIN_DASHBOARD.RELAX_AUDIO_PLAYING' | translate }}
+          </div>
+        }
+
+        <p class="db-relax-sub">{{ 'MAIN_DASHBOARD.RELAX_SUBTITLE' | translate }}</p>
+
+        <div class="db-relax-timer">
+          <div class="db-relax-time">
+            {{ timerMinutes().toString().padStart(2, '0') }}:{{ timerSeconds().toString().padStart(2, '0') }}
+          </div>
+          <div class="db-relax-time-lbl">{{ 'MAIN_DASHBOARD.RELAX_TIME_REMAINING' | translate }}</div>
+        </div>
+
+        <div class="db-relax-tips">
+          <div class="db-relax-tip">
+            <span class="material-icons">water_drop</span>
+            <span>{{ 'MAIN_DASHBOARD.RELAX_TIP_DRINK' | translate }}</span>
+          </div>
+          <div class="db-relax-tip">
+            <span class="material-icons">directions_walk</span>
+            <span>{{ 'MAIN_DASHBOARD.RELAX_TIP_WALK' | translate }}</span>
+          </div>
+          <div class="db-relax-tip">
+            <span class="material-icons">visibility</span>
+            <span>{{ 'MAIN_DASHBOARD.RELAX_TIP_REST_EYES' | translate }}</span>
+          </div>
+          <div class="db-relax-tip">
+            <span class="material-icons">air</span>
+            <span>{{ 'MAIN_DASHBOARD.RELAX_TIP_BREATHE' | translate }}</span>
+          </div>
+        </div>
+
+        <div class="db-relax-breathe">
+          <div class="db-breathe-dot db-breathe-dot-1"></div>
+          <span>{{ 'MAIN_DASHBOARD.RELAX_BREATHE_IN_OUT' | translate }}</span>
+          <div class="db-breathe-dot db-breathe-dot-2"></div>
+        </div>
+
+        <button (click)="stopTimer()" class="db-relax-stop">
+          <span class="material-icons">stop</span>
+          {{ 'MAIN_DASHBOARD.RELAX_STOP_BREAK' | translate }}
+        </button>
       </div>
     </div>
   }
 
-  <!-- Footer -->
-  <footer class="dark:bg-black/50 light:bg-white/50 dark:border-yellow-500/20 light:border-blue-500/20 border-t mt-16">
-    <div class="container mx-auto px-4 py-6 text-center">
-      <p class="dark:text-gray-500 light:text-gray-600 text-sm flex items-center justify-center gap-1">
-        {{ 'MAIN_DASHBOARD.BUILT_WITH' | translate }} <span class="material-icons text-sm dark:text-red-400 light:text-red-500">favorite</span> {{ 'MAIN_DASHBOARD.USING' | translate }} Angular 18 + MongoDB + Tailwind CSS
-      </p>
-      <div class="mt-2 text-xs dark:text-yellow-500/60 light:text-blue-500/60">{{ 'MAIN_DASHBOARD.FOOTER_TEXT' | translate }}</div>
-    </div>
-  </footer>
 </div>

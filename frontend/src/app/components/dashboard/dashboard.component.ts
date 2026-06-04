@@ -1,4 +1,4 @@
-import { Component, OnInit, signal, computed, effect } from '@angular/core';
+﻿import { Component, OnInit, signal, computed, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -186,6 +186,10 @@ export class DashboardComponent implements OnInit {
   
   totalTodos = computed(() => {
     return this.todos().length;
+  });
+
+  urgentTodosCount = computed(() => {
+    return this.todos().filter(t => !t.done && t.priority === 'urgent').length;
   });
 
   // Material Icons for subjects
@@ -748,7 +752,7 @@ export class DashboardComponent implements OnInit {
   saveSubject() {
     const isFr = this.languageService.currentLanguage() === 'fr';
     if (!this.subjectForm.name.trim()) {
-      Swal.fire({ 
+      this.fireSwal({ 
         icon: 'error', 
         title: isFr ? 'Erreur' : 'Error', 
         text: isFr ? 'Le nom est requis' : 'Name is required'
@@ -763,7 +767,7 @@ export class DashboardComponent implements OnInit {
 
     request.subscribe({
       next: () => {
-        Swal.fire({ 
+        this.fireSwal({ 
           icon: 'success', 
           title: isFr ? 'Succès' : 'Success', 
           text: isFr ? 'Matière enregistrée avec succès' : 'Subject saved successfully', 
@@ -775,7 +779,7 @@ export class DashboardComponent implements OnInit {
         this.loadDayPlan(); // Reload current day plan to show updated data
       },
       error: (err) => {
-        Swal.fire({ 
+        this.fireSwal({ 
           icon: 'error', 
           title: isFr ? 'Erreur' : 'Error', 
           text: err.error?.message || (isFr ? 'Une erreur est survenue' : 'An error occurred')
@@ -951,7 +955,7 @@ export class DashboardComponent implements OnInit {
 
     if (subjects.length === 0) {
       const isFr = this.languageService.currentLanguage() === 'fr';
-      Swal.fire({ 
+      this.fireSwal({ 
         icon: 'error', 
         title: isFr ? 'Erreur' : 'Error', 
         text: isFr ? 'Ajoutez au moins une matière avec un objectif' : 'Add at least one subject with a goal'
@@ -962,7 +966,7 @@ export class DashboardComponent implements OnInit {
     this.dayPlanService.saveDayPlan({ date: this.today, subjects }).subscribe({
       next: () => {
         const isFr = this.languageService.currentLanguage() === 'fr';
-        Swal.fire({ 
+        this.fireSwal({ 
           icon: 'success', 
           title: isFr ? '✅ Plan mis à jour' : '✅ Plan updated', 
           text: isFr ? 'Sessions ajustées automatiquement' : 'Sessions adjusted automatically',
@@ -974,7 +978,7 @@ export class DashboardComponent implements OnInit {
       },
       error: (err) => {
         const isFr = this.languageService.currentLanguage() === 'fr';
-        Swal.fire({ 
+        this.fireSwal({ 
           icon: 'error', 
           title: isFr ? 'Erreur' : 'Error', 
           text: err.error?.message
@@ -985,7 +989,7 @@ export class DashboardComponent implements OnInit {
 
   deleteSubject(subject: Subject) {
     const isFr = this.languageService.currentLanguage() === 'fr';
-    Swal.fire({
+    this.fireSwal({
       title: isFr ? 'Supprimer?' : 'Delete?',
       text: isFr ? `Supprimer "${subject.name}"?` : `Delete "${subject.name}"?`,
       icon: 'warning',
@@ -996,11 +1000,11 @@ export class DashboardComponent implements OnInit {
       if (result.isConfirmed) {
         this.subjectService.deleteSubject(subject._id!).subscribe({
           next: () => {
-            Swal.fire({ icon: 'success', title: isFr ? 'Supprimé' : 'Deleted', timer: 1500, showConfirmButton: false });
+            this.fireSwal({ icon: 'success', title: isFr ? 'Supprimé' : 'Deleted', timer: 1500, showConfirmButton: false });
             this.loadSubjects();
           },
           error: (err) => {
-            Swal.fire({ icon: 'error', title: isFr ? 'Erreur' : 'Error', text: err.error?.message });
+            this.fireSwal({ icon: 'error', title: isFr ? 'Erreur' : 'Error', text: err.error?.message });
           }
         });
       }
@@ -1099,14 +1103,14 @@ export class DashboardComponent implements OnInit {
         : (isFr ? 'courte pause' : 'short break');
       
       // Offer break
-      const result = await Swal.fire({
+      const result = await this.fireSwal({
         title: isFr ? `☕ Temps de pause!` : `☕ Break time!`,
         html: `
           <div class="text-center">
-            <p class="text-lg mb-4">${isFr ? `Vous avez complété <strong class="text-yellow-400">${newSessionCount}</strong> session(s) aujourd'hui!` : `You have completed <strong class="text-yellow-400">${newSessionCount}</strong> session(s) today!`}</p>
+            <p class="text-lg mb-4">${isFr ? `Vous avez complété <strong class="text-indigo-600 dark:text-purple-400">${newSessionCount}</strong> session(s) aujourd'hui!` : `You have completed <strong class="text-indigo-600 dark:text-purple-400">${newSessionCount}</strong> session(s) today!`}</p>
             <p class="text-gray-400 mb-2">${isFr ? `Prenez une <strong>${breakType}</strong> de <strong class="text-green-400">${breakDuration} minutes</strong>` : `Take a <strong>${breakType}</strong> of <strong class="text-green-400">${breakDuration} minutes</strong>`}</p>
             <div class="mt-4 flex justify-center gap-4">
-              <div class="text-center p-4 bg-blue-500/10 rounded-lg">
+              <div class="text-center p-4 bg-indigo-500/10 rounded-lg">
                 <div class="text-3xl mb-2">🎯</div>
                 <div class="text-sm text-gray-400">Session ${newSessionCount}/${this.currentSessionGoal()}</div>
               </div>
@@ -1118,8 +1122,6 @@ export class DashboardComponent implements OnInit {
         showCancelButton: true,
         confirmButtonText: isFr ? `🧘 Commencer la pause (${breakDuration}min)` : `🧘 Start break (${breakDuration}min)`,
         cancelButtonText: isFr ? '⏭️ Passer la pause' : '⏭️ Skip break',
-        background: '#1a1a1a',
-        color: '#ffd700',
         confirmButtonColor: '#10b981',
         cancelButtonColor: '#6b7280'
       });
@@ -1139,16 +1141,13 @@ export class DashboardComponent implements OnInit {
       const wasLongBreak = localStorage.getItem('currentBreakIsLong') === 'true';
       const isFr = this.languageService.currentLanguage() === 'fr';
       
-      Swal.fire({
+      this.fireSwal({
         title: isFr ? '💪 Pause terminée!' : '💪 Break finished!',
         text: wasLongBreak 
           ? (isFr ? 'Nouveau cycle! Sessions réinitialisées 🔄' : 'New cycle! Sessions reset 🔄') 
           : (isFr ? 'Prêt à reprendre le travail?' : 'Ready to resume work?'),
         icon: 'info',
-        confirmButtonText: isFr ? '🔥 Continuer!' : '🔥 Continue!',
-        background: '#1a1a1a',
-        color: '#ffd700',
-        confirmButtonColor: '#ffd700'
+        confirmButtonText: isFr ? '🔥 Continuer!' : '🔥 Continue!'
       });
       
       // Si c'était une pause longue, réinitialiser les sessions
@@ -1190,21 +1189,19 @@ export class DashboardComponent implements OnInit {
     const messages = isFr ? messagesFr : messagesEn;
     const message = messages[Math.min(sessionCount - 1, messages.length - 1)];
     
-    await Swal.fire({
+    await this.fireSwal({
       title: message.title,
       html: `
         <div class="text-center">
           <div class="text-6xl mb-4 animate-bounce">🏆</div>
           <p class="text-xl mb-2">${message.text}</p>
-          <p class="text-gray-400"><strong class="text-yellow-400">${minutes} minutes</strong> ${isFr ? 'de focus complet' : 'of complete focus'}</p>
+          <p class="text-gray-400"><strong class="text-indigo-600 dark:text-purple-400">${minutes} minutes</strong> ${isFr ? 'de focus complet' : 'of complete focus'}</p>
           <div class="mt-4 text-sm text-gray-500">+${minutes * 2} ${isFr ? 'points' : 'points'} 💰</div>
         </div>
       `,
       timer: 2500,
       timerProgressBar: true,
-      showConfirmButton: false,
-      background: '#1a1a1a',
-      color: '#ffd700'
+      showConfirmButton: false
     });
   }
 
@@ -1244,17 +1241,15 @@ export class DashboardComponent implements OnInit {
         next: (res) => {
           if (res.success) {
             const isFr = this.languageService.currentLanguage() === 'fr';
-            Swal.fire({
+            this.fireSwal({
               icon: 'info',
               title: isFr ? 'Session interrompue' : 'Session interrupted',
               html: `
                 <p>${minutesStudied} ${isFr ? 'minutes complétées' : 'minutes completed'}</p>
-                <p class="text-sm text-yellow-400">+${pointsEarned} points</p>
+                <p class="text-sm text-indigo-600 dark:text-purple-400 font-bold">+${pointsEarned} points</p>
               `,
               timer: 2000,
-              showConfirmButton: false,
-              background: '#1a1a1a',
-              color: '#ffd700'
+              showConfirmButton: false
             });
           }
         },
@@ -1322,13 +1317,10 @@ export class DashboardComponent implements OnInit {
     const isFr = this.languageService.currentLanguage() === 'fr';
     // Validate settings
     if (this.timerSettings.focusDuration < 1 || this.timerSettings.focusDuration > 60) {
-      Swal.fire({
+      this.fireSwal({
         icon: 'error',
         title: isFr ? 'Erreur' : 'Error',
-        text: isFr ? 'La durée de focus doit être entre 1 et 60 minutes' : 'Focus duration must be between 1 and 60 minutes',
-        background: '#1a1a1a',
-        color: '#ffd700',
-        confirmButtonColor: '#ffd700'
+        text: isFr ? 'La durée de focus doit être entre 1 et 60 minutes' : 'Focus duration must be between 1 and 60 minutes'
       });
       return;
     }
@@ -1357,26 +1349,22 @@ export class DashboardComponent implements OnInit {
     this.authService.updateTimerSettings(allSettings).subscribe({
       next: (response) => {
         console.log('✅ Tous les paramètres sauvegardés dans la base:', response.settings);
-        Swal.fire({
+        this.fireSwal({
           icon: 'success',
           title: isFr ? 'Paramètres sauvegardés!' : 'Settings saved!',
           text: isFr ? 'Synchronisés sur tous vos appareils' : 'Synchronized across all your devices',
           timer: 1500,
-          showConfirmButton: false,
-          background: '#1a1a1a',
-          color: '#ffd700'
+          showConfirmButton: false
         });
       },
       error: (error) => {
         console.error('❌ Erreur sauvegarde base de données:', error);
-        Swal.fire({
+        this.fireSwal({
           icon: 'warning',
           title: isFr ? 'Paramètres sauvegardés localement' : 'Settings saved locally',
           text: isFr ? 'Synchronisation avec le serveur échouée' : 'Server synchronization failed',
           timer: 2000,
-          showConfirmButton: false,
-          background: '#1a1a1a',
-          color: '#ffd700'
+          showConfirmButton: false
         });
       }
     });
@@ -1523,12 +1511,18 @@ export class DashboardComponent implements OnInit {
           this.authService.awardPoints(bonusPoints).subscribe({
             next: (res) => {
               const isFr = this.languageService.currentLanguage() === 'fr';
-              Swal.fire({
+              const isLight = this.themeService.isLight();
+              const primaryGlow = isLight ? 'rgba(99, 102, 241, 0.3)' : 'rgba(139, 92, 246, 0.4)';
+              const primaryBorder = isLight ? '2px solid rgba(99, 102, 241, 0.25)' : '3px solid #8b5cf6';
+              const rewardTitleColor = isLight ? 'linear-gradient(135deg, #6366f1, #8b5cf6, #7c3aed)' : 'linear-gradient(135deg, #a78bfa, #8b5cf6, #7c3aed)';
+              const rewardTextCol = isLight ? '#6366f1' : '#a78bfa';
+
+              this.fireSwal({
                 title: `
                   <div style="margin-bottom: 1rem;">
                     <div style="font-size: 5em; animation: bounce 1s ease-in-out infinite;">${subjectIcon}</div>
                   </div>
-                  <div style="font-size: 2em; font-weight: bold; background: linear-gradient(135deg, #ffd700, #ffed4e, #ffd700); -webkit-background-clip: text; -webkit-text-fill-color: transparent; animation: shine 2s linear infinite;">
+                  <div style="font-size: 2em; font-weight: bold; background: ${rewardTitleColor}; -webkit-background-clip: text; -webkit-text-fill-color: transparent; animation: shine 2s linear infinite;">
                     ${isFr ? 'Objectif Atteint! 🎉' : 'Goal Achieved! 🎉'}
                   </div>
                 `,
@@ -1543,8 +1537,8 @@ export class DashboardComponent implements OnInit {
                       100% { background-position: 200% center; }
                     }
                     @keyframes pulse-glow {
-                      0%, 100% { box-shadow: 0 0 20px rgba(255, 215, 0, 0.5); }
-                      50% { box-shadow: 0 0 40px rgba(255, 215, 0, 0.8); }
+                      0%, 100% { box-shadow: 0 0 20px ${primaryGlow}; }
+                      50% { box-shadow: 0 0 40px ${primaryGlow}; }
                     }
                     .celebration-card {
                       animation: pulse-glow 2s ease-in-out infinite;
@@ -1561,16 +1555,16 @@ export class DashboardComponent implements OnInit {
                       </div>
                     </div>
                     
-                    <div style="background: linear-gradient(135deg, #ffd70030, #ffed4e30); border: 3px solid #ffd700; border-radius: 1.5rem; padding: 2rem; margin: 1.5rem 0; position: relative; overflow: hidden;">
+                    <div style="background: ${isLight ? 'linear-gradient(135deg, rgba(99, 102, 241, 0.08), rgba(139, 92, 246, 0.06))' : 'linear-gradient(135deg, rgba(139, 92, 246, 0.15), rgba(167, 139, 250, 0.1))'}; border: ${primaryBorder}; border-radius: 1.5rem; padding: 2rem; margin: 1.5rem 0; position: relative; overflow: hidden;">
                       <div style="position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.1) 50%, transparent 70%); animation: shine 3s linear infinite;"></div>
                       <div style="position: relative; z-index: 1;">
                         <div style="font-size: 1.2em; color: #a0a0a0; margin-bottom: 0.5rem;">🎁 ${isFr ? 'Récompense' : 'Reward'}</div>
-                        <div style="font-size: 4em; font-weight: bold; color: #ffd700; text-shadow: 0 0 30px rgba(255, 215, 0, 0.8), 0 0 60px rgba(255, 215, 0, 0.4);">
+                        <div style="font-size: 4em; font-weight: bold; color: ${rewardTextCol}; text-shadow: ${isLight ? 'none' : '0 0 30px rgba(139, 92, 246, 0.7), 0 0 60px rgba(139, 92, 246, 0.3)'};">
                           +${bonusPoints}
                         </div>
-                        <div style="font-size: 1.5em; color: #ffd700; font-weight: bold;">${isFr ? 'Points! 🏆' : 'Points! 🏆'}</div>
+                        <div style="font-size: 1.5em; color: sinFr ? 'Points! 🏆' : 'Points! 🏆'}\</div>
                         <div style="font-size: 0.9em; color: #a0a0a0; margin-top: 0.5rem;">
-                          Total: <span style="color: #ffd700; font-weight: bold;">${res.totalPoints}</span> points
+                          Total: <span style="color: ${rewardTextCol}; font-weight: bold;">${res.totalPoints}</span> points
                         </div>
                       </div>
                     </div>
@@ -1613,12 +1607,10 @@ export class DashboardComponent implements OnInit {
                 confirmButtonText: nextSubject 
                   ? (isFr ? `🔥 Commencer ${nextSubject.name}!` : `🔥 Start ${nextSubject.name}!`) 
                   : (isFr ? '🎉 Parfait!' : '🎉 Perfect!'),
-                background: '#0a0a0a',
-                color: '#ffffff',
-                confirmButtonColor: nextSubject ? nextSubject.color : '#ffd700',
-                width: '90vw',
+                confirmButtonColor: nextSubject ? nextSubject.color : (isLight ? '#6366f1' : '#8b5cf6'),
+                width: '40vw',
                 customClass: {
-                  popup: 'celebration-popup responsive-modal',
+                  popup: 'study-hub-swal-modal celebration-popup responsive-modal',
                   confirmButton: 'celebration-button'
                 },
                 showClass: {
@@ -1628,7 +1620,6 @@ export class DashboardComponent implements OnInit {
                   popup: 'animate__animated animate__zoomOut animate__faster'
                 }
               }).then((result) => {
-                // If user clicks to start next subject and next subject exists
                 if (result.isConfirmed && nextSubject) {
                   // Start timer for next subject
                   this.startTimer(nextSubject);
@@ -1639,15 +1630,14 @@ export class DashboardComponent implements OnInit {
               console.error('Error awarding bonus points:', err);
               // Still show celebration even if points fail
               const isFr = this.languageService.currentLanguage() === 'fr';
-              Swal.fire({
+              const isLight = this.themeService.isLight();
+              const subColor = isLight ? '#6366f1' : '#a78bfa';
+              this.fireSwal({
                 icon: 'success',
                 title: isFr ? `🎉 Objectif atteint! 🎉` : `🎉 Goal achieved! 🎉`,
                 html: `<div style="font-size: 1.2em;">
-                  <p>${isFr ? `Félicitations! Vous avez complété <strong style="color: #ffd700;">${subjectName}</strong>!` : `Congratulations! You have completed <strong style="color: #ffd700;">${subjectName}</strong>!`}</p>
+                  <p>${isFr ? `Félicitations! Vous avez complété <strong style="color: ${subColor};">${subjectName}</strong>!` : `Congratulations! You have completed <strong style="color: ${subColor};">${subjectName}</strong>!`}</p>
                 </div>`,
-                background: '#1a1a1a',
-                color: '#ffd700',
-                confirmButtonColor: '#ffd700',
                 timer: 3000
               });
             }
@@ -1747,24 +1737,34 @@ export class DashboardComponent implements OnInit {
     const isLight = this.themeService.isLight();
     return isLight
       ? {
+          customClass: {
+            popup: 'study-hub-swal-modal'
+          },
           background: '#ffffff',
-          color: '#0f172a',
-          confirmButtonColor: '#4f46e5',
+          color: '#1e1b4b',
+          confirmButtonColor: '#6366f1',
           cancelButtonColor: '#cbd5e1'
         }
       : {
-          background: '#0a0a0a',
-          color: '#f8fafc',
-          confirmButtonColor: '#facc15',
+          customClass: {
+            popup: 'study-hub-swal-modal'
+          },
+          background: '#0e1229',
+          color: '#f1f5f9',
+          confirmButtonColor: '#8b5cf6',
           cancelButtonColor: '#374151'
         };
   }
 
-  private taskAlert(options: any) {
+  private fireSwal(options: any) {
     return Swal.fire({
       ...this.getTaskSwalTheme(),
       ...options
     });
+  }
+
+  private taskAlert(options: any) {
+    return this.fireSwal(options);
   }
 
   saveTodo() {
@@ -2158,13 +2158,15 @@ export class DashboardComponent implements OnInit {
     
     // If no sessions, redirect to calendar to create them
     const isFr = this.languageService.currentLanguage() === 'fr';
-    Swal.fire({
+    const isLight = this.themeService.isLight();
+    const primaryColor = isLight ? '#6366f1' : '#a78bfa';
+    this.fireSwal({
       title: isFr ? '📅 Utilisez le Calendrier' : '📅 Use the Calendar',
       html: `
         <div style="text-align: left;">
-          <p style="margin-bottom: 15px;">${isFr ? 'Pour ajouter du temps d\'étude à cette matière, vous devez créer des sessions dans le <strong style="color: #ffd700;">Calendrier</strong>.' : 'To add study time for this subject, you must create sessions in the <strong style="color: #ffd700;">Calendar</strong>.'}</p>
+          <p style="margin-bottom: 15px;">${isFr ? `Pour ajouter du temps d'étude à cette matière, vous devez créer des sessions dans le <strong style="color: ${primaryColor};">Calendrier</strong>.` : `To add study time for this subject, you must create sessions in the <strong style="color: ${primaryColor};">Calendar</strong>.`}</p>
           <p style="color: #10b981; margin-bottom: 10px;">${isFr ? '✅ Avantages du calendrier:' : '✅ Calendar Benefits:'}</p>
-          <ul style="list-style: none; padding-left: 0; color: #ffd700;">
+          <ul style="list-style: none; padding-left: 0; color: ${primaryColor};">
             ${isFr 
               ? `<li>📍 Planifiez l'heure exacte de chaque session</li>
                  <li>⏱️ Définissez la durée précise</li>
@@ -2183,10 +2185,8 @@ export class DashboardComponent implements OnInit {
       cancelButtonText: isFr ? 'Plus tard' : 'Later',
       confirmButtonColor: '#10b981',
       cancelButtonColor: '#6b7280',
-      background: '#1a1a1a',
-      color: '#ffd700',
       customClass: {
-        popup: 'swal-wide'
+        popup: 'study-hub-swal-modal swal-wide'
       }
     }).then((result) => {
       if (result.isConfirmed) {
@@ -2242,6 +2242,13 @@ export class DashboardComponent implements OnInit {
   goToPlanner() {
     this.closeMobileSubjectsMenu();
     this.router.navigate(['/planner']);
+  }
+
+  scrollToTodos() {
+    const element = document.getElementById('db-todo-card');
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
   }
 
   goToStudyHub() {
@@ -2340,12 +2347,10 @@ export class DashboardComponent implements OnInit {
         onError: (event: any) => {
           console.error('❌ YouTube player error:', event.data);
           const isFr = this.languageService.currentLanguage() === 'fr';
-          Swal.fire({
+          this.fireSwal({
             icon: 'error',
             title: isFr ? 'Erreur Audio' : 'Audio Error',
             text: isFr ? 'Impossible de lire la vidéo YouTube. Vérifiez le lien.' : 'Unable to play the YouTube video. Please check the link.',
-            background: '#1a1a1a',
-            color: '#ffd700',
             timer: 3000
           });
         }
@@ -2367,12 +2372,10 @@ export class DashboardComponent implements OnInit {
     const isFr = this.languageService.currentLanguage() === 'fr';
     
     if (!videoId) {
-      Swal.fire({
+      this.fireSwal({
         icon: 'error',
         title: isFr ? 'URL Invalide' : 'Invalid URL',
-        text: isFr ? 'Le lien YouTube n\'est pas valide' : 'The YouTube link is not valid',
-        background: '#1a1a1a',
-        color: '#ffd700'
+        text: isFr ? 'Le lien YouTube n\'est pas valide' : 'The YouTube link is not valid'
       });
       return;
     }
@@ -2381,12 +2384,10 @@ export class DashboardComponent implements OnInit {
     fetch(`https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${videoId}&format=json`)
       .then(response => {
         if (response.ok) {
-          Swal.fire({
+          this.fireSwal({
             icon: 'success',
             title: isFr ? 'URL Valide!' : 'Valid URL!',
-            text: isFr ? 'La vidéo YouTube existe et sera jouée pendant les pauses' : 'The YouTube video exists and will be played during breaks',
-            background: '#1a1a1a',
-            color: '#ffd700',
+            text: isFr ? 'La vidéo YouTube exists and will be played during breaks' : 'The YouTube video exists and will be played during breaks',
             timer: 2000
           });
         } else {
@@ -2394,12 +2395,10 @@ export class DashboardComponent implements OnInit {
         }
       })
       .catch(() => {
-        Swal.fire({
+        this.fireSwal({
           icon: 'error',
           title: isFr ? 'Vidéo Introuvable' : 'Video Not Found',
-          text: isFr ? 'Cette vidéo YouTube n\'existe pas ou est privée' : 'This YouTube video does not exist or is private',
-          background: '#1a1a1a',
-          color: '#ffd700'
+          text: isFr ? 'Cette vidéo YouTube n\'existe pas ou est privée' : 'This YouTube video does not exist or is private'
         });
       });
   }
@@ -2419,16 +2418,12 @@ export class DashboardComponent implements OnInit {
 
   logout() {
     const isFr = this.languageService.currentLanguage() === 'fr';
-    Swal.fire({
+    this.fireSwal({
       title: isFr ? 'Se déconnecter?' : 'Logout?',
       icon: 'question',
       showCancelButton: true,
-      confirmButtonColor: '#ffd700',
-      cancelButtonColor: '#6b7280',
       confirmButtonText: isFr ? 'Oui' : 'Yes',
-      cancelButtonText: isFr ? 'Non' : 'No',
-      background: '#1a1a1a',
-      color: '#ffd700'
+      cancelButtonText: isFr ? 'Non' : 'No'
     }).then((result) => {
       if (result.isConfirmed) {
         this.authService.logout();

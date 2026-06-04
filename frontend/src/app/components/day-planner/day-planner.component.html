@@ -1,175 +1,225 @@
-<div class="min-h-screen dark:bg-black light:bg-gradient-to-br light:from-blue-50 light:via-gray-50 light:to-blue-50 dark:text-white light:text-gray-900 transition-colors duration-300">
-  <!-- Premium Header -->
-  <header class="sticky top-0 z-50 dark:bg-black/80 light:bg-white/95 backdrop-blur-xl dark:border-yellow-500/20 light:border-blue-500/20 border-b dark:shadow-yellow-500/10 light:shadow-blue-500/10 shadow-2xl transition-colors duration-300">
-    <div class="container mx-auto px-4 py-4">
-      <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-        <div class="flex items-center gap-3 sm:gap-4">
-          <div class="w-12 h-12 dark:bg-gradient-to-br dark:from-yellow-400 dark:to-yellow-600 light:bg-gradient-to-br light:from-blue-400 light:to-blue-600 rounded-xl flex items-center justify-center shadow-lg dark:shadow-yellow-500/50 light:shadow-blue-500/50 transition-all duration-300">
-            <span class="material-icons text-2xl dark:text-yellow-900 light:text-white">calendar_today</span>
-          </div>
-          <div>
-            <h1 class="text-2xl sm:text-3xl font-bold bg-gradient-to-r dark:from-yellow-400 dark:via-yellow-500 dark:to-yellow-600 light:from-blue-500 light:via-blue-600 light:to-blue-700 bg-clip-text text-transparent">Planning Journalier</h1>
-            <p class="text-xs dark:text-yellow-500/60 light:text-blue-600">Organisez vos sessions d'étude</p>
-          </div>
+<div class="pl-root" [class.dark]="themeService.isDark()" [class.light]="!themeService.isDark()">
+
+  <!-- ══════════════ STICKY HEADER ══════════════ -->
+  <header class="pl-header">
+    <div class="pl-header-inner">
+      <div class="pl-logo-group">
+        <div class="pl-logo-icon" (click)="goToDashboard()">
+          <span class="material-icons">calendar_month</span>
         </div>
-        
-        <div class="flex flex-wrap items-center gap-2 sm:gap-3">
-            <button (click)="themeService.toggleTheme()" 
-              class="p-3 dark:bg-yellow-500/20 dark:hover:bg-yellow-500/30 light:bg-blue-100 light:hover:bg-blue-200 border dark:border-yellow-500/30 light:border-blue-400 rounded-xl dark:text-yellow-400 light:text-blue-700 transition-all duration-300 shadow-sm light:shadow-blue-200/60"
-                  [title]="themeService.isDark() ? 'Passer en mode clair' : 'Passer en mode sombre'">
-            <span class="material-icons">{{ themeService.isDark() ? 'light_mode' : 'dark_mode' }}</span>
-          </button>
-          
-          <button (click)="goToDashboard()" class="px-3 sm:px-4 py-2 dark:bg-gray-800 dark:hover:bg-gray-700 light:bg-white light:hover:bg-blue-50 border light:border-blue-300 rounded-xl dark:text-white light:text-gray-800 transition-all duration-300 flex items-center gap-2 shadow-sm light:shadow-blue-200/60 text-sm sm:text-base">
-            <span class="material-icons text-xl">arrow_back</span>
-            Retour Dashboard
-          </button>
+        <div>
+          <h1 class="pl-logo-text">Planning Journalier</h1>
+          <p class="pl-logo-sub">Organisez vos sessions d'étude</p>
         </div>
+      </div>
+
+      <div class="pl-header-actions">
+        <button class="pl-icon-btn" (click)="themeService.toggleTheme()"
+          [title]="themeService.isDark() ? 'Mode clair' : 'Mode sombre'">
+          <span class="material-icons">{{ themeService.isDark() ? 'light_mode' : 'dark_mode' }}</span>
+        </button>
+        <button class="pl-btn-back" (click)="goToDashboard()">
+          <span class="material-icons">arrow_back</span>
+          <span class="pl-btn-text">Dashboard</span>
+        </button>
       </div>
     </div>
   </header>
 
-  <!-- Main Content -->
-  <main class="container mx-auto px-4 py-8">
-    
+  <!-- ══════════════ MAIN ══════════════ -->
+  <main class="pl-main">
+
     @if (isLoading()) {
-      <div class="flex items-center justify-center py-20">
-        <div class="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-yellow-500"></div>
+      <div class="pl-loading">
+        <div class="pl-spinner"></div>
+        <p class="pl-loading-text">Chargement de votre planning…</p>
       </div>
     } @else {
-      
-      <!-- Compact Stats Dashboard -->
-      <div class="mb-8 rounded-2xl border-2 dark:border-yellow-500/20 light:border-blue-300 dark:bg-gradient-to-r dark:from-gray-900 dark:via-black dark:to-gray-900 light:bg-gradient-to-r light:from-white light:via-blue-50 light:to-white p-4 sm:p-5 shadow-xl dark:shadow-yellow-500/5 light:shadow-blue-200/60">
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-          <div class="relative overflow-hidden rounded-xl border dark:border-yellow-500/30 light:border-blue-400 dark:bg-yellow-500/10 light:bg-blue-100/80 p-4">
-            <div class="absolute -top-10 -right-10 w-28 h-28 rounded-full dark:bg-yellow-500/20 light:bg-blue-200/70 blur-2xl"></div>
-            <div class="relative flex items-center justify-between gap-3">
-              <div>
-                <p class="text-xs uppercase tracking-wide dark:text-yellow-500/70 light:text-blue-600 font-semibold">Temps planifié</p>
-                <p class="text-2xl sm:text-3xl font-bold dark:text-yellow-300 light:text-blue-800 mt-1">{{ (totalPlannedMinutes() / 60).toFixed(1) }}h</p>
-              </div>
-              <span class="material-icons text-3xl dark:text-yellow-400 light:text-blue-600">schedule</span>
+
+      <!-- ═══ HERO STATS ═══ -->
+      <section class="pl-hero">
+        <div class="pl-hero-orb pl-hero-orb-1"></div>
+        <div class="pl-hero-orb pl-hero-orb-2"></div>
+        <div class="pl-hero-content">
+          <div>
+            <div class="pl-hero-badge">
+              <span class="material-icons" style="font-size:13px">insights</span>
+              Vue d'ensemble
             </div>
+            <h2 class="pl-hero-greeting">
+              Votre <span class="pl-hero-name">Planning</span>
+            </h2>
+            <p class="pl-hero-sub">
+              Planifiez, visualisez et suivez vos sessions d'étude en temps réel.
+            </p>
           </div>
 
-          <div class="relative overflow-hidden rounded-xl border dark:border-purple-500/30 light:border-indigo-400 dark:bg-purple-500/10 light:bg-indigo-100/80 p-4">
-            <div class="absolute -top-10 -right-10 w-28 h-28 rounded-full dark:bg-purple-500/20 light:bg-indigo-200/70 blur-2xl"></div>
-            <div class="relative flex items-center justify-between gap-3">
-              <div>
-                <p class="text-xs uppercase tracking-wide dark:text-purple-300/80 light:text-indigo-700 font-semibold">Matières planifiées</p>
-                <p class="text-2xl sm:text-3xl font-bold dark:text-purple-300 light:text-indigo-800 mt-1">{{ plannedSubjectsCount() }}</p>
-              </div>
-              <span class="material-icons text-3xl dark:text-purple-300 light:text-indigo-600">menu_book</span>
+          <div class="pl-hero-stats">
+            <div class="pl-stat">
+              <div class="pl-stat-val">{{ (totalPlannedMinutes() / 60).toFixed(1) }}h</div>
+              <div class="pl-stat-lbl">Planifié</div>
+            </div>
+            <div class="pl-stat-divider"></div>
+            <div class="pl-stat">
+              <div class="pl-stat-val">{{ (totalStudiedMinutes() / 60).toFixed(1) }}h</div>
+              <div class="pl-stat-lbl">Complété</div>
+            </div>
+            <div class="pl-stat-divider"></div>
+            <div class="pl-stat">
+              <div class="pl-stat-val">{{ plannedSubjectsCount() }}</div>
+              <div class="pl-stat-lbl">Matières</div>
             </div>
           </div>
         </div>
+      </section>
+
+      <!-- ═══ HOW-TO-USE TIPS ═══ -->
+      <div class="pl-tips-card" #tipsCard>
+        <div class="pl-tips-header" (click)="tipsOpen = !tipsOpen">
+          <h3 class="pl-tips-title">
+            <span class="material-icons">lightbulb</span>
+            Comment utiliser le Planning ?
+          </h3>
+          <span class="pl-tips-toggle" [class.open]="tipsOpen">
+            <span class="material-icons">expand_more</span>
+          </span>
+        </div>
+
+        @if (tipsOpen) {
+          <div class="pl-tips-body">
+            <div class="pl-tips-grid">
+              <div class="pl-tip-item">
+                <div class="pl-tip-icon-wrap">
+                  <span class="material-icons">touch_app</span>
+                </div>
+                <div class="pl-tip-content">
+                  <div class="pl-tip-label">Créer une session</div>
+                  <div class="pl-tip-desc">Cliquez et glissez sur le calendrier pour créer une nouvelle session d'étude</div>
+                </div>
+              </div>
+              <div class="pl-tip-item">
+                <div class="pl-tip-icon-wrap">
+                  <span class="material-icons">open_with</span>
+                </div>
+                <div class="pl-tip-content">
+                  <div class="pl-tip-label">Déplacer une session</div>
+                  <div class="pl-tip-desc">Glissez-déposez n'importe quelle session pour changer son horaire</div>
+                </div>
+              </div>
+              <div class="pl-tip-item">
+                <div class="pl-tip-icon-wrap">
+                  <span class="material-icons">height</span>
+                </div>
+                <div class="pl-tip-content">
+                  <div class="pl-tip-label">Redimensionner</div>
+                  <div class="pl-tip-desc">Faites glisser le bas d'une session pour modifier sa durée</div>
+                </div>
+              </div>
+              <div class="pl-tip-item">
+                <div class="pl-tip-icon-wrap">
+                  <span class="material-icons">check_circle</span>
+                </div>
+                <div class="pl-tip-content">
+                  <div class="pl-tip-label">Marquer complété</div>
+                  <div class="pl-tip-desc">Cliquez sur une session pour la marquer comme terminée (en vert)</div>
+                </div>
+              </div>
+              <div class="pl-tip-item">
+                <div class="pl-tip-icon-wrap">
+                  <span class="material-icons">view_week</span>
+                </div>
+                <div class="pl-tip-content">
+                  <div class="pl-tip-label">Changer de vue</div>
+                  <div class="pl-tip-desc">Basculez entre Jour, Semaine et Mois pour voir votre planning</div>
+                </div>
+              </div>
+              <div class="pl-tip-item">
+                <div class="pl-tip-icon-wrap">
+                  <span class="material-icons">school</span>
+                </div>
+                <div class="pl-tip-content">
+                  <div class="pl-tip-label">Ajouter des matières</div>
+                  <div class="pl-tip-desc">Créez d'abord vos matières depuis le Dashboard pour les planifier ici</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        }
       </div>
 
-      <!-- Calendar Section -->
-      <div class="bg-gradient-to-br dark:from-gray-900 dark:to-black light:bg-white border-2 dark:border-yellow-500/20 light:border-blue-300 rounded-2xl p-4 sm:p-6 shadow-2xl dark:shadow-yellow-500/5 light:shadow-xl light:shadow-blue-200/60 transition-colors duration-300">
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6 pb-4 border-b dark:border-yellow-500/20 light:border-blue-400">
-          <h2 class="text-xl sm:text-2xl font-bold bg-gradient-to-r dark:from-yellow-400 dark:to-yellow-600 light:from-blue-600 light:to-blue-700 bg-clip-text text-transparent flex items-center gap-2">
-            <span class="material-icons text-3xl">event_note</span>
+      <!-- ═══ CALENDAR CARD ═══ -->
+      <div class="pl-card">
+        <div class="pl-card-header">
+          <h2 class="pl-card-title">
+            <span class="material-icons">event_note</span>
             Calendrier d'étude
           </h2>
-          
-          <div class="flex gap-3 flex-wrap text-xs">
-            <div class="flex items-center gap-2">
-              <div class="w-3 h-3 rounded-full" style="background: linear-gradient(135deg, #3b82f6, #8b5cf6);"></div>
-              <span class="dark:text-gray-400 light:text-gray-700 font-medium">À faire</span>
+          <div class="pl-legend">
+            <div class="pl-legend-item">
+              <div class="pl-legend-dot pl-dot-pending"></div>
+              <span>À faire</span>
             </div>
-            <div class="flex items-center gap-2">
-              <div class="w-3 h-3 bg-green-500 rounded-full"></div>
-              <span class="dark:text-gray-400 light:text-gray-700 font-medium flex items-center gap-1">
-                <span class="material-icons text-sm">check</span>
-                Complété
-              </span>
+            <div class="pl-legend-item">
+              <div class="pl-legend-dot pl-dot-done"></div>
+              <span>Complété</span>
             </div>
           </div>
         </div>
-        
-        <div class="mobile-calendar-toolbar lg:hidden mb-4 rounded-xl border dark:border-yellow-500/30 light:border-blue-400 dark:bg-black/60 light:bg-blue-50/80 p-3 shadow-md">
-          <div class="grid grid-cols-2 gap-2 mb-2">
-            <button
-              type="button"
-              (click)="mobilePrev()"
-              class="py-2 px-3 rounded-lg dark:bg-yellow-500/20 dark:hover:bg-yellow-500/30 light:bg-blue-100 light:hover:bg-blue-200 dark:text-yellow-300 light:text-blue-700 font-semibold text-sm transition-colors duration-200">
-              Précédent
+
+        <!-- Mobile Toolbar (hidden on ≥1024px) -->
+        <div class="pl-mobile-toolbar lg-hidden">
+          <div class="pl-toolbar-grid-2">
+            <button type="button" class="pl-tb-btn" (click)="mobilePrev()">
+              ← Précédent
             </button>
-            <button
-              type="button"
-              (click)="mobileNext()"
-              class="py-2 px-3 rounded-lg dark:bg-yellow-500/20 dark:hover:bg-yellow-500/30 light:bg-blue-100 light:hover:bg-blue-200 dark:text-yellow-300 light:text-blue-700 font-semibold text-sm transition-colors duration-200">
-              Suivant
+            <button type="button" class="pl-tb-btn" (click)="mobileNext()">
+              Suivant →
             </button>
           </div>
-
-          <button
-            type="button"
-            (click)="mobileToday()"
-            class="w-full py-2 px-3 mb-2 rounded-lg dark:bg-yellow-500/25 dark:hover:bg-yellow-500/35 light:bg-blue-200 light:hover:bg-blue-300 dark:text-yellow-200 light:text-blue-800 font-bold text-sm transition-colors duration-200">
+          <button type="button" class="pl-tb-btn pl-tb-today" (click)="mobileToday()">
             Aujourd'hui
           </button>
-
-          <div class="text-center py-2 mb-2 rounded-lg dark:bg-gray-900/70 light:bg-white dark:text-yellow-200 light:text-blue-800 font-bold text-sm sm:text-base truncate">
-            {{ currentCalendarTitle() }}
-          </div>
-
-          <div class="grid grid-cols-3 gap-2">
-            <button
-              type="button"
-              (click)="setMobileView('timeGridDay')"
-              [class]="currentViewType() === 'timeGridDay'
-                ? 'py-2 px-2 rounded-lg dark:bg-yellow-500/35 light:bg-blue-300 dark:text-yellow-100 light:text-blue-900 font-bold text-xs transition-colors duration-200'
-                : 'py-2 px-2 rounded-lg dark:bg-yellow-500/15 dark:hover:bg-yellow-500/25 light:bg-blue-100 light:hover:bg-blue-200 dark:text-yellow-300 light:text-blue-700 font-semibold text-xs transition-colors duration-200'">
-              Jour
-            </button>
-            <button
-              type="button"
-              (click)="setMobileView('timeGridWeek')"
-              [class]="currentViewType() === 'timeGridWeek'
-                ? 'py-2 px-2 rounded-lg dark:bg-yellow-500/35 light:bg-blue-300 dark:text-yellow-100 light:text-blue-900 font-bold text-xs transition-colors duration-200'
-                : 'py-2 px-2 rounded-lg dark:bg-yellow-500/15 dark:hover:bg-yellow-500/25 light:bg-blue-100 light:hover:bg-blue-200 dark:text-yellow-300 light:text-blue-700 font-semibold text-xs transition-colors duration-200'">
-              Semaine
-            </button>
-            <button
-              type="button"
-              (click)="setMobileView('dayGridMonth')"
-              [class]="currentViewType() === 'dayGridMonth'
-                ? 'py-2 px-2 rounded-lg dark:bg-yellow-500/35 light:bg-blue-300 dark:text-yellow-100 light:text-blue-900 font-bold text-xs transition-colors duration-200'
-                : 'py-2 px-2 rounded-lg dark:bg-yellow-500/15 dark:hover:bg-yellow-500/25 light:bg-blue-100 light:hover:bg-blue-200 dark:text-yellow-300 light:text-blue-700 font-semibold text-xs transition-colors duration-200'">
-              Mois
-            </button>
+          <div class="pl-tb-title">{{ currentCalendarTitle() }}</div>
+          <div class="pl-toolbar-grid-3">
+            <button type="button" class="pl-tb-btn"
+              [class.pl-tb-btn-active]="currentViewType() === 'timeGridDay'"
+              (click)="setMobileView('timeGridDay')">Jour</button>
+            <button type="button" class="pl-tb-btn"
+              [class.pl-tb-btn-active]="currentViewType() === 'timeGridWeek'"
+              (click)="setMobileView('timeGridWeek')">Semaine</button>
+            <button type="button" class="pl-tb-btn"
+              [class.pl-tb-btn-active]="currentViewType() === 'dayGridMonth'"
+              (click)="setMobileView('dayGridMonth')">Mois</button>
           </div>
         </div>
 
-        <div class="calendar-wrapper bg-white rounded-xl p-2 sm:p-4 shadow-inner overflow-hidden">
-          <full-calendar #plannerCalendar [options]="calendarOptions()"></full-calendar>
+        <!-- FullCalendar -->
+        <div class="pl-calendar-wrapper">
+          @if (subjects().length === 0) {
+            <div class="pl-empty-state">
+              <div class="pl-empty-icon">
+                <span class="material-icons">school</span>
+              </div>
+              <p class="pl-empty-title">Aucune matière trouvée</p>
+              <p class="pl-empty-sub">Créez d'abord vos matières depuis le Dashboard pour commencer à planifier vos sessions.</p>
+            </div>
+          } @else {
+            <full-calendar #plannerCalendar [options]="calendarOptions()"></full-calendar>
+          }
         </div>
 
-        <div class="mt-6 p-4 dark:bg-yellow-500/10 light:bg-gradient-to-br light:from-blue-50 light:to-blue-100 border-2 dark:border-yellow-500/30 light:border-blue-400 rounded-xl transition-colors duration-300 shadow-md light:shadow-blue-200/50">
-          <div class="flex items-center gap-3">
-            <span class="material-icons text-3xl dark:text-yellow-400 light:text-blue-600">lightbulb</span>
-            <div class="flex-1">
-              <p class="dark:text-yellow-400 light:text-blue-700 font-semibold mb-1">Comment utiliser:</p>
-              <ul class="text-sm dark:text-gray-400 light:text-gray-700 space-y-1 font-medium">
-                <li>• Cliquez et glissez sur le calendrier pour créer une nouvelle session</li>
-                <li>• Cliquez sur une session pour la modifier ou la supprimer</li>
-                <li>• Déplacez ou redimensionnez les sessions par glisser-déposer</li>
-              </ul>
+        <!-- Bottom Banner -->
+        <div class="pl-banner">
+          <span class="material-icons">auto_fix_high</span>
+          <div>
+            <div class="pl-banner-title">Astuce Pro</div>
+            <div class="pl-banner-body">
+              Vos sessions sont sauvegardées automatiquement. Glissez-déposez pour réorganiser, cliquez pour modifier ou marquer comme terminé.
             </div>
           </div>
         </div>
       </div>
 
     }
-
   </main>
-
-  <!-- Footer -->
-  <footer class="dark:bg-black/50 light:bg-white border-t dark:border-yellow-500/20 light:border-blue-300 mt-16 transition-colors duration-300">
-    <div class="container mx-auto px-4 py-6 text-center">
-      <p class="dark:text-gray-500 light:text-gray-600 text-sm">EduFocus © 2026 - Master Your Learning Journey</p>
-    </div>
-  </footer>
 </div>

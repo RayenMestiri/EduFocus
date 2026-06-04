@@ -76,6 +76,8 @@ function formatLocalDate(date: Date): string {
 export class DayPlannerComponent implements OnInit {
   @ViewChild('plannerCalendar') plannerCalendar?: FullCalendarComponent;
 
+  tipsOpen = true; // How-to-use panel open by default
+
   subjects = signal<Subject[]>([]);
   dayPlan = signal<DayPlan | null>(null);
   visiblePlans = signal<DayPlan[]>([]);
@@ -436,27 +438,39 @@ export class DayPlannerComponent implements OnInit {
       Swal.fire({
         icon: 'warning',
         title: 'Aucune matière',
-        text: 'Ajoutez d\'abord des matières depuis le dashboard'
-      });
+        html: `<p style="margin:.5rem 0">Vous devez d'abord créer des matières depuis le Dashboard avant de planifier des sessions.</p>`,
+        customClass: { popup: 'study-hub-swal-modal' },
+        confirmButtonText: 'Aller au Dashboard'
+      }).then(r => { if (r.isConfirmed) this.goToDashboard(); });
       return;
     }
 
+    const isDark = this.themeService.isDark();
+    const accentColor = isDark ? '#8b5cf6' : '#6366f1';
+    const selectBg = isDark ? '#0e1229' : '#ffffff';
+    const selectColor = isDark ? '#e2e8f0' : '#1f2937';
+    const borderColor = isDark ? '#8b5cf6' : '#6366f1';
+
     Swal.fire({
-      title: 'Nouvelle session d\'étude',
+      title: '📅 Nouvelle session d\'étude',
       html: `
-        <select id="subject-select" class="swal2-input" style="width: 90%; padding: 14px 16px; font-size: 16px; height: auto; min-height: 48px; margin: 20px auto; display: block; border: 2px solid #3b82f6; border-radius: 8px; background-color: white; color: #1f2937;">
-          <option value="" style="padding: 10px; font-size: 16px;">Sélectionnez une matière</option>
-          ${subjects.map(s => `<option value="${s._id}" style="padding: 10px; font-size: 16px;">${s.name}</option>`).join('')}
+        <p style="font-size:.88rem;opacity:.7;margin-bottom:1rem;">Choisissez la matière pour cette plage horaire</p>
+        <select id="subject-select"
+          style="width:90%;padding:12px 16px;font-size:15px;height:auto;min-height:48px;
+                 margin:0 auto;display:block;border:2px solid ${borderColor};border-radius:10px;
+                 background:${selectBg};color:${selectColor};outline:none;cursor:pointer;font-weight:600;">
+          <option value="">— Sélectionnez une matière —</option>
+          ${subjects.map(s => `<option value="${s._id}">${s.name}</option>`).join('')}
         </select>
       `,
       showCancelButton: true,
-      confirmButtonText: 'Créer',
+      confirmButtonText: 'Créer la session',
       cancelButtonText: 'Annuler',
-      confirmButtonColor: '#3b82f6',
+      customClass: { popup: 'study-hub-swal-modal' },
       preConfirm: () => {
         const select = document.getElementById('subject-select') as HTMLSelectElement;
         if (!select.value) {
-          Swal.showValidationMessage('Veuillez sélectionner une matière');
+          Swal.showValidationMessage('⚠️ Veuillez sélectionner une matière');
           return false;
         }
         return select.value;
@@ -470,8 +484,6 @@ export class DayPlannerComponent implements OnInit {
         let normalizedStart = new Date(selectInfo.start);
         let normalizedEnd = new Date(selectInfo.end);
 
-        // In month/all-day selection, FullCalendar can return 24h ranges.
-        // Normalize to a clear 1-hour session to avoid wrong durations/times.
         if (selectInfo.allDay || this.currentViewType() === 'dayGridMonth') {
           normalizedStart = new Date(selectInfo.start);
           normalizedStart.setHours(9, 0, 0, 0);
@@ -486,14 +498,12 @@ export class DayPlannerComponent implements OnInit {
           normalizedEnd.setMinutes(normalizedEnd.getMinutes() + duration);
         }
 
-        // Use normalized local date/time from the selection
         const clickedDate = new Date(normalizedStart);
         const year = clickedDate.getFullYear();
         const month = clickedDate.getMonth();
         const day = clickedDate.getDate();
         const sessionDate = new Date(year, month, day, clickedDate.getHours(), clickedDate.getMinutes());
         
-        // Update current date if clicking on a different day
         const clickedDateStr = formatLocalDate(clickedDate);
         if (clickedDateStr !== this.currentDate()) {
           this.currentDate.set(clickedDateStr);
@@ -517,11 +527,15 @@ export class DayPlannerComponent implements OnInit {
         this.saveSessionsToBackend(affectedDate);
 
         Swal.fire({
+          toast: true,
+          position: 'top-end',
           icon: 'success',
-          title: 'Session créée!',
-          text: `Session de ${duration} minutes ajoutée`,
-          timer: 2000,
-          showConfirmButton: false
+          title: '✅ Session créée !',
+          text: `${subject.name} — ${duration} min`,
+          customClass: { popup: 'study-hub-swal-toast' },
+          timer: 2500,
+          showConfirmButton: false,
+          timerProgressBar: true
         });
       }
 
@@ -531,45 +545,52 @@ export class DayPlannerComponent implements OnInit {
 
   handleEventClick(clickInfo: EventClickArg) {
     const session: StudySession = clickInfo.event.extendedProps['session'];
+    const statusIcon = session.completed ? '✅' : '⏳';
+    const statusLabel = session.completed ? '<span style="color:#10b981;font-weight:700">Complété</span>' : '<span style="color:#8b5cf6;font-weight:700">À faire</span>';
 
     Swal.fire({
-      title: session.subjectName,
+      title: `📚 ${session.subjectName}`,
       html: `
-        <div style="text-align: left; padding: 1rem;">
-          <p><strong>🕐 Horaire:</strong> ${session.startTime} - ${session.endTime}</p>
-          <p><strong>⏱️ Durée:</strong> ${session.duration} minutes</p>
-          <p><strong>✅ Statut:</strong> ${session.completed ? 'Complété' : 'À faire'}</p>
+        <div style="text-align:left;padding:.75rem;line-height:2">
+          <div style="display:flex;align-items:center;gap:.5rem">🕐 <strong>Horaire :</strong>&nbsp;${session.startTime} — ${session.endTime}</div>
+          <div style="display:flex;align-items:center;gap:.5rem">⏱️ <strong>Durée :</strong>&nbsp;${session.duration} minutes</div>
+          <div style="display:flex;align-items:center;gap:.5rem">${statusIcon} <strong>Statut :</strong>&nbsp;${statusLabel}</div>
         </div>
       `,
       showCancelButton: true,
       showDenyButton: true,
-      confirmButtonText: session.completed ? 'Marquer non complété' : 'Marquer complété',
-      denyButtonText: 'Supprimer',
+      confirmButtonText: session.completed ? '↩ Marquer non terminé' : '✅ Marquer terminé',
+      denyButtonText: '🗑 Supprimer',
       cancelButtonText: 'Fermer',
-      confirmButtonColor: '#10b981',
-      denyButtonColor: '#ef4444'
+      customClass: { popup: 'study-hub-swal-modal' }
     }).then((result) => {
       if (result.isConfirmed) {
-        this.sessions.update(sessions => 
-          sessions.map(s => 
-            s === session ? { ...s, completed: !s.completed } : s
-          )
+        this.sessions.update(sessions =>
+          sessions.map(s => s === session ? { ...s, completed: !s.completed } : s)
         );
         this.updateCalendarEvents();
         const affectedDate = formatLocalDate(session.date);
         this.saveSessionsToBackend(affectedDate);
+
+        Swal.fire({
+          toast: true, position: 'top-end',
+          icon: 'success',
+          title: session.completed ? 'Session réactivée' : 'Session complétée ! 🎉',
+          customClass: { popup: 'study-hub-swal-toast' },
+          timer: 2000, showConfirmButton: false, timerProgressBar: true
+        });
       } else if (result.isDenied) {
         const affectedDate = formatLocalDate(session.date);
-        this.sessions.update(sessions => 
-          sessions.filter(s => s !== session)
-        );
+        this.sessions.update(sessions => sessions.filter(s => s !== session));
         this.updateCalendarEvents();
         this.saveSessionsToBackend(affectedDate);
+
         Swal.fire({
-          icon: 'success',
+          toast: true, position: 'top-end',
+          icon: 'info',
           title: 'Session supprimée',
-          timer: 1500,
-          showConfirmButton: false
+          customClass: { popup: 'study-hub-swal-toast' },
+          timer: 1800, showConfirmButton: false
         });
       }
     });
@@ -601,10 +622,12 @@ export class DayPlannerComponent implements OnInit {
     this.saveSessionsToBackend(affectedDate);
 
     Swal.fire({
+      toast: true, position: 'top-end',
       icon: 'success',
-      title: 'Session déplacée',
-      timer: 1500,
-      showConfirmButton: false
+      title: '📍 Session déplacée',
+      text: `Nouvelle heure : ${newStart.toTimeString().slice(0,5)} — ${newEnd.toTimeString().slice(0,5)}`,
+      customClass: { popup: 'study-hub-swal-toast' },
+      timer: 2200, showConfirmButton: false, timerProgressBar: true
     });
   }
 
@@ -635,11 +658,12 @@ export class DayPlannerComponent implements OnInit {
     this.saveSessionsToBackend(affectedDate);
 
     Swal.fire({
+      toast: true, position: 'top-end',
       icon: 'success',
-      title: 'Durée modifiée',
+      title: '⏱ Durée mise à jour',
       text: `${newDuration} minutes`,
-      timer: 1500,
-      showConfirmButton: false
+      customClass: { popup: 'study-hub-swal-toast' },
+      timer: 2000, showConfirmButton: false, timerProgressBar: true
     });
   }
 
@@ -1001,7 +1025,8 @@ export class DayPlannerComponent implements OnInit {
           icon: 'error',
           title: 'Erreur de sauvegarde',
           text: errorMessage,
-          timer: 2000
+          customClass: { popup: 'study-hub-swal-modal' },
+          confirmButtonText: 'Fermer'
         });
       }
     });

@@ -45,19 +45,40 @@ export class LoginComponent {
 
   onSubmit() {
     if (!this.email || !this.password) {
-      Swal.fire({ icon: 'error', title: 'Champs manquants', text: 'Veuillez remplir tous les champs.', background: '#0d0900', color: '#fbbf24', confirmButtonColor: '#f59e0b' });
+      Swal.fire({
+        icon: 'warning',
+        title: 'Champs manquants',
+        text: 'Veuillez remplir tous les champs.',
+        customClass: { popup: 'study-hub-swal-modal' },
+        confirmButtonText: 'Compris'
+      });
       return;
     }
     this.isLoading = true;
     this.authService.login(this.email, this.password).subscribe({
       next: () => {
-        Swal.fire({ icon: 'success', title: 'Bienvenue !', text: 'Connexion réussie', background: '#0d0900', color: '#fbbf24', confirmButtonColor: '#f59e0b', timer: 1400, showConfirmButton: false });
+        Swal.fire({
+          toast: true,
+          position: 'top-end',
+          icon: 'success',
+          title: 'Bienvenue !',
+          text: 'Connexion réussie',
+          customClass: { popup: 'study-hub-swal-toast' },
+          timer: 2000,
+          showConfirmButton: false
+        });
         const redirectUrl = this.route.snapshot.queryParams['redirect'] || '/dashboard';
         this.router.navigateByUrl(redirectUrl);
       },
       error: (err) => {
         this.isLoading = false;
-        Swal.fire({ icon: 'error', title: 'Échec de connexion', text: err.error?.message || 'Identifiants incorrects.', background: '#0d0900', color: '#fbbf24', confirmButtonColor: '#f59e0b' });
+        Swal.fire({
+          icon: 'error',
+          title: 'Échec de connexion',
+          text: err.error?.message || 'Identifiants incorrects.',
+          customClass: { popup: 'study-hub-swal-modal' },
+          confirmButtonText: 'Réessayer'
+        });
       }
     });
   }
@@ -78,9 +99,8 @@ export class LoginComponent {
           icon: 'error',
           title: 'Échec d\'envoi',
           text: err?.error?.message || 'Impossible d\'envoyer le lien de réinitialisation.',
-          background: '#0d0900',
-          color: '#fbbf24',
-          confirmButtonColor: '#f59e0b'
+          customClass: { popup: 'study-hub-swal-modal' },
+          confirmButtonText: 'Fermer'
         });
       }
     });
