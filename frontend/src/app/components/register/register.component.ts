@@ -84,24 +84,30 @@ export class RegisterComponent {
   ) {}
 
   // ── Validators ───────────────────────────────────────────────────────
-  validateName(): void {
+  validateName(onInput = false): void {
     if (!this.name.trim()) {
-      this.nameError = 'Le nom est requis';
+      if (!onInput) {
+        this.nameError = 'Le nom est requis';
+      }
     } else if (this.name.trim().length < 2) {
-      this.nameError = 'Le nom doit contenir au moins 2 caractères';
+      if (!onInput) {
+        this.nameError = 'Le nom doit contenir au moins 2 caractères';
+      }
     } else {
       this.nameError = '';
     }
   }
 
-  validateEmail(): void {
+  validateEmail(onInput = false): void {
     const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!this.email) {
       this.emailError = '';
       this.isValidEmail = false;
     } else if (!re.test(this.email)) {
-      this.emailError = 'Adresse e-mail invalide';
       this.isValidEmail = false;
+      if (!onInput) {
+        this.emailError = 'Adresse e-mail invalide';
+      }
     } else {
       this.emailError = '';
       this.isValidEmail = true;

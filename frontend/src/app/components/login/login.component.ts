@@ -80,14 +80,16 @@ export class LoginComponent implements OnInit {
     return { score, label: labels[score] || '', color: colors[score] || '' };
   }
 
-  validateEmail(): void {
+  validateEmail(onInput = false): void {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!this.email) {
       this.emailError = '';
       this.isValidEmail = false;
     } else if (!emailRegex.test(this.email)) {
-      this.emailError = 'Adresse e-mail invalide';
       this.isValidEmail = false;
+      if (!onInput) {
+        this.emailError = 'Adresse e-mail invalide';
+      }
     } else {
       this.emailError = '';
       this.isValidEmail = true;

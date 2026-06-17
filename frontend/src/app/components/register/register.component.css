@@ -573,7 +573,11 @@ html, body { height: 100%; }
   box-shadow: 0 0 0 0px rgba(var(--accent-rgb), 0.2);
 }
 .auth-progress-dot .material-icons {
-  font-size: 16px !important;
+  font-family: 'Material Icons' !important;
+  font-weight: normal !important;
+  font-size: 18px !important;
+  line-height: 1 !important;
+  color: inherit !important;
 }
 .auth-progress-step span:last-child {
   font-size: 0.76rem;

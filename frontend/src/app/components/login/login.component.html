@@ -109,6 +109,7 @@
               id="login-email"
               type="email"
               [(ngModel)]="email"
+              (ngModelChange)="validateEmail(true)"
               name="email"
               placeholder="votre@email.com"
               class="auth-field-input"
