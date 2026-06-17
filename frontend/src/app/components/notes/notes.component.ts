@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy, signal, computed, ViewChild, ElementRef, 
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { NoteService } from '../../services/note.service';
+import { OfflineNoteService } from '../../services/offline/offline-note.service';
 import { SubjectService } from '../../services/subject.service';
 import { AuthService } from '../../services/auth.service';
 import { ThemeService } from '../../services/theme.service';
@@ -143,7 +143,7 @@ export class NotesComponent implements OnInit, OnDestroy {
   });
 
   constructor(
-    private noteService: NoteService,
+    private noteService: OfflineNoteService,
     private subjectService: SubjectService,
     private authService: AuthService,
     public themeService: ThemeService,

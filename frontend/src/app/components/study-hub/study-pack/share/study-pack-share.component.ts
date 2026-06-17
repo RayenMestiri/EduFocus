@@ -1,7 +1,7 @@
 import { Component, inject, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { StudyHubService } from '../../../../services/study-hub.service';
+import { OfflineStudyHubService } from '../../../../services/offline/offline-studyhub.service';
 import { AuthService } from '../../../../services/auth.service';
 import { ThemeService } from '../../../../services/theme.service';
 import { TranslateModule } from '@ngx-translate/core';
@@ -185,7 +185,7 @@ import Swal from 'sweetalert2';
 export class StudyPackShareComponent implements OnInit {
   route = inject(ActivatedRoute);
   router = inject(Router);
-  studyHubService = inject(StudyHubService);
+  studyHubService = inject(OfflineStudyHubService);
   authService = inject(AuthService);
   themeService = inject(ThemeService);
 

@@ -2,7 +2,7 @@ import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router, ActivatedRoute } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { StudyHubService } from '../../../../services/study-hub.service';
+import { OfflineStudyHubService } from '../../../../services/offline/offline-studyhub.service';
 import { SubjectService } from '../../../../services/subject.service';
 import { ThemeService } from '../../../../services/theme.service';
 import { StudyPack } from '../../../../models/study-hub.model';
@@ -17,7 +17,7 @@ import Swal from 'sweetalert2';
   templateUrl: './study-pack-form.component.html',
 })
 export class StudyPackFormComponent implements OnInit {
-  studyHubService = inject(StudyHubService);
+  studyHubService = inject(OfflineStudyHubService);
   subjectService = inject(SubjectService);
   themeService = inject(ThemeService);
   router = inject(Router);

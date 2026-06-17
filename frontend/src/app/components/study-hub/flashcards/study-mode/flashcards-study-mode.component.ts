@@ -1,7 +1,7 @@
 import { Component, inject, signal, computed, HostListener, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { StudyHubService } from '../../../../services/study-hub.service';
+import { OfflineStudyHubService } from '../../../../services/offline/offline-studyhub.service';
 import { ThemeService } from '../../../../services/theme.service';
 import { StudyPack, Flashcard } from '../../../../models/study-hub.model';
 import { TranslateModule } from '@ngx-translate/core';
@@ -16,7 +16,7 @@ import Swal from 'sweetalert2';
   styleUrls: ['./flashcards-study-mode.component.css']
 })
 export class FlashcardsStudyModeComponent implements OnInit {
-  studyHubService = inject(StudyHubService);
+  studyHubService = inject(OfflineStudyHubService);
   themeService = inject(ThemeService);
   route = inject(ActivatedRoute);
   router = inject(Router);

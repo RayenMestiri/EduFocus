@@ -2,7 +2,7 @@ import { Component, inject, signal, computed, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { StudyHubService } from '../../../../services/study-hub.service';
+import { OfflineStudyHubService } from '../../../../services/offline/offline-studyhub.service';
 import { ThemeService } from '../../../../services/theme.service';
 import { StudyPack, Note, Flashcard, QCM, QuizAttempt } from '../../../../models/study-hub.model';
 import { TranslateModule } from '@ngx-translate/core';
@@ -17,7 +17,7 @@ import Swal from 'sweetalert2';
   styleUrl: './study-pack-detail.component.css',
 })
 export class StudyPackDetailComponent implements OnInit {
-  studyHubService = inject(StudyHubService);
+  studyHubService = inject(OfflineStudyHubService);
   themeService = inject(ThemeService);
   route = inject(ActivatedRoute);
   router = inject(Router);

@@ -1,0 +1,105 @@
+{
+  "$schema": "./node_modules/@angular/service-worker/config/schema.json",
+  "index": "/index.html",
+  "assetGroups": [
+    {
+      "name": "appShell",
+      "installMode": "prefetch",
+      "resources": {
+        "files": [
+          "/index.csr.html",
+          "/index.html",
+          "/manifest.webmanifest",
+          "/*.css",
+          "/*.js"
+        ]
+      }
+    },
+    {
+      "name": "assets",
+      "installMode": "lazy",
+      "updateMode": "prefetch",
+      "resources": {
+        "files": [
+          "/**/*.(svg|cur|jpg|jpeg|png|apng|webp|avif|gif|otf|ttf|woff|woff2|json|ico)"
+        ],
+        "urls": [
+          "https://fonts.googleapis.com/**",
+          "https://fonts.gstatic.com/**"
+        ]
+      }
+    }
+  ],
+  "dataGroups": [
+    {
+      "name": "api-auth",
+      "urls": ["/api/auth/**"],
+      "cacheConfig": {
+        "strategy": "freshness",
+        "maxSize": 5,
+        "maxAge": "1h",
+        "timeout": "5s"
+      }
+    },
+    {
+      "name": "api-notes",
+      "urls": ["/api/notes/**"],
+      "cacheConfig": {
+        "strategy": "freshness",
+        "maxSize": 100,
+        "maxAge": "7d",
+        "timeout": "5s"
+      }
+    },
+    {
+      "name": "api-study-packs",
+      "urls": ["/api/study-packs/**"],
+      "cacheConfig": {
+        "strategy": "freshness",
+        "maxSize": 100,
+        "maxAge": "7d",
+        "timeout": "5s"
+      }
+    },
+    {
+      "name": "api-todos",
+      "urls": ["/api/todos/**"],
+      "cacheConfig": {
+        "strategy": "freshness",
+        "maxSize": 50,
+        "maxAge": "3d",
+        "timeout": "5s"
+      }
+    },
+    {
+      "name": "api-day-plans",
+      "urls": ["/api/day-plans/**"],
+      "cacheConfig": {
+        "strategy": "freshness",
+        "maxSize": 50,
+        "maxAge": "3d",
+        "timeout": "5s"
+      }
+    },
+    {
+      "name": "api-subjects",
+      "urls": ["/api/subjects/**"],
+      "cacheConfig": {
+        "strategy": "freshness",
+        "maxSize": 20,
+        "maxAge": "7d",
+        "timeout": "5s"
+      }
+    },
+    {
+      "name": "api-stats",
+      "urls": ["/api/stats/**"],
+      "cacheConfig": {
+        "strategy": "freshness",
+        "maxSize": 20,
+        "maxAge": "1d",
+        "timeout": "5s"
+      }
+    }
+  ]
+}
