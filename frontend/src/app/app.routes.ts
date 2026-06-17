@@ -11,6 +11,7 @@ import { StudyPackDetailComponent } from './components/study-hub/study-pack/deta
 import { FlashcardsStudyModeComponent } from './components/study-hub/flashcards/study-mode/flashcards-study-mode.component';
 import { QcmQuizModeComponent } from './components/study-hub/qcm/quiz-mode/qcm-quiz-mode.component';
 import { StudyPackShareComponent } from './components/study-hub/study-pack/share/study-pack-share.component';
+import { AuthGoogleCallbackComponent } from './components/auth-google-callback/auth-google-callback.component';
 import { authGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
@@ -18,6 +19,8 @@ export const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
   { path: 'reset-password', component: ResetPasswordComponent },
+  // Google OAuth callback — receives JWT from backend redirect
+  { path: 'auth/google/callback', component: AuthGoogleCallbackComponent },
   { path: 'dashboard', component: DashboardComponent, canActivate: [authGuard] },
   { path: 'planner', component: DayPlannerComponent },
   { path: 'study-hub', component: StudyHubDashboardComponent, canActivate: [authGuard] },

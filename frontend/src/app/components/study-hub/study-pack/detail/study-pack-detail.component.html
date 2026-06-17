@@ -652,12 +652,12 @@
                 <!-- Key-value list (Tactile borders and contrast values) -->
                 <div class="space-y-1">
                   <div *ngFor="let item of cs.items; let iNum = index" 
-                       class="flex justify-between items-center text-xs py-2 border-b border-gray-100 dark:border-zinc-800/40 gap-4"
+                       class="flex flex-col sm:flex-row sm:justify-between sm:items-center text-xs py-1.5 border-b border-gray-100 dark:border-zinc-800/40 gap-1 sm:gap-4"
                        [style.background]="iNum % 2 === 0 ? 'transparent' : (themeService.isDark() ? 'rgba(255,255,255,0.015)' : 'rgba(0,0,0,0.018)')"
-                       style="padding: 6px 4px; border-radius: 4px;">
-                    <span class="font-bold text-gray-450 dark:text-zinc-400 shrink-0">{{ item.key }}</span>
+                       style="padding: 6px 8px; border-radius: 6px;">
+                    <span class="font-bold text-gray-450 dark:text-zinc-400 sm:shrink-0 text-left">{{ item.key }}</span>
                     <span 
-                      class="font-black font-mono text-right leading-tight select-all" 
+                      class="font-black font-mono text-left sm:text-right leading-tight select-all break-words" 
                       [style.color]="getCheatSheetTheme(csIdx).color"
                       [style.text-shadow]="'0 0 8px ' + getCheatSheetTheme(csIdx).color + '20'"
                       title="Double-click to select"

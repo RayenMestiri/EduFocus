@@ -23,9 +23,23 @@ const UserSchema = new mongoose.Schema({
   },
   password: {
     type: String,
-    required: [true, 'Please add a password'],
+    // Required only for local accounts (not for Google OAuth users)
+    required: function() {
+      return this.authProvider === 'local' && !this.googleId;
+    },
     minlength: [6, 'Password must be at least 6 characters'],
     select: false
+  },
+  // Google OAuth fields
+  googleId: {
+    type: String,
+    default: null,
+    index: { sparse: true, unique: true } // sparse: allows multiple null values
+  },
+  authProvider: {
+    type: String,
+    enum: ['local', 'google'],
+    default: 'local'
   },
   avatar: {
     type: String,
@@ -105,9 +119,10 @@ const UserSchema = new mongoose.Schema({
 UserSchema.index({ email: 1 });
 UserSchema.index({ createdAt: -1 });
 
-// Hash password before saving
+// Hash password before saving — skip for Google OAuth users (no password)
 UserSchema.pre('save', async function() {
-  if (!this.isModified('password')) {
+  // Skip if password not modified OR if there's no password (Google user)
+  if (!this.isModified('password') || !this.password) {
     return;
   }
   const salt = await bcrypt.genSalt(10);
@@ -120,8 +135,11 @@ UserSchema.methods.updateLastLogin = function() {
   return this.save();
 };
 
-// Compare password
+// Compare password — safe to call only for local accounts
 UserSchema.methods.matchPassword = async function(enteredPassword) {
+  if (!this.password) {
+    return false; // Google OAuth user has no password
+  }
   return await bcrypt.compare(enteredPassword, this.password);
 };
 

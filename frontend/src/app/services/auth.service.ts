@@ -10,6 +10,7 @@ export interface User {
   email: string;
   avatar: string;
   role: string;
+  authProvider?: 'local' | 'google'; // track auth method
   stats?: {
     totalStudyMinutes?: number;
     totalSessions?: number;
@@ -152,12 +153,45 @@ export class AuthService {
     return !!this.getToken();
   }
 
+  // ─────────────────────────────────────────────────────────────────────────
+  // GOOGLE OAUTH 2.0 METHODS
+  // ─────────────────────────────────────────────────────────────────────────
+
+  /**
+   * Redirect the browser to the backend Google OAuth entry point.
+   * Passport handles the full OAuth flow and redirects back to
+   * /auth/google/callback?token=JWT in the Angular app.
+   */
+  loginWithGoogle(): void {
+    window.location.href = `${environment.apiUrl}/api/auth/google`;
+  }
+
+  /**
+   * Called by AuthGoogleCallbackComponent after the Google redirect.
+   * Stores the JWT identically to classic login, then hydrates user state.
+   */
+  handleGoogleCallback(token: string): Observable<AuthResponse> {
+    // Store the token — the HTTP interceptor will auto-attach it from now on
+    this.setToken(token);
+    this.isAuthenticated.set(true);
+
+    // Fetch full user profile using the new JWT
+    return this.getMe().pipe(
+      tap(response => {
+        if (response.success && response.user) {
+          this.setUser(response.user);
+        }
+      })
+    );
+  }
+
+  // ─────────────────────────────────────────────────────────────────────────
+
   // Award points to user
   awardPoints(points: number): Observable<any> {
     return this.http.post<any>(`${this.apiUrl}/award-points`, { points }).pipe(
       tap(response => {
         if (response.success) {
-          // Update local user stats with deep copy
           const user = this.currentUser();
           if (user) {
             const updatedUser = {

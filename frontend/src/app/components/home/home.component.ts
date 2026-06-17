@@ -16,6 +16,7 @@ interface Feature {
   title: string;
   desc: string;
   color: string;
+  colorRgb: string;
   badge?: string;
 }
 
@@ -42,6 +43,21 @@ interface Testimonial {
   stars: number;
 }
 
+interface ShowcaseTab {
+  label: string;
+  icon: string;
+  color: string;
+  title: string;
+  desc: string;
+  route: string;
+}
+
+interface HeroSubject {
+  label: string;
+  pct: number;
+  color: string;
+}
+
 @Component({
   selector: 'app-home',
   standalone: true,
@@ -54,7 +70,12 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
 
   @ViewChild('canvas3d', { static: true }) canvasRef!: ElementRef<HTMLCanvasElement>;
 
-  // ── Three.js internals ──────────────────────────────────────────────────
+  // ── State ────────────────────────────────────────────────────────────────
+  isScrolled = false;
+  activeTab = 0;
+  Math = Math;
+
+  // ── Three.js ─────────────────────────────────────────────────────────────
   private scene!: THREE.Scene;
   private camera!: THREE.PerspectiveCamera;
   private renderer!: THREE.WebGLRenderer;
@@ -63,12 +84,18 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   private mouse = { x: 0, y: 0 };
   private animId = 0;
 
-  // ── Page data ───────────────────────────────────────────────────────────
+  // ── Page data ─────────────────────────────────────────────────────────────
+  heroSubjects: HeroSubject[] = [
+    { label: 'Mathématiques', pct: 82, color: '#8b5cf6' },
+    { label: 'Physique',      pct: 67, color: '#6366f1' },
+    { label: 'Informatique',  pct: 91, color: '#22c55e' },
+  ];
+
   stats: Stat[] = [
-    { end: 15000, suffix: '+', label: 'Étudiants actifs',    icon: 'groups',       current: 0 },
-    { end: 4.9,   suffix: '/5', label: 'Note moyenne',        icon: 'star',         current: 0 },
-    { end: 98,    suffix: '%',  label: 'Taux de réussite',    icon: 'emoji_events', current: 0 },
-    { end: 340,   suffix: 'k+', label: 'Sessions planifiées', icon: 'event_note',   current: 0 },
+    { end: 15000, suffix: '+',  label: 'Étudiants actifs',    icon: 'groups',       current: 0 },
+    { end: 4.9,   suffix: '/5', label: 'Note moyenne',         icon: 'star',         current: 0 },
+    { end: 98,    suffix: '%',  label: 'Taux de réussite',     icon: 'emoji_events', current: 0 },
+    { end: 340,   suffix: 'k+', label: 'Sessions planifiées',  icon: 'event_note',   current: 0 },
   ];
 
   features: Feature[] = [
@@ -77,45 +104,118 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
       title: 'Notes Intelligentes',
       desc: 'Créez, organisez et retrouvez vos notes en un instant. Éditeur riche, tags, et protection par mot de passe.',
       color: '#facc15',
+      colorRgb: '250,204,21',
       badge: 'Populaire',
     },
     {
       icon: 'event_note',
       title: 'Planificateur de Semaine',
-      desc: 'Planifiez vos sessions d\'étude avec des blocs horaires colorés et des rappels intelligents.',
+      desc: 'Planifiez vos sessions d\'étude avec des blocs horaires colorés, rappels intelligents et vue hebdomadaire.',
       color: '#6366f1',
+      colorRgb: '99,102,241',
     },
     {
       icon: 'dashboard',
       title: 'Dashboard Personnel',
       desc: 'Visualisez votre progression, vos matières et vos objectifs depuis un tableau de bord unifié.',
       color: '#22c55e',
+      colorRgb: '34,197,94',
+    },
+    {
+      icon: 'style',
+      title: 'Flashcards Interactives',
+      desc: 'Créez des flashcards avec la méthode Leitner. Révisez intelligemment grâce à la répétition espacée.',
+      color: '#f97316',
+      colorRgb: '249,115,22',
+      badge: 'Nouveau',
+    },
+    {
+      icon: 'quiz',
+      title: 'QCM Adaptatifs',
+      desc: 'Des quiz intelligents qui s\'adaptent à votre niveau. Créez vos propres QCM ou utilisez la banque de questions.',
+      color: '#06b6d4',
+      colorRgb: '6,182,212',
     },
     {
       icon: 'psychology',
       title: 'Assistant IA',
       desc: 'Posez vos questions à notre IA intégrée et obtenez des explications claires sur n\'importe quel sujet.',
       color: '#ec4899',
-      badge: 'Nouveau',
+      colorRgb: '236,72,153',
+      badge: 'IA',
+    },
+  ];
+
+  showcaseTabs: ShowcaseTab[] = [
+    {
+      label: 'Notes',
+      icon: 'auto_stories',
+      color: '#facc15',
+      title: 'Notes Intelligentes',
+      desc: 'Un éditeur riche avec formatage Markdown, tags colorés, protection par mot de passe et recherche instantanée.',
+      route: 'notes'
     },
     {
-      icon: 'insights',
-      title: 'Suivi de Progression',
-      desc: 'Graphiques et statistiques détaillés pour comprendre vos habitudes d\'étude et vos points faibles.',
+      label: 'Planning',
+      icon: 'event_note',
+      color: '#6366f1',
+      title: 'Planificateur Hebdomadaire',
+      desc: 'Visualisez votre semaine en un coup d\'œil. Drag & drop, sessions récurrentes et rappels automatiques.',
+      route: 'planner'
+    },
+    {
+      label: 'Dashboard',
+      icon: 'dashboard',
+      color: '#22c55e',
+      title: 'Dashboard Analytique',
+      desc: 'Graphiques de progression, statistiques par matière et suivi de vos objectifs en temps réel.',
+      route: 'dashboard'
+    },
+    {
+      label: 'Flashcards',
+      icon: 'style',
+      color: '#f97316',
+      title: 'Flashcards par Répétition',
+      desc: 'La méthode Leitner scientifiquement prouvée. Mémorisez plus avec moins de temps de révision.',
+      route: 'study-hub/flashcards'
+    },
+    {
+      label: 'QCM',
+      icon: 'quiz',
       color: '#06b6d4',
+      title: 'QCM Adaptatifs',
+      desc: 'Des quiz qui s\'adaptent à votre niveau. Créez des packs de questions ou utilisez nos modèles.',
+      route: 'study-hub/qcm'
     },
     {
-      icon: 'lock',
-      title: 'Données Sécurisées',
-      desc: 'Vos notes et données sont chiffrées et protégées. Votre vie privée est notre priorité absolue.',
-      color: '#8b5cf6',
+      label: 'IA',
+      icon: 'psychology',
+      color: '#ec4899',
+      title: 'Assistant IA Intégré',
+      desc: 'Un assistant IA disponible 24h/24 pour répondre à vos questions, expliquer des concepts et vous aider.',
+      route: 'chat'
     },
   ];
 
   steps: Step[] = [
-    { num: '01', icon: 'person_add', title: 'Créez votre compte', desc: 'Inscription gratuite en moins de 30 secondes. Aucune carte bancaire requise.' },
-    { num: '02', icon: 'tune',        title: 'Configurez vos matières', desc: 'Ajoutez vos cours, définissez vos objectifs et personnalisez votre espace.' },
-    { num: '03', icon: 'rocket_launch', title: 'Commencez à étudier', desc: 'Planifiez, prenez des notes et suivez vos progrès en temps réel.' },
+    {
+      num: '01',
+      icon: 'person_add',
+      title: 'Créez votre compte',
+      desc: 'Inscription gratuite en moins de 30 secondes. Aucune carte bancaire requise.'
+    },
+    {
+      num: '02',
+      icon: 'tune',
+      title: 'Configurez vos matières',
+      desc: 'Ajoutez vos cours, définissez vos objectifs et personnalisez votre espace de travail.'
+    },
+    {
+      num: '03',
+      icon: 'rocket_launch',
+      title: 'Commencez à étudier',
+      desc: 'Planifiez, prenez des notes, révisez avec des flashcards et suivez vos progrès en temps réel.'
+    },
   ];
 
   testimonials: Testimonial[] = [
@@ -138,7 +238,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
       role: 'Licence Informatique, Oran',
       avatar: 'LC',
       stars: 5,
-      text: 'Le dashboard me montre exactement où j\'en suis. J\'adore voir mes progrès visuellement. C\'est motivant et bien pensé.',
+      text: 'Le dashboard me montre exactement où j\'en suis. J\'adore voir mes progrès visuellement. C\'est motivant et très bien pensé.',
     },
   ];
 
@@ -147,6 +247,10 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   formatStat(s: Stat): string {
     if (s.end >= 100 && s.suffix !== '/5') return Math.round(s.current).toLocaleString('fr-FR') + s.suffix;
     return s.current.toFixed(s.end < 10 ? 1 : 0) + s.suffix;
+  }
+
+  setTab(i: number): void {
+    this.activeTab = i;
   }
 
   constructor(private zone: NgZone, public themeService: ThemeService) {}
@@ -167,6 +271,11 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     ScrollTrigger.getAll().forEach(t => t.kill());
   }
 
+  @HostListener('window:scroll')
+  onScroll(): void {
+    this.isScrolled = window.scrollY > 40;
+  }
+
   @HostListener('window:resize')
   onResize(): void {
     if (!this.camera || !this.renderer) return;
@@ -181,7 +290,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     this.mouse.y = (e.clientY / window.innerHeight) * 2 - 1;
   }
 
-  // ════════════ THREE.JS — login/register palette network ════════════
+  // ════════════ THREE.JS ════════════
   private _initThree(): void {
     const canvas = this.canvasRef.nativeElement;
     const W = window.innerWidth, H = window.innerHeight;
@@ -194,7 +303,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     this.renderer.setSize(W, H);
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
-    const COUNT = 180;
+    const COUNT = 220;
     const positions = new Float32Array(COUNT * 3);
     const sizes     = new Float32Array(COUNT);
     const colors    = new Float32Array(COUNT * 3);
@@ -205,13 +314,14 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
       new THREE.Color('#a78bfa'),
       new THREE.Color('#4f46e5'),
       new THREE.Color('#06b6d4'),
+      new THREE.Color('#ec4899'),
     ];
 
     for (let i = 0; i < COUNT; i++) {
-      positions[i * 3]     = (Math.random() - 0.5) * 200;
-      positions[i * 3 + 1] = (Math.random() - 0.5) * 120;
-      positions[i * 3 + 2] = (Math.random() - 0.5) * 60;
-      sizes[i] = Math.random() * 2.5 + 0.5;
+      positions[i * 3]     = (Math.random() - 0.5) * 220;
+      positions[i * 3 + 1] = (Math.random() - 0.5) * 130;
+      positions[i * 3 + 2] = (Math.random() - 0.5) * 70;
+      sizes[i] = Math.random() * 2.8 + 0.4;
       const c = palette[Math.floor(Math.random() * palette.length)];
       colors[i * 3] = c.r; colors[i * 3 + 1] = c.g; colors[i * 3 + 2] = c.b;
     }
@@ -225,7 +335,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     }));
     this.scene.add(this.particles);
 
-    // connecting lines between close particles
+    // connecting lines
     const lp: number[] = [], lc: number[] = [];
     for (let i = 0; i < COUNT; i++) {
       for (let j = i + 1; j < COUNT; j++) {
@@ -233,10 +343,10 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
         const dy = positions[i*3+1]-positions[j*3+1];
         const dz = positions[i*3+2]-positions[j*3+2];
         const dist = Math.sqrt(dx*dx + dy*dy + dz*dz);
-        if (dist < 28) {
+        if (dist < 26) {
           lp.push(positions[i*3], positions[i*3+1], positions[i*3+2],
                   positions[j*3], positions[j*3+1], positions[j*3+2]);
-          const a = (1 - dist / 28) * 0.5;
+          const a = (1 - dist / 26) * 0.45;
           lc.push(0.45*a, 0.38*a, 0.95*a, 0.45*a, 0.38*a, 0.95*a);
         }
       }
@@ -245,7 +355,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     lg.setAttribute('position', new THREE.Float32BufferAttribute(lp, 3));
     lg.setAttribute('color',    new THREE.Float32BufferAttribute(lc, 3));
     this.linesMesh = new THREE.LineSegments(lg, new THREE.LineBasicMaterial({
-      vertexColors: true, transparent: true, opacity: 0.28,
+      vertexColors: true, transparent: true, opacity: 0.22,
     }));
     this.scene.add(this.linesMesh);
   }
@@ -254,8 +364,8 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     this.animId = requestAnimationFrame(() => this._animate());
     const t = Date.now() * 0.0004;
     if (this.particles) {
-      this.particles.rotation.y = t * 0.12 + this.mouse.x * 0.15;
-      this.particles.rotation.x = t * 0.07 + this.mouse.y * 0.08;
+      this.particles.rotation.y = t * 0.10 + this.mouse.x * 0.14;
+      this.particles.rotation.x = t * 0.06 + this.mouse.y * 0.07;
       this.linesMesh.rotation.y = this.particles.rotation.y;
       this.linesMesh.rotation.x = this.particles.rotation.x;
     }
@@ -264,51 +374,44 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // ════════════ GSAP ════════════
   private _initGSAP(): void {
-    // pre-hide scroll-animated elements
-    gsap.set(
-      '.stat-card, .feat-card, .step-card, .testi-card, .cta-inner > *',
-      { autoAlpha: 0 }
-    );
+    // Pre-hide scroll-animated elements
+    gsap.set('.stat-card, .feat-card, .how-card, .testi-card, .cta-inner > *', { autoAlpha: 0 });
+    gsap.set('.showcase', { autoAlpha: 0, y: 60 });
 
-    // ── Hero entrance ──────────────────────────────────────────────────────
-    const tl = gsap.timeline({ delay: 0.1 });
+    // ── Hero entrance ───────────────────────────────────────────────────────
+    const tl = gsap.timeline({ delay: 0.15 });
     tl
-      .from('.hero-eyebrow',  { y: 30, autoAlpha: 0, duration: 0.7, ease: 'power3.out' })
-      .from('.hero-h1 .line', { y: 70, autoAlpha: 0, duration: 1.0, stagger: 0.18, ease: 'expo.out' }, '-=0.3')
-      .from('.hero-sub',      { y: 30, autoAlpha: 0, duration: 0.7, ease: 'power2.out' }, '-=0.35')
-      .from('.hero-actions',  { y: 20, autoAlpha: 0, duration: 0.6, ease: 'power2.out' }, '-=0.3')
-      .from('.hero-trust',    { y: 20, autoAlpha: 0, duration: 0.5, ease: 'power2.out' }, '-=0.25')
-      .from('.hero-visual',   { y: 50, autoAlpha: 0, scale: 0.94, duration: 1.1, ease: 'back.out(1.4)' }, '-=0.6')
-      .from('.vis-pill',      { x: 40, autoAlpha: 0, duration: 0.7, stagger: 0.15, ease: 'back.out(2)' }, '-=0.5')
-      .from('.vis-badge',     { scale: 0, autoAlpha: 0, duration: 0.5, stagger: 0.12, ease: 'back.out(3)' }, '-=0.3');
+      .from('.hero__badge',     { y: 30, autoAlpha: 0, duration: 0.7, ease: 'power3.out' })
+      .from('.js-hero-line',    { y: 80, autoAlpha: 0, duration: 1.1, stagger: 0.18, ease: 'expo.out' }, '-=0.3')
+      .from('.hero__sub',       { y: 30, autoAlpha: 0, duration: 0.7, ease: 'power2.out' }, '-=0.4')
+      .from('.hero__actions',   { y: 20, autoAlpha: 0, duration: 0.6, ease: 'power2.out' }, '-=0.3')
+      .from('.hero__trust',     { y: 20, autoAlpha: 0, duration: 0.5, ease: 'power2.out' }, '-=0.25')
+      .from('.hero__visual',    { y: 60, autoAlpha: 0, scale: 0.92, duration: 1.2, ease: 'back.out(1.4)' }, '-=0.7')
+      .from('.js-hv-pill',      { x: 50, autoAlpha: 0, duration: 0.7, stagger: 0.15, ease: 'back.out(2)' }, '-=0.6')
+      .from('.js-hv-badge',     { scale: 0, autoAlpha: 0, duration: 0.5, stagger: 0.12, ease: 'back.out(3.5)' }, '-=0.4');
 
-    // ── Section headers ────────────────────────────────────────────────────
-    gsap.utils.toArray<Element>('.sec-header').forEach(el => {
+    // ── Section headers ─────────────────────────────────────────────────────
+    gsap.utils.toArray<Element>('.section-header').forEach(el => {
       gsap.from(Array.from(el.children), {
         scrollTrigger: { trigger: el, start: 'top 88%' },
-        y: 50, autoAlpha: 0, duration: 0.75, stagger: 0.13, ease: 'expo.out',
+        y: 50, autoAlpha: 0, duration: 0.8, stagger: 0.12, ease: 'expo.out',
       });
     });
 
-    // ── Stats counter cascade ──────────────────────────────────────────────
+    // ── Stats counter ───────────────────────────────────────────────────────
     ScrollTrigger.create({
       trigger: '.stats-row',
-      start: 'top 80%',
+      start: 'top 82%',
       onEnter: () => {
         gsap.utils.toArray<HTMLElement>('.stat-card').forEach((card, i) => {
           gsap.fromTo(card,
-            { y: 70, autoAlpha: 0, scale: 0.78 },
-            { y: 0, autoAlpha: 1, scale: 1, duration: 0.75, delay: i * 0.13, ease: 'back.out(1.9)' }
-          );
-          const icon = card.querySelector('.stat-icon');
-          if (icon) gsap.fromTo(icon,
-            { rotate: -90, scale: 0 },
-            { rotate: 0, scale: 1, duration: 0.6, delay: i * 0.13 + 0.12, ease: 'back.out(3)' }
+            { y: 80, autoAlpha: 0, scale: 0.75 },
+            { y: 0, autoAlpha: 1, scale: 1, duration: 0.8, delay: i * 0.12, ease: 'back.out(2)' }
           );
         });
         this.stats.forEach((s, i) => {
           gsap.to(s, {
-            current: s.end, duration: 2.2, delay: i * 0.13, ease: 'power3.out',
+            current: s.end, duration: 2.4, delay: i * 0.12, ease: 'power3.out',
             onUpdate: () => this.zone.run(() => {}),
           });
         });
@@ -316,75 +419,80 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
       once: true,
     });
 
-    // ── Feature cards — 3D flip cascade ───────────────────────────────────
+    // ── Feature cards ───────────────────────────────────────────────────────
     ScrollTrigger.create({
       trigger: '.feat-grid',
-      start: 'top 84%',
+      start: 'top 85%',
       onEnter: () => {
         gsap.utils.toArray<HTMLElement>('.feat-card').forEach((card, i) => {
           gsap.fromTo(card,
-            { y: 110, autoAlpha: 0, rotateX: 28, scale: 0.9, transformPerspective: 900, transformOrigin: 'center bottom' },
-            { y: 0, autoAlpha: 1, rotateX: 0, scale: 1, duration: 0.9, delay: i * 0.12, ease: 'expo.out', clearProps: 'rotateX,transformPerspective,transformOrigin' }
+            { y: 120, autoAlpha: 0, rotateX: 30, scale: 0.88, transformPerspective: 1000, transformOrigin: 'center bottom' },
+            { y: 0, autoAlpha: 1, rotateX: 0, scale: 1, duration: 1.0, delay: i * 0.1, ease: 'expo.out', clearProps: 'rotateX,transformPerspective,transformOrigin' }
           );
         });
       },
       once: true,
     });
 
-    // ── Steps — slide alternating ─────────────────────────────────────────
+    // ── Showcase ────────────────────────────────────────────────────────────
+    gsap.fromTo('.showcase',
+      { y: 60, autoAlpha: 0 },
+      { y: 0, autoAlpha: 1, duration: 1.0, ease: 'expo.out',
+        scrollTrigger: { trigger: '.showcase', start: 'top 85%' } }
+    );
+
+    // ── How it works ────────────────────────────────────────────────────────
     ScrollTrigger.create({
-      trigger: '.steps-row',
-      start: 'top 84%',
+      trigger: '.how-row',
+      start: 'top 85%',
       onEnter: () => {
-        gsap.utils.toArray<HTMLElement>('.step-card').forEach((card, i) => {
+        gsap.utils.toArray<HTMLElement>('.how-card').forEach((card, i) => {
           gsap.fromTo(card,
-            { x: i % 2 === 0 ? -80 : 80, autoAlpha: 0 },
-            { x: 0, autoAlpha: 1, duration: 0.85, delay: i * 0.16, ease: 'power3.out' }
+            { x: i % 2 === 0 ? -100 : 100, autoAlpha: 0 },
+            { x: 0, autoAlpha: 1, duration: 0.9, delay: i * 0.18, ease: 'power3.out' }
           );
         });
       },
       once: true,
     });
 
-    // ── Testimonials — depth blur reveal ─────────────────────────────────
+    // ── Testimonials ────────────────────────────────────────────────────────
     ScrollTrigger.create({
       trigger: '.testi-grid',
       start: 'top 88%',
       onEnter: () => {
         gsap.utils.toArray<HTMLElement>('.testi-card').forEach((card, i) => {
           gsap.fromTo(card,
-            { y: 90, autoAlpha: 0, scale: 0.74, filter: 'blur(10px)' },
-            { y: 0, autoAlpha: 1, scale: 1, filter: 'blur(0px)', duration: 0.95, delay: i * 0.2, ease: 'back.out(1.7)', clearProps: 'filter' }
+            { y: 90, autoAlpha: 0, scale: 0.72, filter: 'blur(12px)' },
+            { y: 0, autoAlpha: 1, scale: 1, filter: 'blur(0px)', duration: 1.0, delay: i * 0.18, ease: 'back.out(1.8)', clearProps: 'filter' }
           );
         });
       },
       once: true,
     });
 
-    // ── CTA section ───────────────────────────────────────────────────────
+    // ── CTA ────────────────────────────────────────────────────────────────
     gsap.fromTo('.cta-inner > *',
-      { y: 45, autoAlpha: 0, scale: 0.94 },
-      { y: 0, autoAlpha: 1, scale: 1, duration: 0.78, stagger: 0.14, ease: 'back.out(1.6)',
-        scrollTrigger: { trigger: '.cta-section', start: 'top 84%' } }
+      { y: 50, autoAlpha: 0, scale: 0.92 },
+      { y: 0, autoAlpha: 1, scale: 1, duration: 0.85, stagger: 0.13, ease: 'back.out(1.8)',
+        scrollTrigger: { trigger: '.cta-section', start: 'top 85%' } }
     );
-    gsap.to('.cta-blob-1', { scrollTrigger: { trigger: '.cta-section', scrub: 1.5 }, x: 60, y: -40, scale: 1.3 });
-    gsap.to('.cta-blob-2', { scrollTrigger: { trigger: '.cta-section', scrub: 1.5 }, x: -50, y: 40, scale: 1.2 });
 
     ScrollTrigger.refresh();
 
-    setTimeout(() => this._initTilt(), 600);
+    setTimeout(() => this._initTilt(), 700);
   }
 
   private _initTilt(): void {
-    document.querySelectorAll<HTMLElement>('.feat-card, .testi-card').forEach(card => {
+    document.querySelectorAll<HTMLElement>('.feat-card, .testi-card, .how-card').forEach(card => {
       card.addEventListener('mousemove', (e: MouseEvent) => {
         const r = card.getBoundingClientRect();
-        const x = ((e.clientX - r.left) / r.width  - 0.5) * 18;
-        const y = ((e.clientY - r.top)  / r.height - 0.5) * -18;
-        gsap.to(card, { rotateX: y, rotateY: x, duration: 0.4, ease: 'power2.out', transformPerspective: 800 });
+        const x = ((e.clientX - r.left) / r.width  - 0.5) * 16;
+        const y = ((e.clientY - r.top)  / r.height - 0.5) * -16;
+        gsap.to(card, { rotateX: y, rotateY: x, duration: 0.35, ease: 'power2.out', transformPerspective: 900 });
       });
       card.addEventListener('mouseleave', () => {
-        gsap.to(card, { rotateX: 0, rotateY: 0, duration: 0.6, ease: 'elastic.out(1, 0.5)' });
+        gsap.to(card, { rotateX: 0, rotateY: 0, duration: 0.7, ease: 'elastic.out(1, 0.5)' });
       });
     });
   }

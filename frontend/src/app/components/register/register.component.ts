@@ -3,7 +3,13 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
-import Swal from 'sweetalert2';
+
+interface Alert {
+  type: 'error' | 'warning' | 'success' | 'info';
+  icon: string;
+  title: string;
+  text?: string;
+}
 
 @Component({
   selector: 'app-register',
@@ -22,6 +28,22 @@ export class RegisterComponent {
   showConfirmPassword = false;
   acceptTerms = false;
 
+  // Focus states
+  nameFocused = false;
+  emailFocused = false;
+  pwFocused = false;
+  cpwFocused = false;
+
+  // Validation errors
+  nameError = '';
+  emailError = '';
+  isValidEmail = false;
+  termsError = false;
+
+  // Global alert
+  globalAlert: Alert | null = null;
+
+  // ── Password computed ────────────────────────────────────────────────
   get passwordChecks() {
     const p = this.password;
     return {
@@ -57,87 +79,103 @@ export class RegisterComponent {
     private router: Router
   ) {}
 
-  preventDefault(event: Event) {
-    event.preventDefault();
+  // ── Validators ───────────────────────────────────────────────────────
+  validateName(): void {
+    if (!this.name.trim()) {
+      this.nameError = 'Le nom est requis';
+    } else if (this.name.trim().length < 2) {
+      this.nameError = 'Le nom doit contenir au moins 2 caractères';
+    } else {
+      this.nameError = '';
+    }
   }
 
-  onSubmit() {
-    const cleanName = this.name.trim();
+  validateEmail(): void {
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!this.email) {
+      this.emailError = '';
+      this.isValidEmail = false;
+    } else if (!re.test(this.email)) {
+      this.emailError = 'Adresse e-mail invalide';
+      this.isValidEmail = false;
+    } else {
+      this.emailError = '';
+      this.isValidEmail = true;
+    }
+  }
+
+  showAlert(type: Alert['type'], title: string, text?: string): void {
+    const icons: Record<Alert['type'], string> = {
+      error: 'error_outline',
+      warning: 'warning_amber',
+      success: 'check_circle_outline',
+      info: 'info_outline'
+    };
+    this.globalAlert = { type, icon: icons[type], title, text };
+    if (type === 'success') {
+      setTimeout(() => this.globalAlert = null, 5000);
+    }
+  }
+
+  onSubmit(): void {
+    this.globalAlert = null;
+    this.termsError = false;
+    this.validateName();
+    this.validateEmail();
+
+    const cleanName  = this.name.trim();
     const cleanEmail = this.email.trim().toLowerCase();
-    const hasLetter = /[A-Za-z]/.test(this.password);
 
+    // Validations with inline alerts
     if (!cleanName || !cleanEmail || !this.password || !this.confirmPassword) {
-      Swal.fire({ 
-        icon: 'warning', 
-        title: 'Champs manquants', 
-        text: 'Veuillez remplir tous les champs.', 
-        customClass: { popup: 'study-hub-swal-modal' },
-        confirmButtonText: 'Compris'
-      });
+      this.showAlert('warning', 'Champs requis', 'Veuillez remplir tous les champs du formulaire.');
       return;
     }
-
+    if (this.nameError || this.emailError) {
+      this.showAlert('warning', 'Informations invalides', 'Veuillez corriger les champs marqués en rouge.');
+      return;
+    }
+    if (!this.isValidEmail) {
+      this.showAlert('warning', 'E-mail invalide', 'Vérifiez le format de votre adresse e-mail.');
+      return;
+    }
+    if (this.passwordScore < 2) {
+      this.showAlert('error', 'Mot de passe trop faible', 'Utilisez au moins 8 caractères avec des lettres et des chiffres.');
+      return;
+    }
     if (this.passwordsMismatch) {
-      Swal.fire({ 
-        icon: 'error', 
-        title: 'Mots de passe différents', 
-        text: 'Les mots de passe ne correspondent pas.', 
-        customClass: { popup: 'study-hub-swal-modal' },
-        confirmButtonText: 'Corriger'
-      });
+      this.showAlert('error', 'Mots de passe différents', 'Les deux mots de passe ne correspondent pas. Vérifiez et réessayez.');
       return;
     }
-
-    if (!this.passwordChecks.length || !hasLetter || !this.passwordChecks.number) {
-      Swal.fire({ 
-        icon: 'error', 
-        title: 'Mot de passe trop faible', 
-        text: 'Utilisez au moins 8 caractères avec des lettres et des chiffres.', 
-        customClass: { popup: 'study-hub-swal-modal' },
-        confirmButtonText: 'Compris'
-      });
-      return;
-    }
-
     if (!this.acceptTerms) {
-      Swal.fire({ 
-        icon: 'info', 
-        title: 'Conditions requises', 
-        text: 'Veuillez accepter les conditions d’utilisation.', 
-        customClass: { popup: 'study-hub-swal-modal' },
-        confirmButtonText: 'Compris'
-      });
+      this.termsError = true;
+      this.showAlert('info', 'Conditions requises', 'Veuillez accepter les conditions d\'utilisation pour continuer.');
       return;
     }
 
     this.isLoading = true;
     this.authService.register(cleanName, cleanEmail, this.password).subscribe({
       next: () => {
-        Swal.fire({ 
-          toast: true,
-          position: 'top-end',
-          icon: 'success', 
-          title: 'Compte créé !', 
-          text: 'Inscription réussie', 
-          customClass: { popup: 'study-hub-swal-toast' },
-          timer: 2000, 
-          showConfirmButton: false 
-        });
-        this.router.navigate(['/dashboard']);
+        this.showAlert('success', 'Compte créé avec succès !', 'Bienvenue sur EduFocus. Redirection vers votre espace…');
+        setTimeout(() => this.router.navigate(['/dashboard']), 1200);
       },
       error: (err) => {
         this.isLoading = false;
-        Swal.fire({ 
-          icon: 'error', 
-          title: 'Échec', 
-          text: err.error?.message || 'Une erreur est survenue.', 
-          customClass: { popup: 'study-hub-swal-modal' },
-          confirmButtonText: 'Réessayer'
-        });
+        const msg = err.error?.message || '';
+        if (msg.toLowerCase().includes('exist') || msg.toLowerCase().includes('déjà')) {
+          this.showAlert('warning', 'Compte déjà existant', 'Un compte avec cet e-mail existe déjà. Connectez-vous ou utilisez un autre e-mail.');
+        } else {
+          this.showAlert('error', 'Échec de l\'inscription', msg || 'Une erreur est survenue. Veuillez réessayer.');
+        }
       },
       complete: () => {
         this.isLoading = false;
       }
     });
+  }
+
+  // ── Google OAuth ──────────────────────────────────────────────────────
+  loginWithGoogle(): void {
+    this.authService.loginWithGoogle();
   }
 }

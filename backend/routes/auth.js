@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const passport = require('passport');
 const User = require('../models/User');
 const { getSignedJwtToken } = require('../middleware/auth');
 const { body, validationResult } = require('express-validator');
@@ -546,5 +547,58 @@ router.put('/session-goal', [
     });
   }
 });
+
+// ─────────────────────────────────────────────────────────────────────────────
+// GOOGLE OAUTH 2.0 ROUTES
+// ─────────────────────────────────────────────────────────────────────────────
+
+// @route   GET /api/auth/google
+// @desc    Initiate Google OAuth flow — redirects browser to Google consent screen
+// @access  Public
+router.get('/google',
+  passport.authenticate('google', {
+    scope: ['profile', 'email'],
+    prompt: 'select_account' // Always show account chooser
+  })
+);
+
+// @route   GET /api/auth/google/callback
+// @desc    Google OAuth callback — exchanges code for profile, issues EduFocus JWT
+// @access  Public (Google redirects here)
+router.get('/google/callback',
+  passport.authenticate('google', {
+    session: false, // We don't use server-side sessions after this point
+    failureRedirect: `${process.env.FRONTEND_URL || 'http://localhost:4200'}/login?error=google_failed`
+  }),
+  async (req, res) => {
+    try {
+      // passport.authenticate places the user on req.user
+      const user = req.user;
+
+      if (!user) {
+        return res.redirect(
+          `${process.env.FRONTEND_URL || 'http://localhost:4200'}/login?error=google_no_user`
+        );
+      }
+
+      // Update last login timestamp
+      user.lastLogin = Date.now();
+      await user.save({ validateBeforeSave: false });
+
+      // Generate standard EduFocus JWT — identical to classic login
+      const token = getSignedJwtToken(user._id);
+
+      // Redirect to Angular callback component with the token
+      // Angular will immediately read it from the URL and store it
+      const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:4200';
+      return res.redirect(`${frontendUrl}/auth/google/callback?token=${token}`);
+
+    } catch (error) {
+      console.error('[Google OAuth] Callback error:', error.message);
+      const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:4200';
+      return res.redirect(`${frontendUrl}/login?error=google_server_error`);
+    }
+  }
+);
 
 module.exports = router;

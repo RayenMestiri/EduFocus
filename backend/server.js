@@ -3,8 +3,9 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const path = require('path');
+const { initializePassport } = require('./config/passport');
 
-dotenv.config();
+dotenv.config({ override: true });
 
 const app = express();
 
@@ -37,6 +38,10 @@ const corsOptions = {
 // Handle preflight OPTIONS requests explicitly for all routes (Express 5 + path-to-regexp v8 syntax)
 app.options('/{*any}', cors(corsOptions));
 app.use(cors(corsOptions));
+
+// Initialize Passport with Google OAuth strategy
+// Must be after CORS and before routes
+initializePassport(app);
 
 
 app.use(express.json({ limit: '10mb' }));

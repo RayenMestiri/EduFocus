@@ -1,162 +1,302 @@
-<!-- Forgot Password Overlay -->
-@if (forgotMode) {
-  <div class="forgot-overlay">
-    <div class="forgot-backdrop" (click)="closeForgot()"></div>
-    <div class="forgot-card">
-      <button class="forgot-close" (click)="closeForgot()">
-        <span class="material-icons">close</span>
-      </button>
-
-      @if (!forgotSent) {
-        <div style="margin-bottom:1.2rem">
-          <p class="forgot-title">Mot de passe oublié&nbsp;?</p>
-          <p class="forgot-sub">Entrez votre adresse e-mail pour recevoir un lien de réinitialisation.</p>
-        </div>
-        <div class="field-wrap">
-          <label class="field-label">Adresse e-mail</label>
-          <div class="field-box">
-            <span class="material-icons left-icon">email</span>
-            <input type="email" [(ngModel)]="forgotEmail" name="forgotEmail" placeholder="votre@email.com" class="auth-input" autocomplete="off" />
-          </div>
-        </div>
-        <button class="btn-auth" [disabled]="forgotLoading || !forgotEmail" (click)="sendReset()">
-          @if (forgotLoading) {
-            <svg class="animate-spin" style="width:18px;height:18px" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" opacity=".25"/><path fill="currentColor" opacity=".75" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>
-            Envoi en cours…
-          } @else {
-            <span class="material-icons">send</span> Envoyer le lien
-          }
-        </button>
-      } @else {
-        <div style="text-align:center;padding:1rem 0">
-          <span class="material-icons" style="font-size:3rem;color:#22c55e">mark_email_read</span>
-          <p class="forgot-success-title">E-mail envoyé&nbsp;!</p>
-          <p class="forgot-success-sub">Vérifiez votre boîte de réception pour réinitialiser votre mot de passe.</p>
-          <button class="btn-auth" style="margin-top:1.5rem" (click)="closeForgot()">Fermer</button>
-        </div>
-      }
-    </div>
-  </div>
-}
-
-<!-- Main Page -->
 <div class="auth-page">
-  <!-- Background layers -->
-  <div class="auth-orb orb-1"></div>
-  <div class="auth-orb orb-2"></div>
-  <div class="auth-orb orb-3"></div>
-  <div class="edu-aurora"></div>
 
-  
-
-  <!-- Centered card -->
-  <div class="auth-wrap">
-    <!-- Left decorative panel -->
-    <div class="auth-left">
-    <div class="auth-left-logo">
-      <div class="logo-icon-wrap"><span class="material-icons">school</span></div>
-      <span class="logo-name">Edu<span>Focus</span></span>
-    </div>
-
-    <h2 class="auth-left-tagline">
-      Étudiez plus <em>intelligemment</em>,<br>pas plus dur.
-    </h2>
-    <p class="auth-left-sub">
-      La plateforme d'apprentissage qui s'adapte à vous — notes intelligentes, planification avancée, et suivi de progression en temps réel.
-    </p>
-
-    <div class="auth-feature-list">
-      <div class="auth-feature">
-        <div class="af-icon"><span class="material-icons">edit_note</span></div>
-        Notes enrichies avec éditeur intelligent
-      </div>
-      <div class="auth-feature">
-        <div class="af-icon"><span class="material-icons">insights</span></div>
-        Statistiques d'apprentissage détaillées
-      </div>
-      <div class="auth-feature">
-        <div class="af-icon"><span class="material-icons">calendar_month</span></div>
-        Planificateur de révisions adaptatif
-      </div>
-      <div class="auth-feature">
-        <div class="af-icon"><span class="material-icons">lock</span></div>
-        Notes protégées par mot de passe
-      </div>
-    </div>
-
-    <div class="auth-stat-row">
-      <div class="auth-stat"><span class="as-val">12k+</span><span class="as-lbl">ÉTUDIANTS</span></div>
-      <div class="auth-stat"><span class="as-val">98%</span><span class="as-lbl">SATISFACTION</span></div>
-      <div class="auth-stat"><span class="as-val">4.9★</span><span class="as-lbl">NOTE</span></div>
-    </div>
+  <!-- ── Animated Background ── -->
+  <div class="auth-bg">
+    <div class="auth-orb auth-orb--1"></div>
+    <div class="auth-orb auth-orb--2"></div>
+    <div class="auth-orb auth-orb--3"></div>
+    <div class="auth-grid"></div>
+    <div class="auth-noise"></div>
   </div>
 
-  <!-- Right form panel -->
-  <div class="auth-right">
-    <a routerLink="/" class="auth-back">
-      <span class="material-icons">arrow_back</span> Retour à l'accueil
+  <!-- ── Floating particles ── -->
+  <div class="auth-particles">
+    <div class="particle p1"></div>
+    <div class="particle p2"></div>
+    <div class="particle p3"></div>
+    <div class="particle p4"></div>
+    <div class="particle p5"></div>
+    <div class="particle p6"></div>
+  </div>
+
+  <!-- ── Top Bar ── -->
+  <header class="auth-topbar">
+    <a routerLink="/" class="auth-brand">
+      <div class="auth-brand-logo">
+        <span class="material-icons">auto_stories</span>
+        <div class="auth-brand-ring"></div>
+      </div>
+      <span class="auth-brand-name">Edu<strong>Focus</strong></span>
     </a>
 
+    <a routerLink="/" class="auth-back-btn">
+      <span class="material-icons">arrow_back_ios_new</span>
+      Retour à l'accueil
+    </a>
+  </header>
+
+  <!-- ── Centered Content ── -->
+  <main class="auth-center">
+
+    <!-- Trust badges above the card -->
+    <div class="auth-badges">
+      <div class="auth-badge">
+        <span class="material-icons">verified_user</span>
+        SSL 256-bit
+      </div>
+      <div class="auth-badge">
+        <span class="material-icons">groups</span>
+        15 000+ étudiants
+      </div>
+      <div class="auth-badge">
+        <span class="material-icons">star</span>
+        4.9/5 note
+      </div>
+    </div>
+
+    <!-- ══ CARD ══ -->
     <div class="auth-card">
+
+      <!-- Card glow top line -->
+      <div class="auth-card-glow"></div>
+
+      <!-- Header -->
       <div class="auth-card-header">
-        <h1 class="auth-card-title">Connexion</h1>
-        <p class="auth-card-sub">Bon retour&nbsp;! Entrez vos identifiants.</p>
+        <div class="auth-card-icon">
+          <span class="material-icons">login</span>
+        </div>
+        <div class="auth-card-titles">
+          <h1 class="auth-card-title">Bon retour !</h1>
+          <p class="auth-card-sub">Connectez-vous à votre espace EduFocus</p>
+        </div>
       </div>
 
-      <form (ngSubmit)="onSubmit()" autocomplete="off">
-        <!-- Email -->
-        <div class="field-wrap">
-          <label class="field-label">Adresse e-mail</label>
-          <div class="field-box">
-            <span class="material-icons left-icon">email</span>
-            <input type="email" [(ngModel)]="email" name="email" placeholder="votre@email.com" class="auth-input" autocomplete="email" />
+      <!-- Global Alert -->
+      @if (globalAlert) {
+        <div class="auth-alert auth-alert--{{ globalAlert.type }}" role="alert">
+          <span class="material-icons auth-alert-icon">{{ globalAlert.icon }}</span>
+          <div class="auth-alert-body">
+            <p class="auth-alert-title">{{ globalAlert.title }}</p>
+            @if (globalAlert.text) {
+              <p class="auth-alert-text">{{ globalAlert.text }}</p>
+            }
           </div>
+          <button class="auth-alert-close" (click)="globalAlert = null" aria-label="Fermer">
+            <span class="material-icons">close</span>
+          </button>
+        </div>
+      }
+
+      <!-- Form -->
+      <form class="auth-form" (ngSubmit)="onSubmit()" autocomplete="off" novalidate>
+
+        <!-- Email -->
+        <div class="auth-field" [class.is-focused]="emailFocused" [class.is-filled]="email.length > 0">
+          <label class="auth-field-label" for="login-email">Adresse e-mail</label>
+          <div class="auth-field-wrap">
+            <input
+              id="login-email"
+              type="email"
+              [(ngModel)]="email"
+              name="email"
+              placeholder="votre@email.com"
+              class="auth-field-input"
+              autocomplete="email"
+              (focus)="emailFocused=true"
+              (blur)="emailFocused=false; validateEmail()" />
+            <span class="material-icons auth-field-icon">email</span>
+            @if (email.length > 0 && isValidEmail) {
+              <span class="material-icons auth-field-check">check_circle</span>
+            }
+          </div>
+          @if (emailError) {
+            <p class="auth-field-error">
+              <span class="material-icons">error_outline</span>
+              {{ emailError }}
+            </p>
+          }
         </div>
 
         <!-- Password -->
-        <div class="field-wrap">
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem">
-            <label class="field-label" style="margin-bottom:0">Mot de passe</label>
-            <button type="button" (click)="forgotMode=true" class="forgot-link">Mot de passe oublié&nbsp;?</button>
+        <div class="auth-field" [class.is-focused]="pwFocused" [class.is-filled]="password.length > 0">
+          <div class="auth-field-label-row">
+            <label class="auth-field-label" for="login-pw">Mot de passe</label>
+            <button type="button" class="auth-forgot-link" (click)="forgotMode=true">
+              Mot de passe oublié ?
+            </button>
           </div>
-          <div class="field-box">
-            <span class="material-icons left-icon">lock</span>
-            <input [type]="showPassword ? 'text' : 'password'" [(ngModel)]="password" name="password" placeholder="Entrez votre mot de passe" class="auth-input" autocomplete="current-password" />
-            <button type="button" class="toggle-pw" (click)="showPassword=!showPassword">
+          <div class="auth-field-wrap">
+            <input
+              id="login-pw"
+              [type]="showPassword ? 'text' : 'password'"
+              [(ngModel)]="password"
+              name="password"
+              placeholder="Votre mot de passe"
+              class="auth-field-input"
+              autocomplete="current-password"
+              (focus)="pwFocused=true"
+              (blur)="pwFocused=false" />
+            <span class="material-icons auth-field-icon">lock</span>
+            <button type="button" class="auth-field-toggle" (click)="showPassword=!showPassword">
               <span class="material-icons">{{ showPassword ? 'visibility_off' : 'visibility' }}</span>
             </button>
           </div>
-          <!-- Mini strength bar on login too -->
           @if (password.length > 0) {
-            <div class="strength-row" style="margin-top:.5rem">
-              <div class="strength-bar">
+            <div class="auth-strength">
+              <div class="auth-strength-bars">
                 @for (s of [1,2,3,4]; track s) {
-                  <div class="strength-seg" [style.background]="s <= passwordStrength.score ? passwordStrength.color : ''"></div>
+                  <div class="auth-strength-bar"
+                       [style.background]="s <= passwordStrength.score ? passwordStrength.color : ''"
+                       [style.opacity]="s <= passwordStrength.score ? 1 : 0.15"></div>
                 }
               </div>
-              <span class="strength-label" [style.color]="passwordStrength.color">{{ passwordStrength.label }}</span>
+              <span class="auth-strength-label" [style.color]="passwordStrength.color">
+                {{ passwordStrength.label }}
+              </span>
             </div>
           }
         </div>
 
+        <!-- Remember me -->
+        <label class="auth-remember">
+          <div class="auth-check-box" [class.is-checked]="rememberMe" (click)="rememberMe=!rememberMe">
+            @if (rememberMe) {
+              <span class="material-icons">check</span>
+            }
+          </div>
+          <span>Se souvenir de moi</span>
+        </label>
+
         <!-- Submit -->
-        <button type="submit" class="btn-auth" [disabled]="isLoading">
+        <button type="submit" class="auth-submit" [disabled]="isLoading" [class.is-loading]="isLoading">
+          <span class="auth-submit-shine"></span>
           @if (isLoading) {
-            <svg class="animate-spin" style="width:18px;height:18px" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" opacity=".25"/><path fill="currentColor" opacity=".75" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>
+            <svg class="auth-spinner" viewBox="0 0 24 24" fill="none">
+              <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" opacity=".25"/>
+              <path fill="currentColor" opacity=".75" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+            </svg>
             Connexion en cours…
           } @else {
-            <span class="material-icons">login</span> Se connecter
+            <span class="material-icons">login</span>
+            Se connecter
           }
         </button>
+
       </form>
 
-      <div class="auth-divider">ou</div>
+      <!-- ── Google OAuth Separator ── -->
+      <div class="auth-oauth-sep">
+        <span class="auth-oauth-sep-line"></span>
+        <span class="auth-oauth-sep-text">ou continuer avec</span>
+        <span class="auth-oauth-sep-line"></span>
+      </div>
 
-      <p class="auth-foot-note">
-        Pas encore de compte&nbsp;?
-        <a routerLink="/register" class="auth-foot-link">Créer un compte</a>
+      <!-- ── Google Login Button ── -->
+      <button
+        type="button"
+        id="btn-google-login"
+        class="auth-google-btn"
+        (click)="loginWithGoogle()"
+        aria-label="Se connecter avec Google">
+
+        <!-- Official Google G logo SVG -->
+        <svg class="auth-google-icon" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+          <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+          <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+          <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+          <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+        </svg>
+
+        <span class="auth-google-text">Continuer avec Google</span>
+        <span class="auth-google-arrow material-icons">arrow_forward</span>
+      </button>
+
+      <!-- Divider -->
+      <div class="auth-divider"><span>Pas encore de compte ?</span></div>
+
+      <!-- Register link -->
+      <a routerLink="/register" class="auth-switch-btn">
+        <span class="material-icons">person_add</span>
+        Créer un compte gratuit
+      </a>
+
+      <!-- Footer -->
+      <p class="auth-card-footer">
+        <span class="material-icons">shield</span>
+        Connexion sécurisée SSL 256-bit · Données chiffrées
       </p>
+
     </div>
-  </div>
-  </div>
+    <!-- /CARD -->
+
+  </main>
+
+  <!-- ── Forgot Password Modal ── -->
+  @if (forgotMode) {
+    <div class="auth-modal-overlay" (click)="closeForgot()">
+      <div class="auth-modal" (click)="$event.stopPropagation()">
+
+        <button class="auth-modal-close" (click)="closeForgot()">
+          <span class="material-icons">close</span>
+        </button>
+
+        @if (!forgotSent) {
+          <div class="auth-modal-icon">
+            <span class="material-icons">lock_reset</span>
+          </div>
+          <h3 class="auth-modal-title">Mot de passe oublié ?</h3>
+          <p class="auth-modal-sub">Entrez votre e-mail pour recevoir un lien de réinitialisation sécurisé.</p>
+
+          <div class="auth-field">
+            <label class="auth-field-label">Adresse e-mail</label>
+            <div class="auth-field-wrap">
+              <input type="email" [(ngModel)]="forgotEmail" name="forgotEmail"
+                     placeholder="votre@email.com" class="auth-field-input"
+                     autocomplete="email" />
+              <span class="material-icons auth-field-icon">email</span>
+            </div>
+          </div>
+
+          @if (forgotError) {
+            <div class="auth-alert auth-alert--error" style="margin-top:0.8rem">
+              <span class="material-icons auth-alert-icon">error_outline</span>
+              <div class="auth-alert-body">
+                <p class="auth-alert-title">{{ forgotError }}</p>
+              </div>
+            </div>
+          }
+
+          <button class="auth-submit" style="margin-top:1.2rem"
+                  [disabled]="forgotLoading || !forgotEmail" (click)="sendReset()">
+            <span class="auth-submit-shine"></span>
+            @if (forgotLoading) {
+              <svg class="auth-spinner" viewBox="0 0 24 24" fill="none">
+                <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" opacity=".25"/>
+                <path fill="currentColor" opacity=".75" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+              </svg>
+              Envoi en cours…
+            } @else {
+              <span class="material-icons">send</span>
+              Envoyer le lien
+            }
+          </button>
+        } @else {
+          <div class="auth-modal-success">
+            <div class="auth-modal-success-icon">
+              <span class="material-icons">mark_email_read</span>
+            </div>
+            <h3 class="auth-modal-title">E-mail envoyé !</h3>
+            <p class="auth-modal-sub">Vérifiez votre boîte de réception et suivez les instructions pour réinitialiser votre mot de passe.</p>
+            <button class="auth-submit" style="margin-top:1.4rem" (click)="closeForgot()">
+              <span class="auth-submit-shine"></span>
+              <span class="material-icons">check</span>
+              Fermer
+            </button>
+          </div>
+        }
+
+      </div>
+    </div>
+  }
+
 </div>
