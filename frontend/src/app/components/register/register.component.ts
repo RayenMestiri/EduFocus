@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
+import { ThemeService } from '../../services/theme.service';
 
 interface Alert {
   type: 'error' | 'warning' | 'success' | 'info';
@@ -27,6 +28,8 @@ export class RegisterComponent {
   showPassword = false;
   showConfirmPassword = false;
   acceptTerms = false;
+
+  currentStep = 1;
 
   // Focus states
   nameFocused = false;
@@ -76,7 +79,8 @@ export class RegisterComponent {
 
   constructor(
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    public themeService: ThemeService
   ) {}
 
   // ── Validators ───────────────────────────────────────────────────────
@@ -117,36 +121,68 @@ export class RegisterComponent {
     }
   }
 
+  // ── Step Navigation ──────────────────────────────────────────────────
+  nextStep(): void {
+    if (this.currentStep === 1) {
+      this.validateName();
+      this.validateEmail();
+      if (!this.name.trim()) {
+        this.nameError = 'Le nom est requis';
+      }
+      if (!this.email) {
+        this.emailError = 'L\'adresse e-mail est requise';
+      }
+      if (this.nameError || this.emailError || !this.isValidEmail) {
+        this.showAlert('warning', 'Informations invalides', 'Veuillez corriger les erreurs avant de continuer.');
+        return;
+      }
+      if (this.globalAlert?.type === 'warning') {
+        this.globalAlert = null;
+      }
+      this.currentStep = 2;
+    } else if (this.currentStep === 2) {
+      if (!this.password) {
+        this.showAlert('warning', 'Mot de passe requis', 'Veuillez entrer un mot de passe.');
+        return;
+      }
+      if (this.passwordScore < 2) {
+        this.showAlert('error', 'Mot de passe trop faible', 'Utilisez au moins 8 caractères avec des lettres et des chiffres.');
+        return;
+      }
+      if (!this.confirmPassword) {
+        this.showAlert('warning', 'Confirmation requise', 'Veuillez confirmer votre mot de passe.');
+        return;
+      }
+      if (this.passwordsMismatch) {
+        this.showAlert('error', 'Mots de passe différents', 'Les deux mots de passe ne correspondent pas.');
+        return;
+      }
+      this.globalAlert = null;
+      this.currentStep = 3;
+    }
+  }
+
+  prevStep(): void {
+    if (this.currentStep > 1) {
+      this.currentStep--;
+      this.globalAlert = null;
+    }
+  }
+
   onSubmit(): void {
     this.globalAlert = null;
     this.termsError = false;
-    this.validateName();
-    this.validateEmail();
 
-    const cleanName  = this.name.trim();
-    const cleanEmail = this.email.trim().toLowerCase();
+    if (this.currentStep === 1) {
+      this.nextStep();
+      return;
+    }
+    if (this.currentStep === 2) {
+      this.nextStep();
+      return;
+    }
 
-    // Validations with inline alerts
-    if (!cleanName || !cleanEmail || !this.password || !this.confirmPassword) {
-      this.showAlert('warning', 'Champs requis', 'Veuillez remplir tous les champs du formulaire.');
-      return;
-    }
-    if (this.nameError || this.emailError) {
-      this.showAlert('warning', 'Informations invalides', 'Veuillez corriger les champs marqués en rouge.');
-      return;
-    }
-    if (!this.isValidEmail) {
-      this.showAlert('warning', 'E-mail invalide', 'Vérifiez le format de votre adresse e-mail.');
-      return;
-    }
-    if (this.passwordScore < 2) {
-      this.showAlert('error', 'Mot de passe trop faible', 'Utilisez au moins 8 caractères avec des lettres et des chiffres.');
-      return;
-    }
-    if (this.passwordsMismatch) {
-      this.showAlert('error', 'Mots de passe différents', 'Les deux mots de passe ne correspondent pas. Vérifiez et réessayez.');
-      return;
-    }
+    // Step 3 submission
     if (!this.acceptTerms) {
       this.termsError = true;
       this.showAlert('info', 'Conditions requises', 'Veuillez accepter les conditions d\'utilisation pour continuer.');
@@ -154,6 +190,9 @@ export class RegisterComponent {
     }
 
     this.isLoading = true;
+    const cleanName  = this.name.trim();
+    const cleanEmail = this.email.trim().toLowerCase();
+
     this.authService.register(cleanName, cleanEmail, this.password).subscribe({
       next: () => {
         this.showAlert('success', 'Compte créé avec succès !', 'Bienvenue sur EduFocus. Redirection vers votre espace…');
@@ -163,7 +202,8 @@ export class RegisterComponent {
         this.isLoading = false;
         const msg = err.error?.message || '';
         if (msg.toLowerCase().includes('exist') || msg.toLowerCase().includes('déjà')) {
-          this.showAlert('warning', 'Compte déjà existant', 'Un compte avec cet e-mail existe déjà. Connectez-vous ou utilisez un autre e-mail.');
+          this.showAlert('warning', 'Compte déjà existant', 'Un compte avec cet e-mail existe déjà. Veuillez utiliser une autre adresse.');
+          this.currentStep = 1; // Send them back to change email
         } else {
           this.showAlert('error', 'Échec de l\'inscription', msg || 'Une erreur est survenue. Veuillez réessayer.');
         }

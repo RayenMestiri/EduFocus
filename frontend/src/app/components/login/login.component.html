@@ -1,4 +1,4 @@
-<div class="auth-page">
+<div class="auth-page" [class.auth-page--light]="!themeService.isDark()">
 
   <!-- ── Animated Background ── -->
   <div class="auth-bg">
@@ -29,10 +29,21 @@
       <span class="auth-brand-name">Edu<strong>Focus</strong></span>
     </a>
 
-    <a routerLink="/" class="auth-back-btn">
-      <span class="material-icons">arrow_back_ios_new</span>
-      Retour à l'accueil
-    </a>
+    <div class="auth-topbar-actions">
+      <!-- Theme Toggle Button -->
+      <button class="auth-theme-toggle" (click)="themeService.toggleTheme()" [title]="themeService.isDark() ? 'Mode clair' : 'Mode sombre'" aria-label="Changer le thème">
+        @if (themeService.isDark()) {
+          <span class="material-icons">light_mode</span>
+        } @else {
+          <span class="material-icons">dark_mode</span>
+        }
+      </button>
+
+      <a routerLink="/" class="auth-back-btn">
+        <span class="material-icons">arrow_back_ios_new</span>
+        <span class="auth-back-label">Retour à l'accueil</span>
+      </a>
+    </div>
   </header>
 
   <!-- ── Centered Content ── -->
