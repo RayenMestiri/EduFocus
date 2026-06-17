@@ -8,79 +8,82 @@ import { SyncEngineService, SyncStatus } from '../../../services/offline/sync-en
   standalone: true,
   imports: [CommonModule],
   template: `
-    <!-- Offline Banner -->
     @if (showBanner()) {
-      <div class="offline-banner" [class]="bannerClass()" [@.disabled]="false">
-        <div class="offline-banner-content">
-          <span class="offline-banner-icon">{{ bannerIcon() }}</span>
-          <span class="offline-banner-text">{{ bannerText() }}</span>
-          @if (pendingCount() > 0 && !isOnline()) {
-            <span class="offline-banner-badge">{{ pendingCount() }}</span>
-          }
-        </div>
+      <div class="offline-toast" [class]="bannerClass()">
+        <span class="offline-toast-icon">{{ bannerIcon() }}</span>
+        <span class="offline-toast-text">{{ bannerText() }}</span>
+        @if (pendingCount() > 0 && !isOnline()) {
+          <span class="offline-toast-badge">{{ pendingCount() }}</span>
+        }
       </div>
     }
   `,
   styles: [`
-    .offline-banner {
+    .offline-toast {
       position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
+      bottom: 24px;
+      right: 24px;
       z-index: 10000;
-      padding: 8px 16px;
-      text-align: center;
+      padding: 10px 18px;
+      border-radius: 50px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
       font-family: 'Inter', sans-serif;
       font-size: 13px;
       font-weight: 500;
-      letter-spacing: 0.3px;
-      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-      animation: slideDown 0.4s ease-out;
+      letter-spacing: 0.2px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), 0 2px 8px rgba(0, 0, 0, 0.2);
+      backdrop-filter: blur(12px);
+      animation: toastIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+      max-width: 90vw;
+      pointer-events: auto;
     }
 
-    @keyframes slideDown {
+    @keyframes toastIn {
       from {
-        transform: translateY(-100%);
+        transform: translateY(20px) scale(0.9);
         opacity: 0;
       }
       to {
-        transform: translateY(0);
+        transform: translateY(0) scale(1);
         opacity: 1;
       }
     }
 
-    .offline-banner-content {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
+    .offline-toast-icon {
+      font-size: 15px;
+      flex-shrink: 0;
     }
 
-    .offline-banner-icon {
-      font-size: 16px;
+    .offline-toast-text {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
-    .offline-banner-badge {
+    .offline-toast-badge {
       background: rgba(255, 255, 255, 0.25);
       border-radius: 10px;
-      padding: 1px 8px;
+      padding: 1px 7px;
       font-size: 11px;
       font-weight: 700;
+      flex-shrink: 0;
     }
 
     /* ── States ────────────────────── */
 
     .banner-offline {
-      background: linear-gradient(135deg, #f59e0b, #d97706);
+      background: linear-gradient(135deg, rgba(245, 158, 11, 0.92), rgba(217, 119, 6, 0.92));
       color: #1a1a1a;
     }
 
     .banner-syncing {
-      background: linear-gradient(135deg, #3b82f6, #2563eb);
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.92), rgba(37, 99, 235, 0.92));
       color: #ffffff;
     }
 
-    .banner-syncing .offline-banner-icon {
+    .banner-syncing .offline-toast-icon {
       animation: spin 1s linear infinite;
     }
 
@@ -90,20 +93,32 @@ import { SyncEngineService, SyncStatus } from '../../../services/offline/sync-en
     }
 
     .banner-error {
-      background: linear-gradient(135deg, #ef4444, #dc2626);
+      background: linear-gradient(135deg, rgba(239, 68, 68, 0.92), rgba(220, 38, 38, 0.92));
       color: #ffffff;
     }
 
     .banner-success {
-      background: linear-gradient(135deg, #22c55e, #16a34a);
+      background: linear-gradient(135deg, rgba(34, 197, 94, 0.92), rgba(22, 163, 74, 0.92));
       color: #ffffff;
-      animation: slideDown 0.4s ease-out, fadeOut 0.5s ease-in 2.5s forwards;
+      animation: toastIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), fadeOut 0.5s ease-in 2.5s forwards;
     }
 
     @keyframes fadeOut {
       to {
-        transform: translateY(-100%);
+        transform: translateY(20px) scale(0.9);
         opacity: 0;
+      }
+    }
+
+    /* Mobile: full-width bottom toast */
+    @media (max-width: 480px) {
+      .offline-toast {
+        bottom: 16px;
+        right: 16px;
+        left: 16px;
+        justify-content: center;
+        font-size: 12px;
+        padding: 8px 14px;
       }
     }
   `]
