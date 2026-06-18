@@ -292,9 +292,9 @@
                 <ng-container *ngIf="i === 1">
                   <div class="sc-planner">
                     <div class="sc-planner__days">
-                      <div class="sc-day" *ngFor="let d of ['L','M','M','J','V']">
+                      <div class="sc-day" *ngFor="let d of ['L','M','M','J','V']; let idx = index">
                         <span class="sc-day__label">{{d}}</span>
-                        <div class="sc-day__block" *ngIf="d !== 'M'" [style.background]="tab.color" [style.height]="(40+Math.random()*60)+'px'"></div>
+                        <div class="sc-day__block" *ngIf="d !== 'M'" [style.background]="tab.color" [style.height.px]="[75, 55, 60, 90, 50][idx]"></div>
                         <div class="sc-day__block sc-day__block--2" *ngIf="d === 'L'" style="background:#22c55e;height:30px;"></div>
                       </div>
                     </div>
