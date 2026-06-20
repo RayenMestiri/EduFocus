@@ -69,6 +69,16 @@
               <span class="text-white font-black text-sm">{{ studyHubService.totalQcms() }}</span>
               <span class="text-white/70 text-xs font-semibold">QCMs</span>
             </div>
+            <div *ngIf="totalDueCards() > 0" class="flex items-center gap-1.5 bg-rose-500/80 backdrop-blur-sm rounded-xl px-3 py-1.5 border border-rose-400/50 shadow-lg shadow-rose-500/20 ml-2 animate-pulse">
+              <span class="material-icons text-white text-sm">notifications_active</span>
+              <span class="text-white font-black text-sm">{{ totalDueCards() }}</span>
+              <span class="text-white/90 text-xs font-semibold">à réviser</span>
+            </div>
+            <div *ngIf="totalMasteredCards() > 0" class="flex items-center gap-1.5 bg-amber-500/80 backdrop-blur-sm rounded-xl px-3 py-1.5 border border-amber-400/50 shadow-lg shadow-amber-500/20">
+              <span class="material-icons text-white text-sm">workspace_premium</span>
+              <span class="text-white font-black text-sm">{{ totalMasteredCards() }}</span>
+              <span class="text-white/90 text-xs font-semibold">maîtrisées</span>
+            </div>
           </div>
         </div>
 
@@ -104,10 +114,100 @@
       </div>
     </div>
 
+    <!-- ── Today's Reviews SRS Panel (Compact Collapsible) ── -->
+    <div *ngIf="studyHubService.totalFlashcards() > 0 && !studyHubService.isLoading()" class="mb-6">
+      <div class="srs-panel-compact rounded-2xl border border-gray-100/80 dark:border-gray-800/60 bg-white/80 dark:bg-gray-900/70 backdrop-blur-sm shadow-sm overflow-hidden transition-all duration-300">
+
+        <!-- ── Always-visible compact header row ── -->
+        <div class="flex items-center gap-3 px-4 py-3 cursor-pointer select-none" (click)="toggleSrsPanel()">
+
+          <!-- Icon + title -->
+          <div class="w-7 h-7 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow shadow-indigo-500/25 flex-shrink-0">
+            <span class="material-icons text-white text-sm">psychology</span>
+          </div>
+          <span class="text-sm font-black text-gray-800 dark:text-white whitespace-nowrap">SRS · Révisions du Jour</span>
+
+          <!-- Inline stats pills -->
+          <div class="flex items-center gap-1.5 flex-wrap flex-1 ml-1">
+            <!-- Retention -->
+            <span *ngIf="retentionRate() > 0" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200/60 dark:border-emerald-800/30 text-emerald-700 dark:text-emerald-400 text-[10px] font-black">
+              <span class="material-icons text-[9px]">trending_up</span>{{ retentionRate() }}%
+            </span>
+            <!-- New -->
+            <span *ngIf="newCardsInQueue() > 0" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-blue-50 dark:bg-blue-950/30 border border-blue-200/60 dark:border-blue-800/30 text-blue-700 dark:text-blue-400 text-[10px] font-black">
+              <span class="material-icons text-[9px]">fiber_new</span>{{ newCardsInQueue() }}
+            </span>
+            <!-- Learning -->
+            <span *ngIf="learningCardsInQueue() > 0" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-amber-50 dark:bg-amber-950/30 border border-amber-200/60 dark:border-amber-800/30 text-amber-700 dark:text-amber-400 text-[10px] font-black">
+              <span class="material-icons text-[9px]">school</span>{{ learningCardsInQueue() }}
+            </span>
+            <!-- Due/Overdue -->
+            <span *ngIf="reviewCardsInQueue() + overdueCardsInQueue() > 0" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-rose-50 dark:bg-rose-950/30 border border-rose-200/60 dark:border-rose-800/30 text-rose-700 dark:text-rose-400 text-[10px] font-black">
+              <span class="material-icons text-[9px]">notifications_active</span>{{ reviewCardsInQueue() + overdueCardsInQueue() }}
+            </span>
+            <!-- Mastered -->
+            <span *ngIf="totalMasteredCards() > 0" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200/60 dark:border-emerald-800/30 text-emerald-700 dark:text-emerald-400 text-[10px] font-bold">
+              <span class="material-icons text-[9px]">workspace_premium</span>{{ totalMasteredCards() }}
+            </span>
+            <!-- Total pills when all zero -->
+            <span *ngIf="newCardsInQueue() === 0 && learningCardsInQueue() === 0 && reviewCardsInQueue() + overdueCardsInQueue() === 0" class="text-[10px] text-gray-400 dark:text-gray-500 font-semibold">
+              Tout révisé ✨
+            </span>
+          </div>
+
+          <!-- CTA + Chevron -->
+          <div class="flex items-center gap-2 flex-shrink-0">
+            <a *ngIf="firstPackWithDue()" [routerLink]="['/study-hub', firstPackWithDue()!.id, 'flashcards']"
+              (click)="$event.stopPropagation()"
+              class="inline-flex items-center gap-1 px-3 py-1.5 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-bold text-[11px] rounded-xl shadow shadow-indigo-500/20 transition-all hover:scale-105">
+              <span class="material-icons text-sm">play_circle</span>
+              <span class="hidden sm:inline">Réviser</span>
+              <span class="ml-0.5 px-1 py-0.5 rounded bg-white/20 text-[9px] font-black">{{ totalDueCards() }}</span>
+            </a>
+            <a routerLink="/study-hub/analytics" (click)="$event.stopPropagation()"
+              class="hidden sm:inline-flex items-center gap-1 px-2.5 py-1.5 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-500 dark:text-gray-400 text-[11px] font-semibold rounded-xl transition-all">
+              <span class="material-icons text-sm">analytics</span>
+            </a>
+            <span class="material-icons text-gray-400 dark:text-gray-500 text-base transition-transform duration-300"
+              [class.rotate-180]="srsExpanded()">expand_more</span>
+          </div>
+        </div>
+
+        <!-- ── Expandable detail section ── -->
+        <div class="srs-expand-body" [class.srs-expanded]="srsExpanded()" *ngIf="srsExpanded()">
+          <div class="px-4 pb-4 border-t border-gray-100/80 dark:border-gray-800/60 pt-3">
+
+            <!-- Distribution bar -->
+            <div class="flex items-center gap-3">
+              <div class="flex-1">
+                <div class="flex items-center h-2 rounded-full overflow-hidden bg-gray-100 dark:bg-gray-800 gap-px">
+                  <div class="h-full bg-blue-500 transition-all duration-700 rounded-l-full" [style.width.%]="(newCards() / (studyHubService.totalFlashcards() || 1)) * 100" [title]="newCards() + ' nouvelles'"></div>
+                  <div class="h-full bg-amber-500 transition-all duration-700" [style.width.%]="(learningCards() / (studyHubService.totalFlashcards() || 1)) * 100" [title]="learningCards() + ' apprentissage'"></div>
+                  <div class="h-full bg-purple-500 transition-all duration-700" [style.width.%]="((studyHubService.totalFlashcards() - newCards() - learningCards() - totalMasteredCards()) / (studyHubService.totalFlashcards() || 1)) * 100" [title]="'en révision'"></div>
+                  <div class="h-full bg-emerald-500 transition-all duration-700 rounded-r-full" [style.width.%]="(totalMasteredCards() / (studyHubService.totalFlashcards() || 1)) * 100" [title]="totalMasteredCards() + ' maîtrisées'"></div>
+                </div>
+                <div class="flex gap-3 mt-1.5">
+                  <span class="flex items-center gap-1 text-[9px] font-bold text-gray-400"><span class="w-2 h-2 rounded-full bg-blue-500 inline-block"></span>Nouvelles {{ newCards() }}</span>
+                  <span class="flex items-center gap-1 text-[9px] font-bold text-gray-400"><span class="w-2 h-2 rounded-full bg-amber-500 inline-block"></span>Appr. {{ learningCards() }}</span>
+                  <span class="flex items-center gap-1 text-[9px] font-bold text-gray-400"><span class="w-2 h-2 rounded-full bg-purple-500 inline-block"></span>Révision</span>
+                  <span class="flex items-center gap-1 text-[9px] font-bold text-gray-400"><span class="w-2 h-2 rounded-full bg-emerald-500 inline-block"></span>Maîtrisées {{ totalMasteredCards() }}</span>
+                  <span class="ml-auto text-[9px] font-bold text-gray-400">{{ studyHubService.totalFlashcards() }} total</span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+
     <!-- ── Loading State ── -->
     @if (studyHubService.isLoading()) {
       <div class="flex flex-col items-center justify-center py-24 gap-5">
         <div class="relative w-16 h-16">
+
           <div class="absolute inset-0 rounded-full border-4 border-indigo-100 dark:border-indigo-900/40"></div>
           <div class="absolute inset-0 rounded-full border-4 border-t-indigo-600 dark:border-t-indigo-400 animate-spin"></div>
         </div>
@@ -186,7 +286,10 @@
                   <span class="text-base font-black text-gray-900 dark:text-white leading-none">{{ pack.notes.length }}</span>
                   <span class="text-[9px] font-bold text-blue-500 uppercase tracking-wider">Notes</span>
                 </div>
-                <div class="flex flex-col items-center justify-center py-3 gap-0.5">
+                <div class="sh-stat-chip relative flex flex-col items-center justify-center py-3 gap-0.5">
+                  <div *ngIf="getPackDueCount(pack.id) > 0" class="absolute top-1 right-1 px-1.5 min-w-[16px] h-4 bg-rose-500 rounded-full flex items-center justify-center text-[9px] font-bold text-white shadow-sm shadow-rose-500/30 border border-white dark:border-gray-800" [title]="getPackDueCount(pack.id) + ' cartes à réviser'">
+                    {{ getPackDueCount(pack.id) }}
+                  </div>
                   <span class="text-base font-black text-gray-900 dark:text-white leading-none">{{ pack.flashcards.length }}</span>
                   <span class="text-[9px] font-bold text-purple-500 uppercase tracking-wider">Cards</span>
                 </div>
@@ -225,7 +328,10 @@
                   <span class="material-icons text-[9px]">sticky_note_2</span>{{ 'DASHBOARD.NOTES' | translate }}
                 </span>
               </div>
-              <div class="sh-stat-chip flex flex-col items-center justify-center py-3 gap-0.5">
+              <div class="sh-stat-chip relative flex flex-col items-center justify-center py-3 gap-0.5">
+                <div *ngIf="getPackDueCount(pack.id) > 0" class="absolute top-1.5 right-1.5 px-1.5 min-w-[16px] h-4 bg-rose-500 rounded-full flex items-center justify-center text-[9px] font-bold text-white shadow-sm shadow-rose-500/30 border border-white dark:border-gray-800" [title]="getPackDueCount(pack.id) + ' cartes à réviser'">
+                  {{ getPackDueCount(pack.id) }}
+                </div>
                 <span class="text-base font-black text-gray-900 dark:text-white leading-none">{{ pack.flashcards.length }}</span>
                 <span class="text-[9px] font-bold text-purple-500 dark:text-purple-400 uppercase tracking-wider flex items-center gap-0.5">
                   <span class="material-icons text-[9px]">style</span>{{ 'DASHBOARD.CARDS' | translate }}

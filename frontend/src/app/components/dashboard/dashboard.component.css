@@ -1,4 +1,4 @@
-﻿/* ═══════════════════════════════════════════════════════════════
+/* ═══════════════════════════════════════════════════════════════
    EDUFOCUS DASHBOARD — PREMIUM DESIGN SYSTEM
    Dark: black/charcoal + gold accents
    Light: white + indigo/violet accents
@@ -67,7 +67,10 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 1rem;
+  gap: .5rem;
+}
+@media (min-width: 640px) {
+  .db-header-inner { gap: 1rem; }
 }
 
 /* Logo */
@@ -127,15 +130,19 @@
 .db-header-actions {
   display: flex;
   align-items: center;
-  gap: .5rem;
+  gap: .35rem;
+  flex-shrink: 0;
+}
+@media (min-width: 480px) {
+  .db-header-actions { gap: .5rem; }
 }
 
 .lg-hidden { display: flex; }
 @media (min-width: 1024px) { .lg-hidden { display: none !important; } }
 
 .db-icon-btn {
-  width: 40px; height: 40px;
-  border-radius: 12px;
+  width: 36px; height: 36px;
+  border-radius: 10px;
   border: 1px solid;
   display: flex;
   align-items: center;
@@ -143,6 +150,10 @@
   cursor: pointer;
   transition: var(--transition);
   background: transparent;
+  flex-shrink: 0;
+}
+@media (min-width: 480px) {
+  .db-icon-btn { width: 40px; height: 40px; border-radius: 12px; }
 }
 .db-icon-btn:hover { transform: scale(1.08); }
 
@@ -161,13 +172,17 @@
 
 /* Points badge */
 .db-points-badge {
-  display: flex;
+  display: none;
   align-items: center;
   gap: .4rem;
-  padding: .4rem .875rem;
-  border-radius: 12px;
+  padding: .35rem .6rem;
+  border-radius: 10px;
   border: 1px solid;
   font-weight: 700;
+  flex-shrink: 0;
+}
+@media (min-width: 480px) {
+  .db-points-badge { display: flex; padding: .4rem .875rem; border-radius: 12px; }
 }
 .db-root.dark .db-points-badge {
   background: linear-gradient(135deg, rgba(139,92,246,.15), rgba(167,139,250,.1));
@@ -180,7 +195,8 @@
   color: #6366f1;
 }
 
-.db-points-value { font-size: 1.05rem; }
+.db-points-value { font-size: .9rem; }
+@media (min-width: 640px) { .db-points-value { font-size: 1.05rem; } }
 
 /* User chip */
 .db-user-chip {
@@ -1751,23 +1767,30 @@
   background: rgba(0,0,0,.7);
   backdrop-filter: blur(8px);
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
   z-index: 60;
-  padding: 1rem;
+  padding: .75rem;
   overflow-y: auto;
+}
+@media (min-width: 640px) {
+  .db-modal-overlay { align-items: center; padding: 1rem; }
 }
 
 .db-modal {
-  border-radius: 24px;
+  border-radius: 20px;
   max-width: 480px;
   width: 100%;
   border: 1px solid;
-  max-height: 90vh;
+  max-height: 92vh;
   overflow: hidden;
   display: flex;
   flex-direction: column;
   animation: modal-in .3s cubic-bezier(.34,1.56,.64,1);
+  margin: auto;
+}
+@media (min-width: 640px) {
+  .db-modal { border-radius: 24px; }
 }
 .db-modal-wide { max-width: 640px; }
 
@@ -1791,9 +1814,12 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 1.5rem 1.5rem 1rem;
+  padding: 1rem 1rem .875rem;
   border-bottom: 1px solid;
   flex-shrink: 0;
+}
+@media (min-width: 640px) {
+  .db-modal-header { padding: 1.5rem 1.5rem 1rem; }
 }
 .db-root.dark .db-modal-header { border-color: rgba(255,255,255,.06); }
 .db-root.light .db-modal-header, .db-root.light .db-modal-header { border-color: rgba(99,102,241,.08); }
@@ -1827,13 +1853,18 @@
 .db-root.light .db-modal-close, .db-root.light .db-modal-close { background: #f3f4f6; color: #6b7280; }
 .db-root.light .db-modal-close:hover, .db-root.light .db-modal-close:hover { background: #e5e7eb; color: #111827; }
 
-.db-modal-body { padding: 1.25rem 1.5rem; overflow-y: auto; flex: 1; }
+.db-modal-body { padding: .875rem 1rem; overflow-y: auto; flex: 1; -webkit-overflow-scrolling: touch; }
+@media (min-width: 640px) { .db-modal-body { padding: 1.25rem 1.5rem; } }
 .db-modal-footer {
-  padding: 1rem 1.5rem 1.5rem;
+  padding: .75rem 1rem 1rem;
   display: flex;
-  gap: .75rem;
+  gap: .5rem;
   flex-shrink: 0;
   border-top: 1px solid;
+  flex-wrap: wrap;
+}
+@media (min-width: 640px) {
+  .db-modal-footer { padding: 1rem 1.5rem 1.5rem; gap: .75rem; }
 }
 .db-root.dark .db-modal-footer { border-color: rgba(255,255,255,.06); }
 .db-root.light .db-modal-footer, .db-root.light .db-modal-footer { border-color: rgba(99,102,241,.08); }
@@ -2424,5 +2455,14 @@
   .db-hero-stats { flex-wrap: wrap; justify-content: center; }
   .responsive-modal { max-width: 95vw !important; }
   .lottie-relax-wrapper { width: 150px; height: 150px; }
+  .db-logo-sub { display: none; }
+  .db-logo-text { font-size: 1.3rem; }
+  .db-logo-icon { width: 40px; height: 40px; }
+  .db-settings-grid { grid-template-columns: 1fr !important; }
+  .db-plan-row { flex-direction: column; align-items: flex-start; gap: .5rem; }
+  .db-plan-controls { width: 100%; justify-content: space-between; }
+  .db-slider-val { min-width: 58px; }
+  .db-relax-tips { grid-template-columns: 1fr 1fr; }
+  .db-modal-title { font-size: 1rem; }
 }
 

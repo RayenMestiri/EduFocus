@@ -100,6 +100,13 @@ router.post('/import', async (req, res) => {
         back: f.back || '',
         code: f.code || '',
         difficulty: f.difficulty || null,
+        state: f.state || 'new',
+        repetitions: f.repetitions ?? 0,
+        interval: f.interval ?? 0,
+        easeFactor: f.easeFactor ?? 2.5,
+        dueDate: f.dueDate ? new Date(f.dueDate) : null,
+        lastReviewed: f.lastReviewed ? new Date(f.lastReviewed) : null,
+        lapses: f.lapses ?? 0,
         createdAt: f.createdAt ? new Date(f.createdAt) : new Date()
       }));
 
@@ -191,6 +198,13 @@ router.post('/clone/:id', async (req, res) => {
       back: f.back,
       code: f.code,
       difficulty: null,
+      state: 'new',
+      repetitions: 0,
+      interval: 0,
+      easeFactor: 2.5,
+      dueDate: null,
+      lastReviewed: null,
+      lapses: 0,
       createdAt: new Date()
     }));
 
@@ -247,6 +261,91 @@ router.post('/clone/:id', async (req, res) => {
   }
 });
 
+// @desc    Get aggregated SRS statistics across all user packs
+// @route   GET /api/study-packs/srs-stats
+router.get('/srs-stats', async (req, res) => {
+  try {
+    const packs = await StudyPack.find({ user: req.user._id });
+
+    const now = new Date();
+    const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const endOfToday = new Date(startOfToday.getTime() + 24 * 60 * 60 * 1000 - 1);
+    const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+    const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+
+    let totalFlashcards = 0;
+    let newCount = 0;
+    let learningCount = 0;
+    let reviewCount = 0;
+    let masteredCount = 0;
+    let dueTodayCount = 0;
+    let overdueCount = 0;
+    let totalReviewed = 0; // cards that have been reviewed at least once
+    let totalLapses = 0;
+    let reviewsLast7Days = 0;
+    let reviewsLast30Days = 0;
+
+    for (const pack of packs) {
+      for (const card of (pack.flashcards || [])) {
+        totalFlashcards++;
+
+        const state = card.state || 'new';
+        if (state === 'new') newCount++;
+        else if (state === 'learning') learningCount++;
+        else if (state === 'review') reviewCount++;
+        else if (state === 'mastered') masteredCount++;
+
+        // Due / Overdue
+        if (state !== 'new' && card.dueDate) {
+          const due = new Date(card.dueDate);
+          if (due < startOfToday) {
+            overdueCount++;
+          } else if (due >= startOfToday && due <= endOfToday) {
+            dueTodayCount++;
+          }
+        }
+        if (state === 'new' || state === 'learning') {
+          dueTodayCount++; // new and learning cards are always "due"
+        }
+
+        // Retention tracking
+        if (card.lastReviewed) {
+          totalReviewed++;
+          totalLapses += (card.lapses || 0);
+          const lastReviewed = new Date(card.lastReviewed);
+          if (lastReviewed >= sevenDaysAgo) reviewsLast7Days++;
+          if (lastReviewed >= thirtyDaysAgo) reviewsLast30Days++;
+        }
+      }
+    }
+
+    // Retention rate: (reviewed - lapses) / reviewed * 100 (capped 0-100)
+    const retentionRate = totalReviewed > 0
+      ? Math.max(0, Math.min(100, Math.round(((totalReviewed - totalLapses) / totalReviewed) * 100)))
+      : 0;
+
+    res.json({
+      success: true,
+      data: {
+        totalPacks: packs.length,
+        totalFlashcards,
+        new: newCount,
+        learning: learningCount,
+        review: reviewCount,
+        mastered: masteredCount,
+        dueToday: dueTodayCount,
+        overdue: overdueCount,
+        retentionRate,
+        reviewsLast7Days,
+        reviewsLast30Days,
+        totalReviewed,
+      }
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Erreur lors du calcul des statistiques SRS', error: error.message });
+  }
+});
+
 // ============================================================
 // DYNAMIC /:id ROUTES — come after all static routes
 // ============================================================
@@ -296,7 +395,7 @@ router.put('/:id', async (req, res) => {
       return res.status(404).json({ success: false, message: 'Pack d\'étude non trouvé' });
     }
 
-    const { title, subject, description, progress, streak, isPublic, notes, flashcards, qcm, cheatsheets, exercises } = req.body;
+    const { title, subject, description, progress, streak, isPublic, lastStudied, notes, flashcards, qcm, cheatsheets, exercises } = req.body;
 
     if (title !== undefined) pack.title = title;
     if (subject !== undefined) pack.subject = subject;
@@ -304,6 +403,7 @@ router.put('/:id', async (req, res) => {
     if (progress !== undefined) pack.progress = progress;
     if (streak !== undefined) pack.streak = streak;
     if (isPublic !== undefined) pack.isPublic = isPublic;
+    if (lastStudied !== undefined) pack.lastStudied = lastStudied ? new Date(lastStudied) : null;
 
     // Normalize sub-arrays to strip Mongoose internal fields and ensure clean IDs
     if (notes !== undefined) {
@@ -326,6 +426,13 @@ router.put('/:id', async (req, res) => {
         back: f.back || '',
         code: f.code || '',
         difficulty: f.difficulty || null,
+        state: f.state || 'new',
+        repetitions: f.repetitions ?? 0,
+        interval: f.interval ?? 0,
+        easeFactor: f.easeFactor ?? 2.5,
+        dueDate: f.dueDate ? new Date(f.dueDate) : null,
+        lastReviewed: f.lastReviewed ? new Date(f.lastReviewed) : null,
+        lapses: f.lapses ?? 0,
         createdAt: f.createdAt ? new Date(f.createdAt) : new Date()
       }));
       pack.markModified('flashcards');

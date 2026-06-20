@@ -12,6 +12,7 @@ import { FlashcardsStudyModeComponent } from './components/study-hub/flashcards/
 import { QcmQuizModeComponent } from './components/study-hub/qcm/quiz-mode/qcm-quiz-mode.component';
 import { StudyPackShareComponent } from './components/study-hub/study-pack/share/study-pack-share.component';
 import { AuthGoogleCallbackComponent } from './components/auth-google-callback/auth-google-callback.component';
+import { SrsAnalyticsComponent } from './components/study-hub/srs-analytics/srs-analytics.component';
 import { authGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
@@ -26,9 +27,20 @@ export const routes: Routes = [
   { path: 'study-hub', component: StudyHubDashboardComponent, canActivate: [authGuard] },
   { path: 'study-hub/new', component: StudyPackFormComponent, canActivate: [authGuard] },
   { path: 'study-hub/edit/:id', component: StudyPackFormComponent, canActivate: [authGuard] },
+  { path: 'study-hub/analytics', component: SrsAnalyticsComponent, canActivate: [authGuard] },
   { path: 'study-hub/share/:id', component: StudyPackShareComponent },
-  { path: 'study-hub/:id', component: StudyPackDetailComponent, canActivate: [authGuard] },
+  { 
+    path: 'study-hub/:id', 
+    component: StudyPackDetailComponent, 
+    canActivate: [authGuard],
+    canDeactivate: [(component: StudyPackDetailComponent) => component.canDeactivate ? component.canDeactivate() : true]
+  },
   { path: 'study-hub/:packId/flashcards', component: FlashcardsStudyModeComponent, canActivate: [authGuard] },
-  { path: 'study-hub/:packId/quiz', component: QcmQuizModeComponent, canActivate: [authGuard] },
+  { 
+    path: 'study-hub/:packId/quiz', 
+    component: QcmQuizModeComponent, 
+    canActivate: [authGuard],
+    canDeactivate: [(component: QcmQuizModeComponent) => component.canDeactivate ? component.canDeactivate() : true]
+  },
   { path: '**', redirectTo: '/' }
 ];

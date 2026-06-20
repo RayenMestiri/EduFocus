@@ -45,9 +45,17 @@ Un système de prise de notes structuré conçu pour la révision rapide.
 Le module le plus complexe, structuré autour du concept de "Study Packs" (modules de révision).
 
 - **Seeding & Génération de Contenu** : L'API est capable d'injecter des données pré-construites (ex: packs de révision T-SQL avec quiz, flashcards et exercices) lors de l'initialisation pour fournir un environnement d'apprentissage prêt à l'emploi.
-- **🎴 Moteur de Flashcards** :
+- **🎴 Moteur de Flashcards & Algorithme SRS (Spaced Repetition System)** :
   - **Interface 3D** : Les cartes utilisent la perspective CSS (`transform-style: preserve-3d`) pour une animation de retournement réaliste.
-  - **Suivi de Rétention** : L'utilisateur évalue s'il a retenu l'information (Boutons: "À revoir", "Correct", "Parfait"). Le système enregistre cette donnée pour de futures révisions espacées.
+  - **Algorithme d'Apprentissage SM-2 (SuperMemo)** : Planificateur intelligent basé sur l'algorithme d'Anki pour maximiser la mémorisation à long terme. L'utilisateur note sa rétention à l'aide de 4 choix :
+    - `0 = À revoir (Again)` : Réinitialise l'intervalle à 0, repasse la carte en état `learning` (1 min), diminue la facilité de `0.2` et incrémente le compteur d'oublis (`lapses`).
+    - `1 = Difficile (Hard)` : Réduit la facilité de `0.15` et multiplie l'intervalle par `1.2` en révision.
+    - `2 = Bien (Good)` : Progression classique SM-2 (multiplie l'intervalle par la facilité).
+    - `3 = Facile (Easy)` : Augmente la facilité de `0.15` et applique un bonus d'intervalle de `1.3` supplémentaire.
+  - **Machine à États Récursive** :
+    $$\text{NEW} \rightarrow \text{LEARNING} \rightarrow \text{REVIEW} \rightarrow \text{MASTERED}$$
+    Si l'utilisateur oublie une carte (bouton `0`), elle quitte son état actuel pour retourner en apprentissage court terme (`LEARNING`).
+  - **Critères de Maîtrise (MASTERED)** : Une carte atteint cet état si son intervalle de révision calcule $\ge 21\text{ jours}$ et que son facteur de facilité est $\ge 2.5$.
 - **❓ Système de Quizzes Dynamiques** :
   - Support multi-formats : Choix multiples, Vrai/Faux, saisie libre.
   - **Moteur d'évaluation** : Le backend ou le composant (selon la configuration) évalue les réponses instantanément, affiche des alertes (via SweetAlert2) pour les erreurs fréquentes et fournit des explications détaillées de la bonne réponse.

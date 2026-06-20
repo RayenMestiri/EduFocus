@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════
-   PREMIUM FLASHCARD STUDY MODE — CSS
+   PREMIUM FLASHCARD STUDY MODE — SRS CSS
    ═══════════════════════════════════════════ */
 
 /* 3D Perspective */
@@ -52,25 +52,74 @@
 }
 .fc-container { animation: fcIn 0.4s cubic-bezier(0.22,1,0.36,1) both; }
 
-/* Difficulty buttons */
-@keyframes diffIn {
-  from { opacity: 0; transform: translateY(10px) scale(0.9); }
+/* ═══ SRS 4-BUTTON RATING ANIMATIONS ═══ */
+@keyframes srsIn {
+  from { opacity: 0; transform: translateY(12px) scale(0.92); }
   to   { opacity: 1; transform: translateY(0)    scale(1);   }
 }
-.diff-btn {
-  animation: diffIn 0.35s cubic-bezier(0.34,1.56,0.64,1) both;
+
+.srs-btn {
+  animation: srsIn 0.35s cubic-bezier(0.34,1.56,0.64,1) both;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
-.diff-btn:nth-child(1) { animation-delay: 0ms; }
-.diff-btn:nth-child(2) { animation-delay: 60ms; }
-.diff-btn:nth-child(3) { animation-delay: 120ms; }
-.diff-btn:hover { transform: translateY(-3px) scale(1.03); }
-.diff-btn:active { transform: scale(0.97); }
+.srs-btn:nth-child(1) { animation-delay: 0ms; }
+.srs-btn:nth-child(2) { animation-delay: 50ms; }
+.srs-btn:nth-child(3) { animation-delay: 100ms; }
+.srs-btn:nth-child(4) { animation-delay: 150ms; }
 
-/* Progress fill with gradient */
+.srs-btn:hover { transform: translateY(-3px) scale(1.03); }
+.srs-btn:active { transform: scale(0.97); }
+
+/* "Good" button glow — it's the recommended default */
+.srs-btn-good {
+  position: relative;
+}
+.srs-btn-good::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(99, 102, 241, 0.08));
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+.srs-btn-good:hover::before {
+  opacity: 1;
+}
+
+/* SRS Banner shimmer */
+@keyframes bannerShimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position: 200% center;  }
+}
+.srs-banner {
+  position: relative;
+  overflow: hidden;
+}
+.srs-banner::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(90deg, transparent 30%, rgba(168, 85, 247, 0.04) 50%, transparent 70%);
+  background-size: 200% 100%;
+  animation: bannerShimmer 4s ease-in-out infinite;
+  pointer-events: none;
+}
+
+/* Progress fill — exam mode */
 .fc-progress-fill {
   transition: width 0.6s cubic-bezier(0.34,1.56,0.64,1);
   background: linear-gradient(90deg, #a855f7, #7c3aed, #8b5cf6);
+}
+
+/* Progress fill — normal mode */
+.fc-progress-fill-normal {
+  transition: width 0.6s cubic-bezier(0.34,1.56,0.64,1);
+  background: linear-gradient(90deg, #14b8a6, #06b6d4, #14b8a6);
 }
 
 /* Stat cards */
@@ -98,3 +147,146 @@
   100%  { transform: scale(1) rotate(0deg);    opacity: 1; }
 }
 .fc-finish-icon { animation: fcFinish 0.7s cubic-bezier(0.34,1.56,0.64,1) both; }
+
+/* SRS Rating panel entrance */
+.srs-rating-panel {
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+/* Normal next panel entrance */
+@keyframes normalIn {
+  from { opacity: 0; transform: translateY(10px) scale(0.96); }
+  to   { opacity: 1; transform: translateY(0)    scale(1);   }
+}
+.normal-next-panel {
+  animation: normalIn 0.35s cubic-bezier(0.34,1.56,0.64,1) both;
+}
+.normal-next-btn {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.normal-next-btn:hover { transform: translateY(-2px) scale(1.015); box-shadow: 0 8px 28px rgba(20,184,166,0.25); }
+.normal-next-btn:active { transform: scale(0.98); }
+
+
+/* ═══════════════════════════════════════════
+   PREMIUM MODE SWITCHER TOGGLE
+   ═══════════════════════════════════════════ */
+.mode-switcher-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.mode-switcher-track {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  padding: 4px;
+  border-radius: 14px;
+  background: rgba(0,0,0,0.04);
+  border: 1px solid rgba(0,0,0,0.07);
+  backdrop-filter: blur(8px);
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+:is(.dark) .mode-switcher-track {
+  background: rgba(255,255,255,0.04);
+  border-color: rgba(255,255,255,0.08);
+}
+
+.mode-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 7px 14px;
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.34,1.56,0.64,1);
+  white-space: nowrap;
+  position: relative;
+  z-index: 1;
+}
+
+.mode-btn-label {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.01em;
+}
+
+/* Inactive state */
+.mode-btn-inactive {
+  background: transparent;
+  color: #9ca3af;
+}
+:is(.dark) .mode-btn-inactive {
+  color: #6b7280;
+}
+.mode-btn-inactive:hover {
+  background: rgba(0,0,0,0.04);
+  color: #6b7280;
+}
+:is(.dark) .mode-btn-inactive:hover {
+  background: rgba(255,255,255,0.05);
+  color: #9ca3af;
+}
+
+/* Normal mode active */
+.mode-btn-active-normal {
+  background: linear-gradient(135deg, #14b8a6, #06b6d4);
+  color: #fff;
+  box-shadow: 0 3px 12px rgba(20, 184, 166, 0.35);
+  transform: scale(1.02);
+}
+
+/* Exam mode active */
+.mode-btn-active-exam {
+  background: linear-gradient(135deg, #9333ea, #a855f7, #7c3aed);
+  color: #fff;
+  box-shadow: 0 3px 12px rgba(147, 51, 234, 0.35);
+  transform: scale(1.02);
+}
+
+/* Active button shimmer */
+.mode-btn-active-normal::after,
+.mode-btn-active-exam::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 10px;
+  background: linear-gradient(135deg, rgba(255,255,255,0.2), transparent 60%);
+  pointer-events: none;
+}
+
+/* Mode hint text below switcher */
+.mode-hint {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #14b8a6;
+  padding-right: 2px;
+  animation: fadeInHint 0.3s ease both;
+}
+.mode-hint-exam {
+  color: #a855f7;
+}
+
+@keyframes fadeInHint {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Responsive: hide label on very small screens */
+@media (max-width: 380px) {
+  .mode-btn-label { display: none; }
+  .mode-btn { padding: 7px 10px; }
+}

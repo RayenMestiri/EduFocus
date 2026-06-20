@@ -1,8 +1,9 @@
-import { Component, inject, signal, computed, OnInit } from '@angular/core';
+import { Component, inject, signal, computed, OnInit, OnDestroy, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { OfflineStudyHubService } from '../../../../services/offline/offline-studyhub.service';
+import { SrsEngineService } from '../../../../services/srs-engine.service';
 import { ThemeService } from '../../../../services/theme.service';
 import { StudyPack, Note, Flashcard, QCM, QuizAttempt } from '../../../../models/study-hub.model';
 import { TranslateModule } from '@ngx-translate/core';
@@ -16,8 +17,9 @@ import Swal from 'sweetalert2';
   templateUrl: './study-pack-detail.component.html',
   styleUrl: './study-pack-detail.component.css',
 })
-export class StudyPackDetailComponent implements OnInit {
+export class StudyPackDetailComponent implements OnInit, OnDestroy {
   studyHubService = inject(OfflineStudyHubService);
+  srsEngine = inject(SrsEngineService);
   themeService = inject(ThemeService);
   route = inject(ActivatedRoute);
   router = inject(Router);
@@ -98,10 +100,14 @@ export class StudyPackDetailComponent implements OnInit {
       if (pinB !== pinA) {
         return pinB - pinA; // Pinned first
       }
-      const dateA = a.updatedAt ? new Date(a.updatedAt).getTime() : (a.createdAt ? new Date(a.createdAt).getTime() : 0);
-      const dateB = b.updatedAt ? new Date(b.updatedAt).getTime() : (b.createdAt ? new Date(b.createdAt).getTime() : 0);
-      return dateB - dateA;
+      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(); // Newest first
     });
+  });
+
+  dueCount = computed(() => {
+    const p = this.pack();
+    if (!p || !p.flashcards) return 0;
+    return this.srsEngine.getDueCount(p.flashcards);
   });
 
   activeTab = signal<'notes' | 'flashcards' | 'quiz' | 'cheatsheets' | 'exercises'>('notes');
@@ -285,6 +291,101 @@ export class StudyPackDetailComponent implements OnInit {
   showShareModal = signal(false);
   String = String;
 
+  // ── Lifecycle ─────────────────────────────────────────────────────────────
+  ngOnDestroy() {
+    // Nothing to teardown currently; required by OnDestroy interface
+  }
+
+  /** Returns true if any form modal is open with unsaved content */
+  private get _hasUnsavedFormData(): boolean {
+    // Check all open modals for typed content
+    if (this.showNoteModal() && (this.noteForm.title.trim() || this.noteForm.content.trim())) return true;
+    if (this.showFlashcardModal() && (this.flashcardForm.front.trim() || this.flashcardForm.back.trim())) return true;
+    if (this.showQuizModal() && this.quizForm.question.trim()) return true;
+    if (this.showCheatSheetModal() && (this.cheatSheetForm.title.trim() || this.cheatSheetForm.itemsString.trim())) return true;
+    if (this.showExerciseModal() && (this.exerciseForm.title.trim() || this.exerciseForm.task.trim())) return true;
+    // Import modals
+    if (this.showNoteImportModal() && this.noteImportData.trim()) return true;
+    if (this.showFlashcardImportModal() && this.flashcardImportData.trim()) return true;
+    if (this.showQuizImportModal() && this.quizImportData.trim()) return true;
+    if (this.showCheatSheetImportModal() && this.cheatSheetImportData.trim()) return true;
+    if (this.showExerciseImportModal() && this.exerciseImportData.trim()) return true;
+    return false;
+  }
+
+  /** Angular Router calls this before navigating away from this route */
+  async canDeactivate(): Promise<boolean> {
+    if (!this._hasUnsavedFormData) return true;
+
+    const isDark = this.themeService.isDark();
+    const result = await Swal.fire({
+      title: '⚠️ Données non sauvegardées',
+      html: `
+        <div style="text-align:center;padding:4px 0">
+          <p style="font-size:15px;font-weight:600;margin-bottom:6px">Vous avez des modifications non sauvegardées.</p>
+          <p style="font-size:13px;color:#6b7280;margin:0">Si vous quittez maintenant, vos changements seront perdus.</p>
+        </div>
+      `,
+      icon: 'warning',
+      background: isDark ? '#111827' : '#ffffff',
+      color: isDark ? '#f9fafb' : '#111827',
+      showCancelButton: true,
+      confirmButtonText: '🚪 Quitter sans sauvegarder',
+      cancelButtonText: '↩ Rester et sauvegarder',
+      confirmButtonColor: '#ef4444',
+      cancelButtonColor: '#6366f1',
+      customClass: { popup: 'study-hub-swal-modal font-sans' }
+    });
+
+    return result.isConfirmed;
+  }
+
+  /** Native browser warning on tab close / reload */
+  @HostListener('window:beforeunload', ['$event'])
+  onBeforeUnload(event: BeforeUnloadEvent): void {
+    if (this._hasUnsavedFormData) {
+      event.preventDefault();
+      event.returnValue = '';
+    }
+  }
+
+  /** Shared SweetAlert helper — used by all import modal close guards */
+  private async _confirmLeaveModal(): Promise<boolean> {
+    const isDark = this.themeService.isDark();
+    const result = await Swal.fire({
+      title: '⚠️ Abandonner les modifications ?',
+      html: `<p style="font-size:14px;color:#6b7280">Vous avez du contenu non importé.<br>Voulez-vous quitter sans importer ?</p>`,
+      icon: 'warning',
+      background: isDark ? '#111827' : '#ffffff',
+      color: isDark ? '#f9fafb' : '#111827',
+      showCancelButton: true,
+      confirmButtonText: '🗑 Oui, fermer',
+      cancelButtonText: '↩ Rester',
+      confirmButtonColor: '#ef4444',
+      cancelButtonColor: '#6366f1',
+      customClass: { popup: 'study-hub-swal-modal font-sans' }
+    });
+    return result.isConfirmed;
+  }
+
+  async closeQuizImportModal() {
+    if (!this.quizImportData.trim()) { this.showQuizImportModal.set(false); return; }
+    const r = await this._confirmLeaveModal();
+    if (r) { this.quizImportData = ''; this.showQuizImportModal.set(false); }
+  }
+
+  async closeCheatSheetImportModal() {
+    if (!this.cheatSheetImportData.trim()) { this.showCheatSheetImportModal.set(false); return; }
+    const r = await this._confirmLeaveModal();
+    if (r) { this.cheatSheetImportData = ''; this.showCheatSheetImportModal.set(false); }
+  }
+
+  async closeExerciseImportModal() {
+    if (!this.exerciseImportData.trim()) { this.showExerciseImportModal.set(false); return; }
+    const r = await this._confirmLeaveModal();
+    if (r) { this.exerciseImportData = ''; this.showExerciseImportModal.set(false); }
+  }
+
   toggleShare() {
     const currentPack = this.pack();
     if (!currentPack) return;
@@ -293,6 +394,7 @@ export class StudyPackDetailComponent implements OnInit {
       this.showToast(newIsPublic ? 'Le pack est désormais public !' : 'Le pack est désormais privé !', 'success');
     });
   }
+
 
   getShareLink(): string {
     const currentPack = this.pack();
@@ -689,6 +791,12 @@ export class StudyPackDetailComponent implements OnInit {
     this.showNoteImportModal.set(true);
   }
 
+  async closeNoteImportModal() {
+    if (!this.noteImportData.trim()) { this.showNoteImportModal.set(false); return; }
+    const r = await this._confirmLeaveModal();
+    if (r) { this.noteImportData = ''; this.showNoteImportModal.set(false); }
+  }
+
   importNotesFromJson() {
     const currentPack = this.pack();
     if (!currentPack) return;
@@ -767,6 +875,11 @@ export class StudyPackDetailComponent implements OnInit {
         front: this.flashcardForm.front,
         back: this.flashcardForm.back,
         code: this.flashcardForm.code ? this.flashcardForm.code.trim() : undefined,
+        state: 'new',
+        repetitions: 0,
+        interval: 0,
+        easeFactor: 2.5,
+        lapses: 0,
         createdAt: new Date()
       };
       updatedCards.push(newCard);
@@ -794,6 +907,13 @@ export class StudyPackDetailComponent implements OnInit {
     this.showFlashcardImportModal.set(true);
   }
 
+  async closeFlashcardImportModal() {
+    if (!this.flashcardImportData.trim()) { this.showFlashcardImportModal.set(false); return; }
+    const r = await this._confirmLeaveModal();
+    if (r) { this.flashcardImportData = ''; this.showFlashcardImportModal.set(false); }
+  }
+
+
   importFlashcardsFromJson() {
     const currentPack = this.pack();
     if (!currentPack) return;
@@ -807,6 +927,11 @@ export class StudyPackDetailComponent implements OnInit {
           back: c.back || 'Answer',
           code: c.code || undefined,
           difficulty: c.difficulty,
+          state: c.state || 'new',
+          repetitions: c.repetitions ?? 0,
+          interval: c.interval ?? 0,
+          easeFactor: c.easeFactor ?? 2.5,
+          lapses: c.lapses ?? 0,
           createdAt: new Date()
         }));
 

@@ -1,3 +1,7 @@
+// ─── SRS Types ───────────────────────────────────────────────────────────────
+export type CardState = 'new' | 'learning' | 'review' | 'mastered';
+export type SrsRating = 0 | 1 | 2 | 3; // 0=Again | 1=Hard | 2=Good | 3=Easy
+
 export interface StudyPack {
   id: string;
   title: string;
@@ -31,9 +35,15 @@ export interface Flashcard {
   front: string;
   back: string;
   code?: string; // Optional code block for the back of the card!
-  difficulty?: 'easy' | 'medium' | 'hard';
-  nextReviewDate?: Date; // For spaced repetition
-  lastReviewed?: Date;
+  difficulty?: 'easy' | 'medium' | 'hard'; // Legacy field — kept for compatibility
+  // ── SRS / SM-2 metadata ──────────────────────────────────────────────────
+  state: CardState;         // new | learning | review | mastered
+  repetitions: number;      // number of successful reviews
+  interval: number;         // current interval in days
+  easeFactor: number;       // SM-2 ease factor (default 2.5, min 1.3)
+  dueDate?: Date;           // next review date
+  lastReviewed?: Date;      // last time the card was rated
+  lapses: number;           // times rated 'Again' from REVIEW state
   createdAt: Date;
 }
 

@@ -1258,7 +1258,7 @@
       <h3 class="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
         <span class="material-icons text-blue-500">cloud_upload</span> {{ 'MODALS.NOTE_IMPORT_TITLE' | translate }}
       </h3>
-      <button (click)="showNoteImportModal.set(false)" class="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300">
+      <button (click)="closeNoteImportModal()" class="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300">
         <span class="material-icons">close</span>
       </button>
     </div>
@@ -1297,7 +1297,7 @@
     </div>
     
     <div class="px-6 py-4 border-t border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/30 flex justify-end gap-3">
-      <button (click)="showNoteImportModal.set(false)" class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl transition-colors">{{ 'MODALS.CANCEL' | translate }}</button>
+      <button (click)="closeNoteImportModal()" class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl transition-colors">{{ 'MODALS.CANCEL' | translate }}</button>
       <button (click)="importNotesFromJson()" [disabled]="!noteImportData.trim()" class="px-4 py-2 text-sm font-bold text-white bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-xl transition-colors shadow-md">{{ 'MODALS.NOTE_IMPORT_BTN' | translate }}</button>
     </div>
   </div>
@@ -1310,7 +1310,7 @@
       <h3 class="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
         <span class="material-icons text-purple-500">cloud_upload</span> {{ 'MODALS.FLASH_IMPORT_TITLE' | translate }}
       </h3>
-      <button (click)="showFlashcardImportModal.set(false)" class="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300">
+      <button (click)="closeFlashcardImportModal()" class="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300">
         <span class="material-icons">close</span>
       </button>
     </div>
@@ -1347,7 +1347,7 @@
     </div>
     
     <div class="px-6 py-4 border-t border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/30 flex justify-end gap-3">
-      <button (click)="showFlashcardImportModal.set(false)" class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl transition-colors">{{ 'MODALS.CANCEL' | translate }}</button>
+      <button (click)="closeFlashcardImportModal()" class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl transition-colors">{{ 'MODALS.CANCEL' | translate }}</button>
       <button (click)="importFlashcardsFromJson()" [disabled]="!flashcardImportData.trim()" class="px-4 py-2 text-sm font-bold text-white bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-xl transition-colors shadow-md">{{ 'MODALS.FLASH_IMPORT_BTN' | translate }}</button>
     </div>
   </div>
@@ -1360,7 +1360,7 @@
       <h3 class="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
         <span class="material-icons text-emerald-500">cloud_upload</span> {{ 'MODALS.QCM_IMPORT_TITLE' | translate }}
       </h3>
-      <button (click)="showQuizImportModal.set(false)" class="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300">
+      <button (click)="closeQuizImportModal()" class="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300">
         <span class="material-icons">close</span>
       </button>
     </div>
@@ -1408,7 +1408,7 @@
     </div>
     
     <div class="px-6 py-4 border-t border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/30 flex justify-end gap-3">
-      <button (click)="showQuizImportModal.set(false)" class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl transition-colors">{{ 'MODALS.CANCEL' | translate }}</button>
+      <button (click)="closeQuizImportModal()" class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl transition-colors">{{ 'MODALS.CANCEL' | translate }}</button>
       <button (click)="importQuizzesFromJson()" [disabled]="!quizImportData.trim()" class="px-4 py-2 text-sm font-bold text-white bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-xl transition-colors shadow-md">{{ 'MODALS.QCM_IMPORT_BTN' | translate }}</button>
     </div>
   </div>
@@ -1421,7 +1421,7 @@
       <h3 class="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
         <span class="material-icons text-indigo-500">cloud_upload</span> {{ 'MODALS.CS_IMPORT_TITLE' | translate }}
       </h3>
-      <button (click)="showCheatSheetImportModal.set(false)" class="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300">
+      <button (click)="closeCheatSheetImportModal()" class="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300">
         <span class="material-icons">close</span>
       </button>
     </div>
@@ -1462,7 +1462,7 @@
     </div>
     
     <div class="px-6 py-4 border-t border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/30 flex justify-end gap-3">
-      <button (click)="showCheatSheetImportModal.set(false)" class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl transition-colors">{{ 'MODALS.CANCEL' | translate }}</button>
+      <button (click)="closeCheatSheetImportModal()" class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl transition-colors">{{ 'MODALS.CANCEL' | translate }}</button>
       <button (click)="importCheatsheetsFromJson()" [disabled]="!cheatSheetImportData.trim()" class="px-4 py-2 text-sm font-bold text-white bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-xl transition-colors shadow-md">{{ 'MODALS.CS_IMPORT_BTN' | translate }}</button>
     </div>
   </div>
@@ -1475,7 +1475,7 @@
       <h3 class="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
         <span class="material-icons text-emerald-500">cloud_upload</span> {{ 'MODALS.EX_IMPORT_TITLE' | translate }}
       </h3>
-      <button (click)="showExerciseImportModal.set(false)" class="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300">
+      <button (click)="closeExerciseImportModal()" class="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300">
         <span class="material-icons">close</span>
       </button>
     </div>
@@ -1515,7 +1515,7 @@
     </div>
     
     <div class="px-6 py-4 border-t border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/30 flex justify-end gap-3">
-      <button (click)="showExerciseImportModal.set(false)" class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl transition-colors">{{ 'MODALS.CANCEL' | translate }}</button>
+      <button (click)="closeExerciseImportModal()" class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl transition-colors">{{ 'MODALS.CANCEL' | translate }}</button>
       <button (click)="importExercisesFromJson()" [disabled]="!exerciseImportData.trim()" class="px-4 py-2 text-sm font-bold text-white bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-xl transition-colors shadow-md">{{ 'MODALS.EX_IMPORT_BTN' | translate }}</button>
     </div>
   </div>

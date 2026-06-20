@@ -16,6 +16,14 @@ const FlashcardSubSchema = new mongoose.Schema({
   back: { type: String, required: true },
   code: { type: String },
   difficulty: { type: String, enum: ['easy', 'medium', 'hard', null], default: null },
+  // ── SRS / SM-2 metadata ──────────────────────────────────────────────────
+  state: { type: String, enum: ['new', 'learning', 'review', 'mastered'], default: 'new' },
+  repetitions: { type: Number, default: 0 },
+  interval: { type: Number, default: 0 },
+  easeFactor: { type: Number, default: 2.5 },
+  dueDate: { type: Date, default: null },
+  lastReviewed: { type: Date, default: null },
+  lapses: { type: Number, default: 0 },
   createdAt: { type: Date, default: Date.now }
 }, { _id: false, id: false });
 
@@ -88,6 +96,10 @@ const StudyPackSchema = new mongoose.Schema({
   isPublic: {
     type: Boolean,
     default: false
+  },
+  lastStudied: {
+    type: Date,
+    default: null
   },
   notes: [NoteSubSchema],
   flashcards: [FlashcardSubSchema],

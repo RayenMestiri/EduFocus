@@ -1,4 +1,4 @@
-﻿import { Component, OnInit, signal, computed, effect } from '@angular/core';
+import { Component, OnInit, signal, computed, effect, untracked } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -213,11 +213,11 @@ export class DashboardComponent implements OnInit {
     // React to language change to update AI welcome message if it hasn't been replaced by a smart analysis yet
     effect(() => {
       const lang = this.languageService.currentLanguage();
-      const currentContent = this.aiMessages()[0]?.content;
+      const currentContent = untracked(() => this.aiMessages()[0]?.content);
       if (!currentContent || currentContent.includes('AI Study Coach') || currentContent.includes('AI Coach')) {
-        this.initWelcomeMessage();
+        untracked(() => this.initWelcomeMessage());
       }
-    });
+    }, { allowSignalWrites: true });
   }
 
   currentUser = computed(() => this.authService.currentUser());

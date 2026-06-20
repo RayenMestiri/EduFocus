@@ -347,10 +347,10 @@
   </div>
 
   <!-- ══ FINISHED STATE ══ -->
-  <div class="w-full max-w-2xl flex-1 flex flex-col items-center justify-center text-center px-6 py-16 animate-[cardIn_0.5s_ease_both]" *ngIf="isFinished()">
+  <div class="w-full max-w-3xl flex-1 flex flex-col items-center px-4 sm:px-6 py-10 animate-[cardIn_0.5s_ease_both]" *ngIf="isFinished()">
 
     <!-- Score ring -->
-    <div class="relative w-36 h-36 mb-8">
+    <div class="relative w-36 h-36 mb-6">
       <svg class="w-full h-full -rotate-90" viewBox="0 0 100 100">
         <circle cx="50" cy="50" r="40" fill="none" stroke-width="8" class="stroke-gray-100 dark:stroke-gray-800"/>
         <circle cx="50" cy="50" r="40" fill="none" stroke-width="8" stroke-linecap="round"
@@ -365,10 +365,10 @@
     </div>
 
     <div class="text-4xl mb-3">{{ Math.round((score() / (filteredQcms().length || pack?.qcm?.length || 1)) * 100) >= 70 ? '🏆' : Math.round((score() / (filteredQcms().length || pack?.qcm?.length || 1)) * 100) >= 50 ? '⭐' : '💪' }}</div>
-    <h2 class="text-3xl font-black text-gray-900 dark:text-white mb-3">{{ 'QCM.QUIZ_DONE' | translate }}</h2>
-    <p class="text-gray-500 dark:text-gray-400 mb-10 max-w-sm leading-relaxed">{{ 'QCM.QUIZ_DONE_MSG' | translate:{score: (Math.round((score() / (filteredQcms().length || pack?.qcm?.length || 1)) * 100))} }}</p>
+    <h2 class="text-3xl font-black text-gray-900 dark:text-white mb-2 text-center">{{ 'QCM.QUIZ_DONE' | translate }}</h2>
+    <p class="text-gray-500 dark:text-gray-400 mb-6 text-center max-w-sm leading-relaxed">{{ 'QCM.QUIZ_DONE_MSG' | translate:{score: (Math.round((score() / (filteredQcms().length || pack?.qcm?.length || 1)) * 100))} }}</p>
 
-    <div class="flex gap-4">
+    <div class="flex gap-4 mb-10">
       <button (click)="restart()"
         class="px-6 py-3 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-700 rounded-2xl hover:bg-gray-50 dark:hover:bg-gray-800 transition-all font-bold shadow-sm hover:shadow-md">
         {{ 'QCM.RESTART' | translate }}
@@ -378,6 +378,78 @@
         {{ 'QCM.BACK_TO_PACK' | translate }}
       </a>
     </div>
+
+    <!-- ── Answer History Review ── -->
+    <div class="w-full">
+      <div class="flex items-center gap-3 mb-4">
+        <div class="flex-1 h-px bg-gray-200 dark:bg-gray-800"></div>
+        <span class="text-xs font-black uppercase tracking-widest text-gray-400 dark:text-gray-600 flex items-center gap-1.5">
+          <span class="material-icons text-sm">history</span>
+          Historique des réponses
+        </span>
+        <div class="flex-1 h-px bg-gray-200 dark:bg-gray-800"></div>
+      </div>
+
+      <div class="space-y-3">
+        @for (q of (pack?.qcm || []); track q.id; let i = $index) {
+          @let state = userAnswers()[q.id];
+          <div class="rounded-2xl border-2 overflow-hidden transition-all"
+            [ngClass]="{
+              'border-emerald-400/60 bg-emerald-50/60 dark:bg-emerald-950/20': state?.hasAnswered && state?.isCorrect,
+              'border-rose-400/60 bg-rose-50/60 dark:bg-rose-950/20': state?.hasAnswered && !state?.isCorrect,
+              'border-gray-200/70 dark:border-gray-700/50 bg-white/60 dark:bg-gray-900/40': !state?.hasAnswered
+            }">
+            <div class="p-4 sm:p-5">
+              <div class="flex items-start justify-between gap-3 mb-3">
+                <div class="flex items-center gap-2 flex-wrap">
+                  <span class="flex-shrink-0 w-6 h-6 rounded-lg text-[10px] font-black flex items-center justify-center"
+                    [ngClass]="{
+                      'bg-emerald-500 text-white': state?.hasAnswered && state?.isCorrect,
+                      'bg-rose-500 text-white': state?.hasAnswered && !state?.isCorrect,
+                      'bg-gray-200 dark:bg-gray-700 text-gray-500': !state?.hasAnswered
+                    }">
+                    {{ state?.hasAnswered ? (state?.isCorrect ? '✓' : '✗') : '?' }}
+                  </span>
+                  <span class="text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-lg border"
+                    [ngClass]="{
+                      'bg-emerald-100 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400 border-emerald-200/60': state?.hasAnswered && state?.isCorrect,
+                      'bg-rose-100 dark:bg-rose-900/40 text-rose-600 dark:text-rose-400 border-rose-200/60': state?.hasAnswered && !state?.isCorrect,
+                      'bg-gray-100 dark:bg-gray-800 text-gray-500 border-gray-200 dark:border-gray-700': !state?.hasAnswered
+                    }">
+                    {{ state?.hasAnswered ? (state?.isCorrect ? 'Correct' : 'Incorrect') : 'Non répondu' }}
+                  </span>
+                  <span *ngIf="q.topic" class="text-[10px] font-semibold text-gray-400 dark:text-gray-500 px-1.5 py-0.5 bg-gray-100 dark:bg-gray-800 rounded-lg">#{{ q.topic }}</span>
+                </div>
+                <span class="text-[10px] font-bold text-gray-400 dark:text-gray-500 flex-shrink-0">Q{{ i + 1 }}</span>
+              </div>
+
+              <p class="text-sm font-semibold text-gray-800 dark:text-gray-200 mb-3 leading-relaxed" [innerHTML]="q.question"></p>
+
+              <div *ngIf="state?.hasAnswered" class="flex flex-col sm:flex-row gap-2 text-xs">
+                <div class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl"
+                  [ngClass]="state?.isCorrect ? 'bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300' : 'bg-rose-100 dark:bg-rose-900/40 text-rose-700 dark:text-rose-300'">
+                  <span class="material-icons text-sm">{{ state?.isCorrect ? 'check_circle' : 'cancel' }}</span>
+                  <span class="font-semibold">Votre réponse :</span>
+                  <span class="font-black">{{ q.type === 'multiple-choice' && q.options ? (q.options[+state!.selected] || state?.selected) : state?.selected }}</span>
+                </div>
+                <div *ngIf="!state?.isCorrect" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300">
+                  <span class="material-icons text-sm">lightbulb</span>
+                  <span class="font-semibold">Bonne réponse :</span>
+                  <span class="font-black">{{ q.type === 'multiple-choice' && q.options ? (q.options[+q.correctAnswer] || q.correctAnswer) : q.correctAnswer }}</span>
+                </div>
+              </div>
+
+              <div *ngIf="!state?.hasAnswered" class="text-xs text-gray-400 dark:text-gray-500 italic">
+                Vous n'avez pas répondu à cette question
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+
   </div>
+
+
 
 </div>

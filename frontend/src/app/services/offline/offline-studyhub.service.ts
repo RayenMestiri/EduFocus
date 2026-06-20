@@ -50,16 +50,47 @@ export class OfflineStudyHubService {
     return {
       ...raw,
       id: raw._id || raw.id,
-      notes: (raw.notes || []).map((n: any) => ({ ...n, id: n.id || n._id })),
-      flashcards: (raw.flashcards || []).map((f: any) => ({ ...f, id: f.id || f._id })),
-      qcm: (raw.qcm || []).map((q: any) => ({ ...q, id: q.id || q._id })),
-      cheatsheets: (raw.cheatsheets || []).map((cs: any) => ({ ...cs, id: cs.id || cs._id })),
-      exercises: (raw.exercises || []).map((ex: any) => ({ ...ex, id: ex.id || ex._id })),
+      lastStudied: raw.lastStudied ? new Date(raw.lastStudied) : undefined,
+      createdAt: raw.createdAt ? new Date(raw.createdAt) : new Date(),
+      updatedAt: raw.updatedAt ? new Date(raw.updatedAt) : new Date(),
+      notes: (raw.notes || []).map((n: any) => ({
+        ...n,
+        id: n.id || n._id,
+        createdAt: n.createdAt ? new Date(n.createdAt) : new Date(),
+        updatedAt: n.updatedAt ? new Date(n.updatedAt) : new Date(),
+      })),
+      flashcards: (raw.flashcards || []).map((f: any) => ({
+        ...f,
+        id: f.id || f._id,
+        state: f.state || 'new',
+        repetitions: f.repetitions ?? 0,
+        interval: f.interval ?? 0,
+        easeFactor: f.easeFactor ?? 2.5,
+        dueDate: f.dueDate ? new Date(f.dueDate) : undefined,
+        lastReviewed: f.lastReviewed ? new Date(f.lastReviewed) : undefined,
+        lapses: f.lapses ?? 0,
+        createdAt: f.createdAt ? new Date(f.createdAt) : new Date(),
+      })),
+      qcm: (raw.qcm || []).map((q: any) => ({
+        ...q,
+        id: q.id || q._id,
+        createdAt: q.createdAt ? new Date(q.createdAt) : new Date(),
+      })),
+      cheatsheets: (raw.cheatsheets || []).map((cs: any) => ({
+        ...cs,
+        id: cs.id || cs._id,
+        createdAt: cs.createdAt ? new Date(cs.createdAt) : new Date(),
+      })),
+      exercises: (raw.exercises || []).map((ex: any) => ({
+        ...ex,
+        id: ex.id || ex._id,
+        createdAt: ex.createdAt ? new Date(ex.createdAt) : new Date(),
+      })),
     };
   }
 
   private cleanForBackend(obj: any): any {
-    if (obj instanceof Date) return obj;
+    if (obj instanceof Date) return obj.toISOString(); // Serialize Dates as ISO strings for clean JSON
     if (Array.isArray(obj)) return obj.map(item => this.cleanForBackend(item));
     if (obj && typeof obj === 'object') {
       const clean: any = {};
@@ -100,7 +131,8 @@ export class OfflineStudyHubService {
 
   private async loadFromCache(): Promise<void> {
     const cached = await this.db.getAll<StudyPack>('studyPacks');
-    this.studyPacksSignal.set(cached);
+    const mapped = cached.map(p => this.mapPack(p));
+    this.studyPacksSignal.set(mapped);
     this.isLoading.set(false);
   }
 
@@ -115,7 +147,8 @@ export class OfflineStudyHubService {
     const inMemory = this.getPackById(id);
     if (inMemory) return inMemory;
     // Then check IndexedDB
-    return this.db.getById<StudyPack>('studyPacks', id);
+    const raw = await this.db.getById<StudyPack>('studyPacks', id);
+    return raw ? this.mapPack(raw) : undefined;
   }
 
   public addPack(pack: Omit<StudyPack, 'id' | 'createdAt' | 'updatedAt'>, callback?: () => void): void {
