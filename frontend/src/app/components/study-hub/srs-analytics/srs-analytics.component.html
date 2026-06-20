@@ -1,135 +1,165 @@
-<div class="min-h-screen bg-gradient-to-br from-slate-50 via-indigo-50/30 to-purple-50/20 dark:from-gray-950 dark:via-indigo-950/20 dark:to-gray-900 transition-colors duration-300">
+<!-- ══════════════════════════════════════════════════════════
+     SRS Analytics — Ultra Premium Dashboard v3.0
+     ══════════════════════════════════════════════════════════ -->
+<div class="srs-page" [class.dark]="themeService.isDark()">
 
   <!-- ══ Sticky Top Nav ══ -->
-  <header class="sticky top-0 z-40 bg-white/75 dark:bg-gray-950/85 backdrop-blur-2xl border-b border-white/30 dark:border-gray-800/50 shadow-sm">
-    <div class="max-w-[1800px] w-[98%] lg:w-[94%] mx-auto px-4 py-3 flex items-center justify-between">
+  <nav class="srs-nav">
+    <div class="srs-nav-inner">
+
+      <!-- Brand -->
       <div class="flex items-center gap-3">
-        <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-500 via-purple-500 to-fuchsia-500 flex items-center justify-center shadow-lg shadow-indigo-400/30">
-          <span class="material-icons text-white text-lg">analytics</span>
+        <div class="srs-logo-icon">
+          <span class="material-icons text-white" style="font-size:18px;position:relative;z-index:1">analytics</span>
         </div>
-        <div>
-          <span class="font-extrabold text-lg bg-gradient-to-r from-indigo-600 via-purple-600 to-fuchsia-600 dark:from-indigo-400 dark:to-purple-400 bg-clip-text text-transparent">SRS Analytiques</span>
-          <span class="ml-2 px-1.5 py-0.5 rounded-md bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 text-[10px] font-black uppercase tracking-widest border border-indigo-100 dark:border-indigo-900/50">Tableau de bord</span>
+        <div class="flex items-center gap-2">
+          <span class="srs-title-text">SRS Analytiques</span>
+          <span class="srs-badge-pill">Dashboard</span>
         </div>
       </div>
+
+      <!-- Actions -->
       <div class="flex items-center gap-2">
-        <a routerLink="/study-hub" class="px-3 py-1.5 rounded-xl bg-gray-50/80 hover:bg-white dark:bg-gray-800/60 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-300 border border-gray-200/70 dark:border-gray-700/70 text-xs font-semibold flex items-center gap-1.5 transition-all">
-          <span class="material-icons text-sm">arrow_back</span><span class="hidden sm:inline">Study Hub</span>
+        <a routerLink="/study-hub" class="srs-back-btn">
+          <span class="material-icons" style="font-size:16px">arrow_back_ios</span>
+          <span class="hidden sm:inline">Study Hub</span>
         </a>
-        <span class="h-5 w-px bg-gray-200 dark:bg-gray-700 mx-1"></span>
+        <div style="width:1px;height:20px;background:rgba(0,0,0,.1)" class="dark:opacity-20"></div>
         <app-language-switcher></app-language-switcher>
-        <button (click)="themeService.toggleTheme()" class="p-2 rounded-xl bg-gray-50/80 hover:bg-white dark:bg-gray-800/60 dark:hover:bg-gray-800 border border-gray-200/70 dark:border-gray-700/70 text-gray-500 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-all">
-          <span class="material-icons text-sm">{{ themeService.isDark() ? 'light_mode' : 'dark_mode' }}</span>
+        <button (click)="themeService.toggleTheme()" class="srs-theme-btn" [title]="themeService.isDark() ? 'Mode clair' : 'Mode sombre'">
+          <span class="material-icons" style="font-size:18px">{{ themeService.isDark() ? 'light_mode' : 'dark_mode' }}</span>
         </button>
       </div>
+
     </div>
-  </header>
+  </nav>
 
   <!-- ══ Main Content ══ -->
-  <div class="max-w-[1800px] w-[98%] lg:w-[94%] mx-auto p-4 sm:p-6 md:p-8">
+  <main class="srs-main">
 
-    <!-- ── Loading State ── -->
-    <div *ngIf="isLoading()" class="flex flex-col items-center justify-center py-32 gap-5">
-      <div class="relative w-16 h-16">
-        <div class="absolute inset-0 rounded-full border-4 border-indigo-100 dark:border-indigo-900/40"></div>
-        <div class="absolute inset-0 rounded-full border-4 border-t-indigo-600 dark:border-t-indigo-400 animate-spin"></div>
-      </div>
-      <p class="text-gray-600 dark:text-gray-300 font-bold text-sm">Calcul des statistiques SRS…</p>
+    <!-- ── Loading ── -->
+    <div *ngIf="isLoading()" class="flex flex-col items-center justify-center" style="min-height:60vh;gap:18px">
+      <div class="srs-loader-ring"></div>
+      <p style="font-size:13px;font-weight:700;color:#64748b">Calcul des statistiques SRS…</p>
     </div>
 
     <!-- ── Empty State ── -->
     <div *ngIf="!isLoading() && computedStats().totalFlashcards === 0"
-      class="flex flex-col items-center justify-center py-28 gap-5 text-center">
-      <div class="w-24 h-24 rounded-3xl bg-gradient-to-br from-indigo-100 to-purple-100 dark:from-indigo-900/40 dark:to-purple-900/30 flex items-center justify-center shadow-xl float-icon">
-        <span class="material-icons text-4xl text-indigo-500">psychology</span>
+         class="flex flex-col items-center justify-center text-center"
+         style="min-height:60vh;gap:20px">
+      <div class="empty-icon-wrap">
+        <span class="material-icons" style="font-size:40px;color:#8b5cf6">psychology</span>
       </div>
-      <h3 class="text-2xl font-black text-gray-900 dark:text-white">Pas encore de flashcards</h3>
-      <p class="text-gray-500 dark:text-gray-400 max-w-sm text-sm leading-relaxed">Créez des flashcards dans vos packs d'étude pour commencer à analyser vos progrès et suivre votre rétention.</p>
+      <div>
+        <h2 style="font-size:22px;font-weight:900;color:#0f172a;margin:0 0 8px" class="dark:text-white">Pas encore de flashcards</h2>
+        <p style="font-size:13px;color:#64748b;max-width:320px;line-height:1.6">
+          Créez des flashcards dans vos packs d'étude pour commencer à analyser vos progrès.
+        </p>
+      </div>
       <a routerLink="/study-hub"
-        class="px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-bold rounded-2xl shadow-lg transition-all hover:scale-105 hover:shadow-indigo-400/30">
+         class="cta-review"
+         style="padding:12px 24px;font-size:13px;border-radius:14px">
+        <span class="material-icons" style="font-size:16px">rocket_launch</span>
         Aller au Study Hub
       </a>
     </div>
 
-    <!-- ══ Dashboard Content ══ -->
-    <div *ngIf="!isLoading() && computedStats().totalFlashcards > 0">
+    <!-- ══ Dashboard ══ -->
+    <ng-container *ngIf="!isLoading() && computedStats().totalFlashcards > 0">
 
-      <!-- ── Page Title ── -->
-      <div class="mb-8">
-        <p class="section-eyebrow text-indigo-500 dark:text-indigo-400 mb-1">Vue d'ensemble</p>
-        <h1 class="text-2xl sm:text-3xl font-black text-gray-900 dark:text-white">Vos performances SRS</h1>
-        <p class="text-gray-500 dark:text-gray-400 text-sm mt-1">
-          {{ computedStats().totalFlashcards }} flashcards dans {{ computedStats().totalPacks }} pack{{ computedStats().totalPacks > 1 ? 's' : '' }} · Mis à jour en temps réel
+      <!-- ── Page Headline ── -->
+      <div class="srs-headline">
+        <div class="srs-eyebrow">Vue d'ensemble</div>
+        <h1 class="srs-h1">Vos performances SRS</h1>
+        <p class="srs-subtitle">
+          <strong class="font-mono">{{ computedStats().totalFlashcards }}</strong> flashcards ·
+          <strong class="font-mono">{{ computedStats().totalPacks }}</strong> pack{{ computedStats().totalPacks > 1 ? 's' : '' }} ·
+          <span style="color:#10b981;font-weight:600">● Mis à jour en temps réel</span>
         </p>
       </div>
 
-      <!-- ══ ROW 1 : KPI Hero Cards ══ -->
-      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+      <!-- ══ ROW 1 : Hero KPIs ══ -->
+      <div class="srs-row sr-section-gap grid grid-cols-2 lg:grid-cols-4 gap-4">
 
-        <!-- 1. Retention Rate — Gradient hero -->
-        <div class="ana-card col-span-2 lg:col-span-1 retention-card rounded-3xl p-6 shadow-xl shadow-indigo-500/25 text-white relative overflow-hidden">
-          <div class="relative z-10">
-            <!-- Label + tooltip -->
-            <div class="flex items-center gap-2 mb-4">
-              <div class="w-7 h-7 rounded-lg bg-white/15 flex items-center justify-center">
-                <span class="material-icons text-white text-sm">psychology</span>
+        <!-- 1. Retention Hero — Ultra-Premium Minimalist v3 -->
+        <div class="hero-retention-card col-span-2 lg:col-span-1"
+          [class]="computedStats().retentionRate >= 90 ? 'hero-excellent' :
+                   computedStats().retentionRate >= 75 ? 'hero-good' :
+                   computedStats().retentionRate >= 50 ? 'hero-average' : 'hero-poor'">
+          
+          <!-- Subtle static glow -->
+          <div class="hero-glow-overlay"></div>
+
+          <!-- Header -->
+          <div class="hero-v3-header">
+            <span class="hero-v3-title">Taux de Rétention</span>
+            <div class="tip-wrap">
+              <div class="hero-v3-info-btn">
+                <span class="material-icons" style="font-size:12px">help_outline</span>
               </div>
-              <div class="flex-1">
-                <div class="text-white/90 text-xs font-black uppercase tracking-widest">Taux de Rétention</div>
-              </div>
-              <div class="tooltip-wrap">
-                <div class="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center cursor-help">
-                  <span class="material-icons text-white text-[11px]">help_outline</span>
-                </div>
-                <div class="tooltip-content">
-                  % de cartes mémorisées sans erreur parmi les cartes révisées.<br>
-                  90%+ = Excellent · 75%+ = Bien · &lt;50% = À améliorer
-                </div>
-              </div>
+              <div class="tip-box">% de cartes mémorisées sans erreur.<br>90%+ Excellent · 75%+ Bien · &lt;50% À améliorer</div>
             </div>
-            <!-- SVG Ring -->
-            <div class="flex items-center gap-4 mb-4">
-              <svg width="80" height="80" viewBox="0 0 100 100">
-                <circle class="ring-track" cx="50" cy="50" r="45"></circle>
-                <circle class="ring-fill ring-progress" cx="50" cy="50" r="45"
-                  [attr.stroke-dashoffset]="(1 - computedStats().retentionRate / 100) * 283">
+          </div>
+
+          <!-- Central Ring & Score -->
+          <div class="hero-v3-body">
+            <div class="hero-v3-ring-container">
+              <svg width="96" height="96" viewBox="0 0 100 100" class="hero-v3-svg">
+                <!-- Track -->
+                <circle cx="50" cy="50" r="41" fill="none" stroke="rgba(255, 255, 255, 0.12)" stroke-width="6.5"></circle>
+                <!-- Fill arc -->
+                <circle cx="50" cy="50" r="41" fill="none" stroke="white" stroke-width="6.5"
+                  stroke-linecap="round"
+                  stroke-dasharray="257.6"
+                  [attr.stroke-dashoffset]="(1 - computedStats().retentionRate / 100) * 257.6"
+                  class="hero-v3-arc-fill">
                 </circle>
               </svg>
-              <div>
-                <div class="stat-value text-5xl font-black font-mono leading-none">{{ computedStats().retentionRate }}<span class="text-2xl text-white/70">%</span></div>
-                <div class="text-white/60 text-[11px] font-bold mt-1">
-                  {{ computedStats().totalReviewed }} carte{{ computedStats().totalReviewed > 1 ? 's' : '' }} révisée{{ computedStats().totalReviewed > 1 ? 's' : '' }}
-                </div>
+              <!-- Center Number -->
+              <div class="hero-v3-score-center">
+                <div class="hero-v3-number">{{ computedStats().retentionRate }}<span class="hero-v3-percent">%</span></div>
               </div>
             </div>
-            <!-- Status badge -->
-            <div class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold text-[11px]"
-              [class]="computedStats().retentionRate >= 90 ? 'bg-emerald-400/20 text-emerald-100' :
-                       computedStats().retentionRate >= 75 ? 'bg-blue-400/20 text-blue-100' :
-                       computedStats().retentionRate >= 50 ? 'bg-amber-400/20 text-amber-100' :
-                       'bg-rose-400/20 text-rose-100'">
-              <span class="material-icons text-[12px]">
-                {{ computedStats().retentionRate >= 90 ? 'emoji_events' : computedStats().retentionRate >= 75 ? 'trending_up' : computedStats().retentionRate >= 50 ? 'trending_flat' : 'trending_down' }}
+          </div>
+
+          <!-- Footer Details -->
+          <div class="hero-v3-footer">
+            <!-- Status Pill -->
+            <div class="hero-v3-status-pill">
+              <span class="material-icons">
+                {{ computedStats().retentionRate >= 90 ? 'emoji_events' :
+                   computedStats().retentionRate >= 75 ? 'thumb_up' :
+                   computedStats().retentionRate >= 50 ? 'trending_flat' : 'warning' }}
               </span>
-              {{ computedStats().retentionRate >= 90 ? 'Excellent !' : computedStats().retentionRate >= 75 ? 'Bien' : computedStats().retentionRate >= 50 ? 'Moyen' : 'À améliorer' }}
+              <span>
+                {{ computedStats().retentionRate >= 90 ? 'Excellent' :
+                   computedStats().retentionRate >= 75 ? 'Très bien' :
+                   computedStats().retentionRate >= 50 ? 'Moyen' : 'À améliorer' }}
+              </span>
+            </div>
+            <!-- Subtitle details -->
+            <div class="hero-v3-stats-line">
+              <span>{{ computedStats().totalReviewed }} révisée{{ computedStats().totalReviewed > 1 ? 's' : '' }}</span>
+              <span class="dot-separator">•</span>
+              <span>{{ computedStats().mastered }} maîtrisée{{ computedStats().mastered > 1 ? 's' : '' }}</span>
             </div>
           </div>
         </div>
 
-        <!-- 2. À réviser aujourd'hui -->
-        <div class="ana-card stat-tile tile-due rounded-3xl">
-          <div class="flex items-start justify-between mb-3">
-            <div class="w-10 h-10 rounded-2xl bg-rose-50 dark:bg-rose-950/40 flex items-center justify-center">
-              <span class="material-icons text-rose-500">notifications_active</span>
+        <!-- 2. À réviser -->
+        <div class="srs-card kpi-tile tile-due">
+          <div class="flex items-start justify-between">
+            <div class="kpi-icon-wrap" style="background:linear-gradient(135deg,#fee2e2,#fecaca)">
+              <span class="material-icons" style="font-size:20px;color:#ef4444;position:relative;z-index:1">notifications_active</span>
             </div>
-            <span *ngIf="computedStats().dueToday > 0" class="w-2.5 h-2.5 rounded-full bg-rose-500 due-pulse mt-1"></span>
+            <span *ngIf="computedStats().dueToday > 0" class="due-dot"></span>
           </div>
-          <div class="stat-value text-4xl font-black text-rose-600 dark:text-rose-400 font-mono leading-none mb-1">{{ computedStats().dueToday }}</div>
-          <div class="text-[10px] font-black text-rose-400/80 uppercase tracking-widest mb-3">À réviser</div>
-          <!-- Explanation -->
-          <div class="p-2.5 rounded-xl bg-rose-50 dark:bg-rose-950/25 border border-rose-100 dark:border-rose-900/30 text-[11px] text-rose-700 dark:text-rose-300 font-semibold leading-snug">
-            <span *ngIf="computedStats().dueToday === 0">✅ Toutes les cartes sont à jour !</span>
-            <span *ngIf="computedStats().dueToday > 0 && computedStats().overdue === 0">📅 Cartes prévues pour aujourd'hui</span>
+          <div class="kpi-value" style="color:#ef4444">{{ computedStats().dueToday }}</div>
+          <div class="kpi-label" style="color:#ef4444">À réviser</div>
+          <div class="kpi-info-box" style="background:rgba(239,68,68,.06);border:1px solid rgba(239,68,68,.12);color:#dc2626"
+               [class.dark:text-rose-400]="true">
+            <span *ngIf="computedStats().dueToday === 0" style="color:#16a34a">✅ Tout est à jour !</span>
+            <span *ngIf="computedStats().dueToday > 0 && computedStats().overdue === 0">📅 Prévues pour aujourd'hui</span>
             <span *ngIf="computedStats().overdue > 0">
               ⚠️ dont <strong>{{ computedStats().overdue }}</strong> en retard
             </span>
@@ -137,29 +167,25 @@
         </div>
 
         <!-- 3. Cette semaine -->
-        <div class="ana-card stat-tile tile-week rounded-3xl">
-          <div class="flex items-start justify-between mb-3">
-            <div class="w-10 h-10 rounded-2xl bg-indigo-50 dark:bg-indigo-950/40 flex items-center justify-center">
-              <span class="material-icons text-indigo-500">event_repeat</span>
-            </div>
+        <div class="srs-card kpi-tile tile-week">
+          <div class="kpi-icon-wrap" style="background:linear-gradient(135deg,#e0e7ff,#c7d2fe)">
+            <span class="material-icons" style="font-size:20px;color:#6366f1;position:relative;z-index:1">event_repeat</span>
           </div>
-          <div class="stat-value text-4xl font-black text-indigo-600 dark:text-indigo-400 font-mono leading-none mb-1">{{ computedStats().reviewsLast7Days }}</div>
-          <div class="text-[10px] font-black text-indigo-400/80 uppercase tracking-widest mb-3">7 derniers jours</div>
-          <div class="p-2.5 rounded-xl bg-indigo-50 dark:bg-indigo-950/25 border border-indigo-100 dark:border-indigo-900/30 text-[11px] text-indigo-700 dark:text-indigo-300 font-semibold leading-snug">
+          <div class="kpi-value" style="color:#6366f1">{{ computedStats().reviewsLast7Days }}</div>
+          <div class="kpi-label" style="color:#6366f1">7 derniers jours</div>
+          <div class="kpi-info-box" style="background:rgba(99,102,241,.06);border:1px solid rgba(99,102,241,.12);color:#4338ca">
             📊 <strong>{{ computedStats().reviewsLast30Days }}</strong> cartes ce mois-ci
           </div>
         </div>
 
         <!-- 4. Maîtrisées -->
-        <div class="ana-card stat-tile tile-master rounded-3xl">
-          <div class="flex items-start justify-between mb-3">
-            <div class="w-10 h-10 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 flex items-center justify-center">
-              <span class="material-icons text-emerald-500">workspace_premium</span>
-            </div>
+        <div class="srs-card kpi-tile tile-master">
+          <div class="kpi-icon-wrap" style="background:linear-gradient(135deg,#d1fae5,#a7f3d0)">
+            <span class="material-icons" style="font-size:20px;color:#10b981;position:relative;z-index:1">workspace_premium</span>
           </div>
-          <div class="stat-value text-4xl font-black text-emerald-600 dark:text-emerald-400 font-mono leading-none mb-1">{{ computedStats().mastered }}</div>
-          <div class="text-[10px] font-black text-emerald-400/80 uppercase tracking-widest mb-3">Maîtrisées</div>
-          <div class="p-2.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/25 border border-emerald-100 dark:border-emerald-900/30 text-[11px] text-emerald-700 dark:text-emerald-300 font-semibold leading-snug">
+          <div class="kpi-value" style="color:#10b981">{{ computedStats().mastered }}</div>
+          <div class="kpi-label" style="color:#10b981">Maîtrisées</div>
+          <div class="kpi-info-box" style="background:rgba(16,185,129,.06);border:1px solid rgba(16,185,129,.12);color:#059669">
             🏆 sur <strong>{{ computedStats().totalFlashcards }}</strong> cartes totales
           </div>
         </div>
@@ -167,375 +193,346 @@
       </div>
 
       <!-- ══ ROW 2 : Distribution + Activité ══ -->
-      <div class="grid grid-cols-1 lg:grid-cols-5 gap-6 mb-6">
+      <div class="srs-row sr-section-gap grid grid-cols-1 lg:grid-cols-5 gap-5">
 
-        <!-- Distribution des États (3/5) -->
-        <div class="ana-card glass-card p-6 lg:col-span-3">
-          <div class="flex items-start justify-between mb-5">
+        <!-- Distribution (3/5) -->
+        <div class="srs-card p-6 lg:col-span-3">
+          <!-- Header -->
+          <div class="flex items-start justify-between mb-2">
             <div>
-              <p class="section-eyebrow text-purple-500 dark:text-purple-400 mb-1">Répartition globale</p>
-              <h2 class="font-black text-gray-900 dark:text-white text-base flex items-center gap-2">
-                <span class="material-icons text-purple-500 text-lg">donut_large</span>
+              <div class="sec-eyebrow" style="color:#8b5cf6">Répartition globale</div>
+              <div class="sec-title">
+                <span class="material-icons" style="font-size:18px;color:#8b5cf6">donut_large</span>
                 Distribution des États SRS
-              </h2>
-              <p class="text-xs text-gray-400 dark:text-gray-500 mt-0.5">{{ computedStats().totalFlashcards }} flashcards réparties en 4 états d'apprentissage</p>
+              </div>
+              <p class="sec-sub">{{ computedStats().totalFlashcards }} flashcards réparties en 4 états d'apprentissage</p>
             </div>
-            <div class="tooltip-wrap">
-              <div class="w-7 h-7 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center cursor-help">
-                <span class="material-icons text-gray-400 text-sm">help_outline</span>
+            <div class="tip-wrap">
+              <div class="help-btn">
+                <span class="material-icons" style="font-size:12px;color:#94a3b8">help_outline</span>
               </div>
-              <div class="tooltip-content">
-                Nouvelle → Apprentissage → Révision → Maîtrisée<br>
-                Chaque état correspond à un niveau de mémorisation.
-              </div>
+              <div class="tip-box">Nouvelle → Apprentissage → Révision → Maîtrisée</div>
             </div>
           </div>
 
-          <!-- Big stacked bar -->
-          <div class="flex h-8 rounded-2xl overflow-hidden mb-5 gap-0.5">
-            <div *ngIf="computedStats().new > 0" class="h-full bg-gradient-to-r from-blue-400 to-blue-500 transition-all duration-700 flex items-center justify-center"
+          <!-- Big distribution bar -->
+          <div class="dist-bar-mega">
+            <div *ngIf="computedStats().new > 0" class="dist-seg new-seg"
               [style.width]="getDistributionWidth(computedStats().new)">
-              <span *ngIf="(computedStats().new / computedStats().totalFlashcards) > 0.1" class="text-white text-[10px] font-black">{{ computedStats().new }}</span>
+              <span *ngIf="(computedStats().new / computedStats().totalFlashcards) > 0.1">{{ computedStats().new }}</span>
             </div>
-            <div *ngIf="computedStats().learning > 0" class="h-full bg-gradient-to-r from-amber-400 to-amber-500 transition-all duration-700 flex items-center justify-center"
+            <div *ngIf="computedStats().learning > 0" class="dist-seg learn-seg"
               [style.width]="getDistributionWidth(computedStats().learning)">
-              <span *ngIf="(computedStats().learning / computedStats().totalFlashcards) > 0.1" class="text-white text-[10px] font-black">{{ computedStats().learning }}</span>
+              <span *ngIf="(computedStats().learning / computedStats().totalFlashcards) > 0.1">{{ computedStats().learning }}</span>
             </div>
-            <div *ngIf="computedStats().review > 0" class="h-full bg-gradient-to-r from-violet-400 to-violet-500 transition-all duration-700 flex items-center justify-center"
+            <div *ngIf="computedStats().review > 0" class="dist-seg review-seg"
               [style.width]="getDistributionWidth(computedStats().review)">
-              <span *ngIf="(computedStats().review / computedStats().totalFlashcards) > 0.1" class="text-white text-[10px] font-black">{{ computedStats().review }}</span>
+              <span *ngIf="(computedStats().review / computedStats().totalFlashcards) > 0.1">{{ computedStats().review }}</span>
             </div>
-            <div *ngIf="computedStats().mastered > 0" class="h-full bg-gradient-to-r from-emerald-400 to-emerald-500 transition-all duration-700 flex items-center justify-center"
+            <div *ngIf="computedStats().mastered > 0" class="dist-seg master-seg"
               [style.width]="getDistributionWidth(computedStats().mastered)">
-              <span *ngIf="(computedStats().mastered / computedStats().totalFlashcards) > 0.1" class="text-white text-[10px] font-black">{{ computedStats().mastered }}</span>
+              <span *ngIf="(computedStats().mastered / computedStats().totalFlashcards) > 0.1">{{ computedStats().mastered }}</span>
             </div>
           </div>
 
-          <!-- 4 state cards -->
+          <!-- 4 state mini cards -->
           <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
 
             <!-- Nouvelle -->
-            <div class="rounded-2xl bg-blue-50 dark:bg-blue-950/25 border border-blue-100 dark:border-blue-900/40 p-3">
+            <div class="state-mini-card s-new">
               <div class="flex items-center gap-1.5 mb-2">
-                <span class="w-2.5 h-2.5 rounded-full bg-blue-500"></span>
-                <span class="text-[9px] font-black uppercase tracking-widest text-blue-500">Nouvelle</span>
+                <span class="state-dot" style="background:#3b82f6"></span>
+                <span style="font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:.09em;color:#3b82f6">Nouvelle</span>
               </div>
-              <div class="text-2xl font-black text-blue-600 dark:text-blue-400 font-mono">{{ computedStats().new }}</div>
-              <div class="text-[10px] text-blue-400/70 font-bold mt-0.5">{{ pct(computedStats().new) }}</div>
-              <div class="mt-2 text-[10px] text-blue-600/60 dark:text-blue-400/50 leading-snug">Jamais révisée</div>
+              <div class="state-num" style="color:#2563eb">{{ computedStats().new }}</div>
+              <div class="state-pct" style="color:#3b82f6">{{ pct(computedStats().new) }}</div>
+              <div style="font-size:10px;color:#3b82f6;opacity:.6;margin-top:5px">Jamais révisée</div>
             </div>
 
             <!-- Apprentissage -->
-            <div class="rounded-2xl bg-amber-50 dark:bg-amber-950/25 border border-amber-100 dark:border-amber-900/40 p-3">
+            <div class="state-mini-card s-learn">
               <div class="flex items-center gap-1.5 mb-2">
-                <span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
-                <span class="text-[9px] font-black uppercase tracking-widest text-amber-500">Apprent.</span>
+                <span class="state-dot" style="background:#f59e0b"></span>
+                <span style="font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:.09em;color:#f59e0b">Apprent.</span>
               </div>
-              <div class="text-2xl font-black text-amber-600 dark:text-amber-400 font-mono">{{ computedStats().learning }}</div>
-              <div class="text-[10px] text-amber-400/70 font-bold mt-0.5">{{ pct(computedStats().learning) }}</div>
-              <div class="mt-2 text-[10px] text-amber-600/60 dark:text-amber-400/50 leading-snug">En cours d'apprent.</div>
+              <div class="state-num" style="color:#d97706">{{ computedStats().learning }}</div>
+              <div class="state-pct" style="color:#f59e0b">{{ pct(computedStats().learning) }}</div>
+              <div style="font-size:10px;color:#f59e0b;opacity:.6;margin-top:5px">En cours</div>
             </div>
 
             <!-- Révision -->
-            <div class="rounded-2xl bg-violet-50 dark:bg-violet-950/25 border border-violet-100 dark:border-violet-900/40 p-3">
+            <div class="state-mini-card s-review">
               <div class="flex items-center gap-1.5 mb-2">
-                <span class="w-2.5 h-2.5 rounded-full bg-violet-500"></span>
-                <span class="text-[9px] font-black uppercase tracking-widest text-violet-500">Révision</span>
+                <span class="state-dot" style="background:#8b5cf6"></span>
+                <span style="font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:.09em;color:#8b5cf6">Révision</span>
               </div>
-              <div class="text-2xl font-black text-violet-600 dark:text-violet-400 font-mono">{{ computedStats().review }}</div>
-              <div class="text-[10px] text-violet-400/70 font-bold mt-0.5">{{ pct(computedStats().review) }}</div>
-              <div class="mt-2 text-[10px] text-violet-600/60 dark:text-violet-400/50 leading-snug">Consolidation</div>
+              <div class="state-num" style="color:#7c3aed">{{ computedStats().review }}</div>
+              <div class="state-pct" style="color:#8b5cf6">{{ pct(computedStats().review) }}</div>
+              <div style="font-size:10px;color:#8b5cf6;opacity:.6;margin-top:5px">Consolidation</div>
             </div>
 
             <!-- Maîtrisée -->
-            <div class="rounded-2xl bg-emerald-50 dark:bg-emerald-950/25 border border-emerald-100 dark:border-emerald-900/40 p-3">
+            <div class="state-mini-card s-master">
               <div class="flex items-center gap-1.5 mb-2">
-                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
-                <span class="text-[9px] font-black uppercase tracking-widest text-emerald-500">Maîtrisée</span>
+                <span class="state-dot" style="background:#10b981"></span>
+                <span style="font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:.09em;color:#10b981">Maîtrisée</span>
               </div>
-              <div class="text-2xl font-black text-emerald-600 dark:text-emerald-400 font-mono">{{ computedStats().mastered }}</div>
-              <div class="text-[10px] text-emerald-400/70 font-bold mt-0.5">{{ pct(computedStats().mastered) }}</div>
-              <div class="mt-2 text-[10px] text-emerald-600/60 dark:text-emerald-400/50 leading-snug">Mémorisée long terme</div>
+              <div class="state-num" style="color:#059669">{{ computedStats().mastered }}</div>
+              <div class="state-pct" style="color:#10b981">{{ pct(computedStats().mastered) }}</div>
+              <div style="font-size:10px;color:#10b981;opacity:.6;margin-top:5px">Long terme</div>
             </div>
+
           </div>
         </div>
 
-        <!-- Activité + Motivation (2/5) -->
-        <div class="ana-card glass-card p-6 lg:col-span-2 flex flex-col gap-5">
+        <!-- Activité (2/5) -->
+        <div class="srs-card p-6 lg:col-span-2 flex flex-col gap-5">
           <div>
-            <p class="section-eyebrow text-orange-500 dark:text-orange-400 mb-1">Historique</p>
-            <h2 class="font-black text-gray-900 dark:text-white text-base flex items-center gap-2">
-              <span class="material-icons text-orange-500 text-lg">local_fire_department</span>
+            <div class="sec-eyebrow" style="color:#f97316">Historique</div>
+            <div class="sec-title">
+              <span class="material-icons" style="font-size:18px;color:#f97316">local_fire_department</span>
               Activité de Révision
-            </h2>
-            <p class="text-xs text-gray-400 dark:text-gray-500 mt-0.5">Cartes révisées sur les 30 derniers jours</p>
+            </div>
+            <p class="sec-sub">Cartes révisées récemment</p>
           </div>
 
-          <!-- 7 days bar -->
-          <div class="flex flex-col gap-1.5">
+          <!-- 7 days -->
+          <div style="display:flex;flex-direction:column;gap:6px">
             <div class="flex items-center justify-between">
-              <span class="text-[10px] font-black text-gray-500 dark:text-gray-400 uppercase tracking-widest">7 derniers jours</span>
-              <span class="text-sm font-black text-indigo-600 dark:text-indigo-400 font-mono">{{ computedStats().reviewsLast7Days }}</span>
+              <span style="font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:.1em;color:#94a3b8">7 derniers jours</span>
+              <span class="font-mono" style="font-size:15px;font-weight:800;color:#6366f1">{{ computedStats().reviewsLast7Days }}</span>
             </div>
-            <div class="h-8 bg-gray-100 dark:bg-gray-800 rounded-xl overflow-hidden relative">
+            <div class="activity-bar-wrap">
               <div *ngIf="computedStats().reviewsLast7Days > 0"
-                class="absolute inset-y-0 left-0 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-xl flex items-center justify-end pr-3 transition-all duration-1000"
-                [style.width.%]="100">
-                <span class="text-white text-xs font-black">{{ computedStats().reviewsLast7Days }} cartes</span>
+                   class="activity-bar-fill"
+                   style="width:100%;background:linear-gradient(90deg,#6366f1,#8b5cf6)">
+                <span class="activity-bar-label">{{ computedStats().reviewsLast7Days }} cartes</span>
               </div>
-              <div *ngIf="computedStats().reviewsLast7Days === 0" class="absolute inset-0 flex items-center pl-4">
-                <span class="text-gray-400 dark:text-gray-500 text-xs font-semibold">Aucune révision cette semaine</span>
+              <div *ngIf="computedStats().reviewsLast7Days === 0" class="activity-empty">
+                Aucune révision cette semaine
               </div>
             </div>
           </div>
 
-          <!-- 30 days bar -->
-          <div class="flex flex-col gap-1.5">
+          <!-- 30 days -->
+          <div style="display:flex;flex-direction:column;gap:6px">
             <div class="flex items-center justify-between">
-              <span class="text-[10px] font-black text-gray-500 dark:text-gray-400 uppercase tracking-widest">30 derniers jours</span>
-              <span class="text-sm font-black text-purple-600 dark:text-purple-400 font-mono">{{ computedStats().reviewsLast30Days }}</span>
+              <span style="font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:.1em;color:#94a3b8">30 derniers jours</span>
+              <span class="font-mono" style="font-size:15px;font-weight:800;color:#a855f7">{{ computedStats().reviewsLast30Days }}</span>
             </div>
-            <div class="h-8 bg-gray-100 dark:bg-gray-800 rounded-xl overflow-hidden relative">
+            <div class="activity-bar-wrap">
               <div *ngIf="computedStats().reviewsLast30Days > 0"
-                class="absolute inset-y-0 left-0 bg-gradient-to-r from-purple-500 to-fuchsia-500 rounded-xl flex items-center justify-end pr-3 transition-all duration-1000"
-                [style.width.%]="100">
-                <span class="text-white text-xs font-black">{{ computedStats().reviewsLast30Days }} cartes</span>
+                   class="activity-bar-fill"
+                   style="width:100%;background:linear-gradient(90deg,#a855f7,#ec4899)">
+                <span class="activity-bar-label">{{ computedStats().reviewsLast30Days }} cartes</span>
               </div>
-              <div *ngIf="computedStats().reviewsLast30Days === 0" class="absolute inset-0 flex items-center pl-4">
-                <span class="text-gray-400 dark:text-gray-500 text-xs font-semibold">Aucune révision ce mois</span>
+              <div *ngIf="computedStats().reviewsLast30Days === 0" class="activity-empty">
+                Aucune révision ce mois
               </div>
             </div>
           </div>
 
-          <!-- Motivation insight -->
-          <div class="mt-auto p-4 rounded-2xl border"
-            [class]="computedStats().retentionRate >= 80 ? 'bg-emerald-50 dark:bg-emerald-950/20 border-emerald-100 dark:border-emerald-900/30' :
-                     computedStats().retentionRate >= 50 ? 'bg-blue-50 dark:bg-blue-950/20 border-blue-100 dark:border-blue-900/30' :
-                     'bg-amber-50 dark:bg-amber-950/20 border-amber-100 dark:border-amber-900/30'">
-            <div class="flex items-start gap-3">
-              <span class="material-icons text-xl flex-shrink-0"
-                [class]="computedStats().retentionRate >= 80 ? 'text-emerald-500' : computedStats().retentionRate >= 50 ? 'text-blue-500' : 'text-amber-500'">
+          <!-- Motivation message -->
+          <div class="motivation-box" style="margin-top:auto"
+            [style.background]="computedStats().retentionRate >= 80 ? 'rgba(16,185,129,.06)' : computedStats().retentionRate >= 50 ? 'rgba(99,102,241,.06)' : 'rgba(245,158,11,.06)'"
+            [style.borderColor]="computedStats().retentionRate >= 80 ? 'rgba(16,185,129,.2)' : computedStats().retentionRate >= 50 ? 'rgba(99,102,241,.2)' : 'rgba(245,158,11,.2)'">
+            <div class="motivation-icon"
+              [style.background]="computedStats().retentionRate >= 80 ? 'rgba(16,185,129,.12)' : computedStats().retentionRate >= 50 ? 'rgba(99,102,241,.12)' : 'rgba(245,158,11,.12)'">
+              <span class="material-icons" style="font-size:18px"
+                [style.color]="computedStats().retentionRate >= 80 ? '#10b981' : computedStats().retentionRate >= 50 ? '#6366f1' : '#f59e0b'">
                 {{ computedStats().retentionRate >= 80 ? 'celebration' : computedStats().retentionRate >= 50 ? 'trending_up' : 'lightbulb' }}
               </span>
-              <p class="text-xs font-bold leading-relaxed"
-                [class]="computedStats().retentionRate >= 80 ? 'text-emerald-700 dark:text-emerald-300' : computedStats().retentionRate >= 50 ? 'text-blue-700 dark:text-blue-300' : 'text-amber-700 dark:text-amber-300'">
-                <span *ngIf="computedStats().retentionRate >= 80">Excellent travail ! Votre mémoire est très performante. Continuez sur cette lancée ! 🎉</span>
-                <span *ngIf="computedStats().retentionRate >= 50 && computedStats().retentionRate < 80">Bonne progression ! Révisez régulièrement pour consolider. 💪</span>
-                <span *ngIf="computedStats().retentionRate < 50 && computedStats().totalReviewed > 0">Révisez plus fréquemment pour améliorer votre rétention. 📚</span>
-                <span *ngIf="computedStats().totalReviewed === 0">Commencez votre première session pour obtenir des statistiques !</span>
-              </p>
             </div>
-          </div>
-        </div>
-
-      </div>
-
-      <!-- ══ ROW 3 : Per-Pack Breakdown Table ══ -->
-      <div class="ana-card glass-card overflow-hidden mb-6">
-
-        <!-- Table header -->
-        <div class="p-5 pb-4 flex items-center justify-between border-b border-gray-100/60 dark:border-gray-800/60">
-          <div>
-            <p class="section-eyebrow text-fuchsia-500 dark:text-fuchsia-400 mb-1">Détail par pack</p>
-            <h2 class="font-black text-gray-900 dark:text-white text-base flex items-center gap-2">
-              <span class="material-icons text-fuchsia-500 text-lg">table_chart</span>
-              Performance SRS par Pack
-            </h2>
-            <p class="text-xs text-gray-400 dark:text-gray-500 mt-0.5">
-              {{ packBreakdown().length }} pack{{ packBreakdown().length > 1 ? 's' : '' }} analysé{{ packBreakdown().length > 1 ? 's' : '' }} · Trié par priorité de révision
+            <p class="motivation-text"
+              [style.color]="computedStats().retentionRate >= 80 ? '#065f46' : computedStats().retentionRate >= 50 ? '#312e81' : '#78350f'">
+              <span *ngIf="computedStats().retentionRate >= 80" class="dark:text-emerald-300">Excellent travail ! Votre mémoire est très performante. Continuez ! 🎉</span>
+              <span *ngIf="computedStats().retentionRate >= 50 && computedStats().retentionRate < 80" class="dark:text-indigo-300">Bonne progression ! Révisez régulièrement pour consolider. 💪</span>
+              <span *ngIf="computedStats().retentionRate < 50 && computedStats().totalReviewed > 0" class="dark:text-amber-300">Révisez plus fréquemment pour améliorer votre rétention. 📚</span>
+              <span *ngIf="computedStats().totalReviewed === 0" class="dark:text-indigo-300">Commencez votre première session pour obtenir des stats !</span>
             </p>
           </div>
-          <a routerLink="/study-hub" class="text-xs font-bold text-indigo-500 hover:text-indigo-700 dark:hover:text-indigo-300 transition-colors flex items-center gap-1">
-            <span class="material-icons text-xs">open_in_new</span> Voir tous
-          </a>
+
+        </div>
+      </div>
+
+      <!-- ══ ROW 3 : Per-Pack Table ══ -->
+      <div class="srs-row srs-card sr-section-gap overflow-hidden">
+
+        <!-- Table header -->
+        <div style="padding:20px 22px 16px;border-bottom:1px solid rgba(0,0,0,.05)" class="dark:border-white/5">
+          <div class="flex items-start justify-between">
+            <div>
+              <div class="sec-eyebrow" style="color:#ec4899">Détail par pack</div>
+              <div class="sec-title">
+                <span class="material-icons" style="font-size:18px;color:#ec4899">table_chart</span>
+                Performance SRS par Pack
+              </div>
+              <p class="sec-sub">
+                {{ packBreakdown().length }} pack{{ packBreakdown().length > 1 ? 's' : '' }} analysé{{ packBreakdown().length > 1 ? 's' : '' }} · Trié par priorité de révision
+              </p>
+            </div>
+            <a routerLink="/study-hub"
+               style="display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;color:#6366f1;text-decoration:none;transition:color .2s"
+               class="hover:text-indigo-800 dark:hover:text-indigo-300">
+              <span class="material-icons" style="font-size:12px">open_in_new</span> Voir tous
+            </a>
+          </div>
         </div>
 
-        <!-- Legend bar (explains the columns) -->
-        <div class="px-5 py-3 bg-gray-50/60 dark:bg-gray-800/30 border-b border-gray-100/60 dark:border-gray-800/60 flex flex-wrap gap-x-6 gap-y-2">
-          <div class="flex items-center gap-1.5 tooltip-wrap">
-            <span class="material-icons text-gray-400 text-[13px]">tag</span>
-            <span class="text-[10px] font-black uppercase tracking-widest text-gray-400">Total</span>
-            <div class="tooltip-content">Nombre total de flashcards dans ce pack</div>
+        <!-- Legend strip -->
+        <div class="legend-stripe">
+          <div class="legend-item">
+            <span class="material-icons" style="font-size:11px;color:#94a3b8">tag</span> Total
           </div>
-          <div class="flex items-center gap-1.5 tooltip-wrap">
-            <span class="w-2 h-2 rounded-full bg-rose-500"></span>
-            <span class="text-[10px] font-black uppercase tracking-widest text-rose-400">À réviser</span>
-            <div class="tooltip-content">Cartes dues aujourd'hui selon l'algorithme SRS.<br>Plus ce chiffre est élevé, plus urgent de réviser.</div>
+          <div class="legend-item">
+            <span style="width:8px;height:8px;border-radius:50%;background:#ef4444;display:block"></span> À réviser
           </div>
-          <div class="flex items-center gap-1.5 tooltip-wrap">
-            <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
-            <span class="text-[10px] font-black uppercase tracking-widest text-emerald-400">Maîtrisées</span>
-            <div class="tooltip-content">Cartes en état « Maîtrisée » sur le total du pack.<br>Objectif : 100% maîtrisées !</div>
+          <div class="legend-item">
+            <span style="width:8px;height:8px;border-radius:50%;background:#10b981;display:block"></span> Maîtrisées
           </div>
-          <div class="flex items-center gap-1.5 tooltip-wrap">
-            <span class="material-icons text-indigo-400 text-[13px]">psychology</span>
-            <span class="text-[10px] font-black uppercase tracking-widest text-indigo-400">Rétention</span>
-            <div class="tooltip-content">% de réponses correctes parmi toutes les révisions.<br>🟢 90%+ · 🔵 75%+ · 🟡 50%+ · 🔴 &lt;50%</div>
+          <div class="legend-item">
+            <span class="material-icons" style="font-size:11px;color:#6366f1">psychology</span> Rétention
           </div>
-          <div class="flex items-center gap-1.5 tooltip-wrap">
-            <div class="flex gap-0.5">
-              <span class="w-2 h-2 rounded-sm bg-blue-400"></span>
-              <span class="w-2 h-2 rounded-sm bg-amber-400"></span>
-              <span class="w-2 h-2 rounded-sm bg-violet-400"></span>
-              <span class="w-2 h-2 rounded-sm bg-emerald-400"></span>
+          <div class="legend-item">
+            <div style="display:flex;gap:2px">
+              <span style="width:7px;height:7px;border-radius:2px;background:#3b82f6;display:block"></span>
+              <span style="width:7px;height:7px;border-radius:2px;background:#f59e0b;display:block"></span>
+              <span style="width:7px;height:7px;border-radius:2px;background:#8b5cf6;display:block"></span>
+              <span style="width:7px;height:7px;border-radius:2px;background:#10b981;display:block"></span>
             </div>
-            <span class="text-[10px] font-black uppercase tracking-widest text-gray-400">Distribution</span>
-            <div class="tooltip-content">Répartition visuelle : 🔵 Nouvelle · 🟡 Apprentissage · 🟣 Révision · 🟢 Maîtrisée</div>
+            Distribution
           </div>
         </div>
 
         <!-- Scrollable table -->
-        <div class="pack-table-wrap">
-          <table class="w-full pack-table min-w-[640px]">
+        <div class="pack-scroll">
+          <table class="pack-table">
             <thead>
-              <tr class="text-[10px] font-black uppercase tracking-widest text-gray-400 dark:text-gray-500">
-                <th class="text-left px-5 py-3.5">Pack d'étude</th>
-                <th class="text-center px-4 py-3.5">
-                  <span class="flex items-center justify-center gap-1">
-                    <span class="material-icons text-[11px]">tag</span> Total
-                  </span>
-                </th>
-                <th class="text-center px-4 py-3.5">
-                  <span class="flex items-center justify-center gap-1">
-                    <span class="w-1.5 h-1.5 rounded-full bg-rose-400"></span> À réviser
-                  </span>
-                </th>
-                <th class="text-center px-4 py-3.5">
-                  <span class="flex items-center justify-center gap-1">
-                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> Maîtrisées
-                  </span>
-                </th>
-                <th class="text-center px-4 py-3.5">
-                  <span class="flex items-center justify-center gap-1">
-                    <span class="material-icons text-[11px]">psychology</span> Rétention
-                  </span>
-                </th>
-                <th class="text-left px-4 py-3.5 hidden md:table-cell">
-                  <span class="flex items-center gap-1">Distribution</span>
-                </th>
-                <th class="text-right px-4 py-3.5">Action</th>
+              <tr class="pack-thead-row">
+                <th>Pack d'étude</th>
+                <th><span style="display:flex;align-items:center;justify-content:center;gap:4px"><span class="material-icons" style="font-size:11px">tag</span> Total</span></th>
+                <th><span style="display:flex;align-items:center;justify-content:center;gap:4px"><span style="width:6px;height:6px;border-radius:50%;background:#ef4444;display:block"></span> À réviser</span></th>
+                <th><span style="display:flex;align-items:center;justify-content:center;gap:4px"><span style="width:6px;height:6px;border-radius:50%;background:#10b981;display:block"></span> Maîtrisées</span></th>
+                <th><span style="display:flex;align-items:center;justify-content:center;gap:4px"><span class="material-icons" style="font-size:11px">psychology</span> Rétention</span></th>
+                <th class="hidden md:table-cell" style="text-align:left">Distribution</th>
+                <th style="text-align:right">Action</th>
               </tr>
             </thead>
             <tbody>
-              <tr *ngFor="let row of packBreakdown()" class="pack-row">
+              <tr *ngFor="let row of packBreakdown()" class="pack-body-row">
 
-                <!-- Pack Name & Subject -->
-                <td class="px-5 py-4">
+                <!-- Pack Name -->
+                <td>
                   <div class="flex items-center gap-3">
-                    <div class="w-9 h-9 rounded-xl flex-shrink-0 flex items-center justify-center text-sm font-black"
-                      [style.background]="row.due > 0 ? 'linear-gradient(135deg,#fef2f2,#ffe4e6)' : 'linear-gradient(135deg,#f0fdf4,#dcfce7)'"
-                      [style.color]="row.due > 0 ? '#dc2626' : '#16a34a'">
+                    <div class="pack-avatar"
+                      [style.background]="row.due > 0 ? 'linear-gradient(135deg,#fee2e2,#fecaca)' : 'linear-gradient(135deg,#d1fae5,#a7f3d0)'"
+                      [style.color]="row.due > 0 ? '#dc2626' : '#059669'">
                       {{ row.pack.title ? row.pack.title.charAt(0).toUpperCase() : '?' }}
                     </div>
-                    <div class="min-w-0">
-                      <div class="font-bold text-sm text-gray-900 dark:text-white truncate max-w-[160px]" [title]="row.pack.title">{{ row.pack.title }}</div>
-                      <div class="text-[10px] text-gray-400 dark:text-gray-500 font-medium flex items-center gap-0.5 mt-0.5">
-                        <span class="material-icons text-[9px]">label</span>
-                        <span class="truncate max-w-[120px]">{{ row.pack.subject || 'Sans catégorie' }}</span>
+                    <div style="min-width:0">
+                      <div style="font-weight:700;font-size:13px;color:#0f172a;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:160px"
+                           class="dark:text-white" [title]="row.pack.title">{{ row.pack.title }}</div>
+                      <div style="font-size:10px;color:#94a3b8;display:flex;align-items:center;gap:3px;margin-top:2px">
+                        <span class="material-icons" style="font-size:9px">label</span>
+                        <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:120px">{{ row.pack.subject || 'Sans catégorie' }}</span>
                       </div>
                     </div>
                   </div>
                 </td>
 
                 <!-- Total -->
-                <td class="px-4 py-4 text-center">
-                  <span class="text-sm font-black text-gray-700 dark:text-gray-300 font-mono">{{ row.total }}</span>
+                <td>
+                  <span class="font-mono" style="font-size:13px;font-weight:800;color:#475569" class="dark:text-slate-300">{{ row.total }}</span>
                 </td>
 
-                <!-- Due Today -->
-                <td class="px-4 py-4 text-center">
+                <!-- Due -->
+                <td>
                   <span *ngIf="row.due > 0"
-                    class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-rose-50 dark:bg-rose-950/30 text-rose-600 dark:text-rose-400 text-xs font-black border border-rose-200/60 dark:border-rose-800/30">
-                    <span class="material-icons text-[10px]">notifications_active</span>{{ row.due }}
+                    style="display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:10px;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);color:#dc2626;font-size:11px;font-weight:800">
+                    <span class="material-icons" style="font-size:11px">notifications_active</span>{{ row.due }}
                   </span>
                   <span *ngIf="row.due === 0"
-                    class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-emerald-50 dark:bg-emerald-950/20 text-emerald-600 dark:text-emerald-400 text-xs font-bold border border-emerald-100 dark:border-emerald-900/30">
-                    <span class="material-icons text-[10px]">check_circle</span> OK
+                    style="display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:10px;background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.2);color:#059669;font-size:11px;font-weight:800">
+                    <span class="material-icons" style="font-size:11px">check_circle</span>OK
                   </span>
                 </td>
 
-                <!-- Mastered / Total -->
-                <td class="px-4 py-4 text-center">
-                  <div class="flex flex-col items-center gap-1">
-                    <div class="flex items-baseline gap-0.5">
-                      <span class="text-sm font-black text-emerald-600 dark:text-emerald-400 font-mono">{{ row.states.mastered }}</span>
-                      <span class="text-[10px] text-gray-400 font-medium">/ {{ row.total }}</span>
+                <!-- Mastered -->
+                <td>
+                  <div style="display:flex;flex-direction:column;align-items:center;gap:4px">
+                    <div style="display:flex;align-items:baseline;gap:2px">
+                      <span class="font-mono" style="font-size:13px;font-weight:800;color:#10b981">{{ row.states.mastered }}</span>
+                      <span style="font-size:10px;color:#94a3b8">/ {{ row.total }}</span>
                     </div>
-                    <!-- Mastered mini bar -->
-                    <div class="w-16 h-1.5 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
-                      <div class="h-full bg-gradient-to-r from-emerald-400 to-emerald-500 rounded-full transition-all duration-700"
+                    <div class="mastered-mini-bar">
+                      <div class="mastered-mini-fill"
                         [style.width.%]="row.total > 0 ? (row.states.mastered / row.total * 100) : 0">
                       </div>
                     </div>
                   </div>
                 </td>
 
-                <!-- Retention Badge -->
-                <td class="px-4 py-4 text-center">
+                <!-- Retention -->
+                <td>
                   <ng-container *ngIf="row.retention !== null">
                     <span class="ret-badge"
                       [class]="row.retention >= 90 ? 'text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/30 border-emerald-200 dark:border-emerald-700/40' :
                                row.retention >= 75 ? 'text-blue-700 dark:text-blue-300 bg-blue-50 dark:bg-blue-950/30 border-blue-200 dark:border-blue-700/40' :
                                row.retention >= 50 ? 'text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/30 border-amber-200 dark:border-amber-700/40' :
                                'text-rose-700 dark:text-rose-300 bg-rose-50 dark:bg-rose-950/30 border-rose-200 dark:border-rose-700/40'">
-                      <span class="material-icons text-[10px]">
+                      <span class="material-icons" style="font-size:10px">
                         {{ row.retention >= 90 ? 'emoji_events' : row.retention >= 75 ? 'thumb_up' : row.retention >= 50 ? 'trending_flat' : 'warning' }}
                       </span>
                       {{ row.retention }}%
                     </span>
-                    <div class="text-[9px] mt-1 font-bold"
+                    <div style="font-size:9px;font-weight:700;margin-top:3px"
                       [class]="row.retention >= 90 ? 'text-emerald-500' : row.retention >= 75 ? 'text-blue-500' : row.retention >= 50 ? 'text-amber-500' : 'text-rose-500'">
                       {{ getMasteryLabel(row.retention) }}
                     </div>
                   </ng-container>
                   <ng-container *ngIf="row.retention === null">
-                    <span class="ret-badge text-gray-400 bg-gray-50 dark:bg-gray-800/50 border-gray-200 dark:border-gray-700/40">
-                      <span class="material-icons text-[10px]">radio_button_unchecked</span>
+                    <span class="ret-badge" style="color:#94a3b8;background:rgba(148,163,184,.08);border-color:rgba(148,163,184,.2)">
+                      <span class="material-icons" style="font-size:10px">radio_button_unchecked</span>
                       Nouveau
                     </span>
-                    <div class="text-[9px] mt-1 text-gray-400 font-bold">Non révisée</div>
+                    <div style="font-size:9px;font-weight:700;margin-top:3px;color:#94a3b8">Non révisée</div>
                   </ng-container>
                 </td>
 
-                <!-- Distribution Mini Bar -->
-                <td class="px-4 py-4 hidden md:table-cell">
+                <!-- Distribution mini bar -->
+                <td class="hidden md:table-cell">
                   <div *ngIf="row.total > 0">
-                    <div class="flex h-3 w-28 rounded-full overflow-hidden gap-px mb-1.5">
-                      <div class="h-full bg-blue-500 rounded-l-full"
-                        [style.width.%]="row.states.new / row.total * 100"
-                        [title]="'Nouvelles: ' + row.states.new"></div>
-                      <div class="h-full bg-amber-500"
-                        [style.width.%]="row.states.learning / row.total * 100"
-                        [title]="'Apprentissage: ' + row.states.learning"></div>
-                      <div class="h-full bg-violet-500"
-                        [style.width.%]="row.states.review / row.total * 100"
-                        [title]="'Révision: ' + row.states.review"></div>
-                      <div class="h-full bg-emerald-500 rounded-r-full"
-                        [style.width.%]="row.states.mastered / row.total * 100"
-                        [title]="'Maîtrisées: ' + row.states.mastered"></div>
+                    <div class="mini-dist-bar">
+                      <div class="mini-dist-seg" style="background:#3b82f6;border-radius:999px 0 0 999px"
+                        [style.width.%]="row.states.new / row.total * 100"></div>
+                      <div class="mini-dist-seg" style="background:#f59e0b"
+                        [style.width.%]="row.states.learning / row.total * 100"></div>
+                      <div class="mini-dist-seg" style="background:#8b5cf6"
+                        [style.width.%]="row.states.review / row.total * 100"></div>
+                      <div class="mini-dist-seg" style="background:#10b981;border-radius:0 999px 999px 0"
+                        [style.width.%]="row.states.mastered / row.total * 100"></div>
                     </div>
-                    <!-- Mini legend -->
-                    <div class="flex flex-wrap gap-x-2 gap-y-0.5">
-                      <span *ngIf="row.states.new > 0" class="text-[9px] text-blue-400 font-bold">{{ row.states.new }}N</span>
-                      <span *ngIf="row.states.learning > 0" class="text-[9px] text-amber-400 font-bold">{{ row.states.learning }}A</span>
-                      <span *ngIf="row.states.review > 0" class="text-[9px] text-violet-400 font-bold">{{ row.states.review }}R</span>
-                      <span *ngIf="row.states.mastered > 0" class="text-[9px] text-emerald-400 font-bold">{{ row.states.mastered }}M</span>
+                    <div style="display:flex;flex-wrap:wrap;gap:4px 8px;margin-top:5px">
+                      <span *ngIf="row.states.new > 0" style="font-size:9px;font-weight:700;color:#3b82f6">{{ row.states.new }}N</span>
+                      <span *ngIf="row.states.learning > 0" style="font-size:9px;font-weight:700;color:#f59e0b">{{ row.states.learning }}A</span>
+                      <span *ngIf="row.states.review > 0" style="font-size:9px;font-weight:700;color:#8b5cf6">{{ row.states.review }}R</span>
+                      <span *ngIf="row.states.mastered > 0" style="font-size:9px;font-weight:700;color:#10b981">{{ row.states.mastered }}M</span>
                     </div>
                   </div>
                 </td>
 
                 <!-- CTA -->
-                <td class="px-4 py-4 text-right">
+                <td style="text-align:right">
                   <a *ngIf="row.due > 0"
                     [routerLink]="['/study-hub', row.pack.id, 'flashcards']"
-                    class="inline-flex items-center gap-1.5 px-3.5 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white text-[11px] font-black rounded-xl transition-all shadow-sm hover:shadow-indigo-400/30 hover:scale-105">
-                    <span class="material-icons text-[13px]">play_circle</span>
+                    class="cta-review">
+                    <span class="material-icons" style="font-size:13px">play_circle</span>
                     Réviser
                   </a>
                   <a *ngIf="row.due === 0"
                     [routerLink]="['/study-hub', row.pack.id, 'flashcards']"
-                    class="inline-flex items-center gap-1.5 px-3.5 py-2 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-500 dark:text-gray-400 text-[11px] font-bold rounded-xl transition-all">
-                    <span class="material-icons text-[13px]">refresh</span>
+                    class="cta-review-light">
+                    <span class="material-icons" style="font-size:13px">refresh</span>
                     Revoir
                   </a>
                 </td>
@@ -545,79 +542,67 @@
           </table>
         </div>
 
-        <!-- Table footer legend -->
-        <div class="px-5 py-3 border-t border-gray-100/60 dark:border-gray-800/60 flex flex-wrap items-center gap-4">
-          <span class="text-[10px] text-gray-400 dark:text-gray-500 font-bold uppercase tracking-widest">Légende distribution :</span>
-          <div class="flex items-center gap-1.5">
-            <span class="w-2.5 h-2.5 rounded-sm bg-blue-500"></span>
-            <span class="text-[10px] text-gray-500 dark:text-gray-400 font-semibold">N = Nouvelle</span>
-          </div>
-          <div class="flex items-center gap-1.5">
-            <span class="w-2.5 h-2.5 rounded-sm bg-amber-500"></span>
-            <span class="text-[10px] text-gray-500 dark:text-gray-400 font-semibold">A = Apprentissage</span>
-          </div>
-          <div class="flex items-center gap-1.5">
-            <span class="w-2.5 h-2.5 rounded-sm bg-violet-500"></span>
-            <span class="text-[10px] text-gray-500 dark:text-gray-400 font-semibold">R = Révision</span>
-          </div>
-          <div class="flex items-center gap-1.5">
-            <span class="w-2.5 h-2.5 rounded-sm bg-emerald-500"></span>
-            <span class="text-[10px] text-gray-500 dark:text-gray-400 font-semibold">M = Maîtrisée</span>
-          </div>
+        <!-- Table footer -->
+        <div style="padding:10px 18px;border-top:1px solid rgba(0,0,0,.05);display:flex;flex-wrap:wrap;align-items:center;gap:14px" class="dark:border-white/5">
+          <span style="font-size:10px;color:#94a3b8;font-weight:700;text-transform:uppercase;letter-spacing:.1em">Légende :</span>
+          <div class="legend-item"><span style="width:8px;height:8px;border-radius:2px;background:#3b82f6;display:block"></span>N = Nouvelle</div>
+          <div class="legend-item"><span style="width:8px;height:8px;border-radius:2px;background:#f59e0b;display:block"></span>A = Apprentissage</div>
+          <div class="legend-item"><span style="width:8px;height:8px;border-radius:2px;background:#8b5cf6;display:block"></span>R = Révision</div>
+          <div class="legend-item"><span style="width:8px;height:8px;border-radius:2px;background:#10b981;display:block"></span>M = Maîtrisée</div>
         </div>
       </div>
 
       <!-- ══ ROW 4 : Quick Insights ══ -->
-      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+      <div class="srs-row grid grid-cols-1 sm:grid-cols-3 gap-4">
 
-        <!-- Insight 1: New cards -->
-        <div class="ana-card insight-card bg-blue-50/80 dark:bg-blue-950/20 border border-blue-100 dark:border-blue-900/30 rounded-2xl">
-          <div class="w-10 h-10 rounded-xl bg-blue-100 dark:bg-blue-900/40 flex items-center justify-center flex-shrink-0">
-            <span class="material-icons text-blue-500">add_circle</span>
+        <!-- Insight 1 — New cards -->
+        <div class="srs-card insight-card">
+          <div class="insight-icon" style="background:rgba(59,130,246,.1)">
+            <span class="material-icons" style="font-size:22px;color:#3b82f6">add_circle</span>
           </div>
-          <div class="flex-1 min-w-0">
-            <div class="text-[10px] font-black text-blue-400 uppercase tracking-widest mb-0.5">Cartes non apprises</div>
-            <div class="text-lg font-black text-blue-700 dark:text-blue-300 font-mono">{{ computedStats().new }}</div>
-            <div class="text-[11px] text-blue-600/70 dark:text-blue-400/60 font-semibold leading-snug">
+          <div style="flex:1;min-width:0">
+            <div class="insight-label" style="color:#3b82f6">Cartes non apprises</div>
+            <div class="insight-value" style="color:#2563eb">{{ computedStats().new }}</div>
+            <div class="insight-desc" style="color:#3b82f6">
               {{ computedStats().new > 0 ? 'À commencer à apprendre' : '✅ Tout le contenu a été abordé' }}
             </div>
           </div>
         </div>
 
-        <!-- Insight 2: Total reviewed -->
-        <div class="ana-card insight-card bg-purple-50/80 dark:bg-purple-950/20 border border-purple-100 dark:border-purple-900/30 rounded-2xl">
-          <div class="w-10 h-10 rounded-xl bg-purple-100 dark:bg-purple-900/40 flex items-center justify-center flex-shrink-0">
-            <span class="material-icons text-purple-500">done_all</span>
+        <!-- Insight 2 — Total reviewed -->
+        <div class="srs-card insight-card">
+          <div class="insight-icon" style="background:rgba(139,92,246,.1)">
+            <span class="material-icons" style="font-size:22px;color:#8b5cf6">done_all</span>
           </div>
-          <div class="flex-1 min-w-0">
-            <div class="text-[10px] font-black text-purple-400 uppercase tracking-widest mb-0.5">Total révisées</div>
-            <div class="text-lg font-black text-purple-700 dark:text-purple-300 font-mono">{{ computedStats().totalReviewed }}</div>
-            <div class="text-[11px] text-purple-600/70 dark:text-purple-400/60 font-semibold leading-snug">
-              {{ computedStats().totalReviewed > 0 ? 'Cartes ayant au moins 1 révision' : 'Aucune révision encore' }}
+          <div style="flex:1;min-width:0">
+            <div class="insight-label" style="color:#8b5cf6">Total révisées</div>
+            <div class="insight-value" style="color:#7c3aed">{{ computedStats().totalReviewed }}</div>
+            <div class="insight-desc" style="color:#8b5cf6">
+              {{ computedStats().totalReviewed > 0 ? 'Cartes ayant ≥ 1 révision' : 'Aucune révision encore' }}
             </div>
           </div>
         </div>
 
-        <!-- Insight 3: Due / overdue alert -->
-        <div class="ana-card insight-card rounded-2xl"
-          [class]="computedStats().overdue > 0 ? 'bg-orange-50/80 dark:bg-orange-950/20 border border-orange-100 dark:border-orange-900/30' : 'bg-emerald-50/80 dark:bg-emerald-950/20 border border-emerald-100 dark:border-emerald-900/30'">
-          <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
-            [class]="computedStats().overdue > 0 ? 'bg-orange-100 dark:bg-orange-900/40' : 'bg-emerald-100 dark:bg-emerald-900/40'">
-            <span class="material-icons" [class]="computedStats().overdue > 0 ? 'text-orange-500' : 'text-emerald-500'">
+        <!-- Insight 3 — Overdue / OK -->
+        <div class="srs-card insight-card">
+          <div class="insight-icon"
+            [style.background]="computedStats().overdue > 0 ? 'rgba(249,115,22,.1)' : 'rgba(16,185,129,.1)'">
+            <span class="material-icons" style="font-size:22px"
+              [style.color]="computedStats().overdue > 0 ? '#f97316' : '#10b981'">
               {{ computedStats().overdue > 0 ? 'warning_amber' : 'verified' }}
             </span>
           </div>
-          <div class="flex-1 min-w-0">
-            <div class="text-[10px] font-black uppercase tracking-widest mb-0.5"
-              [class]="computedStats().overdue > 0 ? 'text-orange-400' : 'text-emerald-400'">
+          <div style="flex:1;min-width:0">
+            <div class="insight-label"
+              [style.color]="computedStats().overdue > 0 ? '#f97316' : '#10b981'">
               {{ computedStats().overdue > 0 ? 'En retard' : 'Statut' }}
             </div>
-            <div class="text-lg font-black font-mono"
-              [class]="computedStats().overdue > 0 ? 'text-orange-700 dark:text-orange-300' : 'text-emerald-700 dark:text-emerald-300'">
+            <div class="insight-value"
+              [style.color]="computedStats().overdue > 0 ? '#ea580c' : '#059669'">
               {{ computedStats().overdue > 0 ? computedStats().overdue : '✓' }}
             </div>
-            <div class="text-[11px] font-semibold leading-snug"
-              [class]="computedStats().overdue > 0 ? 'text-orange-600/70 dark:text-orange-400/60' : 'text-emerald-600/70 dark:text-emerald-400/60'">
+            <div class="insight-desc"
+              [style.color]="computedStats().overdue > 0 ? '#f97316' : '#10b981'">
               {{ computedStats().overdue > 0 ? 'Cartes en retard de révision' : 'Aucune carte en retard !' }}
             </div>
           </div>
@@ -625,6 +610,7 @@
 
       </div>
 
-    </div><!-- /dashboard content -->
-  </div><!-- /main -->
+    </ng-container>
+
+  </main>
 </div>

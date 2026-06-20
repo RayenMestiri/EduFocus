@@ -2255,6 +2255,10 @@ export class DashboardComponent implements OnInit {
     this.router.navigate(['/study-hub']);
   }
 
+  goToSrsAnalytics() {
+    this.router.navigate(['/study-hub/analytics']);
+  }
+
   // Lottie Animation Callback
   onAnimationCreated(animationItem: any): void {
     console.log('🧘 Animation de relaxation chargée');

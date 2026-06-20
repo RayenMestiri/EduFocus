@@ -792,7 +792,8 @@
   grid-template-columns: 1fr;
   gap: 1rem;
 }
-@media (min-width: 640px) { .db-quick-grid { grid-template-columns: 1fr 1fr; } }
+@media (min-width: 640px) { .db-quick-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 1024px) { .db-quick-grid { grid-template-columns: repeat(3, 1fr); } }
 
 .db-quick-card {
   position: relative;
@@ -901,6 +902,30 @@
 .db-root.light .db-quick-title-study, .db-root.light .db-quick-title-study { background-image: linear-gradient(135deg, #7c3aed, #8b5cf6); }
 .db-root.light .db-quick-desc, .db-root.light .db-quick-desc { color: #6b7280; }
 .db-root.light .db-quick-arrow-study, .db-root.light .db-quick-arrow-study { color: #8b5cf6; }
+
+/* SRS Analytics card */
+.db-root.dark .db-quick-analytics {
+  background: linear-gradient(145deg, rgba(236,72,153,.08), rgba(236,72,153,.04));
+  border-color: rgba(236,72,153,.2);
+}
+.db-root.dark .db-quick-analytics:hover { border-color: rgba(236,72,153,.4); box-shadow: 0 12px 40px rgba(236,72,153,.12); }
+.db-root.dark .db-quick-analytics .db-quick-glow { background: radial-gradient(circle, rgba(236,72,153,.25), transparent); }
+.db-root.dark .db-quick-icon-analytics { background: linear-gradient(135deg, #ec4899, #db2777); box-shadow: 0 6px 24px rgba(236,72,153,.4); }
+.db-root.dark .db-quick-icon-analytics .material-icons { color: #fff; }
+.db-root.dark .db-quick-title-analytics { background-image: linear-gradient(135deg, #f472b6, #ec4899); }
+.db-root.dark .db-quick-arrow-analytics { color: #f472b6; }
+
+.db-root.light .db-quick-analytics, .db-root.light .db-quick-analytics {
+  background: rgba(255,255,255,.9);
+  border-color: rgba(236,72,153,.15);
+  box-shadow: 0 4px 20px rgba(236,72,153,.08);
+}
+.db-root.light .db-quick-analytics:hover, .db-root.light .db-quick-analytics:hover { border-color: rgba(236,72,153,.3); box-shadow: 0 12px 40px rgba(236,72,153,.15); }
+.db-root.light .db-quick-analytics .db-quick-glow, .db-root.light .db-quick-analytics .db-quick-glow { background: radial-gradient(circle, rgba(236,72,153,.15), transparent); }
+.db-root.light .db-quick-icon-analytics, .db-root.light .db-quick-icon-analytics { background: linear-gradient(135deg, #ec4899, #db2777); box-shadow: 0 6px 24px rgba(236,72,153,.35); }
+.db-root.light .db-quick-icon-analytics .material-icons, .db-root.light .db-quick-icon-analytics .material-icons { color: #fff; }
+.db-root.light .db-quick-title-analytics, .db-root.light .db-quick-title-analytics { background-image: linear-gradient(135deg, #ec4899, #db2777); }
+.db-root.light .db-quick-arrow-analytics, .db-root.light .db-quick-arrow-analytics { color: #db2777; }
 
 /* ─── STATS CARDS ──────────────────────────────────────────── */
 .db-stats-grid {
