@@ -127,6 +127,60 @@ export class SrsAnalyticsComponent implements OnInit {
     return insights;
   });
 
+  // ── Cockpit metrics (real SM-2 data) ──────────────────────────────────────
+  /** Average SM-2 ease factor across cards that have entered the SRS cycle. */
+  avgEaseFactor = computed(() => {
+    let sum = 0, n = 0;
+    for (const p of this.studyHubService.studyPacks())
+      for (const f of (p.flashcards || [])) {
+        if (f.lastReviewed || f.state !== 'new') { sum += (f.easeFactor ?? 2.5); n++; }
+      }
+    return n > 0 ? +(sum / n).toFixed(2) : 2.5;
+  });
+
+  /** Total lapses (times a mastered/review card was forgotten). */
+  totalLapses = computed(() => {
+    let sum = 0;
+    for (const p of this.studyHubService.studyPacks())
+      for (const f of (p.flashcards || [])) sum += (f.lapses || 0);
+    return sum;
+  });
+
+  /** Average review interval (days) for anchored cards — long-term stability. */
+  avgInterval = computed(() => {
+    let sum = 0, n = 0;
+    for (const p of this.studyHubService.studyPacks())
+      for (const f of (p.flashcards || [])) {
+        if ((f.state === 'review' || f.state === 'mastered') && f.interval > 0) { sum += f.interval; n++; }
+      }
+    return n > 0 ? Math.round(sum / n) : 0;
+  });
+
+  /** Review workload forecast for the next 7 days (overdue rolls into today). */
+  reviewForecast = computed(() => {
+    const DAY = 86400000;
+    const now = new Date();
+    const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const buckets = Array.from({ length: 7 }, (_, i) => {
+      const d = new Date(startOfToday.getTime() + i * DAY);
+      return {
+        date: d,
+        label: i === 0 ? "Auj." : d.toLocaleDateString('fr-FR', { weekday: 'short' }),
+        count: 0
+      };
+    });
+    for (const p of this.studyHubService.studyPacks())
+      for (const f of (p.flashcards || [])) {
+        if (!f.dueDate || f.state === 'new') continue;
+        let idx = Math.floor((new Date(f.dueDate).getTime() - startOfToday.getTime()) / DAY);
+        if (idx < 0) idx = 0;          // overdue → due today
+        if (idx > 6) continue;
+        buckets[idx].count++;
+      }
+    const max = Math.max(1, ...buckets.map(b => b.count));
+    return buckets.map(b => ({ ...b, pct: Math.round((b.count / max) * 100) }));
+  });
+
   ngOnInit(): void {
     this.studyHubService.refreshPacks();
     const poll = setInterval(() => {

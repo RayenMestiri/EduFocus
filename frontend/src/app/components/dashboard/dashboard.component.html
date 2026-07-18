@@ -115,253 +115,315 @@
          │ TAB: DASHBOARD (Overview)
          └─────────────────────────────────────────── -->
     @if (activeTab() === 'dashboard') {
-      <div class="db-tab-content">
+      <div class="db-tab-content space-y-6">
 
         <!-- ══ HERO WELCOME BANNER ══ -->
-        <div class="db-hero">
-          <div class="db-hero-bg"></div>
-          <div class="db-hero-content">
-            <div class="db-hero-text">
-              <div class="db-hero-badge">
-                <span class="material-icons">auto_awesome</span>
+        <div class="relative overflow-hidden rounded-3xl border border-white/10 p-6 shadow-2xl sm:p-8
+                    bg-gradient-to-br from-indigo-600 via-purple-600 to-fuchsia-600
+                    dark:from-indigo-700/90 dark:via-purple-700/80 dark:to-fuchsia-700/70">
+          <!-- ambient auras -->
+          <div class="pointer-events-none absolute -right-20 -top-24 h-72 w-72 rounded-full bg-white/20 blur-3xl"></div>
+          <div class="pointer-events-none absolute -bottom-24 -left-10 h-64 w-64 rounded-full bg-fuchsia-400/30 blur-3xl"></div>
+          <!-- fine grid -->
+          <div class="pointer-events-none absolute inset-0 opacity-[0.15] [background-image:linear-gradient(rgba(255,255,255,.4)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,.4)_1px,transparent_1px)] [background-size:40px_40px] [mask-image:radial-gradient(ellipse_60%_80%_at_50%_0%,#000,transparent)]"></div>
+
+          <div class="relative flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+            <div class="max-w-xl">
+              <div class="inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-white/90 backdrop-blur-md">
+                <span class="material-icons text-[14px]">auto_awesome</span>
                 EduFocus Dashboard
               </div>
-              <h2 class="db-hero-greeting">
-                {{ 'MAIN_DASHBOARD.WELCOME_BACK' | translate }}, <span class="db-hero-name">{{ currentUser()?.name || 'Student' }}</span>
+              <h2 class="mt-4 text-3xl font-extrabold tracking-tight text-white sm:text-4xl">
+                {{ 'MAIN_DASHBOARD.WELCOME_BACK' | translate }}, <span class="bg-gradient-to-r from-white via-indigo-100 to-fuchsia-200 bg-clip-text text-transparent [text-shadow:0_0_30px_rgba(255,255,255,.35)]">{{ currentUser()?.name || 'Student' }}</span>
               </h2>
-              <p class="db-hero-sub">{{ 'MAIN_DASHBOARD.HERO_SUB' | translate }}</p>
+              <p class="mt-2 text-sm leading-relaxed text-white/70 sm:text-base">{{ 'MAIN_DASHBOARD.HERO_SUB' | translate }}</p>
+
+              <!-- AI Coach micro-card -->
+              <button (click)="router.navigate(['/ai-coach'])"
+                      class="group mt-5 inline-flex items-center gap-3 rounded-2xl border border-white/20 bg-white/10 px-4 py-2.5 text-left backdrop-blur-md transition hover:bg-white/20">
+                <span class="grid h-9 w-9 place-items-center rounded-xl bg-gradient-to-br from-indigo-400 via-purple-400 to-pink-400 text-white shadow-lg shadow-purple-500/30">
+                  <span class="material-icons text-[18px]">auto_awesome</span>
+                </span>
+                <span>
+                  <span class="flex items-center gap-2 text-sm font-semibold text-white">
+                    {{ 'MAIN_DASHBOARD.AI_COACH' | translate }}
+                    <span class="rounded-md bg-gradient-to-r from-indigo-200 to-pink-200 px-1.5 py-0.5 text-[9px] font-black uppercase tracking-wider text-purple-900 shadow-[0_0_12px_rgba(255,255,255,.4)]">Pro</span>
+                  </span>
+                  <span class="block text-[11px] text-white/60">{{ 'MAIN_DASHBOARD.AI_COACH_DESC' | translate }}</span>
+                </span>
+                <span class="material-icons text-white/70 transition-transform group-hover:translate-x-1">arrow_forward</span>
+              </button>
             </div>
-            <div class="db-hero-stats">
-              <div class="db-hero-stat">
-                <div class="db-hero-stat-val">{{ progressPercentage() }}%</div>
-                <div class="db-hero-stat-lbl">{{ 'MAIN_DASHBOARD.DAILY_GOAL' | translate }}</div>
+
+            <!-- hero stat pills -->
+            <div class="flex items-stretch gap-3">
+              <div class="min-w-[90px] rounded-2xl border border-white/15 bg-white/10 px-4 py-3 text-center backdrop-blur-md">
+                <div class="text-2xl font-extrabold tabular-nums text-white">{{ progressPercentage() }}%</div>
+                <div class="mt-1 text-[10px] font-semibold uppercase tracking-wider text-white/60">{{ 'MAIN_DASHBOARD.DAILY_GOAL' | translate }}</div>
               </div>
-              <div class="db-hero-divider"></div>
-              <div class="db-hero-stat">
-                <div class="db-hero-stat-val">{{ sessionsCompleted() }}</div>
-                <div class="db-hero-stat-lbl">{{ 'MAIN_DASHBOARD.SESSIONS' | translate }}</div>
+              <div class="min-w-[90px] rounded-2xl border border-white/15 bg-white/10 px-4 py-3 text-center backdrop-blur-md">
+                <div class="text-2xl font-extrabold tabular-nums text-white">{{ sessionsCompleted() }}</div>
+                <div class="mt-1 text-[10px] font-semibold uppercase tracking-wider text-white/60">{{ 'MAIN_DASHBOARD.SESSIONS' | translate }}</div>
               </div>
-              <div class="db-hero-divider"></div>
-              <div class="db-hero-stat">
-                <div class="db-hero-stat-val">{{ studyStreak() }}</div>
-                <div class="db-hero-stat-lbl">{{ 'MAIN_DASHBOARD.STREAK_DAYS' | translate }}</div>
+              <div class="min-w-[90px] rounded-2xl border border-amber-300/30 bg-amber-400/15 px-4 py-3 text-center backdrop-blur-md">
+                <div class="flex items-center justify-center gap-1 text-2xl font-extrabold tabular-nums text-white">
+                  <span class="material-icons animate-pulse text-[18px] text-amber-300 drop-shadow-[0_0_10px_rgba(245,158,11,.7)]">local_fire_department</span>
+                  {{ studyStreak() }}
+                </div>
+                <div class="mt-1 text-[10px] font-semibold uppercase tracking-wider text-white/60">{{ 'MAIN_DASHBOARD.STREAK_DAYS' | translate }}</div>
               </div>
             </div>
           </div>
-          <!-- Progress bar -->
-          <div class="db-hero-progress">
-            <div class="db-hero-progress-bar" [style.width.%]="progressPercentage()"></div>
+
+          <!-- neon progress bar -->
+          <div class="relative mt-6 h-2 w-full overflow-hidden rounded-full bg-white/15">
+            <div class="h-full rounded-full bg-gradient-to-r from-emerald-300 via-emerald-400 to-teal-300 shadow-[0_0_12px_rgba(52,211,153,.7)] transition-all duration-700"
+                 [style.width.%]="progressPercentage()"></div>
           </div>
         </div>
 
         <!-- ══ CONTEXTUAL ALERTS ══ -->
         @if (totalGoalMinutes() === 0 && subjects().length > 0) {
-          <div class="db-alert db-alert-warning">
-            <span class="material-icons db-alert-icon">calendar_today</span>
-            <div class="db-alert-body">
-              <div class="db-alert-title">{{ 'MAIN_DASHBOARD.ALERT_NO_PLAN_TITLE' | translate }}</div>
-              <div class="db-alert-msg">{{ 'MAIN_DASHBOARD.ALERT_NO_PLAN_MSG' | translate }}</div>
+          <div class="flex flex-col items-start gap-4 rounded-2xl border border-amber-300/50 bg-amber-50 px-5 py-4 shadow-sm sm:flex-row sm:items-center dark:border-amber-400/20 dark:bg-amber-400/[0.06]">
+            <span class="material-icons text-amber-500">calendar_today</span>
+            <div class="flex-1">
+              <div class="font-semibold text-slate-900 dark:text-white">{{ 'MAIN_DASHBOARD.ALERT_NO_PLAN_TITLE' | translate }}</div>
+              <div class="text-sm text-slate-500 dark:text-slate-400">{{ 'MAIN_DASHBOARD.ALERT_NO_PLAN_MSG' | translate }}</div>
             </div>
-            <button class="db-alert-action" (click)="openPlanModal()">
+            <button class="group inline-flex items-center gap-1.5 rounded-xl bg-amber-500 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-amber-500/25 transition hover:bg-amber-600" (click)="openPlanModal()">
               {{ 'MAIN_DASHBOARD.DAILY_PLANNER' | translate }}
-              <span class="material-icons">arrow_forward</span>
+              <span class="material-icons text-[18px] transition-transform group-hover:translate-x-0.5">arrow_forward</span>
             </button>
           </div>
         }
 
         @if (urgentTodosCount() > 0) {
-          <div class="db-alert db-alert-danger">
-            <span class="material-icons db-alert-icon animate-pulse">priority_high</span>
-            <div class="db-alert-body">
-              <div class="db-alert-title">{{ 'MAIN_DASHBOARD.ALERT_URGENT_TITLE' | translate }}</div>
-              <div class="db-alert-msg">{{ 'MAIN_DASHBOARD.ALERT_URGENT_MSG' | translate: { count: urgentTodosCount() } }}</div>
+          <div class="flex flex-col items-start gap-4 rounded-2xl border border-rose-300/50 bg-rose-50 px-5 py-4 shadow-sm sm:flex-row sm:items-center dark:border-rose-400/20 dark:bg-rose-500/[0.06]">
+            <span class="material-icons animate-pulse text-rose-500">priority_high</span>
+            <div class="flex-1">
+              <div class="font-semibold text-slate-900 dark:text-white">{{ 'MAIN_DASHBOARD.ALERT_URGENT_TITLE' | translate }}</div>
+              <div class="text-sm text-slate-500 dark:text-slate-400">{{ 'MAIN_DASHBOARD.ALERT_URGENT_MSG' | translate: { count: urgentTodosCount() } }}</div>
             </div>
-            <button class="db-alert-action" (click)="activeTab.set('subjects')">
+            <button class="group inline-flex items-center gap-1.5 rounded-xl bg-rose-500 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-rose-500/25 transition hover:bg-rose-600" (click)="activeTab.set('subjects')">
               {{ 'MAIN_DASHBOARD.VIEW_TODOS' | translate }}
-              <span class="material-icons">arrow_forward</span>
+              <span class="material-icons text-[18px] transition-transform group-hover:translate-x-0.5">arrow_forward</span>
             </button>
           </div>
         }
 
         @if (progressPercentage() >= 100 && totalGoalMinutes() > 0) {
-          <div class="db-alert db-alert-success">
-            <span class="material-icons db-alert-icon">celebration</span>
-            <div class="db-alert-body">
-              <div class="db-alert-title">{{ 'MAIN_DASHBOARD.ALERT_GOAL_TITLE' | translate }}</div>
-              <div class="db-alert-msg">{{ 'MAIN_DASHBOARD.ALERT_GOAL_MSG' | translate }}</div>
+          <div class="flex items-center gap-4 rounded-2xl border border-emerald-300/50 bg-emerald-50 px-5 py-4 shadow-sm dark:border-emerald-400/20 dark:bg-emerald-500/[0.06]">
+            <span class="material-icons text-emerald-500">celebration</span>
+            <div class="flex-1">
+              <div class="font-semibold text-slate-900 dark:text-white">{{ 'MAIN_DASHBOARD.ALERT_GOAL_TITLE' | translate }}</div>
+              <div class="text-sm text-slate-500 dark:text-slate-400">{{ 'MAIN_DASHBOARD.ALERT_GOAL_MSG' | translate }}</div>
             </div>
           </div>
         }
 
         @if (progressPercentage() >= 50 && progressPercentage() < 100 && totalGoalMinutes() > 0) {
-          <div class="db-alert db-alert-info">
-            <span class="material-icons db-alert-icon">trending_up</span>
-            <div class="db-alert-body">
-              <div class="db-alert-title">{{ 'MAIN_DASHBOARD.ALERT_PROGRESS_TITLE' | translate }}</div>
-              <div class="db-alert-msg">{{ 'MAIN_DASHBOARD.ALERT_PROGRESS_MSG' | translate }}</div>
+          <div class="flex items-center gap-4 rounded-2xl border border-indigo-300/50 bg-indigo-50 px-5 py-4 shadow-sm dark:border-indigo-400/20 dark:bg-indigo-500/[0.06]">
+            <span class="material-icons text-indigo-500">trending_up</span>
+            <div class="flex-1">
+              <div class="font-semibold text-slate-900 dark:text-white">{{ 'MAIN_DASHBOARD.ALERT_PROGRESS_TITLE' | translate }}</div>
+              <div class="text-sm text-slate-500 dark:text-slate-400">{{ 'MAIN_DASHBOARD.ALERT_PROGRESS_MSG' | translate }}</div>
             </div>
           </div>
         }
 
         <!-- ══ QUICK ACCESS CARDS ══ -->
-        <div class="db-quick-grid">
-          <div class="db-quick-card db-quick-planner" (click)="goToPlanner()">
-            <div class="db-quick-glow"></div>
-            <div class="db-quick-inner">
-              <div class="db-quick-icon-wrap">
+        <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+
+          <!-- Daily Planner -->
+          <div (click)="goToPlanner()"
+               class="group relative cursor-pointer overflow-hidden rounded-2xl border border-slate-200 bg-white p-5 shadow-xl transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl dark:border-white/[0.07] dark:bg-white/[0.02] dark:backdrop-blur-xl dark:hover:border-indigo-400/40">
+            <div class="pointer-events-none absolute -right-8 -top-8 h-24 w-24 rounded-full bg-indigo-500/20 opacity-0 blur-2xl transition-opacity duration-300 group-hover:opacity-100"></div>
+            <div class="relative flex items-start gap-4">
+              <div class="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-indigo-500/10 text-indigo-500 ring-1 ring-indigo-500/20 dark:text-indigo-400">
                 <span class="material-icons">calendar_today</span>
               </div>
-              <div class="db-quick-text">
-                <h3 class="db-quick-title">{{ 'MAIN_DASHBOARD.DAILY_PLANNER' | translate }}</h3>
-                <p class="db-quick-desc">{{ 'MAIN_DASHBOARD.DAILY_PLANNER_DESC' | translate }}</p>
+              <div class="min-w-0 flex-1">
+                <h3 class="font-semibold text-slate-900 dark:text-white">{{ 'MAIN_DASHBOARD.DAILY_PLANNER' | translate }}</h3>
+                <p class="mt-0.5 text-sm leading-snug text-slate-500 dark:text-slate-400">{{ 'MAIN_DASHBOARD.DAILY_PLANNER_DESC' | translate }}</p>
               </div>
+              <span class="material-icons text-slate-300 transition-transform duration-300 group-hover:translate-x-1 group-hover:text-indigo-500 dark:text-slate-600">arrow_forward</span>
             </div>
-            <span class="material-icons db-quick-arrow">arrow_forward</span>
           </div>
 
-          <div class="db-quick-card db-quick-study" (click)="goToStudyHub()">
-            <div class="db-quick-glow"></div>
-            <div class="db-quick-inner">
-              <div class="db-quick-icon-wrap db-quick-icon-study">
+          <!-- Study Hub -->
+          <div (click)="goToStudyHub()"
+               class="group relative cursor-pointer overflow-hidden rounded-2xl border border-slate-200 bg-white p-5 shadow-xl transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl dark:border-white/[0.07] dark:bg-white/[0.02] dark:backdrop-blur-xl dark:hover:border-emerald-400/40">
+            <div class="pointer-events-none absolute -right-8 -top-8 h-24 w-24 rounded-full bg-emerald-500/20 opacity-0 blur-2xl transition-opacity duration-300 group-hover:opacity-100"></div>
+            <div class="relative flex items-start gap-4">
+              <div class="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-emerald-500/10 text-emerald-500 ring-1 ring-emerald-500/20 dark:text-emerald-400">
                 <span class="material-icons">school</span>
               </div>
-              <div class="db-quick-text">
-                <h3 class="db-quick-title db-quick-title-study">{{ 'MAIN_DASHBOARD.STUDY_HUB' | translate }}</h3>
-                <p class="db-quick-desc">{{ 'MAIN_DASHBOARD.STUDY_HUB_DESC' | translate }}</p>
+              <div class="min-w-0 flex-1">
+                <h3 class="font-semibold text-slate-900 dark:text-white">{{ 'MAIN_DASHBOARD.STUDY_HUB' | translate }}</h3>
+                <p class="mt-0.5 text-sm leading-snug text-slate-500 dark:text-slate-400">{{ 'MAIN_DASHBOARD.STUDY_HUB_DESC' | translate }}</p>
               </div>
+              <span class="material-icons text-slate-300 transition-transform duration-300 group-hover:translate-x-1 group-hover:text-emerald-500 dark:text-slate-600">arrow_forward</span>
             </div>
-            <span class="material-icons db-quick-arrow db-quick-arrow-study">arrow_forward</span>
           </div>
 
-          <div class="db-quick-card db-quick-analytics" (click)="goToSrsAnalytics()">
-            <div class="db-quick-glow"></div>
-            <div class="db-quick-inner">
-              <div class="db-quick-icon-wrap db-quick-icon-analytics">
+          <!-- SRS Analytics -->
+          <div (click)="goToSrsAnalytics()"
+               class="group relative cursor-pointer overflow-hidden rounded-2xl border border-slate-200 bg-white p-5 shadow-xl transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl dark:border-white/[0.07] dark:bg-white/[0.02] dark:backdrop-blur-xl dark:hover:border-pink-400/40">
+            <div class="pointer-events-none absolute -right-8 -top-8 h-24 w-24 rounded-full bg-pink-500/20 opacity-0 blur-2xl transition-opacity duration-300 group-hover:opacity-100"></div>
+            <div class="relative flex items-start gap-4">
+              <div class="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-pink-500/10 text-pink-500 ring-1 ring-pink-500/20 dark:text-pink-400">
                 <span class="material-icons">analytics</span>
               </div>
-              <div class="db-quick-text">
-                <h3 class="db-quick-title db-quick-title-analytics">{{ 'MAIN_DASHBOARD.SRS_ANALYTICS' | translate }}</h3>
-                <p class="db-quick-desc">{{ 'MAIN_DASHBOARD.SRS_ANALYTICS_DESC' | translate }}</p>
+              <div class="min-w-0 flex-1">
+                <h3 class="font-semibold text-slate-900 dark:text-white">{{ 'MAIN_DASHBOARD.SRS_ANALYTICS' | translate }}</h3>
+                <p class="mt-0.5 text-sm leading-snug text-slate-500 dark:text-slate-400">{{ 'MAIN_DASHBOARD.SRS_ANALYTICS_DESC' | translate }}</p>
               </div>
+              <span class="material-icons text-slate-300 transition-transform duration-300 group-hover:translate-x-1 group-hover:text-pink-500 dark:text-slate-600">arrow_forward</span>
             </div>
-            <span class="material-icons db-quick-arrow db-quick-arrow-analytics">arrow_forward</span>
           </div>
 
-          <!-- Premium AI Coach Featured Card -->
-          <div class="db-quick-card db-quick-ai" (click)="router.navigate(['/ai-coach'])">
-            <div class="db-quick-glow"></div>
-            <div class="db-quick-inner">
-              <div class="db-quick-icon-wrap db-quick-icon-ai">
-                <span class="material-icons">auto_awesome</span>
-              </div>
-              <div class="db-quick-text">
-                <div class="db-quick-title-row">
-                  <h3 class="db-quick-title db-quick-title-ai">{{ 'MAIN_DASHBOARD.AI_COACH' | translate }}</h3>
-                  <span class="db-quick-ai-new-badge">PRO</span>
+          <!-- AI Coach — Cyber-Violet featured card -->
+          <div (click)="router.navigate(['/ai-coach'])"
+               class="group relative cursor-pointer overflow-hidden rounded-2xl bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 p-[1.5px] shadow-xl transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl hover:shadow-purple-500/30">
+            <div class="relative h-full rounded-2xl bg-white p-5 dark:bg-slate-950/90 dark:backdrop-blur-xl">
+              <div class="pointer-events-none absolute -right-8 -top-8 h-28 w-28 rounded-full bg-purple-500/30 opacity-60 blur-2xl transition-opacity duration-300 group-hover:opacity-100"></div>
+              <div class="relative flex items-start gap-4">
+                <div class="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 text-white shadow-lg shadow-purple-500/40">
+                  <span class="material-icons">auto_awesome</span>
                 </div>
-                <p class="db-quick-desc">{{ 'MAIN_DASHBOARD.AI_COACH_DESC' | translate }}</p>
+                <div class="min-w-0 flex-1">
+                  <div class="flex items-center gap-2">
+                    <h3 class="font-semibold text-slate-900 dark:text-white">{{ 'MAIN_DASHBOARD.AI_COACH' | translate }}</h3>
+                    <span class="rounded-md bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 px-1.5 py-0.5 text-[9px] font-black uppercase tracking-wider text-white shadow-[0_0_12px_rgba(168,85,247,.6)]">Pro</span>
+                  </div>
+                  <p class="mt-0.5 text-sm leading-snug text-slate-500 dark:text-slate-400">{{ 'MAIN_DASHBOARD.AI_COACH_DESC' | translate }}</p>
+                </div>
+                <span class="material-icons text-purple-500 transition-transform duration-300 group-hover:translate-x-1 dark:text-purple-400">arrow_forward</span>
               </div>
-            </div>
-            <span class="material-icons db-quick-arrow db-quick-arrow-ai">arrow_forward</span>
-          </div>
-        </div>
-
-        <!-- ══ STATS CARDS ══ -->
-        <div class="db-stats-grid">
-          <div class="db-stat-card db-stat-progress" (click)="openPlanModal()">
-            <div class="db-stat-blur"></div>
-            <div class="db-stat-body">
-              <div class="db-stat-icon-row">
-                <span class="material-icons db-stat-icon">track_changes</span>
-                <span class="db-stat-click-hint">{{ 'MAIN_DASHBOARD.CLICK_TO_PLAN' | translate }}</span>
-              </div>
-              <div class="db-stat-value">{{ progressPercentage() }}%</div>
-              <div class="db-stat-label">{{ 'MAIN_DASHBOARD.DAILY_GOAL' | translate }}</div>
-              <div class="db-stat-bar-wrap">
-                <div class="db-stat-bar db-stat-bar-primary" [style.width.%]="progressPercentage()"></div>
-              </div>
-            </div>
-          </div>
-
-          <div class="db-stat-card db-stat-time">
-            <div class="db-stat-blur"></div>
-            <div class="db-stat-body">
-              <div class="db-stat-icon-row">
-                <span class="material-icons db-stat-icon db-stat-icon-green">schedule</span>
-              </div>
-              <div class="db-stat-value db-stat-value-green">{{ formatTime(totalStudiedMinutes()) }}</div>
-              <div class="db-stat-label">{{ 'MAIN_DASHBOARD.TIME_STUDIED' | translate }}</div>
-              <div class="db-stat-sub db-stat-sub-green">{{ 'MAIN_DASHBOARD.OF' | translate }} {{ formatTime(totalGoalMinutes()) }} {{ 'MAIN_DASHBOARD.PLANNED' | translate }}</div>
-            </div>
-          </div>
-
-          <div class="db-stat-card db-stat-tasks">
-            <div class="db-stat-blur"></div>
-            <div class="db-stat-body">
-              <div class="db-stat-icon-row">
-                <span class="material-icons db-stat-icon db-stat-icon-blue">task_alt</span>
-              </div>
-              <div class="db-stat-value db-stat-value-blue">{{ completedTodos() }}/{{ totalTodos() }}</div>
-              <div class="db-stat-label">{{ 'MAIN_DASHBOARD.TASKS_COMPLETED' | translate }}</div>
-              <div class="db-stat-sub db-stat-sub-blue">{{ totalTodos() - completedTodos() }} {{ 'MAIN_DASHBOARD.REMAINING' | translate }}</div>
-            </div>
-          </div>
-
-          <div class="db-stat-card db-stat-streak" (click)="openStatsModal()">
-            <div class="db-stat-blur"></div>
-            <div class="db-stat-body">
-              <div class="db-stat-icon-row">
-                <span class="material-icons db-stat-icon db-stat-icon-orange">local_fire_department</span>
-                <span class="db-stat-click-hint db-stat-click-hint-purple">{{ 'MAIN_DASHBOARD.CLICK_FOR_STATS' | translate }}</span>
-              </div>
-              <div class="db-stat-value db-stat-value-purple">{{ studyStreak() }}</div>
-              <div class="db-stat-label">{{ 'MAIN_DASHBOARD.CONSECUTIVE_DAYS' | translate }}</div>
-              <div class="db-stat-sub db-stat-sub-purple">{{ 'MAIN_DASHBOARD.STREAK_LABEL' | translate }}</div>
             </div>
           </div>
         </div>
 
-        <!-- ══ ONBOARDING ══ -->
+        <!-- ══ STATS — BENTO GRID ══ -->
+        <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+
+          <!-- Daily Goal — circular SVG ring -->
+          <div (click)="openPlanModal()"
+               class="group relative cursor-pointer overflow-hidden rounded-2xl border border-slate-200 bg-white p-5 shadow-xl transition hover:-translate-y-1 dark:border-white/[0.07] dark:bg-white/[0.02] dark:backdrop-blur-xl">
+            <div class="flex items-center gap-4">
+              <div class="relative grid h-[84px] w-[84px] shrink-0 place-items-center">
+                <svg viewBox="0 0 80 80" class="h-[84px] w-[84px] -rotate-90">
+                  <circle cx="40" cy="40" r="34" fill="none" stroke-width="7" class="stroke-slate-200 dark:stroke-white/10" />
+                  <circle cx="40" cy="40" r="34" fill="none" stroke-width="7" stroke-linecap="round" stroke="url(#goalGrad)"
+                          stroke-dasharray="213.6" [attr.stroke-dashoffset]="213.6 * (1 - progressPercentage() / 100)"
+                          class="transition-[stroke-dashoffset] duration-700 [filter:drop-shadow(0_0_5px_rgba(52,211,153,.6))]" />
+                  <defs>
+                    <linearGradient id="goalGrad" x1="0" y1="0" x2="1" y2="1">
+                      <stop offset="0" stop-color="#34d399" />
+                      <stop offset="1" stop-color="#14b8a6" />
+                    </linearGradient>
+                  </defs>
+                </svg>
+                <span class="absolute text-lg font-extrabold tabular-nums text-slate-900 dark:text-white">{{ progressPercentage() }}%</span>
+              </div>
+              <div>
+                <div class="text-sm font-semibold text-slate-900 dark:text-white">{{ 'MAIN_DASHBOARD.DAILY_GOAL' | translate }}</div>
+                <div class="mt-1.5 inline-flex items-center gap-1 text-xs text-emerald-500 dark:text-emerald-400">
+                  <span class="material-icons text-[14px]">track_changes</span>{{ 'MAIN_DASHBOARD.CLICK_TO_PLAN' | translate }}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Time studied — monospace -->
+          <div class="relative overflow-hidden rounded-2xl border border-slate-200 bg-white p-5 shadow-xl dark:border-white/[0.07] dark:bg-white/[0.02] dark:backdrop-blur-xl">
+            <div class="mb-3 grid h-10 w-10 place-items-center rounded-xl bg-emerald-500/10 text-emerald-500 ring-1 ring-emerald-500/20 dark:text-emerald-400">
+              <span class="material-icons">schedule</span>
+            </div>
+            <div class="font-mono text-3xl font-bold tabular-nums text-emerald-500 dark:text-emerald-400 [text-shadow:0_0_20px_rgba(52,211,153,.25)]">{{ formatTime(totalStudiedMinutes()) }}</div>
+            <div class="mt-1 text-sm font-medium text-slate-900 dark:text-white">{{ 'MAIN_DASHBOARD.TIME_STUDIED' | translate }}</div>
+            <div class="text-xs text-slate-400 dark:text-slate-500">{{ 'MAIN_DASHBOARD.OF' | translate }} {{ formatTime(totalGoalMinutes()) }} {{ 'MAIN_DASHBOARD.PLANNED' | translate }}</div>
+          </div>
+
+          <!-- Tasks completed -->
+          <div class="relative overflow-hidden rounded-2xl border border-slate-200 bg-white p-5 shadow-xl dark:border-white/[0.07] dark:bg-white/[0.02] dark:backdrop-blur-xl">
+            <div class="mb-3 grid h-10 w-10 place-items-center rounded-xl bg-sky-500/10 text-sky-500 ring-1 ring-sky-500/20 dark:text-sky-400">
+              <span class="material-icons">task_alt</span>
+            </div>
+            <div class="text-3xl font-bold tabular-nums text-sky-500 dark:text-sky-400">{{ completedTodos() }}/{{ totalTodos() }}</div>
+            <div class="mt-1 text-sm font-medium text-slate-900 dark:text-white">{{ 'MAIN_DASHBOARD.TASKS_COMPLETED' | translate }}</div>
+            <div class="text-xs text-slate-400 dark:text-slate-500">{{ totalTodos() - completedTodos() }} {{ 'MAIN_DASHBOARD.REMAINING' | translate }}</div>
+          </div>
+
+          <!-- Streak — flamboyant amber -->
+          <div (click)="openStatsModal()"
+               class="group relative cursor-pointer overflow-hidden rounded-2xl border border-amber-200 bg-white p-5 shadow-xl transition hover:-translate-y-1 dark:border-amber-400/20 dark:bg-amber-400/[0.04] dark:backdrop-blur-xl">
+            <div class="pointer-events-none absolute -right-6 -top-6 h-24 w-24 rounded-full bg-amber-500/20 blur-2xl"></div>
+            <div class="relative mb-3 grid h-10 w-10 place-items-center rounded-xl bg-amber-500/15 ring-1 ring-amber-500/30">
+              <span class="material-icons animate-pulse text-amber-500 drop-shadow-[0_0_15px_rgba(245,158,11,0.6)]">local_fire_department</span>
+            </div>
+            <div class="relative text-3xl font-extrabold tabular-nums text-amber-500 [text-shadow:0_0_20px_rgba(245,158,11,.35)]">{{ studyStreak() }}</div>
+            <div class="relative mt-1 text-sm font-medium text-slate-900 dark:text-white">{{ 'MAIN_DASHBOARD.CONSECUTIVE_DAYS' | translate }}</div>
+            <div class="relative inline-flex items-center gap-1 text-xs text-amber-500/80">
+              <span class="material-icons text-[13px]">bar_chart</span>{{ 'MAIN_DASHBOARD.CLICK_FOR_STATS' | translate }}
+            </div>
+          </div>
+        </div>
+
+        <!-- ══ ONBOARDING — vertical timeline ══ -->
         @if (subjects().length === 0 || totalGoalMinutes() === 0) {
-          <div class="db-onboarding">
-            <div class="db-onboarding-header">
-              <span class="material-icons">rocket_launch</span>
-              <h3>{{ 'MAIN_DASHBOARD.HOW_TO_USE' | translate }}</h3>
+          <div class="relative overflow-hidden rounded-2xl border border-slate-200 bg-white p-6 shadow-xl dark:border-white/[0.07] dark:bg-white/[0.02] dark:backdrop-blur-xl">
+            <div class="mb-6 flex items-center gap-2.5">
+              <span class="material-icons text-purple-500 dark:text-purple-400">rocket_launch</span>
+              <h3 class="text-lg font-bold text-slate-900 dark:text-white">{{ 'MAIN_DASHBOARD.HOW_TO_USE' | translate }}</h3>
             </div>
-            <div class="db-steps">
-              <div class="db-step" [class.db-step-done]="subjects().length > 0">
-                <div class="db-step-num">{{ subjects().length > 0 ? '✓' : '1' }}</div>
-                <div class="db-step-body">
-                  <div class="db-step-title">{{ 'MAIN_DASHBOARD.STEP1_TITLE' | translate }}</div>
-                  <div class="db-step-desc">{{ 'MAIN_DASHBOARD.STEP1_DESC' | translate }}</div>
+
+            <div class="relative space-y-5">
+              <!-- connecting line -->
+              <div class="absolute bottom-3 left-5 top-3 w-px bg-gradient-to-b from-emerald-400/60 via-slate-200 to-slate-200 dark:via-white/10 dark:to-white/10"></div>
+
+              <!-- Step 1 -->
+              <div class="relative flex items-center gap-4">
+                <div class="z-10 grid h-10 w-10 shrink-0 place-items-center rounded-full text-sm font-bold ring-4 ring-white transition dark:ring-slate-950"
+                     [ngClass]="subjects().length > 0 ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/40' : 'bg-slate-100 text-slate-500 dark:bg-white/5 dark:text-slate-400'">
+                  {{ subjects().length > 0 ? '✓' : '1' }}
+                </div>
+                <div class="min-w-0 flex-1">
+                  <div class="font-semibold text-slate-900 dark:text-white">{{ 'MAIN_DASHBOARD.STEP1_TITLE' | translate }}</div>
+                  <div class="text-sm text-slate-500 dark:text-slate-400">{{ 'MAIN_DASHBOARD.STEP1_DESC' | translate }}</div>
                 </div>
                 @if (subjects().length === 0) {
-                  <button class="db-step-btn" (click)="activeTab.set('subjects')">
-                    <span class="material-icons">add</span>
+                  <button class="inline-flex shrink-0 items-center gap-1.5 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-500 px-3.5 py-2 text-sm font-semibold text-white shadow-lg shadow-purple-500/25 transition hover:brightness-110" (click)="activeTab.set('subjects')">
+                    <span class="material-icons text-[18px]">add</span>
                     {{ 'MAIN_DASHBOARD.ADD_SUBJECT' | translate }}
                   </button>
                 }
               </div>
 
-              <div class="db-step" [class.db-step-done]="totalGoalMinutes() > 0">
-                <div class="db-step-num">{{ totalGoalMinutes() > 0 ? '✓' : '2' }}</div>
-                <div class="db-step-body">
-                  <div class="db-step-title">{{ 'MAIN_DASHBOARD.STEP2_TITLE' | translate }}</div>
-                  <div class="db-step-desc">{{ 'MAIN_DASHBOARD.STEP2_DESC' | translate }}</div>
+              <!-- Step 2 -->
+              <div class="relative flex items-center gap-4">
+                <div class="z-10 grid h-10 w-10 shrink-0 place-items-center rounded-full text-sm font-bold ring-4 ring-white transition dark:ring-slate-950"
+                     [ngClass]="totalGoalMinutes() > 0 ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/40' : 'bg-slate-100 text-slate-500 dark:bg-white/5 dark:text-slate-400'">
+                  {{ totalGoalMinutes() > 0 ? '✓' : '2' }}
+                </div>
+                <div class="min-w-0 flex-1">
+                  <div class="font-semibold text-slate-900 dark:text-white">{{ 'MAIN_DASHBOARD.STEP2_TITLE' | translate }}</div>
+                  <div class="text-sm text-slate-500 dark:text-slate-400">{{ 'MAIN_DASHBOARD.STEP2_DESC' | translate }}</div>
                 </div>
                 @if (subjects().length > 0 && totalGoalMinutes() === 0) {
-                  <button class="db-step-btn" (click)="openPlanModal()">
-                    <span class="material-icons">calendar_today</span>
+                  <button class="inline-flex shrink-0 items-center gap-1.5 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-500 px-3.5 py-2 text-sm font-semibold text-white shadow-lg shadow-purple-500/25 transition hover:brightness-110" (click)="openPlanModal()">
+                    <span class="material-icons text-[18px]">calendar_today</span>
                     {{ 'MAIN_DASHBOARD.PLAN_DAY' | translate }}
                   </button>
                 }
               </div>
 
-              <div class="db-step">
-                <div class="db-step-num">3</div>
-                <div class="db-step-body">
-                  <div class="db-step-title">{{ 'MAIN_DASHBOARD.STEP3_TITLE' | translate }}</div>
-                  <div class="db-step-desc">{{ 'MAIN_DASHBOARD.STEP3_DESC' | translate }}</div>
+              <!-- Step 3 -->
+              <div class="relative flex items-center gap-4">
+                <div class="z-10 grid h-10 w-10 shrink-0 place-items-center rounded-full bg-slate-100 text-sm font-bold text-slate-500 ring-4 ring-white dark:bg-white/5 dark:text-slate-400 dark:ring-slate-950">3</div>
+                <div class="min-w-0 flex-1">
+                  <div class="font-semibold text-slate-900 dark:text-white">{{ 'MAIN_DASHBOARD.STEP3_TITLE' | translate }}</div>
+                  <div class="text-sm text-slate-500 dark:text-slate-400">{{ 'MAIN_DASHBOARD.STEP3_DESC' | translate }}</div>
                 </div>
               </div>
             </div>

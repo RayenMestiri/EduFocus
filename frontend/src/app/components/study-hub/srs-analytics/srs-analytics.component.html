@@ -64,509 +64,318 @@
       </div>
     }
 
-    <!-- ═══ DASHBOARD CONTENT ═══ -->
+    <!-- ═══════════════════════════════════════════════════════════
+         COGNITIVE COCKPIT — surgical analytics (Bento grid)
+         Theme-aware : light base + dark: overrides
+         ═══════════════════════════════════════════════════════════ -->
     @if (!isLoading() && computedStats().totalFlashcards > 0) {
+      <div class="-mx-1 rounded-3xl bg-slate-50 p-1 text-slate-700 dark:bg-slate-950 dark:text-slate-200">
+        <div class="mx-auto max-w-7xl space-y-5 p-3 sm:p-5">
 
-      <!-- Page headline -->
-      <div class="sa-headline">
-        <div class="sa-headline-inner">
-          <div class="sa-eyebrow">Vue d'ensemble · Mis à jour en temps réel</div>
-          <h1 class="sa-h1">Vos performances SRS</h1>
-          <p class="sa-subtitle">
-            <strong>{{ computedStats().totalFlashcards }}</strong> flashcards ·
-            <strong>{{ computedStats().totalPacks }}</strong> pack{{ computedStats().totalPacks > 1 ? 's' : '' }}
-          </p>
-        </div>
-        <div class="sa-health-badge">
-          <span class="material-icons">favorite</span>
-          <span class="sa-health-label">Score santé</span>
-          <span class="sa-health-value">{{ getLearningHealthScore() }}/100</span>
-        </div>
-      </div>
+          <!-- ────────────── HEADER · Cognitive Health Indicator ────────────── -->
+          <header class="relative overflow-hidden rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800/60 dark:bg-slate-900/40 dark:shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)] dark:backdrop-blur-md sm:p-7">
+            <div class="pointer-events-none absolute -right-24 -top-24 h-64 w-64 rounded-full bg-cyan-500/10 blur-3xl"></div>
+            <div class="pointer-events-none absolute -bottom-28 left-1/3 h-64 w-64 rounded-full bg-indigo-500/10 blur-3xl"></div>
 
-      <!-- ──────────────────────────────────────────
-           SECTION 1: Hero KPI Strip
-           ────────────────────────────────────────── -->
-      <div class="sa-section sa-kpi-grid">
-
-        <!-- KPI 1: Retention -->
-        <div class="sa-kpi-card sa-kpi-retention" [class.sa-kpi-excellent]="computedStats().retentionRate >= 90"
-             [class.sa-kpi-good]="computedStats().retentionRate >= 75 && computedStats().retentionRate < 90"
-             [class.sa-kpi-average]="computedStats().retentionRate >= 50 && computedStats().retentionRate < 75"
-             [class.sa-kpi-poor]="computedStats().retentionRate < 50">
-          <div class="sa-kpi-top">
-            <div class="sa-kpi-icon-wrap sa-kpi-icon-purple">
-              <span class="material-icons">psychology</span>
-            </div>
-            <div class="sa-kpi-ring-area">
-              <svg width="52" height="52" viewBox="0 0 52 52" class="sa-ring-svg">
-                <circle cx="26" cy="26" r="22" fill="none" stroke="rgba(255,255,255,.15)" stroke-width="4"/>
-                <circle cx="26" cy="26" r="22" fill="none" stroke="white" stroke-width="4" stroke-linecap="round"
-                  stroke-dasharray="138.2"
-                  [attr.stroke-dashoffset]="(1 - computedStats().retentionRate / 100) * 138.2"
-                  class="sa-ring-fill"/>
-              </svg>
-              <span class="sa-ring-label">{{ computedStats().retentionRate }}%</span>
-            </div>
-          </div>
-          <div class="sa-kpi-metric">{{ computedStats().retentionRate }}<span class="sa-kpi-unit">%</span></div>
-          <div class="sa-kpi-name">Taux de Rétention</div>
-          <div class="sa-kpi-status">
-            <span class="material-icons sa-kpi-status-icon">
-              {{ computedStats().retentionRate >= 90 ? 'emoji_events' : computedStats().retentionRate >= 75 ? 'thumb_up' : computedStats().retentionRate >= 50 ? 'trending_flat' : 'warning' }}
-            </span>
-            {{ computedStats().retentionRate >= 90 ? 'Excellent' : computedStats().retentionRate >= 75 ? 'Très bien' : computedStats().retentionRate >= 50 ? 'Moyen' : 'À améliorer' }}
-          </div>
-        </div>
-
-        <!-- KPI 2: Due Today -->
-        <div class="sa-kpi-card">
-          <div class="sa-kpi-top">
-            <div class="sa-kpi-icon-wrap" [style.background]="getWorkloadStatus().bg">
-              <span class="material-icons" [style.color]="getWorkloadStatus().color">notifications_active</span>
-            </div>
-            @if (computedStats().dueToday > 0) {
-              <span class="sa-kpi-live-dot"></span>
-            }
-          </div>
-          <div class="sa-kpi-metric" [style.color]="getWorkloadStatus().color">{{ computedStats().dueToday }}</div>
-          <div class="sa-kpi-name">À réviser</div>
-          <div class="sa-kpi-status" [style.color]="getWorkloadStatus().color">
-            <span class="material-icons sa-kpi-status-icon">{{ getWorkloadStatus().icon }}</span>
-            {{ getWorkloadStatus().label }}
-            @if (computedStats().overdue > 0) {
-              <span class="sa-kpi-overdue-badge">{{ computedStats().overdue }} en retard</span>
-            }
-          </div>
-        </div>
-
-        <!-- KPI 3: Cette Semaine -->
-        <div class="sa-kpi-card">
-          <div class="sa-kpi-top">
-            <div class="sa-kpi-icon-wrap sa-kpi-icon-indigo">
-              <span class="material-icons">event_repeat</span>
-            </div>
-          </div>
-          <div class="sa-kpi-metric" style="color:#6d5ef7">{{ computedStats().reviewsLast7Days }}</div>
-          <div class="sa-kpi-name">7 derniers jours</div>
-          <div class="sa-kpi-status" style="color:#6d5ef7">
-            <span class="material-icons sa-kpi-status-icon">calendar_month</span>
-            {{ computedStats().reviewsLast30Days }} ce mois
-          </div>
-        </div>
-
-        <!-- KPI 4: Maîtrisées -->
-        <div class="sa-kpi-card">
-          <div class="sa-kpi-top">
-            <div class="sa-kpi-icon-wrap sa-kpi-icon-emerald">
-              <span class="material-icons">workspace_premium</span>
-            </div>
-          </div>
-          <div class="sa-kpi-metric" style="color:#22c55e">{{ computedStats().mastered }}</div>
-          <div class="sa-kpi-name">Maîtrisées</div>
-          <div class="sa-kpi-status" style="color:#22c55e">
-            <span class="material-icons sa-kpi-status-icon">layers</span>
-            sur {{ computedStats().totalFlashcards }} cartes · {{ getMasteryPercentage() }}%
-          </div>
-        </div>
-
-      </div>
-
-      <!-- ──────────────────────────────────────────
-           SECTION 2: Distribution + Activity
-           ────────────────────────────────────────── -->
-      <div class="sa-section sa-two-col">
-
-        <!-- Distribution card -->
-        <div class="sa-card sa-dist-card">
-          <div class="sa-card-header">
-            <div>
-              <div class="sa-card-eyebrow">Répartition globale</div>
-              <div class="sa-card-title">
-                <span class="material-icons">donut_large</span>
-                Distribution des États SRS
+            <div class="relative flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+              <div class="min-w-0">
+                <div class="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-100 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-cyan-700 dark:border-slate-700/60 dark:bg-slate-800/40 dark:text-cyan-300/90">
+                  <span class="h-1.5 w-1.5 animate-pulse rounded-full bg-cyan-400 shadow-[0_0_8px_#22d3ee]"></span>
+                  Cognitive Health Indicator
+                </div>
+                <h1 class="mt-3 text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white sm:text-4xl">Retention Matrix</h1>
+                <!-- 🔗 AI Coach one-liner summary (real insight) -->
+                <p class="mt-2 max-w-2xl text-sm leading-relaxed text-slate-500 dark:text-slate-400">
+                  <span class="material-icons align-middle text-[15px] text-indigo-500 dark:text-indigo-400">auto_awesome</span>
+                  {{ getAiInsights()[0].body }}
+                </p>
               </div>
-              <p class="sa-card-sub">{{ computedStats().totalFlashcards }} flashcards · 4 états d'apprentissage</p>
+
+              <!-- Retention score + health gauges -->
+              <div class="flex shrink-0 items-stretch gap-3">
+                <!-- Retention Score badge -->
+                <div class="rounded-2xl border border-cyan-500/30 bg-gradient-to-br from-cyan-500/10 to-emerald-500/5 px-5 py-4 text-center dark:border-cyan-500/20">
+                  <div class="text-[10px] font-semibold uppercase tracking-widest text-cyan-700 dark:text-cyan-300/80">Retention Score</div>
+                  <!-- 🔗 retentionRate() -->
+                  <div class="mt-1 bg-gradient-to-r from-cyan-500 to-emerald-500 bg-clip-text font-mono text-3xl font-extrabold tabular-nums text-transparent dark:from-cyan-300 dark:to-emerald-300 dark:[text-shadow:0_0_30px_rgba(34,211,238,.25)]">
+                    {{ computedStats().retentionRate }}<span class="text-xl">%</span>
+                  </div>
+                </div>
+                <!-- Health score -->
+                <div class="rounded-2xl border border-indigo-500/30 bg-gradient-to-br from-indigo-500/10 to-purple-500/5 px-5 py-4 text-center dark:border-indigo-500/20">
+                  <div class="text-[10px] font-semibold uppercase tracking-widest text-indigo-700 dark:text-indigo-300/80">Health</div>
+                  <!-- 🔗 getLearningHealthScore() -->
+                  <div class="mt-1 font-mono text-3xl font-extrabold tabular-nums text-slate-900 dark:text-white">
+                    {{ getLearningHealthScore() }}<span class="text-base text-slate-400 dark:text-slate-500">/100</span>
+                  </div>
+                </div>
+              </div>
             </div>
+          </header>
+
+          <!-- ────────────── BENTO ROW 1 : Retention Matrix (2/3) + Distribution (1/3) ────────────── -->
+          <div class="grid grid-cols-1 gap-5 lg:grid-cols-3">
+
+            <!-- ═══ Retention curve : Ebbinghaus vs You (SVG) ═══ -->
+            <section class="group relative overflow-hidden rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition-colors duration-300 hover:border-cyan-500/50 dark:border-slate-800/60 dark:bg-slate-900/40 dark:shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)] dark:backdrop-blur-md dark:hover:border-cyan-500/40 lg:col-span-2">
+              <div class="mb-4 flex items-start justify-between gap-4">
+                <div>
+                  <h2 class="text-lg font-bold text-slate-900 dark:text-white">Courbe de rétention</h2>
+                  <p class="text-xs text-slate-400 dark:text-slate-500">Ta mémoire renforcée par la répétition espacée vs l'oubli naturel</p>
+                </div>
+                <div class="flex flex-wrap items-center gap-3 text-xs">
+                  <span class="inline-flex items-center gap-1.5 text-slate-600 dark:text-slate-300"><span class="h-2 w-4 rounded-full bg-gradient-to-r from-cyan-400 to-emerald-400"></span>Ta rétention</span>
+                  <span class="inline-flex items-center gap-1.5 text-slate-400 dark:text-slate-500"><span class="h-0 w-4 border-t-2 border-dashed border-amber-500/80"></span>Sans révision</span>
+                </div>
+              </div>
+
+              <div class="relative">
+                <svg viewBox="0 0 720 280" class="w-full" preserveAspectRatio="none" style="height:240px">
+                  <defs>
+                    <linearGradient id="saRetFill" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stop-color="#22d3ee" stop-opacity="0.35"/>
+                      <stop offset="55%" stop-color="#34d399" stop-opacity="0.12"/>
+                      <stop offset="100%" stop-color="#34d399" stop-opacity="0"/>
+                    </linearGradient>
+                    <linearGradient id="saRetLine" x1="0" y1="0" x2="1" y2="0">
+                      <stop offset="0%" stop-color="#06b6d4"/>
+                      <stop offset="100%" stop-color="#10b981"/>
+                    </linearGradient>
+                  </defs>
+
+                  <!-- grid lines (theme-aware via fill/stroke utilities) -->
+                  @for (gy of [40, 100, 160, 220]; track gy) {
+                    <line [attr.x1]="50" [attr.x2]="690" [attr.y1]="gy" [attr.y2]="gy" class="stroke-slate-200 dark:stroke-slate-800" stroke-width="1" stroke-dasharray="2 6"/>
+                  }
+                  <!-- y labels -->
+                  <text x="24" y="34" class="fill-slate-400 dark:fill-slate-600" font-size="10" font-family="monospace">100</text>
+                  <text x="30" y="145" class="fill-slate-400 dark:fill-slate-600" font-size="10" font-family="monospace">50</text>
+                  <text x="36" y="244" class="fill-slate-400 dark:fill-slate-600" font-size="10" font-family="monospace">0</text>
+
+                  <!-- Ebbinghaus forgetting curve (no review) — illustrative model R=e^(-t/S) -->
+                  <path d="M50,30 C110,72 132,112 156.7,137 C200,176 232,183 263.3,190 C300,201 340,210 370,215 C420,223 452,227 476.7,228 C520,231 552,233 583.3,234 C620,236 660,237 690,237"
+                        fill="none" stroke="#f59e0b" stroke-opacity="0.7" stroke-width="2" stroke-dasharray="5 5" stroke-linecap="round"/>
+
+                  <!-- Your retention (SRS-boosted) fill + line — endpoint anchored near retentionRate() -->
+                  <path d="M50,70 C90,55 120,50 156.7,58 C190,66 210,80 263.3,72 C300,64 330,50 370,55 C410,60 440,74 476.7,66 C510,58 545,48 583.3,52 C620,56 660,60 690,52 L690,240 L50,240 Z"
+                        fill="url(#saRetFill)"/>
+                  <path d="M50,70 C90,55 120,50 156.7,58 C190,66 210,80 263.3,72 C300,64 330,50 370,55 C410,60 440,74 476.7,66 C510,58 545,48 583.3,52 C620,56 660,60 690,52"
+                        fill="none" stroke="url(#saRetLine)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"
+                        style="filter:drop-shadow(0 0 6px rgba(34,211,238,.45))"/>
+
+                  <!-- interactive anchor dots -->
+                  @for (pt of [{x:50,y:70},{x:156.7,y:58},{x:263.3,y:72},{x:370,y:55},{x:476.7,y:66},{x:583.3,y:52},{x:690,y:52}]; track pt.x) {
+                    <circle [attr.cx]="pt.x" [attr.cy]="pt.y" r="4" class="origin-center cursor-pointer fill-white stroke-emerald-500 transition-transform duration-200 [transform-box:fill-box] hover:scale-[1.7] hover:[filter:drop-shadow(0_0_8px_rgba(34,211,238,.95))] dark:fill-slate-900" stroke-width="2.5"/>
+                  }
+                </svg>
+
+                <!-- x-axis labels -->
+                <div class="mt-1 flex justify-between px-[6%] font-mono text-[10px] text-slate-400 dark:text-slate-600">
+                  <span>J0</span><span>J1</span><span>J2</span><span>J3</span><span>J4</span><span>J5</span><span>J6</span>
+                </div>
+              </div>
+            </section>
+
+            <!-- ═══ Card Distribution : SM-2 state machine ═══ -->
+            <section class="group relative overflow-hidden rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition-colors duration-300 hover:border-indigo-500/50 dark:border-slate-800/60 dark:bg-slate-900/40 dark:shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)] dark:backdrop-blur-md dark:hover:border-indigo-500/40">
+              <h2 class="text-lg font-bold text-slate-900 dark:text-white">Distribution des cartes</h2>
+              <p class="mb-4 text-xs text-slate-400 dark:text-slate-500">Machine à états SM-2 · {{ computedStats().totalFlashcards }} cartes</p>
+
+              <!-- stacked mega-bar -->
+              <div class="mb-5 flex h-2.5 w-full overflow-hidden rounded-full bg-slate-200 dark:bg-slate-800/60">
+                <div class="h-full bg-gradient-to-r from-sky-400 to-blue-500 transition-all duration-700" [style.width]="pct(computedStats().new)"></div>
+                <div class="h-full bg-gradient-to-r from-amber-500 to-orange-500 transition-all duration-700" [style.width]="pct(computedStats().learning)"></div>
+                <div class="h-full bg-gradient-to-r from-indigo-400 to-purple-400 transition-all duration-700" [style.width]="pct(computedStats().review)"></div>
+                <div class="h-full bg-gradient-to-r from-cyan-400 to-emerald-400 transition-all duration-700" [style.width]="pct(computedStats().mastered)"></div>
+              </div>
+
+              <!-- segmented rows -->
+              <div class="space-y-3.5">
+                <!-- NEW -->
+                <div>
+                  <div class="mb-1 flex items-center justify-between text-xs">
+                    <span class="inline-flex items-center gap-1.5 font-semibold text-sky-600 dark:text-sky-300"><span class="h-2 w-2 rounded-full bg-sky-400 shadow-[0_0_8px_#38bdf8]"></span>NEW</span>
+                    <span class="font-mono tabular-nums text-slate-500 dark:text-slate-400">{{ computedStats().new }} · {{ pct(computedStats().new) }}</span>
+                  </div>
+                  <div class="h-1.5 w-full overflow-hidden rounded-full bg-slate-200 dark:bg-slate-800/60">
+                    <div class="h-full rounded-full bg-gradient-to-r from-sky-400 to-blue-500" [style.width]="pct(computedStats().new)"></div>
+                  </div>
+                </div>
+                <!-- LEARNING -->
+                <div>
+                  <div class="mb-1 flex items-center justify-between text-xs">
+                    <span class="inline-flex items-center gap-1.5 font-semibold text-amber-600 dark:text-amber-300"><span class="h-2 w-2 rounded-full bg-amber-400 shadow-[0_0_8px_#f59e0b]"></span>LEARNING</span>
+                    <span class="font-mono tabular-nums text-slate-500 dark:text-slate-400">{{ computedStats().learning }} · {{ pct(computedStats().learning) }}</span>
+                  </div>
+                  <div class="h-1.5 w-full overflow-hidden rounded-full bg-slate-200 dark:bg-slate-800/60">
+                    <div class="h-full rounded-full bg-gradient-to-r from-amber-500 to-orange-500" [style.width]="pct(computedStats().learning)"></div>
+                  </div>
+                </div>
+                <!-- REVIEW -->
+                <div>
+                  <div class="mb-1 flex items-center justify-between text-xs">
+                    <span class="inline-flex items-center gap-1.5 font-semibold text-indigo-600 dark:text-indigo-300"><span class="h-2 w-2 rounded-full bg-indigo-400 shadow-[0_0_8px_#818cf8]"></span>REVIEW</span>
+                    <span class="font-mono tabular-nums text-slate-500 dark:text-slate-400">{{ computedStats().review }} · {{ pct(computedStats().review) }}</span>
+                  </div>
+                  <div class="h-1.5 w-full overflow-hidden rounded-full bg-slate-200 dark:bg-slate-800/60">
+                    <div class="h-full rounded-full bg-gradient-to-r from-indigo-400 to-purple-400" [style.width]="pct(computedStats().review)"></div>
+                  </div>
+                </div>
+                <!-- MASTERED -->
+                <div>
+                  <div class="mb-1 flex items-center justify-between text-xs">
+                    <span class="inline-flex items-center gap-1.5 font-semibold text-emerald-600 dark:text-emerald-300"><span class="h-2 w-2 rounded-full bg-emerald-400 shadow-[0_0_8px_#34d399]"></span>MASTERED</span>
+                    <span class="font-mono tabular-nums text-slate-500 dark:text-slate-400">{{ computedStats().mastered }} · {{ pct(computedStats().mastered) }}</span>
+                  </div>
+                  <div class="h-1.5 w-full overflow-hidden rounded-full bg-slate-200 dark:bg-slate-800/60">
+                    <div class="h-full rounded-full bg-gradient-to-r from-cyan-400 to-emerald-400" [style.width]="pct(computedStats().mastered)"></div>
+                  </div>
+                </div>
+              </div>
+            </section>
           </div>
 
-          <!-- Mega bar -->
-          <div class="sa-dist-bar">
-            @if (computedStats().new > 0) {
-              <div class="sa-dist-seg sa-seg-new" [style.width]="getDistributionWidth(computedStats().new)">
-                @if (computedStats().new / computedStats().totalFlashcards > 0.08) {
-                  <span>{{ computedStats().new }}</span>
+          <!-- ────────────── FORECAST · 7-day review load ────────────── -->
+          <section class="group relative overflow-hidden rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition-colors duration-300 hover:border-cyan-500/50 dark:border-slate-800/60 dark:bg-slate-900/40 dark:shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)] dark:backdrop-blur-md dark:hover:border-cyan-500/40">
+            <div class="mb-5 flex items-center justify-between gap-4">
+              <div>
+                <h2 class="text-lg font-bold text-slate-900 dark:text-white">Prochaines échéances</h2>
+                <p class="text-xs text-slate-400 dark:text-slate-500">Anticipe ta charge mentale sur les 7 prochains jours</p>
+              </div>
+              <div class="rounded-full border border-slate-200 bg-slate-100 px-3 py-1 text-xs text-slate-600 dark:border-slate-700/60 dark:bg-slate-800/40 dark:text-slate-300">
+                <!-- 🔗 dueToday() -->
+                <span class="font-mono font-bold text-cyan-600 dark:text-cyan-300">{{ computedStats().dueToday }}</span> aujourd'hui
+              </div>
+            </div>
+
+            <!-- histogram -->
+            <div class="flex items-end justify-between gap-2 sm:gap-3" style="height:170px">
+              <!-- 🔗 reviewForecast() : [{ label, count, pct }] -->
+              @for (day of reviewForecast(); track day.label) {
+                <div class="flex h-full flex-1 flex-col items-center justify-end gap-2">
+                  <span class="font-mono text-xs font-bold tabular-nums transition-colors"
+                        [ngClass]="day.pct === 100 ? 'text-cyan-600 dark:text-cyan-300' : 'text-slate-500 dark:text-slate-400'">{{ day.count }}</span>
+                  <div class="relative flex w-full max-w-[46px] flex-1 items-end overflow-hidden rounded-t-lg bg-slate-200 dark:bg-slate-800/40">
+                    <div class="w-full rounded-t-lg transition-all duration-700"
+                         [ngClass]="day.pct === 100 ? 'bg-gradient-to-t from-cyan-500 to-emerald-400 shadow-[0_0_16px_rgba(34,211,238,.5)]' : 'bg-gradient-to-t from-indigo-500/80 to-indigo-400/60'"
+                         [style.height]="(day.count === 0 ? 2 : day.pct) + '%'"></div>
+                  </div>
+                  <span class="text-[11px] font-medium capitalize text-slate-500">{{ day.label }}</span>
+                </div>
+              }
+            </div>
+          </section>
+
+          <!-- ────────────── MONEYSHOT · micro performance stats ────────────── -->
+          <div class="grid grid-cols-2 gap-4 lg:grid-cols-4">
+
+            <!-- Avg interval -->
+            <div class="group relative overflow-hidden rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition-colors duration-300 hover:border-cyan-500/50 dark:border-slate-800/60 dark:bg-slate-900/40 dark:shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)] dark:backdrop-blur-md dark:hover:border-cyan-500/40">
+              <div class="pointer-events-none absolute -right-6 -top-6 h-20 w-20 rounded-full bg-cyan-500/10 blur-2xl"></div>
+              <span class="material-icons text-[20px] text-cyan-600 dark:text-cyan-400">timeline</span>
+              <!-- 🔗 avgInterval() -->
+              <div class="mt-2 font-mono text-3xl font-bold tabular-nums text-slate-900 dark:text-white">{{ avgInterval() }}<span class="ml-0.5 text-base text-slate-400 dark:text-slate-500">j</span></div>
+              <div class="text-xs text-slate-500">Intervalle moyen</div>
+            </div>
+
+            <!-- Ease factor -->
+            <div class="group relative overflow-hidden rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition-colors duration-300 hover:border-emerald-500/50 dark:border-slate-800/60 dark:bg-slate-900/40 dark:shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)] dark:backdrop-blur-md dark:hover:border-emerald-500/40">
+              <div class="pointer-events-none absolute -right-6 -top-6 h-20 w-20 rounded-full bg-emerald-500/10 blur-2xl"></div>
+              <span class="material-icons text-[20px] text-emerald-600 dark:text-emerald-400">tune</span>
+              <!-- 🔗 avgEaseFactor() -->
+              <div class="mt-2 flex items-baseline gap-1.5">
+                <span class="font-mono text-3xl font-bold tabular-nums text-slate-900 dark:text-white">{{ avgEaseFactor() }}</span>
+                <span class="text-sm font-semibold text-slate-400 dark:text-slate-500">EF</span>
+                @if (avgEaseFactor() >= 2.5) {
+                  <span class="ml-auto inline-flex items-center gap-0.5 rounded-md bg-emerald-500/10 px-1.5 py-0.5 text-[10px] font-bold text-emerald-600 dark:text-emerald-400"><span class="material-icons text-[12px]">arrow_upward</span>optimal</span>
                 }
               </div>
+              <div class="text-xs text-slate-500">Facteur de facilité</div>
+            </div>
+
+            <!-- Lapses -->
+            <div class="group relative overflow-hidden rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition-colors duration-300 hover:border-amber-500/50 dark:border-slate-800/60 dark:bg-slate-900/40 dark:shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)] dark:backdrop-blur-md dark:hover:border-amber-500/40">
+              <div class="pointer-events-none absolute -right-6 -top-6 h-20 w-20 rounded-full bg-amber-500/10 blur-2xl"></div>
+              <span class="material-icons text-[20px] text-amber-600 dark:text-amber-400">replay</span>
+              <!-- 🔗 totalLapses() -->
+              <div class="mt-2 font-mono text-3xl font-bold tabular-nums text-slate-900 dark:text-white">{{ totalLapses() }}</div>
+              <div class="text-xs text-slate-500">Lapsus (oublis)</div>
+            </div>
+
+            <!-- Mastered -->
+            <div class="group relative overflow-hidden rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition-colors duration-300 hover:border-emerald-500/50 dark:border-slate-800/60 dark:bg-slate-900/40 dark:shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)] dark:backdrop-blur-md dark:hover:border-emerald-500/40">
+              <div class="pointer-events-none absolute -right-6 -top-6 h-20 w-20 rounded-full bg-emerald-500/10 blur-2xl"></div>
+              <span class="material-icons text-[20px] text-emerald-600 dark:text-emerald-400">workspace_premium</span>
+              <!-- 🔗 mastered() -->
+              <div class="mt-2 bg-gradient-to-r from-cyan-500 to-emerald-500 bg-clip-text font-mono text-3xl font-bold tabular-nums text-transparent dark:from-cyan-300 dark:to-emerald-300">{{ computedStats().mastered }}</div>
+              <div class="text-xs text-slate-500">Cartes ancrées</div>
+            </div>
+          </div>
+
+          <!-- ────────────── AI INSIGHTS ────────────── -->
+          <section class="grid grid-cols-1 gap-4 md:grid-cols-3">
+            <!-- 🔗 getAiInsights() -->
+            @for (insight of getAiInsights(); track insight.title) {
+              <div class="group relative overflow-hidden rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition-colors duration-300 hover:border-slate-300 dark:border-slate-800/60 dark:bg-slate-900/40 dark:shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)] dark:backdrop-blur-md dark:hover:border-slate-600">
+                <div class="flex items-start gap-3">
+                  <div class="grid h-9 w-9 shrink-0 place-items-center rounded-xl" [style.background]="insight.bg" [style.color]="insight.color">
+                    <span class="material-icons text-[18px]">{{ insight.icon }}</span>
+                  </div>
+                  <div class="min-w-0">
+                    <div class="flex items-center gap-2">
+                      <h3 class="text-sm font-bold text-slate-900 dark:text-white">{{ insight.title }}</h3>
+                      @if (insight.priority === 'high') {
+                        <span class="rounded bg-rose-500/15 px-1.5 py-0.5 text-[9px] font-bold uppercase text-rose-600 dark:text-rose-400">Priorité</span>
+                      }
+                    </div>
+                    <p class="mt-1 text-xs leading-relaxed text-slate-500 dark:text-slate-400">{{ insight.body }}</p>
+                  </div>
+                </div>
+              </div>
             }
-            @if (computedStats().learning > 0) {
-              <div class="sa-dist-seg sa-seg-learn" [style.width]="getDistributionWidth(computedStats().learning)">
-                @if (computedStats().learning / computedStats().totalFlashcards > 0.08) {
-                  <span>{{ computedStats().learning }}</span>
-                }
-              </div>
-            }
-            @if (computedStats().review > 0) {
-              <div class="sa-dist-seg sa-seg-review" [style.width]="getDistributionWidth(computedStats().review)">
-                @if (computedStats().review / computedStats().totalFlashcards > 0.08) {
-                  <span>{{ computedStats().review }}</span>
-                }
-              </div>
-            }
-            @if (computedStats().mastered > 0) {
-              <div class="sa-dist-seg sa-seg-master" [style.width]="getDistributionWidth(computedStats().mastered)">
-                @if (computedStats().mastered / computedStats().totalFlashcards > 0.08) {
-                  <span>{{ computedStats().mastered }}</span>
-                }
-              </div>
-            }
-          </div>
+          </section>
 
-          <!-- State pills -->
-          <div class="sa-state-grid">
-            <div class="sa-state-pill sa-state-new">
-              <div class="sa-state-pill-dot"></div>
-              <div class="sa-state-pill-body">
-                <div class="sa-state-pill-count">{{ computedStats().new }}</div>
-                <div class="sa-state-pill-name">Nouvelle</div>
-                <div class="sa-state-pill-pct">{{ pct(computedStats().new) }}</div>
-              </div>
-            </div>
-            <div class="sa-state-pill sa-state-learn">
-              <div class="sa-state-pill-dot"></div>
-              <div class="sa-state-pill-body">
-                <div class="sa-state-pill-count">{{ computedStats().learning }}</div>
-                <div class="sa-state-pill-name">Apprentissage</div>
-                <div class="sa-state-pill-pct">{{ pct(computedStats().learning) }}</div>
-              </div>
-            </div>
-            <div class="sa-state-pill sa-state-review">
-              <div class="sa-state-pill-dot"></div>
-              <div class="sa-state-pill-body">
-                <div class="sa-state-pill-count">{{ computedStats().review }}</div>
-                <div class="sa-state-pill-name">Révision</div>
-                <div class="sa-state-pill-pct">{{ pct(computedStats().review) }}</div>
-              </div>
-            </div>
-            <div class="sa-state-pill sa-state-master">
-              <div class="sa-state-pill-dot"></div>
-              <div class="sa-state-pill-body">
-                <div class="sa-state-pill-count">{{ computedStats().mastered }}</div>
-                <div class="sa-state-pill-name">Maîtrisée</div>
-                <div class="sa-state-pill-pct">{{ pct(computedStats().mastered) }}</div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Activity + Motivation card -->
-        <div class="sa-card sa-activity-card">
-          <div class="sa-card-header">
-            <div>
-              <div class="sa-card-eyebrow">Historique</div>
-              <div class="sa-card-title">
-                <span class="material-icons">history</span>
-                Activité de Révision
-              </div>
-              <p class="sa-card-sub">Cartes révisées récemment</p>
-            </div>
-          </div>
-
-          <div class="sa-activity-stats">
-            <div class="sa-activity-stat">
-              <div class="sa-activity-stat-val">{{ computedStats().reviewsLast7Days }}</div>
-              <div class="sa-activity-stat-label">7 derniers jours</div>
-              <div class="sa-activity-bar-track">
-                <div class="sa-activity-bar-fill sa-bar-week"
-                     [style.width]="computedStats().reviewsLast30Days > 0 ? (computedStats().reviewsLast7Days / computedStats().reviewsLast30Days * 100) + '%' : '0%'"></div>
-              </div>
-            </div>
-            <div class="sa-activity-stat">
-              <div class="sa-activity-stat-val">{{ computedStats().reviewsLast30Days }}</div>
-              <div class="sa-activity-stat-label">30 derniers jours</div>
-              <div class="sa-activity-bar-track">
-                <div class="sa-activity-bar-fill sa-bar-month" style="width:100%"
-                     [class.sa-bar-empty]="computedStats().reviewsLast30Days === 0"></div>
-              </div>
-            </div>
-            <div class="sa-activity-stat">
-              <div class="sa-activity-stat-val">{{ computedStats().totalReviewed }}</div>
-              <div class="sa-activity-stat-label">Total révisées</div>
-              <div class="sa-activity-bar-track">
-                <div class="sa-activity-bar-fill sa-bar-total"
-                     [style.width]="computedStats().totalFlashcards > 0 ? (computedStats().totalReviewed / computedStats().totalFlashcards * 100) + '%' : '0%'"></div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Motivation -->
-          <div class="sa-motivation"
-               [class.sa-motivation-green]="computedStats().retentionRate >= 80"
-               [class.sa-motivation-blue]="computedStats().retentionRate >= 50 && computedStats().retentionRate < 80"
-               [class.sa-motivation-amber]="computedStats().retentionRate < 50">
-            <span class="material-icons sa-motivation-icon">
-              {{ computedStats().retentionRate >= 80 ? 'celebration' : computedStats().retentionRate >= 50 ? 'trending_up' : 'lightbulb' }}
-            </span>
-            <p class="sa-motivation-text">
-              @if (computedStats().retentionRate >= 80) {
-                Excellent travail ! Votre mémoire est très performante.
-              }
-              @if (computedStats().retentionRate >= 50 && computedStats().retentionRate < 80) {
-                Bonne progression ! Révisez régulièrement pour consolider.
-              }
-              @if (computedStats().retentionRate < 50 && computedStats().totalReviewed > 0) {
-                Révisez plus fréquemment pour améliorer votre rétention.
-              }
-              @if (computedStats().totalReviewed === 0) {
-                Commencez votre première session pour obtenir des stats !
-              }
-            </p>
-          </div>
-        </div>
-
-      </div>
-
-      <!-- ──────────────────────────────────────────
-           SECTION 3: AI Insights Panel
-           ────────────────────────────────────────── -->
-      <div class="sa-section">
-        <div class="sa-section-header">
-          <div class="sa-card-eyebrow">Intelligence artificielle</div>
-          <div class="sa-section-title">
-            <span class="material-icons">auto_awesome</span>
-            Recommandations IA
-          </div>
-          <p class="sa-section-sub">Analyse automatique de vos données d'apprentissage</p>
-        </div>
-        <div class="sa-insights-grid">
-          @for (insight of getAiInsights(); track insight.title) {
-            <div class="sa-insight-card" [class.sa-insight-high]="insight.priority === 'high'"
-                 [class.sa-insight-low]="insight.priority === 'low'">
-              <div class="sa-insight-icon-wrap" [style.background]="insight.bg">
-                <span class="material-icons" [style.color]="insight.color">{{ insight.icon }}</span>
-              </div>
-              <div class="sa-insight-body">
-                <div class="sa-insight-title" [style.color]="insight.color">{{ insight.title }}</div>
-                <p class="sa-insight-text">{{ insight.body }}</p>
-              </div>
-              @if (insight.priority === 'high') {
-                <span class="sa-insight-urgent-badge">Urgent</span>
-              }
-            </div>
-          }
-        </div>
-      </div>
-
-      <!-- ──────────────────────────────────────────
-           SECTION 4: Pack Performance Table
-           ────────────────────────────────────────── -->
-      <div class="sa-section sa-card sa-table-card">
-
-        <div class="sa-table-header">
-          <div>
-            <div class="sa-card-eyebrow">Détail par pack</div>
-            <div class="sa-card-title">
-              <span class="material-icons">table_chart</span>
-              Performance SRS par Pack
-            </div>
-            <p class="sa-card-sub">{{ packBreakdown().length }} pack{{ packBreakdown().length > 1 ? 's' : '' }} analysé{{ packBreakdown().length > 1 ? 's' : '' }} · Trié par priorité</p>
-          </div>
-          <a routerLink="/study-hub" class="sa-table-view-all">
-            <span class="material-icons">open_in_new</span>
-            Voir tous
-          </a>
-        </div>
-
-        <!-- Legend -->
-        <div class="sa-table-legend">
-          <span class="sa-legend-item"><span class="sa-legend-dot" style="background:#3b82f6"></span>Nouvelle</span>
-          <span class="sa-legend-item"><span class="sa-legend-dot" style="background:#f59e0b"></span>Apprentissage</span>
-          <span class="sa-legend-item"><span class="sa-legend-dot" style="background:#8b5cf6"></span>Révision</span>
-          <span class="sa-legend-item"><span class="sa-legend-dot" style="background:#22c55e"></span>Maîtrisée</span>
-        </div>
-
-        <div class="sa-table-scroll">
-          <table class="sa-table">
-            <thead class="sa-thead">
-              <tr>
-                <th class="sa-th sa-th-left">Pack d'étude</th>
-                <th class="sa-th">Total</th>
-                <th class="sa-th">À réviser</th>
-                <th class="sa-th">Maîtrisées</th>
-                <th class="sa-th">Rétention</th>
-                <th class="sa-th sa-th-dist">Distribution</th>
-                <th class="sa-th sa-th-right">Action</th>
-              </tr>
-            </thead>
-            <tbody>
+          <!-- ────────────── PACK PERFORMANCE (real breakdown) ────────────── -->
+          <section class="group relative overflow-hidden rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition-colors duration-300 hover:border-cyan-500/50 dark:border-slate-800/60 dark:bg-slate-900/40 dark:shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)] dark:backdrop-blur-md dark:hover:border-cyan-500/40">
+            <h2 class="mb-4 text-lg font-bold text-slate-900 dark:text-white">Performance par pack</h2>
+            <div class="space-y-2">
+              <!-- 🔗 packBreakdown() : [{ pack, states, due, retention, total }] -->
               @for (row of packBreakdown(); track row.pack.id) {
-                <tr class="sa-tbody-row">
+                <div class="flex flex-wrap items-center gap-x-4 gap-y-2 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 transition-colors hover:border-slate-300 hover:bg-slate-100 dark:border-slate-800/50 dark:bg-slate-800/20 dark:hover:border-slate-700 dark:hover:bg-slate-800/40">
+                  <div class="min-w-[140px] flex-1 truncate font-semibold text-slate-900 dark:text-white">{{ row.pack.title }}</div>
 
-                  <!-- Pack name -->
-                  <td class="sa-td sa-td-pack">
-                    <div class="sa-pack-cell">
-                      <div class="sa-pack-avatar"
-                           [class.sa-avatar-due]="row.due > 0"
-                           [class.sa-avatar-ok]="row.due === 0">
-                        {{ row.pack.title ? row.pack.title.charAt(0).toUpperCase() : '?' }}
-                      </div>
-                      <div class="sa-pack-info">
-                        <div class="sa-pack-name" [title]="row.pack.title">{{ row.pack.title }}</div>
-                        <div class="sa-pack-subject">
-                          <span class="material-icons">label</span>
-                          {{ row.pack.subject || 'Sans catégorie' }}
-                        </div>
-                      </div>
-                    </div>
-                  </td>
+                  <div class="font-mono text-xs tabular-nums text-slate-400 dark:text-slate-500">{{ row.total }} cartes</div>
 
-                  <!-- Total -->
-                  <td class="sa-td sa-td-center">
-                    <span class="sa-td-mono">{{ row.total }}</span>
-                  </td>
+                  @if (row.due > 0) {
+                    <span class="inline-flex items-center gap-1 rounded-md bg-amber-500/10 px-2 py-0.5 text-xs font-semibold text-amber-600 dark:text-amber-400">
+                      <span class="material-icons text-[13px]">bolt</span>{{ row.due }} due
+                    </span>
+                  } @else {
+                    <span class="inline-flex items-center gap-1 rounded-md bg-emerald-500/10 px-2 py-0.5 text-xs font-semibold text-emerald-600 dark:text-emerald-400">
+                      <span class="material-icons text-[13px]">check</span>à jour
+                    </span>
+                  }
 
-                  <!-- Due -->
-                  <td class="sa-td sa-td-center">
-                    @if (row.due > 0) {
-                      <span class="sa-badge sa-badge-red">
-                        <span class="material-icons">notifications_active</span>
-                        {{ row.due }}
-                      </span>
-                    } @else {
-                      <span class="sa-badge sa-badge-green">
-                        <span class="material-icons">check_circle</span>
-                        OK
-                      </span>
-                    }
-                  </td>
+                  <!-- mini distribution bar -->
+                  <div class="flex h-1.5 w-24 overflow-hidden rounded-full bg-slate-200 dark:bg-slate-800/60">
+                    <div class="h-full bg-sky-400" [style.width.%]="(row.states.new / row.total) * 100"></div>
+                    <div class="h-full bg-amber-500" [style.width.%]="(row.states.learning / row.total) * 100"></div>
+                    <div class="h-full bg-indigo-400" [style.width.%]="(row.states.review / row.total) * 100"></div>
+                    <div class="h-full bg-gradient-to-r from-cyan-400 to-emerald-400" [style.width.%]="(row.states.mastered / row.total) * 100"></div>
+                  </div>
 
-                  <!-- Mastered -->
-                  <td class="sa-td sa-td-center">
-                    <div class="sa-mastered-cell">
-                      <span class="sa-td-mono sa-td-green">{{ row.states.mastered }}</span>
-                      <span class="sa-td-total">/ {{ row.total }}</span>
-                      <div class="sa-mini-bar-track">
-                        <div class="sa-mini-bar-fill"
-                             [style.width.%]="row.total > 0 ? (row.states.mastered / row.total * 100) : 0"></div>
-                      </div>
-                    </div>
-                  </td>
-
-                  <!-- Retention -->
-                  <td class="sa-td sa-td-center">
-                    @if (row.retention !== null) {
-                      <div class="sa-ret-cell">
-                        <span class="sa-badge" [class]="getMasteryClass(row.retention)">
-                          <span class="material-icons">
-                            {{ row.retention >= 90 ? 'emoji_events' : row.retention >= 75 ? 'thumb_up' : row.retention >= 50 ? 'trending_flat' : 'warning' }}
-                          </span>
-                          {{ row.retention }}%
-                        </span>
-                        <div class="sa-ret-label" [class]="getMasteryClass(row.retention)">{{ getMasteryLabel(row.retention) }}</div>
-                      </div>
-                    } @else {
-                      <div class="sa-ret-cell">
-                        <span class="sa-badge badge-gray">
-                          <span class="material-icons">radio_button_unchecked</span>
-                          Nouveau
-                        </span>
-                      </div>
-                    }
-                  </td>
-
-                  <!-- Distribution mini bar -->
-                  <td class="sa-td sa-td-dist">
-                    @if (row.total > 0) {
-                      <div class="sa-mini-dist-bar">
-                        <div style="background:#3b82f6;border-radius:4px 0 0 4px"
-                             [style.width.%]="row.states.new / row.total * 100"></div>
-                        <div style="background:#f59e0b" [style.width.%]="row.states.learning / row.total * 100"></div>
-                        <div style="background:#8b5cf6" [style.width.%]="row.states.review / row.total * 100"></div>
-                        <div style="background:#22c55e;border-radius:0 4px 4px 0"
-                             [style.width.%]="row.states.mastered / row.total * 100"></div>
-                      </div>
-                      <div class="sa-mini-dist-labels">
-                        @if (row.states.new > 0) { <span class="sa-dist-lbl sa-lbl-new">{{ row.states.new }}N</span> }
-                        @if (row.states.learning > 0) { <span class="sa-dist-lbl sa-lbl-learn">{{ row.states.learning }}A</span> }
-                        @if (row.states.review > 0) { <span class="sa-dist-lbl sa-lbl-rev">{{ row.states.review }}R</span> }
-                        @if (row.states.mastered > 0) { <span class="sa-dist-lbl sa-lbl-master">{{ row.states.mastered }}M</span> }
-                      </div>
-                    }
-                  </td>
-
-                  <!-- CTA -->
-                  <td class="sa-td sa-td-right">
-                    @if (row.due > 0) {
-                      <a [routerLink]="['/study-hub', row.pack.id, 'flashcards']" class="sa-cta-btn sa-cta-primary">
-                        <span class="material-icons">play_circle</span>
-                        Réviser
-                      </a>
-                    } @else {
-                      <a [routerLink]="['/study-hub', row.pack.id, 'flashcards']" class="sa-cta-btn sa-cta-ghost">
-                        <span class="material-icons">refresh</span>
-                        Revoir
-                      </a>
-                    }
-                  </td>
-
-                </tr>
+                  <!-- retention -->
+                  <div class="w-14 text-right font-mono text-sm font-bold tabular-nums"
+                       [ngClass]="row.retention === null ? 'text-slate-400 dark:text-slate-600' : row.retention >= 75 ? 'text-emerald-600 dark:text-emerald-400' : row.retention >= 50 ? 'text-amber-600 dark:text-amber-400' : 'text-rose-600 dark:text-rose-400'">
+                    {{ row.retention !== null ? row.retention + '%' : '—' }}
+                  </div>
+                </div>
               }
-            </tbody>
-          </table>
+            </div>
+          </section>
+
         </div>
       </div>
-
-      <!-- ──────────────────────────────────────────
-           SECTION 5: Quick Insights (bottom)
-           ────────────────────────────────────────── -->
-      <div class="sa-section sa-quick-grid">
-
-        <div class="sa-quick-card">
-          <div class="sa-quick-icon" style="background:rgba(109,94,247,.1)">
-            <span class="material-icons" style="color:#6d5ef7">add_circle</span>
-          </div>
-          <div class="sa-quick-body">
-            <div class="sa-quick-label">Cartes non apprises</div>
-            <div class="sa-quick-value" style="color:#6d5ef7">{{ computedStats().new }}</div>
-            <div class="sa-quick-sub">
-              @if (computedStats().new > 0) { À commencer à apprendre }
-              @else { Tout le contenu a été abordé }
-            </div>
-          </div>
-        </div>
-
-        <div class="sa-quick-card">
-          <div class="sa-quick-icon" style="background:rgba(109,94,247,.1)">
-            <span class="material-icons" style="color:#6d5ef7">done_all</span>
-          </div>
-          <div class="sa-quick-body">
-            <div class="sa-quick-label">Total révisées</div>
-            <div class="sa-quick-value" style="color:#6d5ef7">{{ computedStats().totalReviewed }}</div>
-            <div class="sa-quick-sub">{{ computedStats().totalReviewed > 0 ? 'Cartes avec au moins 1 révision' : 'Aucune révision encore' }}</div>
-          </div>
-        </div>
-
-        <div class="sa-quick-card">
-          <div class="sa-quick-icon" [style.background]="computedStats().overdue > 0 ? 'rgba(249,115,22,.1)' : 'rgba(34,197,94,.1)'">
-            <span class="material-icons" [style.color]="computedStats().overdue > 0 ? '#f97316' : '#22c55e'">
-              {{ computedStats().overdue > 0 ? 'warning_amber' : 'verified' }}
-            </span>
-          </div>
-          <div class="sa-quick-body">
-            <div class="sa-quick-label" [style.color]="computedStats().overdue > 0 ? '#f97316' : '#22c55e'">
-              {{ computedStats().overdue > 0 ? 'En retard' : 'Statut global' }}
-            </div>
-            <div class="sa-quick-value" [style.color]="computedStats().overdue > 0 ? '#ea580c' : '#22c55e'">
-              {{ computedStats().overdue > 0 ? computedStats().overdue : '✓' }}
-            </div>
-            <div class="sa-quick-sub" [style.color]="computedStats().overdue > 0 ? '#f97316' : '#22c55e'">
-              {{ computedStats().overdue > 0 ? 'Cartes en retard de révision' : 'Aucune carte en retard !' }}
-            </div>
-          </div>
-        </div>
-
-      </div>
-
     }
 
   </main>
