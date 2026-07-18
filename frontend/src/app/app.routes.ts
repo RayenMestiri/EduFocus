@@ -14,15 +14,18 @@ import { StudyPackShareComponent } from './components/study-hub/study-pack/share
 import { AuthGoogleCallbackComponent } from './components/auth-google-callback/auth-google-callback.component';
 import { SrsAnalyticsComponent } from './components/study-hub/srs-analytics/srs-analytics.component';
 import { authGuard } from './guards/auth.guard';
+import { noAuthGuard } from './guards/no-auth.guard';
+import { AiCoachComponent } from './components/ai-coach/ai-coach.component';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent, pathMatch: 'full' },
-  { path: 'login', component: LoginComponent },
-  { path: 'register', component: RegisterComponent },
-  { path: 'reset-password', component: ResetPasswordComponent },
+  { path: 'login', component: LoginComponent, canActivate: [noAuthGuard] },
+  { path: 'register', component: RegisterComponent, canActivate: [noAuthGuard] },
+  { path: 'reset-password', component: ResetPasswordComponent, canActivate: [noAuthGuard] },
   // Google OAuth callback — receives JWT from backend redirect
   { path: 'auth/google/callback', component: AuthGoogleCallbackComponent },
   { path: 'dashboard', component: DashboardComponent, canActivate: [authGuard] },
+  { path: 'ai-coach', component: AiCoachComponent, canActivate: [authGuard] },
   { path: 'planner', component: DayPlannerComponent },
   { path: 'study-hub', component: StudyHubDashboardComponent, canActivate: [authGuard] },
   { path: 'study-hub/new', component: StudyPackFormComponent, canActivate: [authGuard] },

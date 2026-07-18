@@ -16,11 +16,17 @@
 
       <nav class="nav__links">
         <a class="nav__link" href="#features">Fonctionnalités</a>
+        <a class="nav__link" href="#study-hub">Study Hub</a>
         <a class="nav__link" href="#how">Comment ça marche</a>
         <a class="nav__link" href="#testimonials">Avis</a>
       </nav>
 
       <div class="nav__cta">
+        <div class="nav__streak" title="Série d'étude">
+          <span class="material-icons">local_fire_department</span>
+          <span class="nav__streak-num">14</span>
+          <span class="nav__streak-lbl">jours</span>
+        </div>
         <button class="nav__theme-btn" (click)="themeService.toggleTheme()"
           [title]="themeService.isDark() ? 'Mode Clair' : 'Mode Sombre'">
           <span class="material-icons">{{ themeService.isDark() ? 'light_mode' : 'dark_mode' }}</span>
@@ -35,16 +41,20 @@
   </header>
 
   <!-- ════════════════════════════════ HERO ════════════════════════════════════ -->
-  <section class="hero">
-    <canvas #canvas3d class="hero__canvas"></canvas>
+  <section class="hero" #heroSection>
 
-    <!-- Ambient glows -->
-    <div class="hero__glow hero__glow--1"></div>
-    <div class="hero__glow hero__glow--2"></div>
-    <div class="hero__glow hero__glow--3"></div>
-
-    <!-- Grid lines -->
-    <div class="hero__grid"></div>
+    <!-- Professional education background (no 3D) -->
+    <div class="hero__bg">
+      <div class="hero__aurora">
+        <span class="hero__blob hero__blob--1"></span>
+        <span class="hero__blob hero__blob--2"></span>
+        <span class="hero__blob hero__blob--3"></span>
+      </div>
+      <div class="hero__grid"></div>
+      <div class="hero__dots"></div>
+      <div class="hero__beam"></div>
+      <div class="hero__vignette"></div>
+    </div>
 
     <div class="hero__inner">
       <!-- Left: Copy -->
@@ -366,6 +376,160 @@
             </div>
           </div>
         </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════ STUDY HUB — LIVE PREVIEW (AI) ═════════════════════ -->
+  <section class="shp-section" id="study-hub">
+    <div class="shp-section__glow"></div>
+    <div class="shp-section__glow shp-section__glow--2"></div>
+    <div class="section-inner">
+      <div class="section-header">
+        <span class="section-eyebrow section-eyebrow--ai">
+          <span class="material-icons">auto_awesome</span>
+          Aperçu généré par IA
+        </span>
+        <h2 class="section-h2">Votre <strong>Study Hub</strong> en action</h2>
+        <p class="section-sub">Minuteur Pomodoro intelligent, répétition espacée SM-2 et coach IA — réunis dans un espace pensé pour la concentration profonde.</p>
+      </div>
+
+      <div class="shp-grid">
+
+        <!-- ── A. POMODORO ─────────────────────────────────────────────────── -->
+        <div class="shp-card shp-pomo" [class.is-break]="pomoIsBreak">
+          <div class="shp-card__head">
+            <span class="shp-chip">
+              <span class="material-icons">{{ pomoIsBreak ? 'self_improvement' : 'bolt' }}</span>
+              {{ pomoIsBreak ? 'Pause' : 'Focus' }}
+            </span>
+            <span class="shp-cycle">Cycle {{ pomoCycle }}/4</span>
+          </div>
+
+          <div class="pomo-ring">
+            <svg viewBox="0 0 200 200" class="pomo-ring__svg" aria-hidden="true">
+              <circle class="pomo-ring__track" cx="100" cy="100" r="90"></circle>
+              <circle class="pomo-ring__prog" cx="100" cy="100" r="90"
+                      [attr.stroke-dashoffset]="pomoDashoffset"></circle>
+              <defs>
+                <linearGradient id="pomoGrad" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0" [attr.stop-color]="pomoIsBreak ? '#22c55e' : '#8b5cf6'"></stop>
+                  <stop offset="1" [attr.stop-color]="pomoIsBreak ? '#06b6d4' : '#6366f1'"></stop>
+                </linearGradient>
+              </defs>
+            </svg>
+            <div class="pomo-ring__center">
+              <span class="pomo-ring__time">{{ formatPomo() }}</span>
+              <span class="pomo-ring__label">{{ pomoIsBreak ? 'Respire' : 'Concentration' }}</span>
+            </div>
+            <div class="pomo-ring__pulse"></div>
+          </div>
+
+          <div class="pomo-wave">
+            <span class="pomo-wave__btn"><span class="material-icons">graphic_eq</span></span>
+            <div class="pomo-wave__bars" [class.playing]="pomoRunning">
+              <span *ngFor="let b of waveBars; let i = index"
+                    [style.height.%]="b" [style.animation-delay.ms]="i * 90"></span>
+            </div>
+            <span class="pomo-wave__lbl">Lo-Fi · Pluie</span>
+          </div>
+
+          <div class="pomo-actions">
+            <button class="pomo-btn pomo-btn--main" (click)="togglePomo()">
+              <span class="material-icons">{{ pomoRunning ? 'pause' : 'play_arrow' }}</span>
+              {{ pomoRunning ? 'Suspendre' : 'Démarrer' }}
+            </button>
+            <button class="pomo-btn pomo-btn--ghost" (click)="resetPomo()" title="Réinitialiser">
+              <span class="material-icons">restart_alt</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- ── B. FLASHCARD SRS (SM-2) ─────────────────────────────────────── -->
+        <div class="shp-card shp-flash">
+          <div class="shp-card__head">
+            <span class="shp-chip shp-chip--srs"><span class="material-icons">style</span> SRS · SM-2</span>
+            <span class="shp-cycle">12 cartes dues</span>
+          </div>
+
+          <div class="srs-states">
+            <ng-container *ngFor="let st of flashStates; let i = index">
+              <span class="srs-state"
+                    [class.done]="i < flashStateIndex"
+                    [class.active]="i === flashStateIndex">
+                <span class="material-icons" *ngIf="i < flashStateIndex">check</span>{{ st }}
+              </span>
+              <span class="srs-arrow material-icons" *ngIf="i < flashStates.length - 1">chevron_right</span>
+            </ng-container>
+          </div>
+
+          <div class="flip-scene" (click)="flipCard()">
+            <div class="flip-inner" [class.is-flipped]="flashFlipped">
+              <div class="flip-face flip-face--front">
+                <span class="material-icons flip-icon">quiz</span>
+                <p>Qu'est-ce qu'un index <strong>clustered</strong> ?</p>
+                <span class="flip-hint">Cliquer pour révéler</span>
+              </div>
+              <div class="flip-face flip-face--back">
+                <p>Structure qui trie <strong>physiquement</strong> les lignes selon la clé — une seule par table.</p>
+                <span class="flip-hint">Évaluez votre rétention ↓</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="srs-rate">
+            <button class="rate-btn rate-btn--again" (click)="rateCard(0)">
+              <span class="material-icons">replay</span>
+              <span class="rate-btn__lbl">Again</span><span class="rate-btn__int">&lt; 1 min</span>
+            </button>
+            <button class="rate-btn rate-btn--hard" (click)="rateCard(1)">
+              <span class="material-icons">trending_flat</span>
+              <span class="rate-btn__lbl">Hard</span><span class="rate-btn__int">10 min</span>
+            </button>
+            <button class="rate-btn rate-btn--good" (click)="rateCard(2)">
+              <span class="material-icons">check</span>
+              <span class="rate-btn__lbl">Good</span><span class="rate-btn__int">4 j</span>
+            </button>
+            <button class="rate-btn rate-btn--easy" (click)="rateCard(3)">
+              <span class="material-icons">bolt</span>
+              <span class="rate-btn__lbl">Easy</span><span class="rate-btn__int">9 j</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- ── C. COACH IA (Gemini) ────────────────────────────────────────── -->
+        <div class="shp-card shp-coach">
+          <div class="shp-coach__halo"></div>
+          <div class="shp-card__head">
+            <span class="shp-chip shp-chip--ai"><span class="material-icons">psychology</span> Coach IA</span>
+            <span class="shp-badge-ai"><span class="material-icons">auto_awesome</span> Gemini</span>
+          </div>
+
+          <div class="coach-avatar">
+            <span class="material-icons">psychology</span>
+            <span class="coach-avatar__ping"></span>
+          </div>
+
+          <p class="coach-msg">
+            «&nbsp;Ta rétention sur le pack <strong class="c-indigo">T-SQL</strong> a baissé de
+            <strong class="c-amber">18&nbsp;%</strong> cette semaine. Je te propose un cycle
+            Pomodoro de <strong class="c-white">15&nbsp;min</strong> ciblé sur tes 12 cartes dues.&nbsp;»
+          </p>
+
+          <div class="coach-metrics">
+            <div class="coach-metric"><span class="coach-metric__v c-emerald">+42%</span><span class="coach-metric__l">Focus</span></div>
+            <div class="coach-metric"><span class="coach-metric__v c-amber">18%</span><span class="coach-metric__l">Oubli</span></div>
+            <div class="coach-metric"><span class="coach-metric__v c-indigo">14j</span><span class="coach-metric__l">Série</span></div>
+          </div>
+
+          <div class="coach-actions">
+            <a routerLink="/register" class="coach-btn coach-btn--go">
+              <span class="material-icons">play_circle</span> Lancer le cycle
+            </a>
+            <a routerLink="/register" class="coach-btn coach-btn--later">Plus tard</a>
+          </div>
+        </div>
+
       </div>
     </div>
   </section>

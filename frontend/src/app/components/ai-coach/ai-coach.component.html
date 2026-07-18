@@ -1,0 +1,405 @@
+<!-- AI WORKSPACE — 3-panel premium layout -->
+<div class="ai-workspace" [class.dark]="themeService.isDark()">
+
+  <!-- LEFT SIDEBAR -->
+  <aside class="ai-sidebar" [class.ai-sidebar--open]="sidebarOpen()" aria-label="Conversations">
+    <div class="ai-sidebar__brand">
+      <div class="ai-orb">
+        <span class="material-icons">psychology</span>
+        <div class="ai-orb__ring"></div>
+        <div class="ai-orb__ring ai-orb__ring--2"></div>
+      </div>
+      <div>
+        <div class="ai-sidebar__name">AI Coach</div>
+        <div class="ai-sidebar__model">Powered by Gemini</div>
+      </div>
+      @if (sidebarOpen()) {
+        <button class="ai-sidebar__close" (click)="sidebarOpen.set(false)" aria-label="Fermer">
+          <span class="material-icons">close</span>
+        </button>
+      }
+    </div>
+
+    <button class="ai-new-chat-btn" (click)="newSession()" aria-label="Nouvelle conversation">
+      <span class="material-icons">add</span>
+      Nouvelle conversation
+    </button>
+
+    <div class="ai-sessions" role="list">
+      @for (group of groupedSessions(); track group.label) {
+        <div class="ai-sessions__group-label">{{ group.label }}</div>
+        @for (session of group.items; track session.id) {
+          <button class="ai-session-tile"
+            [class.ai-session-tile--active]="session.id === activeSessionId()"
+            (click)="selectSession(session)"
+            role="listitem">
+            <div class="ai-session-tile__icon">
+              <span class="material-icons">chat_bubble_outline</span>
+            </div>
+            <div class="ai-session-tile__body">
+              @if (editingSessionId() === session.id) {
+                <input class="ai-session-tile__rename-input"
+                       [ngModel]="renameTitleText()"
+                       (ngModelChange)="renameTitleText.set($event)"
+                       (keydown.enter)="saveRename(session)"
+                       (keydown.escape)="cancelRename()"
+                       (blur)="saveRename(session)"
+                       (click)="$event.stopPropagation()"
+                       #renameInput>
+              } @else {
+                <div class="ai-session-tile__title">{{ session.title }}</div>
+                <div class="ai-session-tile__preview">{{ session.preview || 'Vide' }}</div>
+              }
+            </div>
+            @if (editingSessionId() !== session.id) {
+              <div class="ai-session-tile__actions">
+                <button class="ai-session-tile__action-btn" (click)="startRename(session, $event)" title="Renommer">
+                  <span class="material-icons">edit</span>
+                </button>
+                <button class="ai-session-tile__action-btn ai-session-tile__action-btn--del" (click)="deleteSession(session.id, $event)" title="Supprimer">
+                  <span class="material-icons">delete_outline</span>
+                </button>
+              </div>
+            }
+          </button>
+        }
+      }
+      @if (groupedSessions().length === 0) {
+        <div class="ai-sessions__empty">
+          <span class="material-icons">forum</span>
+          <p>Aucune conversation</p>
+        </div>
+      }
+    </div>
+
+    <div class="ai-sidebar__footer">
+      <button class="ai-sidebar__footer-btn" (click)="navigateToDashboard()" aria-label="Retour au dashboard">
+        <span class="material-icons">arrow_back</span>
+        Dashboard
+      </button>
+    </div>
+  </aside>
+
+  @if (sidebarOpen()) {
+    <div class="ai-sidebar-overlay" (click)="sidebarOpen.set(false)" aria-hidden="true"></div>
+  }
+
+  <!-- MAIN WORKSPACE -->
+  <main class="ai-main">
+    <header class="ai-topbar">
+      <button class="ai-topbar__icon-btn" (click)="sidebarOpen.set(!sidebarOpen())" aria-label="Conversations">
+        <span class="material-icons">menu</span>
+      </button>
+      <div class="ai-topbar__center">
+        <div class="ai-topbar__pulse"></div>
+        <span class="ai-topbar__title">Coach IA</span>
+        <div class="ai-topbar__badge">Gemini</div>
+      </div>
+      <div class="ai-topbar__actions">
+        <button class="ai-topbar__icon-btn" (click)="newSession()" title="Nouvelle conversation" aria-label="Nouvelle conversation">
+          <span class="material-icons">edit_square</span>
+        </button>
+        <button class="ai-topbar__icon-btn ai-topbar__icon-btn--insights"
+          (click)="rightPanelOpen.set(!rightPanelOpen())" title="Insights" aria-label="Insights">
+          <span class="material-icons">insights</span>
+        </button>
+      </div>
+    </header>
+
+    <div class="ai-chat-body" #chatScroll role="log" aria-live="polite">
+
+      @if (!hasMessages() && !isLoading()) {
+        <div class="ai-welcome">
+          <div class="ai-welcome__orb">
+            <div class="ai-welcome__glow"></div>
+            <span class="material-icons">auto_awesome</span>
+          </div>
+          <h1 class="ai-welcome__title">Votre coach IA personnel</h1>
+          <p class="ai-welcome__sub">
+            Analyse fondée sur vos <strong>vraies données</strong> - sessions, tâches, matières, habitudes.<br>
+            Chaque conseil est unique, jamais générique.
+          </p>
+          <div class="ai-suggestion-grid">
+            @for (s of suggestions; track s.text) {
+              <button class="ai-suggestion-card" (click)="useSuggestion(s.text)">
+                <div class="ai-suggestion-card__icon">
+                  <span class="material-icons">{{ s.icon }}</span>
+                </div>
+                <div class="ai-suggestion-card__text">{{ s.text }}</div>
+                <div class="ai-suggestion-card__desc">{{ s.desc }}</div>
+                <div class="ai-suggestion-card__arrow">
+                  <span class="material-icons">arrow_forward</span>
+                </div>
+              </button>
+            }
+          </div>
+        </div>
+      }
+
+      @if (hasMessages() || isLoading()) {
+        <div class="ai-messages">
+          @for (msg of messages(); track msg.id) {
+
+            @if (msg.role === 'user') {
+              <div class="ai-msg-row ai-msg-row--user">
+                <div class="ai-bubble ai-bubble--user">
+                  <div class="ai-bubble__content">{{ msg.content }}</div>
+                </div>
+              </div>
+            }
+
+            @if (msg.role === 'assistant' && msg.isThinking) {
+              <div class="ai-msg-row ai-msg-row--assistant">
+                <div class="ai-avatar" aria-hidden="true">
+                  <span class="material-icons">psychology</span>
+                </div>
+                <div class="ai-thinking-card" role="status">
+                  <div class="ai-thinking-card__dots" aria-hidden="true">
+                    <span class="ai-dot ai-dot--1"></span>
+                    <span class="ai-dot ai-dot--2"></span>
+                    <span class="ai-dot ai-dot--3"></span>
+                  </div>
+                  <div class="ai-thinking-card__stage">{{ getThinkingStageText() }}</div>
+                  <div class="ai-thinking-card__bar">
+                    <div class="ai-thinking-card__bar-fill"
+                      [style.width.%]="(thinkingStage() + 1) / 5 * 100"></div>
+                  </div>
+                </div>
+              </div>
+            }
+
+            @if (msg.role === 'assistant' && !msg.isThinking) {
+              <div class="ai-msg-row ai-msg-row--assistant">
+                <div class="ai-avatar" aria-hidden="true">
+                  <span class="material-icons">psychology</span>
+                </div>
+                <div class="ai-bubble ai-bubble--assistant">
+
+                  @if (msg.source) {
+                    <div class="ai-bubble__meta">
+                      <span class="material-icons ai-bubble__meta-icon">auto_awesome</span>
+                      <span class="ai-bubble__label">COACH</span>
+                      <span class="ai-source-badge" [class.ai-source-badge--gemini]="msg.source === 'gemini'">
+                        {{ msg.source === 'gemini' ? 'Gemini' : 'Analyse locale' }}
+                      </span>
+                    </div>
+                  }
+
+                  <div class="ai-bubble__content" [innerHTML]="formatContent(msg.content)"></div>
+                  @if (msg.isStreaming) {
+                    <span class="ai-cursor" aria-hidden="true">|</span>
+                  }
+
+                  @if (msg.analysisCard && !msg.isStreaming) {
+                    <div class="ai-analysis-card">
+                      <div class="ai-analysis-card__header">
+                        <div class="ai-score-ring" [style.background]="scoreGradient(msg.analysisCard.score)">
+                          <div class="ai-score-ring__inner">
+                            <div class="ai-score-ring__value">{{ msg.analysisCard.score }}</div>
+                            <div class="ai-score-ring__unit">/100</div>
+                          </div>
+                        </div>
+                        <div class="ai-analysis-card__headline">
+                          <div class="ai-analysis-card__section-label">SCORE DE PRODUCTIVITÉ</div>
+                          <div class="ai-analysis-card__score-label">{{ msg.analysisCard.scoreLabel }}</div>
+                          <div class="ai-analysis-card__trend">{{ msg.analysisCard.trend }}</div>
+                        </div>
+                      </div>
+
+                      @if (msg.analysisCard.strengths.length || msg.analysisCard.problems.length) {
+                        <div class="ai-insights">
+                          <div class="ai-analysis-card__divider-label">
+                            <span class="material-icons">insights</span> Signaux
+                          </div>
+                          @for (insight of msg.analysisCard.strengths.concat(msg.analysisCard.problems); track insight.title) {
+                            <div class="ai-insight-tile" [attr.data-type]="insight.type">
+                              <span class="material-icons ai-insight-tile__icon">
+                                {{ insight.type === 'positive' ? 'trending_up' :
+                                   insight.type === 'warning'  ? 'warning_amber' :
+                                   insight.type === 'critical' ? 'error_outline' : 'info_outline' }}
+                              </span>
+                              <div>
+                                <div class="ai-insight-tile__title">{{ insight.title }}</div>
+                                <div class="ai-insight-tile__detail">{{ insight.detail }}</div>
+                              </div>
+                            </div>
+                          }
+                        </div>
+                      }
+
+                      @if (msg.analysisCard.timeDistribution.length) {
+                        <div class="ai-time-dist">
+                          <div class="ai-analysis-card__divider-label">
+                            <span class="material-icons">donut_small</span> Répartition du temps
+                          </div>
+                          @for (slice of msg.analysisCard.timeDistribution; track slice.label) {
+                            <div class="ai-dist-bar">
+                              <div class="ai-dist-bar__label">{{ slice.label }}</div>
+                              <div class="ai-dist-bar__track">
+                                <div class="ai-dist-bar__fill"
+                                  [style.width.%]="slice.share * 100"
+                                  [style.background]="slice.color"></div>
+                              </div>
+                              <div class="ai-dist-bar__pct" [style.color]="slice.color">{{ (slice.share * 100).toFixed(0) }}%</div>
+                            </div>
+                          }
+                        </div>
+                      }
+
+                      @if (msg.analysisCard.actionPlan.length) {
+                        <div class="ai-action-plan">
+                          <div class="ai-analysis-card__divider-label">
+                            <span class="material-icons">checklist</span> Plan d'action
+                          </div>
+                          @for (item of msg.analysisCard.actionPlan; track item.label; let j = $index) {
+                            <div class="ai-action-item" [attr.data-prio]="item.priority">
+                              <div class="ai-action-item__num">{{ j + 1 }}</div>
+                              <div class="ai-action-item__label">{{ item.label }}</div>
+                            </div>
+                          }
+                        </div>
+                      }
+                    </div>
+                  }
+
+                  @if (!msg.isStreaming && !msg.isThinking) {
+                    <div class="ai-bubble__actions">
+                      <button class="ai-bubble__act-btn"
+                        (click)="copyMessage(msg.content, msg.id)"
+                        [title]="copiedMsgId() === msg.id ? 'Copié !' : 'Copier'"
+                        [attr.aria-label]="copiedMsgId() === msg.id ? 'Copié !' : 'Copier le message'">
+                        <span class="material-icons">{{ copiedMsgId() === msg.id ? 'check' : 'content_copy' }}</span>
+                      </button>
+                      @if (isLastAssistantMessage(msg.id) && !isLoading()) {
+                        <button class="ai-bubble__act-btn"
+                          (click)="regenerateLastResponse()"
+                          title="Regénérer la réponse"
+                          aria-label="Regénérer la réponse">
+                          <span class="material-icons">refresh</span>
+                        </button>
+                      }
+                    </div>
+                  }
+
+                  <div class="ai-bubble__time">{{ formatTime(msg.timestamp) }}</div>
+                </div>
+              </div>
+            }
+
+          }
+
+          @if (followUpSuggestions().length && !isLoading()) {
+            <div class="ai-followups">
+              <div class="ai-followups__label">Suggestions</div>
+              <div class="ai-followups__list">
+                @for (s of followUpSuggestions(); track s) {
+                  <button class="ai-followup-chip" (click)="useSuggestion(s)">{{ s }}</button>
+                }
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </div>
+
+    <div class="ai-input-zone">
+      <div class="ai-input-bar" [class.ai-input-bar--active]="inputText().length > 0">
+        <textarea
+          #inputRef
+          class="ai-input-bar__field"
+          [value]="inputText()"
+          (input)="onInput($event)"
+          (keydown)="onKeydown($event)"
+          placeholder="Posez une question à votre coach..."
+          rows="1"
+          [disabled]="isLoading()"
+          aria-label="Votre message"
+        ></textarea>
+        <button
+          class="ai-input-bar__send"
+          [class.ai-input-bar__send--active]="inputText().trim().length > 0 && !isLoading()"
+          (click)="send()"
+          [disabled]="!inputText().trim() || isLoading()"
+          aria-label="Envoyer"
+        >
+          <span class="material-icons">{{ isLoading() ? 'hourglass_top' : 'arrow_upward' }}</span>
+        </button>
+      </div>
+      <div class="ai-input-zone__hint">
+        <span class="material-icons">lock</span>
+        Vos données restent privées - Analyse fondée sur vos vraies données EduFocus
+      </div>
+    </div>
+  </main>
+
+  <!-- RIGHT PANEL -->
+  <aside class="ai-right-panel" [class.ai-right-panel--open]="rightPanelOpen()" aria-label="Statistiques">
+
+    <div class="ai-right-section">
+      <div class="ai-right-section__title">Score du jour</div>
+      @if (currentScore() !== null) {
+        <div class="ai-score-orb">
+          <div class="ai-score-orb__ring" [style.background]="scoreGradient(currentScore()!)">
+            <div class="ai-score-orb__inner">
+              <div class="ai-score-orb__val" [style.color]="scoreColor(currentScore()!)">{{ currentScore() }}</div>
+              <div class="ai-score-orb__max">/100</div>
+            </div>
+          </div>
+          <div class="ai-score-orb__label" [style.color]="scoreColor(currentScore()!)">
+            {{ currentScore()! >= 75 ? 'Excellente journée' :
+               currentScore()! >= 50 ? 'Bonne dynamique' :
+               currentScore()! >= 25 ? 'Journée correcte' : 'À lancer' }}
+          </div>
+        </div>
+      } @else {
+        <div class="ai-score-orb ai-score-orb--empty">
+          <div class="ai-score-orb__placeholder">--</div>
+        </div>
+      }
+    </div>
+
+    <div class="ai-right-section">
+      <div class="ai-right-section__title">Statistiques</div>
+      @for (stat of quickStats(); track stat.label) {
+        <div class="ai-quick-stat" [style.border-left-color]="stat.color">
+          <div class="ai-quick-stat__left">
+            <span class="material-icons ai-quick-stat__icon" [style.color]="stat.color">{{ stat.icon }}</span>
+            <div>
+              <div class="ai-quick-stat__label">{{ stat.label }}</div>
+              <div class="ai-quick-stat__trend">{{ stat.trend }}</div>
+            </div>
+          </div>
+          <div class="ai-quick-stat__value" [style.color]="stat.color">{{ stat.value }}</div>
+        </div>
+      }
+    </div>
+
+    <div class="ai-right-section">
+      <div class="ai-right-section__title">Cette semaine</div>
+      <div class="ai-sparkline">
+        @for (val of weeklyData(); track $index; let i = $index) {
+          <div class="ai-sparkline__bar"
+            [class.ai-sparkline__bar--today]="i === 6"
+            [style.height.%]="sparklineHeight(val) || 6"
+            [title]="weekDayLabels[i] + ': ' + formatMins(val)"></div>
+        }
+      </div>
+      <div class="ai-sparkline__labels">
+        @for (l of weekDayLabels; track l) {
+          <span>{{ l }}</span>
+        }
+      </div>
+    </div>
+
+    <div class="ai-right-section">
+      <div class="ai-right-section__title">Accès rapide</div>
+      @for (s of suggestions.slice(0, 4); track s.text) {
+        <button class="ai-right-prompt-btn" (click)="useSuggestion(s.text)">
+          <span class="material-icons">{{ s.icon }}</span>
+          {{ s.text }}
+        </button>
+      }
+    </div>
+  </aside>
+
+</div>

@@ -1,102 +1,110 @@
 <div class="db-root" [class.dark]="themeService.isDark()" [class.light]="!themeService.isDark()">
   <!-- ═══════════════════════════════════════════
-       PREMIUM HEADER + TAB NAVIGATION
+       FLOATING PILL NAVIGATION — EduFocus 2026
   ═══════════════════════════════════════════ -->
-  <div class="db-header-container">
-    <header class="db-header">
-      <div class="db-header-inner">
-        <!-- Logo -->
-        <div class="db-logo-group">
-          <div class="db-logo-icon">
-            <span class="material-icons">school</span>
-          </div>
-          <div>
-            <h1 class="db-logo-text">EduFocus</h1>
-            <p class="db-logo-sub">{{ 'MAIN_DASHBOARD.SUBTITLE' | translate }}</p>
-          </div>
+  <nav class="db-nav" aria-label="EduFocus navigation">
+    <div class="db-nav-inner">
+
+      <!-- Logo Mark -->
+      <button class="db-nav-logo" (click)="activeTab.set('dashboard')" tabindex="0">
+        <div class="db-nav-logo-icon">
+          <span class="material-icons">school</span>
         </div>
+        <span class="db-nav-logo-wordmark">EduFocus</span>
+      </button>
 
-        <!-- Header Actions -->
-        <div class="db-header-actions">
-          <!-- Language switcher -->
-          <app-language-switcher></app-language-switcher>
-
-          <!-- Theme toggle -->
-          <button (click)="themeService.toggleTheme()"
-            class="db-icon-btn"
-            [title]="themeService.isDark() ? ('MAIN_DASHBOARD.LIGHT_MODE' | translate) : ('MAIN_DASHBOARD.DARK_MODE' | translate)">
-            <span class="material-icons">{{ themeService.isDark() ? 'light_mode' : 'dark_mode' }}</span>
-          </button>
-
-          <!-- Points badge -->
-          <div class="db-points-badge">
-            <span class="material-icons">emoji_events</span>
-            <span class="db-points-value">{{ currentUser()?.stats?.points || 0 }}</span>
-          </div>
-
-          <!-- User avatar -->
-          <div class="db-user-chip">
-            <div class="db-avatar">
-              {{ currentUser()?.name ? currentUser()!.name.charAt(0).toUpperCase() : 'U' }}
-            </div>
-            <span class="db-username">{{ currentUser()?.name }}</span>
-          </div>
-
-          <!-- Logout -->
-          <button (click)="logout()" class="db-logout-btn" [title]="'MAIN_DASHBOARD.LOGOUT' | translate">
-            <span class="material-icons">logout</span>
-            <span class="db-logout-text">{{ 'MAIN_DASHBOARD.LOGOUT' | translate }}</span>
-          </button>
-        </div>
-      </div>
-    </header>
-
-    <!-- ── Tab Navigation Bar ── -->
-    <nav class="db-tabs" aria-label="Dashboard navigation">
-      <div class="db-tabs-inner">
-        <button class="db-tab" [class.db-tab-active]="activeTab() === 'dashboard'"
-                (click)="activeTab.set('dashboard')">
-          <span class="material-icons">dashboard</span>
-          <span class="db-tab-label">Dashboard</span>
+      <!-- Tab Rail -->
+      <div class="db-nav-rail" role="tablist">
+        <button class="db-nav-tab" [class.db-nav-tab--active]="activeTab() === 'dashboard'"
+                (click)="activeTab.set('dashboard')" role="tab">
+          <span class="material-icons db-nav-tab__icon">dashboard</span>
+          <span class="db-nav-tab__label">Dashboard</span>
         </button>
-        <button class="db-tab" [class.db-tab-active]="activeTab() === 'timer'"
-                (click)="activeTab.set('timer')">
-          <span class="material-icons">timer</span>
-          <span class="db-tab-label">Timer</span>
+
+        <button class="db-nav-tab" [class.db-nav-tab--active]="activeTab() === 'timer'"
+                (click)="activeTab.set('timer')" role="tab">
+          <span class="material-icons db-nav-tab__icon">timer</span>
+          <span class="db-nav-tab__label">Timer</span>
           @if (isTimerRunning()) {
-            <span class="db-tab-live"></span>
+            <span class="db-nav-live-dot"></span>
           }
         </button>
-        <button class="db-tab db-tab-desktop-only" [class.db-tab-active]="activeTab() === 'chrono'"
-                (click)="activeTab.set('chrono')">
-          <span class="material-icons">timelapse</span>
-          <span class="db-tab-label">Chrono</span>
+
+        <button class="db-nav-tab db-nav-tab--desktop" [class.db-nav-tab--active]="activeTab() === 'chrono'"
+                (click)="activeTab.set('chrono')" role="tab">
+          <span class="material-icons db-nav-tab__icon">timelapse</span>
+          <span class="db-nav-tab__label">Chrono</span>
           @if (chronoRunning()) {
-            <span class="db-tab-live"></span>
+            <span class="db-nav-live-dot"></span>
           }
         </button>
-        <button class="db-tab db-tab-desktop-only" [class.db-tab-active]="activeTab() === 'ai'"
-                (click)="activeTab.set('ai')">
-          <span class="material-icons">psychology</span>
-          <span class="db-tab-label">AI Coach</span>
+
+        <button class="db-nav-tab" [class.db-nav-tab--active]="activeTab() === 'subjects'"
+                (click)="activeTab.set('subjects')" role="tab">
+          <span class="material-icons db-nav-tab__icon">menu_book</span>
+          <span class="db-nav-tab__label">{{ 'MAIN_DASHBOARD.SUBJECTS' | translate }}</span>
         </button>
-        <button class="db-tab" [class.db-tab-active]="activeTab() === 'subjects'"
-                (click)="activeTab.set('subjects')">
-          <span class="material-icons">menu_book</span>
-          <span class="db-tab-label">{{ 'MAIN_DASHBOARD.SUBJECTS' | translate }} & Todo</span>
-        </button>
-        <button class="db-tab db-tab-mobile-only"
-                [class.db-tab-active]="activeTab() === 'chrono' || activeTab() === 'ai' || showMobileMoreMenu()"
-                (click)="toggleMobileMoreMenu()">
-          <span class="material-icons">more_horiz</span>
-          <span class="db-tab-label">Plus</span>
+
+        <!-- Mobile overflow -->
+        <button class="db-nav-tab db-nav-tab--mobile-more"
+                [class.db-nav-tab--active]="activeTab() === 'chrono' || showMobileMoreMenu()"
+                (click)="toggleMobileMoreMenu()" role="tab">
+          <span class="material-icons db-nav-tab__icon">grid_view</span>
+          <span class="db-nav-tab__label">Plus</span>
           @if (chronoRunning()) {
-            <span class="db-tab-live"></span>
+            <span class="db-nav-live-dot"></span>
           }
         </button>
       </div>
-    </nav>
-  </div>
+
+      <!-- Right action cluster -->
+      <div class="db-nav-actions">
+        <!-- Points badge -->
+        <div class="db-nav-points" title="Vos points">
+          <span class="material-icons">emoji_events</span>
+          <span>{{ currentUser()?.stats?.points || 0 }}</span>
+        </div>
+
+        <!-- AI Coach Button -->
+        <a class="db-nav-action-btn db-nav-btn--ai"
+           routerLink="/ai-coach"
+           routerLinkActive="db-nav-btn--active"
+           title="AI Coach">
+          <span class="material-icons">auto_awesome</span>
+          <span class="db-nav-btn-label">AI Coach</span>
+        </a>
+
+        <!-- Study Hub Button -->
+        <a class="db-nav-action-btn db-nav-btn--study"
+           routerLink="/study-hub"
+           title="Study Hub">
+          <span class="material-icons">rocket_launch</span>
+          <span class="db-nav-btn-label">Study Hub</span>
+        </a>
+
+        <!-- Language switcher -->
+        <app-language-switcher></app-language-switcher>
+
+        <!-- Theme toggle -->
+        <button class="db-nav-icon-btn"
+                (click)="themeService.toggleTheme()"
+                [title]="themeService.isDark() ? ('MAIN_DASHBOARD.LIGHT_MODE' | translate) : ('MAIN_DASHBOARD.DARK_MODE' | translate)">
+          <span class="material-icons">{{ themeService.isDark() ? 'light_mode' : 'dark_mode' }}</span>
+        </button>
+
+        <!-- User avatar -->
+        <div class="db-nav-avatar" [title]="currentUser()?.name || ''">
+          {{ currentUser()?.name ? currentUser()!.name.charAt(0).toUpperCase() : 'U' }}
+        </div>
+
+        <!-- Logout -->
+        <button class="db-nav-logout" (click)="logout()" [title]="'MAIN_DASHBOARD.LOGOUT' | translate">
+          <span class="material-icons">logout</span>
+        </button>
+      </div>
+
+    </div>
+  </nav>
 
   <!-- ═══════════════════════════════════════════
        MAIN CONTENT — TAB-SWITCHED
@@ -198,6 +206,7 @@
         <!-- ══ QUICK ACCESS CARDS ══ -->
         <div class="db-quick-grid">
           <div class="db-quick-card db-quick-planner" (click)="goToPlanner()">
+            <div class="db-quick-glow"></div>
             <div class="db-quick-inner">
               <div class="db-quick-icon-wrap">
                 <span class="material-icons">calendar_today</span>
@@ -211,6 +220,7 @@
           </div>
 
           <div class="db-quick-card db-quick-study" (click)="goToStudyHub()">
+            <div class="db-quick-glow"></div>
             <div class="db-quick-inner">
               <div class="db-quick-icon-wrap db-quick-icon-study">
                 <span class="material-icons">school</span>
@@ -224,6 +234,7 @@
           </div>
 
           <div class="db-quick-card db-quick-analytics" (click)="goToSrsAnalytics()">
+            <div class="db-quick-glow"></div>
             <div class="db-quick-inner">
               <div class="db-quick-icon-wrap db-quick-icon-analytics">
                 <span class="material-icons">analytics</span>
@@ -235,11 +246,30 @@
             </div>
             <span class="material-icons db-quick-arrow db-quick-arrow-analytics">arrow_forward</span>
           </div>
+
+          <!-- Premium AI Coach Featured Card -->
+          <div class="db-quick-card db-quick-ai" (click)="router.navigate(['/ai-coach'])">
+            <div class="db-quick-glow"></div>
+            <div class="db-quick-inner">
+              <div class="db-quick-icon-wrap db-quick-icon-ai">
+                <span class="material-icons">auto_awesome</span>
+              </div>
+              <div class="db-quick-text">
+                <div class="db-quick-title-row">
+                  <h3 class="db-quick-title db-quick-title-ai">{{ 'MAIN_DASHBOARD.AI_COACH' | translate }}</h3>
+                  <span class="db-quick-ai-new-badge">PRO</span>
+                </div>
+                <p class="db-quick-desc">{{ 'MAIN_DASHBOARD.AI_COACH_DESC' | translate }}</p>
+              </div>
+            </div>
+            <span class="material-icons db-quick-arrow db-quick-arrow-ai">arrow_forward</span>
+          </div>
         </div>
 
         <!-- ══ STATS CARDS ══ -->
         <div class="db-stats-grid">
           <div class="db-stat-card db-stat-progress" (click)="openPlanModal()">
+            <div class="db-stat-blur"></div>
             <div class="db-stat-body">
               <div class="db-stat-icon-row">
                 <span class="material-icons db-stat-icon">track_changes</span>
@@ -254,6 +284,7 @@
           </div>
 
           <div class="db-stat-card db-stat-time">
+            <div class="db-stat-blur"></div>
             <div class="db-stat-body">
               <div class="db-stat-icon-row">
                 <span class="material-icons db-stat-icon db-stat-icon-green">schedule</span>
@@ -265,6 +296,7 @@
           </div>
 
           <div class="db-stat-card db-stat-tasks">
+            <div class="db-stat-blur"></div>
             <div class="db-stat-body">
               <div class="db-stat-icon-row">
                 <span class="material-icons db-stat-icon db-stat-icon-blue">task_alt</span>
@@ -276,6 +308,7 @@
           </div>
 
           <div class="db-stat-card db-stat-streak" (click)="openStatsModal()">
+            <div class="db-stat-blur"></div>
             <div class="db-stat-body">
               <div class="db-stat-icon-row">
                 <span class="material-icons db-stat-icon db-stat-icon-orange">local_fire_department</span>
@@ -664,6 +697,10 @@
                 </div>
               </div>
               <div class="db-ai-header-actions">
+                <button (click)="router.navigate(['/ai-coach'])" class="db-ai-workspace-btn" title="Ouvrir AI Workspace complet">
+                  <span class="material-icons">open_in_full</span>
+                  AI Workspace
+                </button>
                 <button (click)="clearAIChat()" class="db-ai-clear-btn" title="Réinitialiser la conversation">
                   <span class="material-icons">refresh</span>
                 </button>

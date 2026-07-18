@@ -1,7 +1,7 @@
 import { Component, OnInit, signal, computed, effect, untracked } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { SubjectService } from '../../services/subject.service';
 import { DayPlanService } from '../../services/day-plan.service';
@@ -53,7 +53,7 @@ interface AiStudyContext {
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, FormsModule, LottieComponent, TranslateModule, LanguageSwitcherComponent],
+  imports: [CommonModule, FormsModule, LottieComponent, TranslateModule, LanguageSwitcherComponent, RouterModule],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.css'
 })
@@ -271,7 +271,7 @@ export class DashboardComponent implements OnInit {
     private subjectService: SubjectService,
     private dayPlanService: DayPlanService,
     private todoService: TodoService,
-    private router: Router,
+    public router: Router,
     public themeService: ThemeService,
     public languageService: LanguageService,
     private aiAssistantService: AiAssistantService

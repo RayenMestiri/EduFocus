@@ -6,7 +6,6 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import * as THREE from 'three';
 import { ThemeService } from '../../services/theme.service';
 
 gsap.registerPlugin(ScrollTrigger);
@@ -68,21 +67,75 @@ interface HeroSubject {
 })
 export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
 
-  @ViewChild('canvas3d', { static: true }) canvasRef!: ElementRef<HTMLCanvasElement>;
+  @ViewChild('heroSection', { static: true }) heroRef!: ElementRef<HTMLElement>;
 
   // ── State ────────────────────────────────────────────────────────────────
   isScrolled = false;
   activeTab = 0;
   Math = Math;
 
-  // ── Three.js ─────────────────────────────────────────────────────────────
-  private scene!: THREE.Scene;
-  private camera!: THREE.PerspectiveCamera;
-  private renderer!: THREE.WebGLRenderer;
-  private particles!: THREE.Points;
-  private linesMesh!: THREE.LineSegments;
-  private mouse = { x: 0, y: 0 };
-  private animId = 0;
+  // ── Study Hub live preview — Pomodoro ─────────────────────────────────────
+  pomoRemaining = 18 * 60 + 42;   // départ « pré-rempli » pour un anneau vivant
+  pomoRunning   = false;
+  pomoIsBreak   = false;
+  pomoCycle     = 3;
+  private pomoTimer: any = null;
+  private readonly POMO_CIRC = 565.48;   // 2πr, r = 90
+  waveBars = [42, 68, 55, 88, 46, 74, 60, 84, 50, 66, 40, 78];
+
+  // ── Study Hub live preview — Flashcard SM-2 ───────────────────────────────
+  flashFlipped    = false;
+  flashStates     = ['NEW', 'LEARNING', 'REVIEW', 'MASTERED'];
+  flashStateIndex = 1;            // LEARNING
+
+  get pomoTotal(): number { return this.pomoIsBreak ? 5 * 60 : 25 * 60; }
+  get pomoProgress(): number { return 1 - this.pomoRemaining / this.pomoTotal; }
+  get pomoDashoffset(): number { return this.POMO_CIRC * (1 - this.pomoProgress); }
+
+  formatPomo(): string {
+    const m = Math.floor(this.pomoRemaining / 60);
+    const s = this.pomoRemaining % 60;
+    return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+  }
+
+  togglePomo(): void {
+    this.pomoRunning = !this.pomoRunning;
+    this.pomoRunning ? this._startPomo() : this._stopPomo();
+  }
+
+  resetPomo(): void {
+    this._stopPomo();
+    this.pomoRunning = false;
+    this.pomoIsBreak = false;
+    this.pomoCycle = 3;
+    this.pomoRemaining = 18 * 60 + 42;
+  }
+
+  private _startPomo(): void {
+    this._stopPomo();
+    this.pomoTimer = setInterval(() => this.zone.run(() => {
+      if (this.pomoRemaining > 0) {
+        this.pomoRemaining--;
+      } else {
+        this.pomoIsBreak = !this.pomoIsBreak;
+        this.pomoRemaining = this.pomoTotal;
+        if (!this.pomoIsBreak) this.pomoCycle = (this.pomoCycle % 4) + 1;
+      }
+    }), 1000);
+  }
+
+  private _stopPomo(): void {
+    if (this.pomoTimer) { clearInterval(this.pomoTimer); this.pomoTimer = null; }
+  }
+
+  flipCard(): void { this.flashFlipped = !this.flashFlipped; }
+
+  /** SM-2 : 0 Again · 1 Hard · 2 Good · 3 Easy → fait avancer la machine à états. */
+  rateCard(grade: number): void {
+    if (grade === 0)      this.flashStateIndex = Math.max(1, this.flashStateIndex - 1);
+    else if (grade >= 2)  this.flashStateIndex = Math.min(3, this.flashStateIndex + 1);
+    this.flashFlipped = false;   // carte suivante : on repart sur le recto
+  }
 
   // ── Page data ─────────────────────────────────────────────────────────────
   heroSubjects: HeroSubject[] = [
@@ -258,16 +311,11 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   ngOnInit(): void {}
 
   ngAfterViewInit(): void {
-    this.zone.runOutsideAngular(() => {
-      this._initThree();
-      this._animate();
-    });
     requestAnimationFrame(() => setTimeout(() => this._initGSAP(), 80));
   }
 
   ngOnDestroy(): void {
-    cancelAnimationFrame(this.animId);
-    this.renderer?.dispose();
+    this._stopPomo();
     ScrollTrigger.getAll().forEach(t => t.kill());
   }
 
@@ -276,106 +324,21 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     this.isScrolled = window.scrollY > 40;
   }
 
-  @HostListener('window:resize')
-  onResize(): void {
-    if (!this.camera || !this.renderer) return;
-    this.camera.aspect = window.innerWidth / window.innerHeight;
-    this.camera.updateProjectionMatrix();
-    this.renderer.setSize(window.innerWidth, window.innerHeight);
-  }
-
+  // Parallaxe douce du fond hero (aurora) suivant la souris — sans 3D.
   @HostListener('mousemove', ['$event'])
   onMouseMove(e: MouseEvent): void {
-    this.mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
-    this.mouse.y = (e.clientY / window.innerHeight) * 2 - 1;
-  }
-
-  // ════════════ THREE.JS ════════════
-  private _initThree(): void {
-    const canvas = this.canvasRef.nativeElement;
-    const W = window.innerWidth, H = window.innerHeight;
-
-    this.scene  = new THREE.Scene();
-    this.camera = new THREE.PerspectiveCamera(60, W / H, 0.1, 1000);
-    this.camera.position.z = 80;
-
-    this.renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
-    this.renderer.setSize(W, H);
-    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-
-    const COUNT = 220;
-    const positions = new Float32Array(COUNT * 3);
-    const sizes     = new Float32Array(COUNT);
-    const colors    = new Float32Array(COUNT * 3);
-
-    const palette = [
-      new THREE.Color('#6366f1'),
-      new THREE.Color('#8b5cf6'),
-      new THREE.Color('#a78bfa'),
-      new THREE.Color('#4f46e5'),
-      new THREE.Color('#06b6d4'),
-      new THREE.Color('#ec4899'),
-    ];
-
-    for (let i = 0; i < COUNT; i++) {
-      positions[i * 3]     = (Math.random() - 0.5) * 220;
-      positions[i * 3 + 1] = (Math.random() - 0.5) * 130;
-      positions[i * 3 + 2] = (Math.random() - 0.5) * 70;
-      sizes[i] = Math.random() * 2.8 + 0.4;
-      const c = palette[Math.floor(Math.random() * palette.length)];
-      colors[i * 3] = c.r; colors[i * 3 + 1] = c.g; colors[i * 3 + 2] = c.b;
-    }
-
-    const geo = new THREE.BufferGeometry();
-    geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-    geo.setAttribute('size',     new THREE.BufferAttribute(sizes, 1));
-    geo.setAttribute('color',    new THREE.BufferAttribute(colors, 3));
-    this.particles = new THREE.Points(geo, new THREE.PointsMaterial({
-      size: 1.2, vertexColors: true, transparent: true, opacity: 0.85, sizeAttenuation: true,
-    }));
-    this.scene.add(this.particles);
-
-    // connecting lines
-    const lp: number[] = [], lc: number[] = [];
-    for (let i = 0; i < COUNT; i++) {
-      for (let j = i + 1; j < COUNT; j++) {
-        const dx = positions[i*3]-positions[j*3];
-        const dy = positions[i*3+1]-positions[j*3+1];
-        const dz = positions[i*3+2]-positions[j*3+2];
-        const dist = Math.sqrt(dx*dx + dy*dy + dz*dz);
-        if (dist < 26) {
-          lp.push(positions[i*3], positions[i*3+1], positions[i*3+2],
-                  positions[j*3], positions[j*3+1], positions[j*3+2]);
-          const a = (1 - dist / 26) * 0.45;
-          lc.push(0.45*a, 0.38*a, 0.95*a, 0.45*a, 0.38*a, 0.95*a);
-        }
-      }
-    }
-    const lg = new THREE.BufferGeometry();
-    lg.setAttribute('position', new THREE.Float32BufferAttribute(lp, 3));
-    lg.setAttribute('color',    new THREE.Float32BufferAttribute(lc, 3));
-    this.linesMesh = new THREE.LineSegments(lg, new THREE.LineBasicMaterial({
-      vertexColors: true, transparent: true, opacity: 0.22,
-    }));
-    this.scene.add(this.linesMesh);
-  }
-
-  private _animate(): void {
-    this.animId = requestAnimationFrame(() => this._animate());
-    const t = Date.now() * 0.0004;
-    if (this.particles) {
-      this.particles.rotation.y = t * 0.10 + this.mouse.x * 0.14;
-      this.particles.rotation.x = t * 0.06 + this.mouse.y * 0.07;
-      this.linesMesh.rotation.y = this.particles.rotation.y;
-      this.linesMesh.rotation.x = this.particles.rotation.x;
-    }
-    this.renderer.render(this.scene, this.camera);
+    const el = this.heroRef?.nativeElement;
+    if (!el) return;
+    const px = (e.clientX / window.innerWidth) * 2 - 1;   // -1 → 1
+    const py = (e.clientY / window.innerHeight) * 2 - 1;
+    el.style.setProperty('--par-x', (px * 22).toFixed(1));
+    el.style.setProperty('--par-y', (py * 22).toFixed(1));
   }
 
   // ════════════ GSAP ════════════
   private _initGSAP(): void {
     // Pre-hide scroll-animated elements
-    gsap.set('.stat-card, .feat-card, .how-card, .testi-card, .cta-inner > *', { autoAlpha: 0 });
+    gsap.set('.stat-card, .feat-card, .how-card, .testi-card, .cta-inner > *, .shp-card', { autoAlpha: 0 });
     gsap.set('.showcase', { autoAlpha: 0, y: 60 });
 
     // ── Hero entrance ───────────────────────────────────────────────────────
@@ -428,6 +391,21 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
           gsap.fromTo(card,
             { y: 120, autoAlpha: 0, rotateX: 30, scale: 0.88, transformPerspective: 1000, transformOrigin: 'center bottom' },
             { y: 0, autoAlpha: 1, rotateX: 0, scale: 1, duration: 1.0, delay: i * 0.1, ease: 'expo.out', clearProps: 'rotateX,transformPerspective,transformOrigin' }
+          );
+        });
+      },
+      once: true,
+    });
+
+    // ── Study Hub live preview ──────────────────────────────────────────────
+    ScrollTrigger.create({
+      trigger: '.shp-grid',
+      start: 'top 85%',
+      onEnter: () => {
+        gsap.utils.toArray<HTMLElement>('.shp-card').forEach((card, i) => {
+          gsap.fromTo(card,
+            { y: 90, autoAlpha: 0, rotateX: 24, scale: 0.9, transformPerspective: 1000, transformOrigin: 'center bottom' },
+            { y: 0, autoAlpha: 1, rotateX: 0, scale: 1, duration: 1.0, delay: i * 0.14, ease: 'expo.out', clearProps: 'rotateX,transformPerspective,transformOrigin' }
           );
         });
       },
