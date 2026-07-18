@@ -89,6 +89,7 @@ router.post('/import', async (req, res) => {
         content: n.content || '',
         tags: Array.isArray(n.tags) ? n.tags : [],
         isPinned: !!n.isPinned,
+        color: n.color || '#E0F2FE',
         createdAt: n.createdAt ? new Date(n.createdAt) : new Date(),
         updatedAt: n.updatedAt ? new Date(n.updatedAt) : new Date()
       }));
@@ -413,6 +414,7 @@ router.put('/:id', async (req, res) => {
         content: n.content || '',
         tags: Array.isArray(n.tags) ? n.tags : [],
         isPinned: !!n.isPinned,
+        color: n.color || '#E0F2FE',
         createdAt: n.createdAt ? new Date(n.createdAt) : new Date(),
         updatedAt: n.updatedAt ? new Date(n.updatedAt) : new Date()
       }));

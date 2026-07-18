@@ -6,6 +6,7 @@ const NoteSubSchema = new mongoose.Schema({
   content: { type: String, default: '' },
   tags: [{ type: String }],
   isPinned: { type: Boolean, default: false },
+  color: { type: String, default: '#E0F2FE' },
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now }
 }, { _id: false, id: false });

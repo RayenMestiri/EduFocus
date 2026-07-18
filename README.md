@@ -39,7 +39,7 @@ Le tableau de bord est le centre névralgique de l'application, utilisant les **
 ### 3. 📝 Gestionnaire de Notes Avancé
 Un système de prise de notes structuré conçu pour la révision rapide.
 - **Système de Tags & Filtres** : Chaque note peut recevoir de multiples étiquettes. Le frontend implémente un système de filtrage en temps réel basé sur ces tags sans avoir besoin de recharger la page.
-- **Épinglage et Archivage** : Les notes peuvent changer d'état, modifiant instantanément leur positionnement sur l'interface via des animations fluides CSS.
+- **Épinglage et Archivage** : Les notes peuvent changer d'état, modifiant instantanément leur positionnement sur l'interface via des animations fluides   CSS.
 
 ### 4. 🎓 Study Hub : Outils d'Apprentissage Actif
 Le module le plus complexe, structuré autour du concept de "Study Packs" (modules de révision).

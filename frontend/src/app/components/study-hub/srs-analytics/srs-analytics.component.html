@@ -26,8 +26,10 @@
         </a>
         <div style="width:1px;height:20px;background:rgba(0,0,0,.1)" class="dark:opacity-20"></div>
         <app-language-switcher></app-language-switcher>
-        <button (click)="themeService.toggleTheme()" class="srs-theme-btn" [title]="themeService.isDark() ? 'Mode clair' : 'Mode sombre'">
-          <span class="material-icons" style="font-size:18px">{{ themeService.isDark() ? 'light_mode' : 'dark_mode' }}</span>
+        <button (click)="themeService.toggleTheme()" class="srs-theme-btn"
+          [title]="themeService.isDark() ? 'Mode clair' : 'Mode sombre'">
+          <span class="material-icons" style="font-size:18px">{{ themeService.isDark() ? 'light_mode' : 'dark_mode'
+            }}</span>
         </button>
       </div>
 
@@ -45,20 +47,18 @@
 
     <!-- ── Empty State ── -->
     <div *ngIf="!isLoading() && computedStats().totalFlashcards === 0"
-         class="flex flex-col items-center justify-center text-center"
-         style="min-height:60vh;gap:20px">
+      class="flex flex-col items-center justify-center text-center" style="min-height:60vh;gap:20px">
       <div class="empty-icon-wrap">
         <span class="material-icons" style="font-size:40px;color:#8b5cf6">psychology</span>
       </div>
       <div>
-        <h2 style="font-size:22px;font-weight:900;color:#0f172a;margin:0 0 8px" class="dark:text-white">Pas encore de flashcards</h2>
+        <h2 style="font-size:22px;font-weight:900;color:#0f172a;margin:0 0 8px" class="dark:text-white">Pas encore de
+          flashcards</h2>
         <p style="font-size:13px;color:#64748b;max-width:320px;line-height:1.6">
           Créez des flashcards dans vos packs d'étude pour commencer à analyser vos progrès.
         </p>
       </div>
-      <a routerLink="/study-hub"
-         class="cta-review"
-         style="padding:12px 24px;font-size:13px;border-radius:14px">
+      <a routerLink="/study-hub" class="cta-review" style="padding:12px 24px;font-size:13px;border-radius:14px">
         <span class="material-icons" style="font-size:16px">rocket_launch</span>
         Aller au Study Hub
       </a>
@@ -73,7 +73,8 @@
         <h1 class="srs-h1">Vos performances SRS</h1>
         <p class="srs-subtitle">
           <strong class="font-mono">{{ computedStats().totalFlashcards }}</strong> flashcards ·
-          <strong class="font-mono">{{ computedStats().totalPacks }}</strong> pack{{ computedStats().totalPacks > 1 ? 's' : '' }} ·
+          <strong class="font-mono">{{ computedStats().totalPacks }}</strong> pack{{ computedStats().totalPacks > 1 ?
+          's' : '' }} ·
           <span style="color:#10b981;font-weight:600">● Mis à jour en temps réel</span>
         </p>
       </div>
@@ -82,11 +83,10 @@
       <div class="srs-row sr-section-gap grid grid-cols-2 lg:grid-cols-4 gap-4">
 
         <!-- 1. Retention Hero — Ultra-Premium Minimalist v3 -->
-        <div class="hero-retention-card col-span-2 lg:col-span-1"
-          [class]="computedStats().retentionRate >= 90 ? 'hero-excellent' :
+        <div class="hero-retention-card col-span-2 lg:col-span-1" [class]="computedStats().retentionRate >= 90 ? 'hero-excellent' :
                    computedStats().retentionRate >= 75 ? 'hero-good' :
                    computedStats().retentionRate >= 50 ? 'hero-average' : 'hero-poor'">
-          
+
           <!-- Subtle static glow -->
           <div class="hero-glow-overlay"></div>
 
@@ -97,7 +97,8 @@
               <div class="hero-v3-info-btn">
                 <span class="material-icons" style="font-size:12px">help_outline</span>
               </div>
-              <div class="tip-box">% de cartes mémorisées sans erreur.<br>90%+ Excellent · 75%+ Bien · &lt;50% À améliorer</div>
+              <div class="tip-box">% de cartes mémorisées sans erreur.<br>90%+ Excellent · 75%+ Bien · &lt;50% À
+                améliorer</div>
             </div>
           </div>
 
@@ -106,18 +107,18 @@
             <div class="hero-v3-ring-container">
               <svg width="96" height="96" viewBox="0 0 100 100" class="hero-v3-svg">
                 <!-- Track -->
-                <circle cx="50" cy="50" r="41" fill="none" stroke="rgba(255, 255, 255, 0.12)" stroke-width="6.5"></circle>
+                <circle cx="50" cy="50" r="41" fill="none" stroke="rgba(255, 255, 255, 0.12)" stroke-width="6.5">
+                </circle>
                 <!-- Fill arc -->
-                <circle cx="50" cy="50" r="41" fill="none" stroke="white" stroke-width="6.5"
-                  stroke-linecap="round"
-                  stroke-dasharray="257.6"
-                  [attr.stroke-dashoffset]="(1 - computedStats().retentionRate / 100) * 257.6"
+                <circle cx="50" cy="50" r="41" fill="none" stroke="white" stroke-width="6.5" stroke-linecap="round"
+                  stroke-dasharray="257.6" [attr.stroke-dashoffset]="(1 - computedStats().retentionRate / 100) * 257.6"
                   class="hero-v3-arc-fill">
                 </circle>
               </svg>
               <!-- Center Number -->
               <div class="hero-v3-score-center">
-                <div class="hero-v3-number">{{ computedStats().retentionRate }}<span class="hero-v3-percent">%</span></div>
+                <div class="hero-v3-number">{{ computedStats().retentionRate }}<span class="hero-v3-percent">%</span>
+                </div>
               </div>
             </div>
           </div>
@@ -128,13 +129,13 @@
             <div class="hero-v3-status-pill">
               <span class="material-icons">
                 {{ computedStats().retentionRate >= 90 ? 'emoji_events' :
-                   computedStats().retentionRate >= 75 ? 'thumb_up' :
-                   computedStats().retentionRate >= 50 ? 'trending_flat' : 'warning' }}
+                computedStats().retentionRate >= 75 ? 'thumb_up' :
+                computedStats().retentionRate >= 50 ? 'trending_flat' : 'warning' }}
               </span>
               <span>
                 {{ computedStats().retentionRate >= 90 ? 'Excellent' :
-                   computedStats().retentionRate >= 75 ? 'Très bien' :
-                   computedStats().retentionRate >= 50 ? 'Moyen' : 'À améliorer' }}
+                computedStats().retentionRate >= 75 ? 'Très bien' :
+                computedStats().retentionRate >= 50 ? 'Moyen' : 'À améliorer' }}
               </span>
             </div>
             <!-- Subtitle details -->
@@ -150,18 +151,22 @@
         <div class="srs-card kpi-tile tile-due">
           <div class="flex items-start justify-between">
             <div class="kpi-icon-wrap" style="background:linear-gradient(135deg,#fee2e2,#fecaca)">
-              <span class="material-icons" style="font-size:20px;color:#ef4444;position:relative;z-index:1">notifications_active</span>
+              <span class="material-icons"
+                style="font-size:20px;color:#ef4444;position:relative;z-index:1">notifications_active</span>
             </div>
             <span *ngIf="computedStats().dueToday > 0" class="due-dot"></span>
           </div>
           <div class="kpi-value" style="color:#ef4444">{{ computedStats().dueToday }}</div>
           <div class="kpi-label" style="color:#ef4444">À réviser</div>
-          <div class="kpi-info-box" style="background:rgba(239,68,68,.06);border:1px solid rgba(239,68,68,.12);color:#dc2626"
-               [class.dark:text-rose-400]="true">
-            <span *ngIf="computedStats().dueToday === 0" style="color:#16a34a">✅ Tout est à jour !</span>
-            <span *ngIf="computedStats().dueToday > 0 && computedStats().overdue === 0">📅 Prévues pour aujourd'hui</span>
-            <span *ngIf="computedStats().overdue > 0">
-              ⚠️ dont <strong>{{ computedStats().overdue }}</strong> en retard
+          <div class="kpi-info-box"
+            style="background:rgba(239,68,68,.06);border:1px solid rgba(239,68,68,.12);color:#dc2626"
+            [class.dark:text-rose-400]="true">
+            <span *ngIf="computedStats().dueToday === 0" class="info-line" style="color:#16a34a"><span
+                class="material-icons">check_circle</span>Tout est à jour !</span>
+            <span *ngIf="computedStats().dueToday > 0 && computedStats().overdue === 0" class="info-line"><span
+                class="material-icons">event</span>Prévues pour aujourd'hui</span>
+            <span *ngIf="computedStats().overdue > 0" class="info-line">
+              <span class="material-icons">schedule</span>dont <strong>{{ computedStats().overdue }}</strong> en retard
             </span>
           </div>
         </div>
@@ -169,24 +174,30 @@
         <!-- 3. Cette semaine -->
         <div class="srs-card kpi-tile tile-week">
           <div class="kpi-icon-wrap" style="background:linear-gradient(135deg,#e0e7ff,#c7d2fe)">
-            <span class="material-icons" style="font-size:20px;color:#6366f1;position:relative;z-index:1">event_repeat</span>
+            <span class="material-icons"
+              style="font-size:20px;color:#6366f1;position:relative;z-index:1">event_repeat</span>
           </div>
           <div class="kpi-value" style="color:#6366f1">{{ computedStats().reviewsLast7Days }}</div>
           <div class="kpi-label" style="color:#6366f1">7 derniers jours</div>
-          <div class="kpi-info-box" style="background:rgba(99,102,241,.06);border:1px solid rgba(99,102,241,.12);color:#4338ca">
-            📊 <strong>{{ computedStats().reviewsLast30Days }}</strong> cartes ce mois-ci
+          <div class="kpi-info-box info-line"
+            style="background:rgba(99,102,241,.06);border:1px solid rgba(99,102,241,.12);color:#4338ca">
+            <span class="material-icons">calendar_month</span><strong>{{ computedStats().reviewsLast30Days
+              }}</strong>&nbsp;cartes ce mois-ci
           </div>
         </div>
 
         <!-- 4. Maîtrisées -->
         <div class="srs-card kpi-tile tile-master">
           <div class="kpi-icon-wrap" style="background:linear-gradient(135deg,#d1fae5,#a7f3d0)">
-            <span class="material-icons" style="font-size:20px;color:#10b981;position:relative;z-index:1">workspace_premium</span>
+            <span class="material-icons"
+              style="font-size:20px;color:#10b981;position:relative;z-index:1">workspace_premium</span>
           </div>
           <div class="kpi-value" style="color:#10b981">{{ computedStats().mastered }}</div>
           <div class="kpi-label" style="color:#10b981">Maîtrisées</div>
-          <div class="kpi-info-box" style="background:rgba(16,185,129,.06);border:1px solid rgba(16,185,129,.12);color:#059669">
-            🏆 sur <strong>{{ computedStats().totalFlashcards }}</strong> cartes totales
+          <div class="kpi-info-box info-line"
+            style="background:rgba(16,185,129,.06);border:1px solid rgba(16,185,129,.12);color:#059669">
+            <span class="material-icons">layers</span>sur <strong>{{ computedStats().totalFlashcards
+              }}</strong>&nbsp;cartes totales
           </div>
         </div>
 
@@ -200,12 +211,13 @@
           <!-- Header -->
           <div class="flex items-start justify-between mb-2">
             <div>
-              <div class="sec-eyebrow" style="color:#8b5cf6">Répartition globale</div>
+              <div class="sec-eyebrow">Répartition globale</div>
               <div class="sec-title">
-                <span class="material-icons" style="font-size:18px;color:#8b5cf6">donut_large</span>
+                <span class="material-icons" style="font-size:18px">donut_large</span>
                 Distribution des États SRS
               </div>
-              <p class="sec-sub">{{ computedStats().totalFlashcards }} flashcards réparties en 4 états d'apprentissage</p>
+              <p class="sec-sub">{{ computedStats().totalFlashcards }} flashcards réparties en 4 états d'apprentissage
+              </p>
             </div>
             <div class="tip-wrap">
               <div class="help-btn">
@@ -219,19 +231,23 @@
           <div class="dist-bar-mega">
             <div *ngIf="computedStats().new > 0" class="dist-seg new-seg"
               [style.width]="getDistributionWidth(computedStats().new)">
-              <span *ngIf="(computedStats().new / computedStats().totalFlashcards) > 0.1">{{ computedStats().new }}</span>
+              <span *ngIf="(computedStats().new / computedStats().totalFlashcards) > 0.1">{{ computedStats().new
+                }}</span>
             </div>
             <div *ngIf="computedStats().learning > 0" class="dist-seg learn-seg"
               [style.width]="getDistributionWidth(computedStats().learning)">
-              <span *ngIf="(computedStats().learning / computedStats().totalFlashcards) > 0.1">{{ computedStats().learning }}</span>
+              <span *ngIf="(computedStats().learning / computedStats().totalFlashcards) > 0.1">{{
+                computedStats().learning }}</span>
             </div>
             <div *ngIf="computedStats().review > 0" class="dist-seg review-seg"
               [style.width]="getDistributionWidth(computedStats().review)">
-              <span *ngIf="(computedStats().review / computedStats().totalFlashcards) > 0.1">{{ computedStats().review }}</span>
+              <span *ngIf="(computedStats().review / computedStats().totalFlashcards) > 0.1">{{ computedStats().review
+                }}</span>
             </div>
             <div *ngIf="computedStats().mastered > 0" class="dist-seg master-seg"
               [style.width]="getDistributionWidth(computedStats().mastered)">
-              <span *ngIf="(computedStats().mastered / computedStats().totalFlashcards) > 0.1">{{ computedStats().mastered }}</span>
+              <span *ngIf="(computedStats().mastered / computedStats().totalFlashcards) > 0.1">{{
+                computedStats().mastered }}</span>
             </div>
           </div>
 
@@ -242,7 +258,8 @@
             <div class="state-mini-card s-new">
               <div class="flex items-center gap-1.5 mb-2">
                 <span class="state-dot" style="background:#3b82f6"></span>
-                <span style="font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:.09em;color:#3b82f6">Nouvelle</span>
+                <span
+                  style="font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:.09em;color:#3b82f6">Nouvelle</span>
               </div>
               <div class="state-num" style="color:#2563eb">{{ computedStats().new }}</div>
               <div class="state-pct" style="color:#3b82f6">{{ pct(computedStats().new) }}</div>
@@ -253,7 +270,8 @@
             <div class="state-mini-card s-learn">
               <div class="flex items-center gap-1.5 mb-2">
                 <span class="state-dot" style="background:#f59e0b"></span>
-                <span style="font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:.09em;color:#f59e0b">Apprent.</span>
+                <span
+                  style="font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:.09em;color:#f59e0b">Apprent.</span>
               </div>
               <div class="state-num" style="color:#d97706">{{ computedStats().learning }}</div>
               <div class="state-pct" style="color:#f59e0b">{{ pct(computedStats().learning) }}</div>
@@ -264,7 +282,8 @@
             <div class="state-mini-card s-review">
               <div class="flex items-center gap-1.5 mb-2">
                 <span class="state-dot" style="background:#8b5cf6"></span>
-                <span style="font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:.09em;color:#8b5cf6">Révision</span>
+                <span
+                  style="font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:.09em;color:#8b5cf6">Révision</span>
               </div>
               <div class="state-num" style="color:#7c3aed">{{ computedStats().review }}</div>
               <div class="state-pct" style="color:#8b5cf6">{{ pct(computedStats().review) }}</div>
@@ -275,7 +294,8 @@
             <div class="state-mini-card s-master">
               <div class="flex items-center gap-1.5 mb-2">
                 <span class="state-dot" style="background:#10b981"></span>
-                <span style="font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:.09em;color:#10b981">Maîtrisée</span>
+                <span
+                  style="font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:.09em;color:#10b981">Maîtrisée</span>
               </div>
               <div class="state-num" style="color:#059669">{{ computedStats().mastered }}</div>
               <div class="state-pct" style="color:#10b981">{{ pct(computedStats().mastered) }}</div>
@@ -288,9 +308,9 @@
         <!-- Activité (2/5) -->
         <div class="srs-card p-6 lg:col-span-2 flex flex-col gap-5">
           <div>
-            <div class="sec-eyebrow" style="color:#f97316">Historique</div>
+            <div class="sec-eyebrow">Historique</div>
             <div class="sec-title">
-              <span class="material-icons" style="font-size:18px;color:#f97316">local_fire_department</span>
+              <span class="material-icons" style="font-size:18px">history</span>
               Activité de Révision
             </div>
             <p class="sec-sub">Cartes révisées récemment</p>
@@ -299,13 +319,14 @@
           <!-- 7 days -->
           <div style="display:flex;flex-direction:column;gap:6px">
             <div class="flex items-center justify-between">
-              <span style="font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:.1em;color:#94a3b8">7 derniers jours</span>
-              <span class="font-mono" style="font-size:15px;font-weight:800;color:#6366f1">{{ computedStats().reviewsLast7Days }}</span>
+              <span style="font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:.1em;color:#94a3b8">7
+                derniers jours</span>
+              <span class="font-mono" style="font-size:15px;font-weight:800;color:#7c3aed">{{
+                computedStats().reviewsLast7Days }}</span>
             </div>
             <div class="activity-bar-wrap">
-              <div *ngIf="computedStats().reviewsLast7Days > 0"
-                   class="activity-bar-fill"
-                   style="width:100%;background:linear-gradient(90deg,#6366f1,#8b5cf6)">
+              <div *ngIf="computedStats().reviewsLast7Days > 0" class="activity-bar-fill"
+                style="width:100%;background:linear-gradient(90deg,#7c3aed,#8b5cf6)">
                 <span class="activity-bar-label">{{ computedStats().reviewsLast7Days }} cartes</span>
               </div>
               <div *ngIf="computedStats().reviewsLast7Days === 0" class="activity-empty">
@@ -317,13 +338,14 @@
           <!-- 30 days -->
           <div style="display:flex;flex-direction:column;gap:6px">
             <div class="flex items-center justify-between">
-              <span style="font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:.1em;color:#94a3b8">30 derniers jours</span>
-              <span class="font-mono" style="font-size:15px;font-weight:800;color:#a855f7">{{ computedStats().reviewsLast30Days }}</span>
+              <span style="font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:.1em;color:#94a3b8">30
+                derniers jours</span>
+              <span class="font-mono" style="font-size:15px;font-weight:800;color:#a78bfa">{{
+                computedStats().reviewsLast30Days }}</span>
             </div>
             <div class="activity-bar-wrap">
-              <div *ngIf="computedStats().reviewsLast30Days > 0"
-                   class="activity-bar-fill"
-                   style="width:100%;background:linear-gradient(90deg,#a855f7,#ec4899)">
+              <div *ngIf="computedStats().reviewsLast30Days > 0" class="activity-bar-fill"
+                style="width:100%;background:linear-gradient(90deg,#a78bfa,#8b5cf6)">
                 <span class="activity-bar-label">{{ computedStats().reviewsLast30Days }} cartes</span>
               </div>
               <div *ngIf="computedStats().reviewsLast30Days === 0" class="activity-empty">
@@ -340,15 +362,20 @@
               [style.background]="computedStats().retentionRate >= 80 ? 'rgba(16,185,129,.12)' : computedStats().retentionRate >= 50 ? 'rgba(99,102,241,.12)' : 'rgba(245,158,11,.12)'">
               <span class="material-icons" style="font-size:18px"
                 [style.color]="computedStats().retentionRate >= 80 ? '#10b981' : computedStats().retentionRate >= 50 ? '#6366f1' : '#f59e0b'">
-                {{ computedStats().retentionRate >= 80 ? 'celebration' : computedStats().retentionRate >= 50 ? 'trending_up' : 'lightbulb' }}
+                {{ computedStats().retentionRate >= 80 ? 'celebration' : computedStats().retentionRate >= 50 ?
+                'trending_up' : 'lightbulb' }}
               </span>
             </div>
             <p class="motivation-text"
               [style.color]="computedStats().retentionRate >= 80 ? '#065f46' : computedStats().retentionRate >= 50 ? '#312e81' : '#78350f'">
-              <span *ngIf="computedStats().retentionRate >= 80" class="dark:text-emerald-300">Excellent travail ! Votre mémoire est très performante. Continuez ! 🎉</span>
-              <span *ngIf="computedStats().retentionRate >= 50 && computedStats().retentionRate < 80" class="dark:text-indigo-300">Bonne progression ! Révisez régulièrement pour consolider. 💪</span>
-              <span *ngIf="computedStats().retentionRate < 50 && computedStats().totalReviewed > 0" class="dark:text-amber-300">Révisez plus fréquemment pour améliorer votre rétention. 📚</span>
-              <span *ngIf="computedStats().totalReviewed === 0" class="dark:text-indigo-300">Commencez votre première session pour obtenir des stats !</span>
+              <span *ngIf="computedStats().retentionRate >= 80" class="dark:text-emerald-300">Excellent travail ! Votre
+                mémoire est très performante, continuez.</span>
+              <span *ngIf="computedStats().retentionRate >= 50 && computedStats().retentionRate < 80"
+                class="dark:text-indigo-300">Bonne progression ! Révisez régulièrement pour consolider.</span>
+              <span *ngIf="computedStats().retentionRate < 50 && computedStats().totalReviewed > 0"
+                class="dark:text-amber-300">Révisez plus fréquemment pour améliorer votre rétention.</span>
+              <span *ngIf="computedStats().totalReviewed === 0" class="dark:text-indigo-300">Commencez votre première
+                session pour obtenir des stats !</span>
             </p>
           </div>
 
@@ -362,18 +389,19 @@
         <div style="padding:20px 22px 16px;border-bottom:1px solid rgba(0,0,0,.05)" class="dark:border-white/5">
           <div class="flex items-start justify-between">
             <div>
-              <div class="sec-eyebrow" style="color:#ec4899">Détail par pack</div>
+              <div class="sec-eyebrow">Détail par pack</div>
               <div class="sec-title">
-                <span class="material-icons" style="font-size:18px;color:#ec4899">table_chart</span>
+                <span class="material-icons" style="font-size:18px">table_chart</span>
                 Performance SRS par Pack
               </div>
               <p class="sec-sub">
-                {{ packBreakdown().length }} pack{{ packBreakdown().length > 1 ? 's' : '' }} analysé{{ packBreakdown().length > 1 ? 's' : '' }} · Trié par priorité de révision
+                {{ packBreakdown().length }} pack{{ packBreakdown().length > 1 ? 's' : '' }} analysé{{
+                packBreakdown().length > 1 ? 's' : '' }} · Trié par priorité de révision
               </p>
             </div>
             <a routerLink="/study-hub"
-               style="display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;color:#6366f1;text-decoration:none;transition:color .2s"
-               class="hover:text-indigo-800 dark:hover:text-indigo-300">
+              style="display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;color:#6366f1;text-decoration:none;transition:color .2s"
+              class="hover:text-indigo-800 dark:hover:text-indigo-300">
               <span class="material-icons" style="font-size:12px">open_in_new</span> Voir tous
             </a>
           </div>
@@ -410,10 +438,16 @@
             <thead>
               <tr class="pack-thead-row">
                 <th>Pack d'étude</th>
-                <th><span style="display:flex;align-items:center;justify-content:center;gap:4px"><span class="material-icons" style="font-size:11px">tag</span> Total</span></th>
-                <th><span style="display:flex;align-items:center;justify-content:center;gap:4px"><span style="width:6px;height:6px;border-radius:50%;background:#ef4444;display:block"></span> À réviser</span></th>
-                <th><span style="display:flex;align-items:center;justify-content:center;gap:4px"><span style="width:6px;height:6px;border-radius:50%;background:#10b981;display:block"></span> Maîtrisées</span></th>
-                <th><span style="display:flex;align-items:center;justify-content:center;gap:4px"><span class="material-icons" style="font-size:11px">psychology</span> Rétention</span></th>
+                <th><span style="display:flex;align-items:center;justify-content:center;gap:4px"><span
+                      class="material-icons" style="font-size:11px">tag</span> Total</span></th>
+                <th><span style="display:flex;align-items:center;justify-content:center;gap:4px"><span
+                      style="width:6px;height:6px;border-radius:50%;background:#ef4444;display:block"></span> À
+                    réviser</span></th>
+                <th><span style="display:flex;align-items:center;justify-content:center;gap:4px"><span
+                      style="width:6px;height:6px;border-radius:50%;background:#10b981;display:block"></span>
+                    Maîtrisées</span></th>
+                <th><span style="display:flex;align-items:center;justify-content:center;gap:4px"><span
+                      class="material-icons" style="font-size:11px">psychology</span> Rétention</span></th>
                 <th class="hidden md:table-cell" style="text-align:left">Distribution</th>
                 <th style="text-align:right">Action</th>
               </tr>
@@ -430,11 +464,13 @@
                       {{ row.pack.title ? row.pack.title.charAt(0).toUpperCase() : '?' }}
                     </div>
                     <div style="min-width:0">
-                      <div style="font-weight:700;font-size:13px;color:#0f172a;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:160px"
-                           class="dark:text-white" [title]="row.pack.title">{{ row.pack.title }}</div>
+                      <div
+                        style="font-weight:700;font-size:13px;color:#0f172a;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:160px"
+                        class="dark:text-white" [title]="row.pack.title">{{ row.pack.title }}</div>
                       <div style="font-size:10px;color:#94a3b8;display:flex;align-items:center;gap:3px;margin-top:2px">
                         <span class="material-icons" style="font-size:9px">label</span>
-                        <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:120px">{{ row.pack.subject || 'Sans catégorie' }}</span>
+                        <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:120px">{{
+                          row.pack.subject || 'Sans catégorie' }}</span>
                       </div>
                     </div>
                   </div>
@@ -442,7 +478,8 @@
 
                 <!-- Total -->
                 <td>
-                  <span class="font-mono" style="font-size:13px;font-weight:800;color:#475569" class="dark:text-slate-300">{{ row.total }}</span>
+                  <span class="font-mono" style="font-size:13px;font-weight:800;color:#475569"
+                    class="dark:text-slate-300">{{ row.total }}</span>
                 </td>
 
                 <!-- Due -->
@@ -461,7 +498,8 @@
                 <td>
                   <div style="display:flex;flex-direction:column;align-items:center;gap:4px">
                     <div style="display:flex;align-items:baseline;gap:2px">
-                      <span class="font-mono" style="font-size:13px;font-weight:800;color:#10b981">{{ row.states.mastered }}</span>
+                      <span class="font-mono" style="font-size:13px;font-weight:800;color:#10b981">{{
+                        row.states.mastered }}</span>
                       <span style="font-size:10px;color:#94a3b8">/ {{ row.total }}</span>
                     </div>
                     <div class="mastered-mini-bar">
@@ -481,7 +519,8 @@
                                row.retention >= 50 ? 'text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/30 border-amber-200 dark:border-amber-700/40' :
                                'text-rose-700 dark:text-rose-300 bg-rose-50 dark:bg-rose-950/30 border-rose-200 dark:border-rose-700/40'">
                       <span class="material-icons" style="font-size:10px">
-                        {{ row.retention >= 90 ? 'emoji_events' : row.retention >= 75 ? 'thumb_up' : row.retention >= 50 ? 'trending_flat' : 'warning' }}
+                        {{ row.retention >= 90 ? 'emoji_events' : row.retention >= 75 ? 'thumb_up' : row.retention >= 50
+                        ? 'trending_flat' : 'warning' }}
                       </span>
                       {{ row.retention }}%
                     </span>
@@ -491,7 +530,8 @@
                     </div>
                   </ng-container>
                   <ng-container *ngIf="row.retention === null">
-                    <span class="ret-badge" style="color:#94a3b8;background:rgba(148,163,184,.08);border-color:rgba(148,163,184,.2)">
+                    <span class="ret-badge"
+                      style="color:#94a3b8;background:rgba(148,163,184,.08);border-color:rgba(148,163,184,.2)">
                       <span class="material-icons" style="font-size:10px">radio_button_unchecked</span>
                       Nouveau
                     </span>
@@ -513,24 +553,25 @@
                         [style.width.%]="row.states.mastered / row.total * 100"></div>
                     </div>
                     <div style="display:flex;flex-wrap:wrap;gap:4px 8px;margin-top:5px">
-                      <span *ngIf="row.states.new > 0" style="font-size:9px;font-weight:700;color:#3b82f6">{{ row.states.new }}N</span>
-                      <span *ngIf="row.states.learning > 0" style="font-size:9px;font-weight:700;color:#f59e0b">{{ row.states.learning }}A</span>
-                      <span *ngIf="row.states.review > 0" style="font-size:9px;font-weight:700;color:#8b5cf6">{{ row.states.review }}R</span>
-                      <span *ngIf="row.states.mastered > 0" style="font-size:9px;font-weight:700;color:#10b981">{{ row.states.mastered }}M</span>
+                      <span *ngIf="row.states.new > 0" style="font-size:9px;font-weight:700;color:#3b82f6">{{
+                        row.states.new }}N</span>
+                      <span *ngIf="row.states.learning > 0" style="font-size:9px;font-weight:700;color:#f59e0b">{{
+                        row.states.learning }}A</span>
+                      <span *ngIf="row.states.review > 0" style="font-size:9px;font-weight:700;color:#8b5cf6">{{
+                        row.states.review }}R</span>
+                      <span *ngIf="row.states.mastered > 0" style="font-size:9px;font-weight:700;color:#10b981">{{
+                        row.states.mastered }}M</span>
                     </div>
                   </div>
                 </td>
 
                 <!-- CTA -->
                 <td style="text-align:right">
-                  <a *ngIf="row.due > 0"
-                    [routerLink]="['/study-hub', row.pack.id, 'flashcards']"
-                    class="cta-review">
+                  <a *ngIf="row.due > 0" [routerLink]="['/study-hub', row.pack.id, 'flashcards']" class="cta-review">
                     <span class="material-icons" style="font-size:13px">play_circle</span>
                     Réviser
                   </a>
-                  <a *ngIf="row.due === 0"
-                    [routerLink]="['/study-hub', row.pack.id, 'flashcards']"
+                  <a *ngIf="row.due === 0" [routerLink]="['/study-hub', row.pack.id, 'flashcards']"
                     class="cta-review-light">
                     <span class="material-icons" style="font-size:13px">refresh</span>
                     Revoir
@@ -543,12 +584,21 @@
         </div>
 
         <!-- Table footer -->
-        <div style="padding:10px 18px;border-top:1px solid rgba(0,0,0,.05);display:flex;flex-wrap:wrap;align-items:center;gap:14px" class="dark:border-white/5">
-          <span style="font-size:10px;color:#94a3b8;font-weight:700;text-transform:uppercase;letter-spacing:.1em">Légende :</span>
-          <div class="legend-item"><span style="width:8px;height:8px;border-radius:2px;background:#3b82f6;display:block"></span>N = Nouvelle</div>
-          <div class="legend-item"><span style="width:8px;height:8px;border-radius:2px;background:#f59e0b;display:block"></span>A = Apprentissage</div>
-          <div class="legend-item"><span style="width:8px;height:8px;border-radius:2px;background:#8b5cf6;display:block"></span>R = Révision</div>
-          <div class="legend-item"><span style="width:8px;height:8px;border-radius:2px;background:#10b981;display:block"></span>M = Maîtrisée</div>
+        <div
+          style="padding:10px 18px;border-top:1px solid rgba(0,0,0,.05);display:flex;flex-wrap:wrap;align-items:center;gap:14px"
+          class="dark:border-white/5">
+          <span
+            style="font-size:10px;color:#94a3b8;font-weight:700;text-transform:uppercase;letter-spacing:.1em">Légende
+            :</span>
+          <div class="legend-item"><span
+              style="width:8px;height:8px;border-radius:2px;background:#3b82f6;display:block"></span>N = Nouvelle</div>
+          <div class="legend-item"><span
+              style="width:8px;height:8px;border-radius:2px;background:#f59e0b;display:block"></span>A = Apprentissage
+          </div>
+          <div class="legend-item"><span
+              style="width:8px;height:8px;border-radius:2px;background:#8b5cf6;display:block"></span>R = Révision</div>
+          <div class="legend-item"><span
+              style="width:8px;height:8px;border-radius:2px;background:#10b981;display:block"></span>M = Maîtrisée</div>
         </div>
       </div>
 
@@ -557,27 +607,29 @@
 
         <!-- Insight 1 — New cards -->
         <div class="srs-card insight-card">
-          <div class="insight-icon" style="background:rgba(59,130,246,.1)">
-            <span class="material-icons" style="font-size:22px;color:#3b82f6">add_circle</span>
+          <div class="insight-icon" style="background:rgba(124,58,237,.1)">
+            <span class="material-icons" style="font-size:22px;color:#7c3aed">add_circle</span>
           </div>
           <div style="flex:1;min-width:0">
-            <div class="insight-label" style="color:#3b82f6">Cartes non apprises</div>
-            <div class="insight-value" style="color:#2563eb">{{ computedStats().new }}</div>
-            <div class="insight-desc" style="color:#3b82f6">
-              {{ computedStats().new > 0 ? 'À commencer à apprendre' : '✅ Tout le contenu a été abordé' }}
+            <div class="insight-label" style="color:#7c3aed">Cartes non apprises</div>
+            <div class="insight-value" style="color:#7c3aed">{{ computedStats().new }}</div>
+            <div class="insight-desc" style="color:#7c3aed">
+              <span *ngIf="computedStats().new > 0">À commencer à apprendre</span>
+              <span *ngIf="computedStats().new === 0" class="info-line"><span
+                  class="material-icons">check_circle</span>Tout le contenu a été abordé</span>
             </div>
           </div>
         </div>
 
         <!-- Insight 2 — Total reviewed -->
         <div class="srs-card insight-card">
-          <div class="insight-icon" style="background:rgba(139,92,246,.1)">
-            <span class="material-icons" style="font-size:22px;color:#8b5cf6">done_all</span>
+          <div class="insight-icon" style="background:rgba(124,58,237,.1)">
+            <span class="material-icons" style="font-size:22px;color:#7c3aed">done_all</span>
           </div>
           <div style="flex:1;min-width:0">
-            <div class="insight-label" style="color:#8b5cf6">Total révisées</div>
+            <div class="insight-label" style="color:#7c3aed">Total révisées</div>
             <div class="insight-value" style="color:#7c3aed">{{ computedStats().totalReviewed }}</div>
-            <div class="insight-desc" style="color:#8b5cf6">
+            <div class="insight-desc" style="color:#7c3aed">
               {{ computedStats().totalReviewed > 0 ? 'Cartes ayant ≥ 1 révision' : 'Aucune révision encore' }}
             </div>
           </div>
@@ -593,16 +645,13 @@
             </span>
           </div>
           <div style="flex:1;min-width:0">
-            <div class="insight-label"
-              [style.color]="computedStats().overdue > 0 ? '#f97316' : '#10b981'">
+            <div class="insight-label" [style.color]="computedStats().overdue > 0 ? '#f97316' : '#10b981'">
               {{ computedStats().overdue > 0 ? 'En retard' : 'Statut' }}
             </div>
-            <div class="insight-value"
-              [style.color]="computedStats().overdue > 0 ? '#ea580c' : '#059669'">
+            <div class="insight-value" [style.color]="computedStats().overdue > 0 ? '#ea580c' : '#059669'">
               {{ computedStats().overdue > 0 ? computedStats().overdue : '✓' }}
             </div>
-            <div class="insight-desc"
-              [style.color]="computedStats().overdue > 0 ? '#f97316' : '#10b981'">
+            <div class="insight-desc" [style.color]="computedStats().overdue > 0 ? '#f97316' : '#10b981'">
               {{ computedStats().overdue > 0 ? 'Cartes en retard de révision' : 'Aucune carte en retard !' }}
             </div>
           </div>

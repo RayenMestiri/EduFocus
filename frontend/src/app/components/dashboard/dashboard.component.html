@@ -1,156 +1,113 @@
 <div class="db-root" [class.dark]="themeService.isDark()" [class.light]="!themeService.isDark()">
   <!-- ═══════════════════════════════════════════
-       PREMIUM HEADER
+       PREMIUM HEADER + TAB NAVIGATION
   ═══════════════════════════════════════════ -->
-  <header class="db-header">
-    <div class="db-header-inner">
-      <!-- Logo -->
-      <div class="db-logo-group">
-        <div class="db-logo-icon">
-          <span class="material-icons">school</span>
-        </div>
-        <div>
-          <h1 class="db-logo-text">EduFocus</h1>
-          <p class="db-logo-sub">{{ 'MAIN_DASHBOARD.SUBTITLE' | translate }}</p>
-        </div>
-      </div>
-
-      <!-- Header Actions -->
-      <div class="db-header-actions">
-        <!-- Mobile subjects toggle -->
-        <button
-          (click)="toggleMobileSubjectsMenu()"
-          class="db-icon-btn lg-hidden"
-          [attr.aria-label]="showMobileSubjectsMenu() ? ('MAIN_DASHBOARD.CLOSE_SUBJECTS' | translate) : ('MAIN_DASHBOARD.OPEN_SUBJECTS' | translate)">
-          <span class="material-icons">{{ showMobileSubjectsMenu() ? 'close' : 'menu' }}</span>
-        </button>
-
-        <!-- Language switcher -->
-        <app-language-switcher></app-language-switcher>
-
-        <!-- Theme toggle -->
-        <button (click)="themeService.toggleTheme()"
-          class="db-icon-btn"
-          [title]="themeService.isDark() ? ('MAIN_DASHBOARD.LIGHT_MODE' | translate) : ('MAIN_DASHBOARD.DARK_MODE' | translate)">
-          <span class="material-icons">{{ themeService.isDark() ? 'light_mode' : 'dark_mode' }}</span>
-        </button>
-
-        <!-- Points badge -->
-        <div class="db-points-badge">
-          <span class="material-icons">emoji_events</span>
-          <span class="db-points-value">{{ currentUser()?.stats?.points || 0 }}</span>
-        </div>
-
-        <!-- User avatar -->
-        <div class="db-user-chip">
-          <div class="db-avatar">
-            {{ currentUser()?.name ? currentUser()!.name.charAt(0).toUpperCase() : 'U' }}
+  <div class="db-header-container">
+    <header class="db-header">
+      <div class="db-header-inner">
+        <!-- Logo -->
+        <div class="db-logo-group">
+          <div class="db-logo-icon">
+            <span class="material-icons">school</span>
           </div>
-          <span class="db-username">{{ currentUser()?.name }}</span>
+          <div>
+            <h1 class="db-logo-text">EduFocus</h1>
+            <p class="db-logo-sub">{{ 'MAIN_DASHBOARD.SUBTITLE' | translate }}</p>
+          </div>
         </div>
 
-        <!-- Logout -->
-        <button (click)="logout()" class="db-logout-btn" [title]="'MAIN_DASHBOARD.LOGOUT' | translate">
-          <span class="material-icons">logout</span>
-          <span class="db-logout-text">{{ 'MAIN_DASHBOARD.LOGOUT' | translate }}</span>
-        </button>
-      </div>
-    </div>
-  </header>
+        <!-- Header Actions -->
+        <div class="db-header-actions">
+          <!-- Language switcher -->
+          <app-language-switcher></app-language-switcher>
 
-  <!-- ═══════════════════════════════════════════
-       MOBILE OVERLAY
-  ═══════════════════════════════════════════ -->
-  @if (showMobileSubjectsMenu()) {
-    <div class="db-overlay" (click)="closeMobileSubjectsMenu()"></div>
-  }
-
-  <!-- ═══════════════════════════════════════════
-       MAIN LAYOUT
-  ═══════════════════════════════════════════ -->
-  <main class="db-main">
-    <div class="db-layout">
-
-      <!-- ┌───────────────────────────────────────
-           │ LEFT SIDEBAR — SUBJECTS
-           └─────────────────────────────────────── -->
-      <aside class="db-sidebar-left"
-        [class.db-sidebar-open]="showMobileSubjectsMenu()"
-        [class.db-sidebar-closed]="!showMobileSubjectsMenu()">
-
-        <div class="db-sidebar-card">
-          <!-- Mobile header -->
-          <div class="db-sidebar-mobile-header">
-            <h2 class="db-section-title">
-              <span class="material-icons">menu_book</span>
-              {{ 'MAIN_DASHBOARD.SUBJECTS' | translate }}
-            </h2>
-            <button (click)="closeMobileSubjectsMenu()" class="db-close-btn">
-              <span class="material-icons">close</span>
-            </button>
-          </div>
-
-          <!-- Desktop title -->
-          <h2 class="db-section-title db-desktop-only">
-            <span class="material-icons">menu_book</span>
-            {{ 'MAIN_DASHBOARD.SUBJECTS' | translate }}
-          </h2>
-
-          <!-- Onboarding tip when no subjects -->
-          @if (subjects().length === 0) {
-            <div class="db-tip-banner db-tip-primary">
-              <span class="material-icons db-tip-icon">lightbulb</span>
-              <div>
-                <div class="db-tip-title">{{ 'MAIN_DASHBOARD.GET_STARTED' | translate }}</div>
-                <div class="db-tip-body">{{ 'MAIN_DASHBOARD.ADD_FIRST_SUBJECT' | translate }}</div>
-              </div>
-            </div>
-          }
-
-          <!-- Add Subject Button -->
-          <button (click)="openSubjectModal()" class="db-add-btn db-add-subject-btn">
-            <span class="material-icons">add</span>
-            {{ 'MAIN_DASHBOARD.ADD_SUBJECT' | translate }}
+          <!-- Theme toggle -->
+          <button (click)="themeService.toggleTheme()"
+            class="db-icon-btn"
+            [title]="themeService.isDark() ? ('MAIN_DASHBOARD.LIGHT_MODE' | translate) : ('MAIN_DASHBOARD.DARK_MODE' | translate)">
+            <span class="material-icons">{{ themeService.isDark() ? 'light_mode' : 'dark_mode' }}</span>
           </button>
 
-          <!-- Subject List -->
-          <div class="db-subject-grid">
-            @for (subject of subjects(); track subject._id) {
-              <div class="db-subject-card"
-                   [style.background]="'linear-gradient(135deg, ' + subject.color + '18, ' + subject.color + '08)'"
-                   [style.border-color]="subject.color + '50'">
-                <div class="db-subject-inner">
-                  <div class="db-subject-info">
-                    <span class="material-icons db-subject-icon"
-                          [style.color]="subject.color"
-                          [style.filter]="themeService.isLight() ? 'saturate(1.2) brightness(0.85)' : ''">
-                      {{ subject.icon }}
-                    </span>
-                    <div [style.color]="subject.color"
-                         [style.filter]="themeService.isLight() ? 'saturate(1.3) brightness(0.8)' : ''"
-                         class="db-subject-name">{{ subject.name }}</div>
-                  </div>
-                  <div class="db-subject-actions">
-                    <button (click)="openSubjectModal(subject)" class="db-action-btn">
-                      <span class="material-icons">edit</span>
-                    </button>
-                    <button (click)="deleteSubject(subject)" class="db-action-btn db-action-delete">
-                      <span class="material-icons">delete</span>
-                    </button>
-                  </div>
-                </div>
-              </div>
-            } @empty {
-              <p class="db-empty-msg">{{ 'MAIN_DASHBOARD.NO_SUBJECTS' | translate }}</p>
-            }
+          <!-- Points badge -->
+          <div class="db-points-badge">
+            <span class="material-icons">emoji_events</span>
+            <span class="db-points-value">{{ currentUser()?.stats?.points || 0 }}</span>
           </div>
-        </div>
-      </aside>
 
-      <!-- ┌───────────────────────────────────────
-           │ MAIN CONTENT AREA
-           └─────────────────────────────────────── -->
-      <div class="db-content">
+          <!-- User avatar -->
+          <div class="db-user-chip">
+            <div class="db-avatar">
+              {{ currentUser()?.name ? currentUser()!.name.charAt(0).toUpperCase() : 'U' }}
+            </div>
+            <span class="db-username">{{ currentUser()?.name }}</span>
+          </div>
+
+          <!-- Logout -->
+          <button (click)="logout()" class="db-logout-btn" [title]="'MAIN_DASHBOARD.LOGOUT' | translate">
+            <span class="material-icons">logout</span>
+            <span class="db-logout-text">{{ 'MAIN_DASHBOARD.LOGOUT' | translate }}</span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- ── Tab Navigation Bar ── -->
+    <nav class="db-tabs" aria-label="Dashboard navigation">
+      <div class="db-tabs-inner">
+        <button class="db-tab" [class.db-tab-active]="activeTab() === 'dashboard'"
+                (click)="activeTab.set('dashboard')">
+          <span class="material-icons">dashboard</span>
+          <span class="db-tab-label">Dashboard</span>
+        </button>
+        <button class="db-tab" [class.db-tab-active]="activeTab() === 'timer'"
+                (click)="activeTab.set('timer')">
+          <span class="material-icons">timer</span>
+          <span class="db-tab-label">Timer</span>
+          @if (isTimerRunning()) {
+            <span class="db-tab-live"></span>
+          }
+        </button>
+        <button class="db-tab db-tab-desktop-only" [class.db-tab-active]="activeTab() === 'chrono'"
+                (click)="activeTab.set('chrono')">
+          <span class="material-icons">timelapse</span>
+          <span class="db-tab-label">Chrono</span>
+          @if (chronoRunning()) {
+            <span class="db-tab-live"></span>
+          }
+        </button>
+        <button class="db-tab db-tab-desktop-only" [class.db-tab-active]="activeTab() === 'ai'"
+                (click)="activeTab.set('ai')">
+          <span class="material-icons">psychology</span>
+          <span class="db-tab-label">AI Coach</span>
+        </button>
+        <button class="db-tab" [class.db-tab-active]="activeTab() === 'subjects'"
+                (click)="activeTab.set('subjects')">
+          <span class="material-icons">menu_book</span>
+          <span class="db-tab-label">{{ 'MAIN_DASHBOARD.SUBJECTS' | translate }} & Todo</span>
+        </button>
+        <button class="db-tab db-tab-mobile-only"
+                [class.db-tab-active]="activeTab() === 'chrono' || activeTab() === 'ai' || showMobileMoreMenu()"
+                (click)="toggleMobileMoreMenu()">
+          <span class="material-icons">more_horiz</span>
+          <span class="db-tab-label">Plus</span>
+          @if (chronoRunning()) {
+            <span class="db-tab-live"></span>
+          }
+        </button>
+      </div>
+    </nav>
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       MAIN CONTENT — TAB-SWITCHED
+  ═══════════════════════════════════════════ -->
+  <main class="db-main">
+
+    <!-- ┌───────────────────────────────────────────
+         │ TAB: DASHBOARD (Overview)
+         └─────────────────────────────────────────── -->
+    @if (activeTab() === 'dashboard') {
+      <div class="db-tab-content">
 
         <!-- ══ HERO WELCOME BANNER ══ -->
         <div class="db-hero">
@@ -162,7 +119,7 @@
                 EduFocus Dashboard
               </div>
               <h2 class="db-hero-greeting">
-                {{ 'MAIN_DASHBOARD.WELCOME_BACK' | translate }}, <span class="db-hero-name">{{ currentUser()?.name || 'Student' }}</span> 👋
+                {{ 'MAIN_DASHBOARD.WELCOME_BACK' | translate }}, <span class="db-hero-name">{{ currentUser()?.name || 'Student' }}</span>
               </h2>
               <p class="db-hero-sub">{{ 'MAIN_DASHBOARD.HERO_SUB' | translate }}</p>
             </div>
@@ -178,7 +135,7 @@
               </div>
               <div class="db-hero-divider"></div>
               <div class="db-hero-stat">
-                <div class="db-hero-stat-val">🔥 {{ studyStreak() }}</div>
+                <div class="db-hero-stat-val">{{ studyStreak() }}</div>
                 <div class="db-hero-stat-lbl">{{ 'MAIN_DASHBOARD.STREAK_DAYS' | translate }}</div>
               </div>
             </div>
@@ -190,7 +147,6 @@
         </div>
 
         <!-- ══ CONTEXTUAL ALERTS ══ -->
-        <!-- Alert: No plan yet -->
         @if (totalGoalMinutes() === 0 && subjects().length > 0) {
           <div class="db-alert db-alert-warning">
             <span class="material-icons db-alert-icon">calendar_today</span>
@@ -205,7 +161,6 @@
           </div>
         }
 
-        <!-- Alert: Urgent todos -->
         @if (urgentTodosCount() > 0) {
           <div class="db-alert db-alert-danger">
             <span class="material-icons db-alert-icon animate-pulse">priority_high</span>
@@ -213,14 +168,13 @@
               <div class="db-alert-title">{{ 'MAIN_DASHBOARD.ALERT_URGENT_TITLE' | translate }}</div>
               <div class="db-alert-msg">{{ 'MAIN_DASHBOARD.ALERT_URGENT_MSG' | translate: { count: urgentTodosCount() } }}</div>
             </div>
-            <button class="db-alert-action" (click)="scrollToTodos()">
+            <button class="db-alert-action" (click)="activeTab.set('subjects')">
               {{ 'MAIN_DASHBOARD.VIEW_TODOS' | translate }}
               <span class="material-icons">arrow_forward</span>
             </button>
           </div>
         }
 
-        <!-- Alert: Goal achieved! -->
         @if (progressPercentage() >= 100 && totalGoalMinutes() > 0) {
           <div class="db-alert db-alert-success">
             <span class="material-icons db-alert-icon">celebration</span>
@@ -231,7 +185,6 @@
           </div>
         }
 
-        <!-- Alert: Good progress -->
         @if (progressPercentage() >= 50 && progressPercentage() < 100 && totalGoalMinutes() > 0) {
           <div class="db-alert db-alert-info">
             <span class="material-icons db-alert-icon">trending_up</span>
@@ -244,9 +197,7 @@
 
         <!-- ══ QUICK ACCESS CARDS ══ -->
         <div class="db-quick-grid">
-          <!-- Daily Planner -->
           <div class="db-quick-card db-quick-planner" (click)="goToPlanner()">
-            <div class="db-quick-glow"></div>
             <div class="db-quick-inner">
               <div class="db-quick-icon-wrap">
                 <span class="material-icons">calendar_today</span>
@@ -259,9 +210,7 @@
             <span class="material-icons db-quick-arrow">arrow_forward</span>
           </div>
 
-          <!-- Study Hub -->
           <div class="db-quick-card db-quick-study" (click)="goToStudyHub()">
-            <div class="db-quick-glow"></div>
             <div class="db-quick-inner">
               <div class="db-quick-icon-wrap db-quick-icon-study">
                 <span class="material-icons">school</span>
@@ -274,9 +223,7 @@
             <span class="material-icons db-quick-arrow db-quick-arrow-study">arrow_forward</span>
           </div>
 
-          <!-- SRS Analytics -->
           <div class="db-quick-card db-quick-analytics" (click)="goToSrsAnalytics()">
-            <div class="db-quick-glow"></div>
             <div class="db-quick-inner">
               <div class="db-quick-icon-wrap db-quick-icon-analytics">
                 <span class="material-icons">analytics</span>
@@ -292,9 +239,7 @@
 
         <!-- ══ STATS CARDS ══ -->
         <div class="db-stats-grid">
-          <!-- Daily Goal -->
           <div class="db-stat-card db-stat-progress" (click)="openPlanModal()">
-            <div class="db-stat-blur"></div>
             <div class="db-stat-body">
               <div class="db-stat-icon-row">
                 <span class="material-icons db-stat-icon">track_changes</span>
@@ -308,9 +253,7 @@
             </div>
           </div>
 
-          <!-- Time Studied -->
           <div class="db-stat-card db-stat-time">
-            <div class="db-stat-blur"></div>
             <div class="db-stat-body">
               <div class="db-stat-icon-row">
                 <span class="material-icons db-stat-icon db-stat-icon-green">schedule</span>
@@ -321,9 +264,7 @@
             </div>
           </div>
 
-          <!-- Tasks -->
           <div class="db-stat-card db-stat-tasks">
-            <div class="db-stat-blur"></div>
             <div class="db-stat-body">
               <div class="db-stat-icon-row">
                 <span class="material-icons db-stat-icon db-stat-icon-blue">task_alt</span>
@@ -334,9 +275,7 @@
             </div>
           </div>
 
-          <!-- Study Streak -->
           <div class="db-stat-card db-stat-streak" (click)="openStatsModal()">
-            <div class="db-stat-blur"></div>
             <div class="db-stat-body">
               <div class="db-stat-icon-row">
                 <span class="material-icons db-stat-icon db-stat-icon-orange">local_fire_department</span>
@@ -349,7 +288,7 @@
           </div>
         </div>
 
-        <!-- ══ HOW TO USE — ONBOARDING TIPS ══ -->
+        <!-- ══ ONBOARDING ══ -->
         @if (subjects().length === 0 || totalGoalMinutes() === 0) {
           <div class="db-onboarding">
             <div class="db-onboarding-header">
@@ -364,7 +303,7 @@
                   <div class="db-step-desc">{{ 'MAIN_DASHBOARD.STEP1_DESC' | translate }}</div>
                 </div>
                 @if (subjects().length === 0) {
-                  <button class="db-step-btn" (click)="openSubjectModal()">
+                  <button class="db-step-btn" (click)="activeTab.set('subjects')">
                     <span class="material-icons">add</span>
                     {{ 'MAIN_DASHBOARD.ADD_SUBJECT' | translate }}
                   </button>
@@ -396,329 +335,678 @@
           </div>
         }
 
-        <!-- ══ AI STUDY ASSISTANT ══ -->
-        <div class="db-card db-ai-panel">
-          <button type="button" (click)="toggleAiPanel()" class="db-ai-toggle" [class.db-ai-pulse]="!showAiPanel()">
-            <div class="db-ai-toggle-left">
-              <div class="db-ai-orb">
-                <span class="material-icons">psychology</span>
-              </div>
-              <div>
-                <div class="db-ai-name">{{ 'MAIN_DASHBOARD.AI_ASSISTANT' | translate }}</div>
-                <div class="db-ai-sub">
-                  <span class="material-icons">tips_and_updates</span>
-                  {{ 'MAIN_DASHBOARD.AI_SUBTITLE' | translate }}
-                </div>
-              </div>
-            </div>
-            <div class="db-ai-toggle-right">
-              <span class="db-ai-badge">AI</span>
-              <span class="material-icons db-ai-chevron">{{ showAiPanel() ? 'expand_less' : 'expand_more' }}</span>
-            </div>
-          </button>
+      </div>
+    }
 
-          @if (showAiPanel()) {
-            <div class="db-ai-body">
-              <div class="db-ai-toolbar">
-                <button (click)="requestAIAdvice()" [disabled]="aiLoading()" class="db-ai-analyze-btn">
-                  @if (aiLoading()) {
-                    <span class="material-icons db-spin">sync</span>
-                    {{ 'MAIN_DASHBOARD.AI_ANALYZING' | translate }}
-                  } @else {
-                    <span class="material-icons">auto_awesome</span>
-                    {{ 'MAIN_DASHBOARD.AI_ANALYZE_BTN' | translate }}
-                  }
+
+    <!-- ┌───────────────────────────────────────────
+         │ TAB: POMODORO TIMER
+         └─────────────────────────────────────────── -->
+    @if (activeTab() === 'timer') {
+      <div class="db-tab-content">
+        <div class="tc-layout">
+
+          <!-- ══ MAIN: Pomodoro ring & controls ══ -->
+          <div class="db-card db-timer-card db-card-spacious tc-main">
+            <div class="db-card-header">
+              <h2 class="db-card-title">
+                <span class="material-icons">timer</span>
+                {{ 'MAIN_DASHBOARD.POMODORO_TITLE' | translate }}
+              </h2>
+              <div class="db-timer-header-right">
+                <div class="db-session-badge">
+                  <span class="material-icons">local_cafe</span>
+                  {{ sessionsCompleted() }}/{{ currentSessionGoal() }}
+                  <span class="db-session-label">{{ 'MAIN_DASHBOARD.SESSIONS' | translate }}</span>
+                </div>
+                <button (click)="openTimerSettings()" class="db-icon-btn" [title]="'MAIN_DASHBOARD.TIMER_SETTINGS' | translate">
+                  <span class="material-icons">settings</span>
                 </button>
               </div>
+            </div>
 
-              @if (aiNotice()) {
-                <div class="db-alert db-alert-warning db-ai-notice">
-                  <span class="material-icons db-alert-icon">info</span>
-                  <div class="db-alert-body">{{ aiNotice() }}</div>
+            <!-- ── Mode indicator bar ── -->
+            <div class="pomo-mode-bar">
+              <div class="pomo-mode-pill" [class.pomo-mode-active]="timerMode() !== 'break'">
+                <span class="material-icons">psychology</span>
+                {{ 'MAIN_DASHBOARD.TIMER_FOCUS_LABEL' | translate }}
+              </div>
+              <div class="pomo-mode-divider"></div>
+              <div class="pomo-mode-pill" [class.pomo-mode-break]="timerMode() === 'break'">
+                <span class="material-icons">self_improvement</span>
+                {{ 'MAIN_DASHBOARD.TIMER_BREAK_MODE' | translate }}
+              </div>
+            </div>
+
+            <!-- ── Session progress dots ── -->
+            <div class="pomo-session-dots">
+              @for (i of [1,2,3,4]; track i) {
+                <div class="pomo-dot" [class.pomo-dot-filled]="sessionsCompleted() >= i"></div>
+              }
+              <span class="pomo-dot-label">{{ sessionsCompleted() % 4 }}/4 → {{ 'MAIN_DASHBOARD.TIMER_LONG_BREAK_LABEL' | translate }}</span>
+            </div>
+
+            <!-- ── Main timer area ── -->
+            <div class="pomo-stage" [class.pomo-stage-break]="timerMode() === 'break'">
+
+              <!-- Ambient glow ring -->
+              <div class="pomo-glow" [class.pomo-glow-running]="isTimerRunning()" [class.pomo-glow-break]="timerMode() === 'break'"></div>
+
+              <!-- SVG Ring -->
+              <div class="pomo-ring-wrap">
+                <svg class="pomo-svg" viewBox="0 0 220 220">
+                  <!-- Track -->
+                  <circle cx="110" cy="110" r="96" fill="none" stroke-width="6" class="pomo-track"/>
+                  <!-- Progress arc -->
+                  <circle cx="110" cy="110" r="96" fill="none" stroke-width="6"
+                          stroke-linecap="round"
+                          class="pomo-arc"
+                          [attr.stroke]="timerMode() === 'break' ? 'url(#breakGrad)' : 'url(#focusGrad)'"
+                          [attr.stroke-dasharray]="603.19"
+                          [attr.stroke-dashoffset]="603.19 * (1 - ((timerMinutes() * 60 + timerSeconds()) / (initialTimerMinutes() * 60)))" />
+                  <defs>
+                    <linearGradient id="focusGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stop-color="#a78bfa"/>
+                      <stop offset="100%" stop-color="#6366f1"/>
+                    </linearGradient>
+                    <linearGradient id="breakGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stop-color="#34d399"/>
+                      <stop offset="100%" stop-color="#059669"/>
+                    </linearGradient>
+                  </defs>
+                </svg>
+
+                <!-- Center content -->
+                <div class="pomo-center">
+                  <!-- Mode label inside ring -->
+                  <div class="pomo-mode-label" [class.pomo-mode-label-break]="timerMode() === 'break'">
+                    {{ timerMode() === 'break' ? ('MAIN_DASHBOARD.TIMER_BREAK_MODE' | translate) : ('MAIN_DASHBOARD.TIMER_FOCUS_LABEL' | translate) }}
+                  </div>
+
+                  <!-- Big time display -->
+                  <div class="pomo-time">
+                    {{ timerMinutes().toString().padStart(2, '0') }}<span class="pomo-colon">:</span>{{ timerSeconds().toString().padStart(2, '0') }}
+                  </div>
+
+                  <!-- Active subject chip -->
+                  @if (selectedSubjectForTimer()) {
+                    <div class="pomo-subject-chip"
+                         [style.background]="selectedSubjectForTimer()!.color + '22'"
+                         [style.border-color]="selectedSubjectForTimer()!.color + '55'">
+                      <span class="material-icons" [style.color]="selectedSubjectForTimer()!.color">{{ selectedSubjectForTimer()!.icon }}</span>
+                      <span [style.color]="selectedSubjectForTimer()!.color">{{ selectedSubjectForTimer()!.name }}</span>
+                    </div>
+                  }
+                </div>
+              </div>
+
+              <!-- Controls below ring -->
+              @if (!isTimerRunning() && !selectedSubjectForTimer()) {
+                <!-- IDLE STATE: duration adjuster -->
+                <div class="pomo-idle">
+                  <div class="pomo-duration-row">
+                    <button (click)="adjustTimer(-5)" class="pomo-adj-btn">−5</button>
+                    <button (click)="adjustTimer(-1)" class="pomo-adj-btn pomo-adj-sm">−1</button>
+                    <div class="pomo-duration-display">
+                      <span class="pomo-duration-val">{{ initialTimerMinutes() }}</span>
+                      <span class="pomo-duration-lbl">min</span>
+                    </div>
+                    <button (click)="adjustTimer(1)" class="pomo-adj-btn pomo-adj-sm">+1</button>
+                    <button (click)="adjustTimer(5)" class="pomo-adj-btn">+5</button>
+                  </div>
+
+                  <p class="pomo-prompt">{{ subjects().length > 0 ? ('MAIN_DASHBOARD.TIMER_START_PROMPT' | translate) : '' }}</p>
+                </div>
+              } @else {
+                <!-- RUNNING / PAUSED STATE -->
+                <div class="pomo-controls">
+                  @if (isTimerRunning()) {
+                    <button (click)="pauseTimer()" class="pomo-btn pomo-btn-pause">
+                      <span class="material-icons">pause</span>
+                    </button>
+                  } @else {
+                    <button (click)="startTimer(selectedSubjectForTimer()!)" class="db-ctrl-btn db-ctrl-play">
+                      <span class="material-icons">play_arrow</span>
+                    </button>
+                  }
+                  <button (click)="stopTimer()" class="db-ctrl-btn db-ctrl-stop">
+                    <span class="material-icons">stop</span>
+                  </button>
                 </div>
               }
+            </div>
+          </div>
 
-              <div class="db-ai-messages">
-                @for (message of aiMessages(); track $index) {
-                  <div class="db-ai-message">
-                    <div class="db-ai-msg-header">
-                      <span class="material-icons">smart_toy</span>
-                      {{ 'MAIN_DASHBOARD.AI_COACH' | translate }}
-                    </div>
-                    <div class="db-ai-msg-body whitespace-pre-line">{{ message.content }}</div>
+          <!-- ══ SIDEBAR ══ -->
+          <div class="tc-side">
+
+            <!-- Subject picker (idle) OR active session summary -->
+            @if (!selectedSubjectForTimer()) {
+              <div class="db-card tc-side-card">
+                <div class="db-card-header">
+                  <h3 class="tc-side-title">
+                    <span class="material-icons">menu_book</span>
+                    {{ 'MAIN_DASHBOARD.SUBJECTS' | translate }}
+                  </h3>
+                </div>
+                @if (subjects().length === 0) {
+                  <div class="tc-subject-empty">
+                    <span class="material-icons">menu_book</span>
+                    <p>{{ 'MAIN_DASHBOARD.TIMER_ADD_SUBJECT_FIRST' | translate }}</p>
+                    <button class="tc-subject-empty-btn" (click)="activeTab.set('subjects')">
+                      <span class="material-icons">add</span>
+                      {{ 'MAIN_DASHBOARD.ADD_SUBJECT' | translate }}
+                    </button>
+                  </div>
+                } @else {
+                  <div class="pomo-subject-grid tc-subject-grid">
+                    @for (subject of subjects(); track subject._id) {
+                      <button (click)="startTimer(subject)"
+                              class="pomo-subject-btn"
+                              [style.--subj-color]="subject.color">
+                        <span class="pomo-subject-btn-icon material-icons">{{ subject.icon }}</span>
+                        <span class="pomo-subject-btn-name">{{ subject.name }}</span>
+                        <span class="material-icons pomo-subject-btn-arrow">play_arrow</span>
+                      </button>
+                    }
                   </div>
                 }
               </div>
+            } @else {
+              <div class="db-card tc-side-card tc-session-card" [style.--subj-color]="selectedSubjectForTimer()!.color">
+                <div class="tc-session-icon">
+                  <span class="material-icons">{{ selectedSubjectForTimer()!.icon }}</span>
+                </div>
+                <div class="tc-session-name">{{ selectedSubjectForTimer()!.name }}</div>
+                <div class="tc-session-status" [class.tc-session-status-running]="isTimerRunning()">
+                  <span class="tc-session-status-dot"></span>
+                  {{ isTimerRunning() ? ('MAIN_DASHBOARD.TIMER_FOCUS_LABEL' | translate) : ('MAIN_DASHBOARD.CHRONO_PAUSE' | translate) }}
+                </div>
+              </div>
+            }
 
-              <div class="db-ai-footer">
-                <span class="material-icons">insights</span>
-                {{ 'MAIN_DASHBOARD.AI_SOURCE' | translate }}
+            <!-- Today at a glance -->
+            <div class="db-card tc-side-card">
+              <div class="db-card-header">
+                <h3 class="tc-side-title">
+                  <span class="material-icons">insights</span>
+                  {{ 'MAIN_DASHBOARD.STATS_WEEK_TITLE' | translate }}
+                </h3>
+              </div>
+              <div class="tc-stat-row">
+                <div class="tc-stat-icon"><span class="material-icons">track_changes</span></div>
+                <div>
+                  <div class="tc-stat-val">{{ progressPercentage() }}%</div>
+                  <div class="tc-stat-lbl">{{ 'MAIN_DASHBOARD.DAILY_GOAL' | translate }}</div>
+                </div>
+              </div>
+              <div class="tc-stat-row">
+                <div class="tc-stat-icon tc-stat-icon-green"><span class="material-icons">schedule</span></div>
+                <div>
+                  <div class="tc-stat-val">{{ formatTime(totalStudiedMinutes()) }}</div>
+                  <div class="tc-stat-lbl">{{ 'MAIN_DASHBOARD.TIME_STUDIED' | translate }}</div>
+                </div>
+              </div>
+              <div class="tc-stat-row">
+                <div class="tc-stat-icon tc-stat-icon-orange"><span class="material-icons">local_fire_department</span></div>
+                <div>
+                  <div class="tc-stat-val">{{ studyStreak() }}</div>
+                  <div class="tc-stat-lbl">{{ 'MAIN_DASHBOARD.STREAK_LABEL' | translate }}</div>
+                </div>
               </div>
             </div>
-          }
-        </div>
 
-        <!-- ══ POMODORO TIMER ══ -->
-        <div class="db-card db-timer-card">
-          <div class="db-card-header">
-            <h2 class="db-card-title">
-              <span class="material-icons">timer</span>
-              {{ 'MAIN_DASHBOARD.POMODORO_TITLE' | translate }}
-            </h2>
-            <div class="db-timer-header-right">
-              <div class="db-session-badge">
-                <span class="material-icons">local_cafe</span>
-                {{ sessionsCompleted() }}/{{ currentSessionGoal() }}
-                <span class="db-session-label">{{ 'MAIN_DASHBOARD.SESSIONS' | translate }}</span>
-              </div>
-              <button (click)="openTimerSettings()" class="db-icon-btn" [title]="'MAIN_DASHBOARD.TIMER_SETTINGS' | translate">
-                <span class="material-icons">settings</span>
+          </div>
+        </div>
+      </div>
+    }
+
+
+    <!-- ┌───────────────────────────────────────────
+         │ TAB: CHRONOMETER
+         └─────────────────────────────────────────── -->
+    @if (activeTab() === 'chrono') {
+      <div class="db-tab-content">
+        <div class="tc-layout">
+
+          <!-- ══ MAIN: Chronometer ══ -->
+          <div class="db-card db-chrono-card db-card-spacious tc-main">
+            <div class="db-card-header">
+              <h2 class="db-card-title db-card-title-cyan">
+                <span class="material-icons">timelapse</span>
+                {{ 'MAIN_DASHBOARD.CHRONO_TITLE' | translate }}
+              </h2>
+              <div class="db-chrono-badge">{{ 'MAIN_DASHBOARD.CHRONO_NO_BACKEND' | translate }}</div>
+            </div>
+
+            <div class="db-chrono-display">
+              <div class="db-chrono-time db-chrono-time-lg">{{ formatChronometer(chronoElapsedSeconds()) }}</div>
+              <div class="db-chrono-sub">{{ 'MAIN_DASHBOARD.CHRONO_ELAPSED' | translate }}</div>
+            </div>
+
+            <div class="db-chrono-controls">
+              <button (click)="toggleChronometer()" class="db-chrono-btn"
+                      [class.db-chrono-btn-start]="!chronoRunning()"
+                      [class.db-chrono-btn-pause]="chronoRunning()">
+                <span class="material-icons">{{ chronoRunning() ? 'pause' : 'play_arrow' }}</span>
+                {{ chronoRunning() ? ('MAIN_DASHBOARD.CHRONO_PAUSE' | translate) : ('MAIN_DASHBOARD.CHRONO_START' | translate) }}
+              </button>
+              <button (click)="addChronoLap()" class="db-chrono-btn db-chrono-btn-lap" [disabled]="chronoElapsedSeconds() === 0">
+                <span class="material-icons">flag</span>
+                {{ 'MAIN_DASHBOARD.CHRONO_LAP' | translate }}
+              </button>
+              <button (click)="resetChronometer()" class="db-chrono-btn db-chrono-btn-reset" [disabled]="chronoElapsedSeconds() === 0">
+                <span class="material-icons">restart_alt</span>
+                {{ 'MAIN_DASHBOARD.CHRONO_RESET' | translate }}
               </button>
             </div>
           </div>
 
-          <!-- Break Mode Banner -->
-          @if (timerMode() === 'break') {
-            <div class="db-break-banner">
-              <span class="material-icons db-break-icon">self_improvement</span>
-              <span>{{ 'MAIN_DASHBOARD.TIMER_BREAK_MODE' | translate }}</span>
-              <div class="db-break-dots">
-                <span></span><span></span><span></span>
-              </div>
-            </div>
-          }
-
-          <!-- Timer display -->
-          <div class="db-timer-display">
-            <div class="db-timer-ring-wrap">
-              <svg class="db-timer-svg" viewBox="0 0 100 100">
-                <circle cx="50" cy="50" r="44" stroke="currentColor" stroke-width="6" fill="none" class="db-ring-track"/>
-                <circle cx="50" cy="50" r="44"
-                        [attr.stroke]="themeService.isDark() ? 'url(#timerViolet)' : 'url(#timerIndigo)'"
-                        stroke-width="6"
-                        fill="none"
-                        stroke-linecap="round"
-                        class="db-ring-progress"
-                        [attr.stroke-dasharray]="276.46"
-                        [attr.stroke-dashoffset]="276.46 * (1 - ((timerMinutes() * 60 + timerSeconds()) / (initialTimerMinutes() * 60)))" />
-                <defs>
-                  <linearGradient id="timerViolet" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" style="stop-color:#a78bfa;stop-opacity:1"/>
-                    <stop offset="100%" style="stop-color:#7c3aed;stop-opacity:1"/>
-                  </linearGradient>
-                  <linearGradient id="timerIndigo" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" style="stop-color:#6366f1;stop-opacity:1"/>
-                    <stop offset="100%" style="stop-color:#8b5cf6;stop-opacity:1"/>
-                  </linearGradient>
-                </defs>
-              </svg>
-              <div class="db-timer-center">
-                <div class="db-timer-time">
-                  {{ timerMinutes().toString().padStart(2, '0') }}:{{ timerSeconds().toString().padStart(2, '0') }}
-                </div>
-                @if (selectedSubjectForTimer()) {
-                  <div class="db-timer-subject">{{ selectedSubjectForTimer()!.name }}</div>
+          <!-- ══ SIDEBAR: Laps ══ -->
+          <div class="tc-side">
+            <div class="db-card tc-side-card">
+              <div class="db-card-header">
+                <h3 class="tc-side-title">
+                  <span class="material-icons">flag</span>
+                  {{ 'MAIN_DASHBOARD.CHRONO_SAVED_LAPS' | translate }}
+                </h3>
+                @if (chronoLaps().length > 0) {
+                  <span class="db-session-badge">{{ chronoLaps().length }}</span>
                 }
               </div>
-            </div>
-
-            <!-- No subject selected state -->
-            @if (!isTimerRunning() && !selectedSubjectForTimer()) {
-              <div class="db-timer-idle">
-                <div class="db-timer-adjuster">
-                  <button (click)="adjustTimer(-1)" class="db-timer-adj-btn">
-                    <span class="material-icons">remove</span>
-                  </button>
-                  <div class="db-timer-min-display">
-                    <span class="db-timer-min-val">{{ initialTimerMinutes() }}</span>
-                    <span class="db-timer-min-lbl">{{ 'MAIN_DASHBOARD.TIMER_MINUTES' | translate }}</span>
-                  </div>
-                  <button (click)="adjustTimer(1)" class="db-timer-adj-btn">
-                    <span class="material-icons">add</span>
-                  </button>
-                </div>
-
-                <p class="db-timer-prompt">{{ 'MAIN_DASHBOARD.TIMER_START_PROMPT' | translate }}</p>
-
-                @if (subjects().length === 0) {
-                  <div class="db-tip-banner db-tip-info">
-                    <span class="material-icons db-tip-icon">lightbulb</span>
-                    <div class="db-tip-body">{{ 'MAIN_DASHBOARD.TIMER_ADD_SUBJECT_FIRST' | translate }}</div>
-                  </div>
-                }
-
-                <div class="db-subject-pills">
-                  @for (subject of subjects(); track subject._id) {
-                    <button (click)="startTimer(subject)"
-                            class="db-subject-pill"
-                            [style.background]="'linear-gradient(135deg, ' + subject.color + 'dd, ' + subject.color + 'aa)'"
-                            [style.box-shadow]="'0 4px 16px ' + subject.color + '44'">
-                      <span class="material-icons">{{ subject.icon }}</span>
-                      {{ subject.name }}
-                    </button>
+              @if (chronoLaps().length > 0) {
+                <div class="db-chrono-laps-list tc-laps-list">
+                  @for (lap of chronoLaps(); track $index) {
+                    <div class="db-chrono-lap">
+                      <span class="db-lap-num">{{ 'MAIN_DASHBOARD.CHRONO_LAP_NUM' | translate }}{{ chronoLaps().length - $index }}</span>
+                      <div class="db-lap-times">
+                        <span class="db-lap-total">{{ formatChronometer(lap) }}</span>
+                        <span class="db-lap-delta">+{{ getChronoLapDuration($index) }}</span>
+                      </div>
+                    </div>
                   }
                 </div>
-              </div>
-            } @else {
-              <div class="db-timer-controls">
-                @if (isTimerRunning()) {
-                  <button (click)="pauseTimer()" class="db-ctrl-btn db-ctrl-pause">
-                    <span class="material-icons">pause</span>
-                  </button>
-                } @else {
-                  <button (click)="startTimer(selectedSubjectForTimer()!)" class="db-ctrl-btn db-ctrl-play">
-                    <span class="material-icons">play_arrow</span>
-                  </button>
-                }
-                <button (click)="stopTimer()" class="db-ctrl-btn db-ctrl-stop">
-                  <span class="material-icons">stop</span>
-                </button>
-              </div>
-            }
-          </div>
-        </div>
-
-        <!-- ══ CHRONOMETER ══ -->
-        <div class="db-card db-chrono-card">
-          <div class="db-card-header">
-            <h2 class="db-card-title db-card-title-cyan">
-              <span class="material-icons">timelapse</span>
-              {{ 'MAIN_DASHBOARD.CHRONO_TITLE' | translate }}
-            </h2>
-            <div class="db-chrono-badge">{{ 'MAIN_DASHBOARD.CHRONO_NO_BACKEND' | translate }}</div>
-          </div>
-
-          <div class="db-chrono-display">
-            <div class="db-chrono-time">{{ formatChronometer(chronoElapsedSeconds()) }}</div>
-            <div class="db-chrono-sub">{{ 'MAIN_DASHBOARD.CHRONO_ELAPSED' | translate }}</div>
-          </div>
-
-          <div class="db-chrono-controls">
-            <button (click)="toggleChronometer()" class="db-chrono-btn"
-                    [class.db-chrono-btn-start]="!chronoRunning()"
-                    [class.db-chrono-btn-pause]="chronoRunning()">
-              <span class="material-icons">{{ chronoRunning() ? 'pause' : 'play_arrow' }}</span>
-              {{ chronoRunning() ? ('MAIN_DASHBOARD.CHRONO_PAUSE' | translate) : ('MAIN_DASHBOARD.CHRONO_START' | translate) }}
-            </button>
-            <button (click)="addChronoLap()" class="db-chrono-btn db-chrono-btn-lap" [disabled]="chronoElapsedSeconds() === 0">
-              <span class="material-icons">flag</span>
-              {{ 'MAIN_DASHBOARD.CHRONO_LAP' | translate }}
-            </button>
-            <button (click)="resetChronometer()" class="db-chrono-btn db-chrono-btn-reset" [disabled]="chronoElapsedSeconds() === 0">
-              <span class="material-icons">restart_alt</span>
-              {{ 'MAIN_DASHBOARD.CHRONO_RESET' | translate }}
-            </button>
-          </div>
-
-          @if (chronoLaps().length > 0) {
-            <div class="db-chrono-laps">
-              <div class="db-chrono-laps-title">{{ 'MAIN_DASHBOARD.CHRONO_SAVED_LAPS' | translate }}</div>
-              <div class="db-chrono-laps-list">
-                @for (lap of chronoLaps(); track $index) {
-                  <div class="db-chrono-lap">
-                    <span class="db-lap-num">{{ 'MAIN_DASHBOARD.CHRONO_LAP_NUM' | translate }}{{ chronoLaps().length - $index }}</span>
-                    <div class="db-lap-times">
-                      <span class="db-lap-total">{{ formatChronometer(lap) }}</span>
-                      <span class="db-lap-delta">+{{ getChronoLapDuration($index) }}</span>
-                    </div>
-                  </div>
-                }
-              </div>
+              } @else {
+                <div class="tc-laps-empty">
+                  <span class="material-icons">flag</span>
+                  <p>{{ 'MAIN_DASHBOARD.CHRONO_LAP' | translate }}</p>
+                </div>
+              }
             </div>
-          }
+          </div>
+
         </div>
       </div>
+    }
 
-      <!-- ┌───────────────────────────────────────
-           │ RIGHT SIDEBAR — TO-DO
-           └─────────────────────────────────────── -->
-      <aside class="db-sidebar-right">
-        <div id="db-todo-card" class="db-sidebar-card db-todo-card">
-          <!-- Header -->
-          <div class="db-todo-header">
-            <h2 class="db-section-title">
-              <span class="material-icons">check_circle</span>
-              {{ 'MAIN_DASHBOARD.TODO_TITLE' | translate }}
-            </h2>
-            <div class="db-todo-count">
-              <span class="db-todo-done-count">{{ completedTodos() }}</span>/<span>{{ totalTodos() }}</span>
-            </div>
-          </div>
 
-          <!-- Onboarding tip -->
-          @if (todos().length === 0) {
-            <div class="db-tip-banner db-tip-accent">
-              <span class="material-icons db-tip-icon">tips_and_updates</span>
-              <div>
-                <div class="db-tip-title">{{ 'MAIN_DASHBOARD.TODO_TIP_TITLE' | translate }}</div>
-                <div class="db-tip-body">{{ 'MAIN_DASHBOARD.TODO_TIP_MSG' | translate }}</div>
+    <!-- ┌───────────────────────────────────────────
+         │ TAB: AI STUDY ASSISTANT
+         └─────────────────────────────────────────── -->
+    @if (activeTab() === 'ai') {
+      <div class="db-tab-content">
+        <div class="tc-layout">
+
+          <!-- ══ MAIN: AI conversation ══ -->
+          <div class="db-card db-ai-fullpage tc-main">
+            <div class="db-card-header">
+              <div class="db-ai-toggle-left">
+                <div class="db-ai-orb-pulsing">
+                  <span class="material-icons">psychology</span>
+                  <span class="db-ai-live-dot"></span>
+                </div>
+                <div>
+                  <div class="db-ai-name">{{ 'MAIN_DASHBOARD.AI_ASSISTANT' | translate }}</div>
+                  <div class="db-ai-sub">
+                    <span class="material-icons">tips_and_updates</span>
+                    {{ 'MAIN_DASHBOARD.AI_SUBTITLE' | translate }}
+                  </div>
+                </div>
+              </div>
+              <div class="db-ai-header-actions">
+                <button (click)="clearAIChat()" class="db-ai-clear-btn" title="Réinitialiser la conversation">
+                  <span class="material-icons">refresh</span>
+                </button>
+                <span class="db-ai-badge">AI</span>
               </div>
             </div>
-          }
 
-          <!-- Add Task Button -->
-          <button (click)="openTodoModal()" class="db-add-btn db-add-todo-btn">
-            <span class="material-icons">add_task</span>
-            {{ 'MAIN_DASHBOARD.ADD_TASK' | translate }}
-          </button>
-
-          <!-- Task List -->
-          <div class="db-todo-list">
-            @for (todo of todos(); track todo._id) {
-              <div class="db-todo-item"
-                   [class.db-todo-done]="todo.done"
-                   [class.db-todo-urgent]="!todo.done && todo.priority === 'urgent'">
-                <input type="checkbox"
-                       [ngModel]="todo.done"
-                       (ngModelChange)="toggleTodo(todo, $event)"
-                       class="db-todo-check"/>
-
-                <div class="db-todo-info">
-                  <div class="db-todo-title" [class.db-todo-title-done]="todo.done">{{ todo.title }}</div>
-
-                  @if (getTodoSubject(todo); as todoSubject) {
-                    <div class="db-todo-subject">
-                      <span class="material-icons">menu_book</span>
-                      {{ todoSubject.name }}
+            <div class="db-ai-body-full">
+              <!-- Scrollable message area -->
+              <div class="db-ai-messages db-ai-messages-tall">
+                @for (message of aiMessages(); track $index) {
+                  <div [class]="message.role === 'user' ? 'db-ai-msg-user-container' : 'db-ai-msg-assistant-container'">
+                    @if (message.role === 'assistant') {
+                      <div class="db-ai-msg-avatar">
+                        <span class="material-icons">smart_toy</span>
+                      </div>
+                    }
+                    
+                    <div [class]="message.role === 'user' ? 'db-ai-msg-user-bubble' : 'db-ai-msg-assistant-bubble'">
+                      @if (message.isThinking) {
+                        <div class="db-ai-typing">
+                          <span class="db-ai-typing-dot"></span>
+                          <span class="db-ai-typing-dot"></span>
+                          <span class="db-ai-typing-dot"></span>
+                        </div>
+                      } @else {
+                        <div class="db-ai-msg-content whitespace-pre-line">{{ message.content }}</div>
+                      }
                     </div>
-                  }
+                  </div>
+                }
+              </div>
 
-                  <div class="db-todo-tags">
-                    @if (todo.priority === 'urgent') {
-                      <span class="db-priority-tag db-priority-urgent">
-                        <span class="material-icons">local_fire_department</span>
-                        {{ 'MAIN_DASHBOARD.TODO_URGENT' | translate }}
-                      </span>
-                    } @else if (todo.priority === 'high') {
-                      <span class="db-priority-tag db-priority-high">{{ 'MAIN_DASHBOARD.TODO_HIGH' | translate }}</span>
-                    } @else if (todo.priority === 'medium') {
-                      <span class="db-priority-tag db-priority-medium">{{ 'MAIN_DASHBOARD.TODO_MEDIUM' | translate }}</span>
-                    } @else {
-                      <span class="db-priority-tag db-priority-low">{{ 'MAIN_DASHBOARD.TODO_LOW' | translate }}</span>
+              <!-- Suggestion chips (hide when loading or user has started chatting) -->
+              @if (aiMessages().length <= 1 && !aiLoading()) {
+                <div class="db-ai-suggestions-container">
+                  <div class="db-ai-suggestions-title">Sujets suggérés</div>
+                  <div class="db-ai-suggestions-list">
+                    @for (suggestion of aiSuggestions; track $index) {
+                      <button (click)="askAI(suggestion.text)" class="db-ai-suggestion-chip">
+                        <span class="material-icons">{{ suggestion.icon }}</span>
+                        {{ suggestion.text }}
+                      </button>
                     }
                   </div>
                 </div>
+              }
 
-                <div class="db-todo-actions">
-                  <button (click)="editTodo(todo)" class="db-action-btn">
-                    <span class="material-icons">edit</span>
-                  </button>
-                  <button (click)="deleteTodo(todo)" class="db-action-btn db-action-delete">
-                    <span class="material-icons">delete</span>
-                  </button>
+              <!-- Input bar -->
+              <div class="db-ai-input-wrapper">
+                <input 
+                  type="text" 
+                  [ngModel]="aiInputText()" 
+                  (ngModelChange)="aiInputText.set($event)"
+                  (keyup.enter)="askAI(aiInputText())"
+                  placeholder="Posez une question à votre coach d'études..." 
+                  class="db-ai-chat-input"
+                  [disabled]="aiLoading()"
+                />
+                <button 
+                  (click)="askAI(aiInputText())" 
+                  [disabled]="aiLoading() || !aiInputText().trim()" 
+                  class="db-ai-send-btn"
+                >
+                  <span class="material-icons">send</span>
+                </button>
+              </div>
+
+              <div class="db-ai-footer-info">
+                <span class="material-icons">security</span>
+                Analyse fondée sur vos vraies données d'étude • Réponses optimisées par IA
+              </div>
+            </div>
+          </div>
+
+          <!-- ══ SIDEBAR: snapshot the AI reasons about ══ -->
+          <div class="tc-side">
+            <div class="db-card tc-side-card">
+              <div class="db-card-header">
+                <h3 class="tc-side-title">
+                  <span class="material-icons">query_stats</span>
+                  {{ 'MAIN_DASHBOARD.STATS_WEEK_TITLE' | translate }}
+                </h3>
+              </div>
+              <div class="tc-ai-metric">
+                <span class="tc-ai-metric-label"><span class="material-icons">track_changes</span>{{ 'MAIN_DASHBOARD.DAILY_GOAL' | translate }}</span>
+                <span class="tc-ai-metric-val">{{ progressPercentage() }}%</span>
+              </div>
+              <div class="tc-ai-metric">
+                <span class="tc-ai-metric-label"><span class="material-icons">schedule</span>{{ 'MAIN_DASHBOARD.TIME_STUDIED' | translate }}</span>
+                <span class="tc-ai-metric-val">{{ formatTime(totalStudiedMinutes()) }}</span>
+              </div>
+              <div class="tc-ai-metric">
+                <span class="tc-ai-metric-label"><span class="material-icons">task_alt</span>{{ 'MAIN_DASHBOARD.TASKS_COMPLETED' | translate }}</span>
+                <span class="tc-ai-metric-val">{{ completedTodos() }}/{{ totalTodos() }}</span>
+              </div>
+              <div class="tc-ai-metric">
+                <span class="tc-ai-metric-label"><span class="material-icons">local_fire_department</span>{{ 'MAIN_DASHBOARD.STREAK_LABEL' | translate }}</span>
+                <span class="tc-ai-metric-val">{{ studyStreak() }}</span>
+              </div>
+            </div>
+
+            <div class="db-card tc-side-card tc-tip-card">
+              <div class="db-card-header">
+                <h3 class="tc-side-title">
+                  <span class="material-icons">tips_and_updates</span>
+                  {{ 'MAIN_DASHBOARD.AI_SUBTITLE' | translate }}
+                </h3>
+              </div>
+              <div class="tc-tip-row">
+                <span class="material-icons">bolt</span>
+                {{ 'MAIN_DASHBOARD.AI_SOURCE' | translate }}
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    }
+
+
+    <!-- ┌───────────────────────────────────────────
+         │ TAB: MATIÈRES & TODO
+         └─────────────────────────────────────────── -->
+    @if (activeTab() === 'subjects') {
+      <div class="db-tab-content st-page">
+
+        <!-- ══ PAGE HERO BANNER ══ -->
+        <div class="st-hero">
+          <div class="st-hero-orbs">
+            <div class="st-orb st-orb-1"></div>
+            <div class="st-orb st-orb-2"></div>
+            <div class="st-orb st-orb-3"></div>
+          </div>
+          <div class="st-hero-content">
+            <div class="st-hero-left">
+              <div class="st-hero-badge">
+                <span class="material-icons">auto_awesome</span>
+                Espace d'étude
+              </div>
+              <h2 class="st-hero-title">Matières <span class="st-hero-amp">&</span> Todo</h2>
+              <p class="st-hero-desc">Organisez vos matières et gérez vos tâches pour rester concentré.</p>
+            </div>
+            <div class="st-hero-stats">
+              <div class="st-hero-stat">
+                <div class="st-hero-stat-val">{{ subjects().length }}</div>
+                <div class="st-hero-stat-key">Matières</div>
+              </div>
+              <div class="st-hero-divider"></div>
+              <div class="st-hero-stat">
+                <div class="st-hero-stat-val st-stat-green">{{ completedTodos() }}</div>
+                <div class="st-hero-stat-key">Complétées</div>
+              </div>
+              <div class="st-hero-divider"></div>
+              <div class="st-hero-stat">
+                <div class="st-hero-stat-val st-stat-yellow">{{ totalTodos() - completedTodos() }}</div>
+                <div class="st-hero-stat-key">En attente</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="st-layout">
+
+          <!-- ══ SUBJECTS PANEL ══ -->
+          <div class="st-panel st-panel-subjects">
+            <div class="st-panel-header">
+              <div class="st-panel-title">
+                <div class="st-panel-icon st-icon-purple">
+                  <span class="material-icons">menu_book</span>
+                </div>
+                <div>
+                  <h2 class="st-heading">{{ 'MAIN_DASHBOARD.SUBJECTS' | translate }}</h2>
+                  <p class="st-subheading">{{ subjects().length }} {{ 'MAIN_DASHBOARD.SUBJECTS' | translate | lowercase }}</p>
                 </div>
               </div>
-            } @empty {
-              <div class="db-empty-todo">
-                <span class="material-icons">task_alt</span>
-                <p>{{ 'MAIN_DASHBOARD.TODO_NO_TASKS' | translate }}</p>
+              <button (click)="openSubjectModal()" class="st-add-btn">
+                <span class="material-icons">add</span>
+                {{ 'MAIN_DASHBOARD.ADD_SUBJECT' | translate }}
+              </button>
+            </div>
+
+            @if (subjects().length === 0) {
+              <div class="st-empty">
+                <div class="st-empty-icon">
+                  <span class="material-icons">menu_book</span>
+                </div>
+                <p class="st-empty-title">{{ 'MAIN_DASHBOARD.GET_STARTED' | translate }}</p>
+                <p class="st-empty-sub">{{ 'MAIN_DASHBOARD.ADD_FIRST_SUBJECT' | translate }}</p>
+                <button (click)="openSubjectModal()" class="st-add-btn st-add-btn-lg">
+                  <span class="material-icons">add</span>
+                  {{ 'MAIN_DASHBOARD.ADD_SUBJECT' | translate }}
+                </button>
+              </div>
+            } @else {
+              <div class="st-subjects-list">
+                @for (subject of displayedSubjects(); track subject._id) {
+                  <div class="st-subject-card" [style.--s-color]="subject.color">
+                    <!-- Glow overlay -->
+                    <div class="st-subject-glow"></div>
+                    <!-- Colored left accent -->
+                    <div class="st-subject-accent"></div>
+                    <!-- Icon bubble -->
+                    <div class="st-subject-bubble">
+                      <span class="material-icons" [style.color]="subject.color">{{ subject.icon }}</span>
+                    </div>
+                    <!-- Info -->
+                    <div class="st-subject-info">
+                      <div class="st-subject-name">{{ subject.name }}</div>
+                      <div class="st-subject-pill" [style.background]="subject.color + '1A'" [style.color]="subject.color" [style.border-color]="subject.color + '33'">
+                        <span class="material-icons">auto_stories</span>
+                        Matière
+                      </div>
+                    </div>
+                    <!-- Actions -->
+                    <div class="st-subject-actions">
+                      <button (click)="openSubjectModal(subject)" class="st-action-btn" title="Edit">
+                        <span class="material-icons">edit</span>
+                      </button>
+                      <button (click)="deleteSubject(subject)" class="st-action-btn st-action-delete" title="Delete">
+                        <span class="material-icons">delete_outline</span>
+                      </button>
+                    </div>
+                  </div>
+                }
               </div>
             }
           </div>
-        </div>
-      </aside>
 
-    </div><!-- /db-layout -->
+          <!-- ══ TODO PANEL ══ -->
+          <div class="st-panel st-panel-todo">
+            <div class="st-panel-header">
+              <div class="st-panel-title">
+                <div class="st-panel-icon st-icon-green">
+                  <span class="material-icons">check_circle_outline</span>
+                </div>
+                <div>
+                  <h2 class="st-heading">{{ 'MAIN_DASHBOARD.TODO_TITLE' | translate }}</h2>
+                  <p class="st-subheading">
+                    <span class="st-done-count">{{ completedTodos() }}</span>/{{ totalTodos() }} {{ 'MAIN_DASHBOARD.TASKS_COMPLETED' | translate | lowercase }}
+                  </p>
+                </div>
+              </div>
+              <button (click)="openTodoModal()" class="st-add-btn st-add-btn-green">
+                <span class="material-icons">add_task</span>
+                {{ 'MAIN_DASHBOARD.ADD_TASK' | translate }}
+              </button>
+            </div>
+
+            <!-- Progress bar -->
+            @if (totalTodos() > 0) {
+              <div class="st-progress-track">
+                <div class="st-progress-fill"
+                     [style.width.%]="(completedTodos() / totalTodos()) * 100">
+                  <div class="st-progress-shimmer"></div>
+                </div>
+                <span class="st-progress-label">{{ completedTodos() }}/{{ totalTodos() }}</span>
+              </div>
+            }
+
+            @if (todos().length === 0) {
+              <div class="st-empty">
+                <div class="st-empty-icon st-empty-icon-green">
+                  <span class="material-icons">task_alt</span>
+                </div>
+                <p class="st-empty-title">{{ 'MAIN_DASHBOARD.TODO_TIP_TITLE' | translate }}</p>
+                <p class="st-empty-sub">{{ 'MAIN_DASHBOARD.TODO_TIP_MSG' | translate }}</p>
+              </div>
+            } @else {
+              <div class="st-todo-list" id="db-todo-card">
+                @for (todo of todos(); track todo._id) {
+                  <div class="st-todo-item"
+                       [class.st-todo-done]="todo.done"
+                       [attr.data-priority]="todo.priority">
+
+                    <!-- Priority color stripe -->
+                    <div class="st-todo-stripe"
+                         [class.st-stripe-urgent]="todo.priority === 'urgent'"
+                         [class.st-stripe-high]="todo.priority === 'high'"
+                         [class.st-stripe-medium]="todo.priority === 'medium'"
+                         [class.st-stripe-low]="todo.priority === 'low'"></div>
+
+                    <!-- Checkbox -->
+                    <label class="st-checkbox-wrap">
+                      <input type="checkbox"
+                             [ngModel]="todo.done"
+                             (ngModelChange)="toggleTodo(todo, $event)"
+                             class="st-checkbox-input"/>
+                      <span class="st-checkbox-custom">
+                        <span class="material-icons st-check-icon">check</span>
+                      </span>
+                    </label>
+
+                    <!-- Content -->
+                    <div class="st-todo-body">
+                      <div class="st-todo-title" [class.st-todo-title-done]="todo.done">{{ todo.title }}</div>
+
+                      <div class="st-todo-meta">
+                        @if (getTodoSubject(todo); as todoSubject) {
+                          <span class="st-todo-subject-chip"
+                                [style.background]="todoSubject.color + '18'"
+                                [style.color]="todoSubject.color"
+                                [style.border-color]="todoSubject.color + '40'">
+                            <span class="material-icons">{{ todoSubject.icon }}</span>
+                            {{ todoSubject.name }}
+                          </span>
+                        }
+
+                        @if (todo.priority === 'urgent') {
+                          <span class="st-priority-badge st-urgent">
+                            <span class="material-icons">local_fire_department</span>
+                            {{ 'MAIN_DASHBOARD.TODO_URGENT' | translate }}
+                          </span>
+                        } @else if (todo.priority === 'high') {
+                          <span class="st-priority-badge st-high">{{ 'MAIN_DASHBOARD.TODO_HIGH' | translate }}</span>
+                        } @else if (todo.priority === 'medium') {
+                          <span class="st-priority-badge st-medium">{{ 'MAIN_DASHBOARD.TODO_MEDIUM' | translate }}</span>
+                        } @else {
+                          <span class="st-priority-badge st-low">{{ 'MAIN_DASHBOARD.TODO_LOW' | translate }}</span>
+                        }
+                      </div>
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="st-todo-actions">
+                      <button (click)="editTodo(todo)" class="st-action-btn">
+                        <span class="material-icons">edit</span>
+                      </button>
+                      <button (click)="deleteTodo(todo)" class="st-action-btn st-action-delete">
+                        <span class="material-icons">delete_outline</span>
+                      </button>
+                    </div>
+                  </div>
+                }
+              </div>
+            }
+          </div>
+
+        </div>
+
+      </div>
+    }
+
   </main>
 
   <!-- ═══════════════════════════════════════════
@@ -757,12 +1045,18 @@
           </div>
 
           <div class="db-field">
-            <label class="db-label">{{ 'MAIN_DASHBOARD.SUBJECT_ICON' | translate }}</label>
-            <div class="db-icon-grid">
-              @for (icon of icons; track icon) {
+            <div class="sm-field-header">
+              <label class="db-label">{{ 'MAIN_DASHBOARD.SUBJECT_ICON' | translate }}</label>
+              <button type="button" class="sm-more-btn" (click)="showMoreIcons.set(!showMoreIcons())">
+                <span class="material-icons">{{ showMoreIcons() ? 'expand_less' : 'expand_more' }}</span>
+                {{ showMoreIcons() ? 'Moins' : 'Plus d\'icônes (' + (icons.length - 20) + ')' }}
+              </button>
+            </div>
+            <div class="sm-icon-grid">
+              @for (icon of visibleIcons; track icon) {
                 <button type="button" (click)="subjectForm.icon = icon"
-                        class="db-icon-pick"
-                        [class.db-icon-pick-active]="subjectForm.icon === icon">
+                        class="sm-icon-btn"
+                        [class.sm-icon-active]="subjectForm.icon === icon">
                   <span class="material-icons">{{ icon }}</span>
                 </button>
               }
@@ -770,20 +1064,33 @@
           </div>
 
           <div class="db-field">
-            <label class="db-label">{{ 'MAIN_DASHBOARD.SUBJECT_COLOR' | translate }}</label>
-            <div class="db-color-grid">
-              @for (color of colors; track color) {
+            <div class="sm-field-header">
+              <label class="db-label">{{ 'MAIN_DASHBOARD.SUBJECT_COLOR' | translate }}</label>
+              <button type="button" class="sm-more-btn" (click)="showMoreColors.set(!showMoreColors())">
+                <span class="material-icons">{{ showMoreColors() ? 'expand_less' : 'expand_more' }}</span>
+                {{ showMoreColors() ? 'Moins' : 'Plus de couleurs (' + (colors.length - 16) + ')' }}
+              </button>
+            </div>
+            <div class="sm-color-grid">
+              @for (color of visibleColors; track color) {
                 <button type="button" (click)="subjectForm.color = color"
-                        class="db-color-pick"
-                        [class.db-color-pick-active]="subjectForm.color === color"
-                        [style.background]="color">
+                        class="sm-color-btn"
+                        [class.sm-color-active]="subjectForm.color === color"
+                        [style.background]="color"
+                        [title]="color">
                   @if (subjectForm.color === color) {
-                    <span class="material-icons" [class.text-black]="color === '#ffd700'" [class.text-white]="color !== '#ffd700'">check</span>
+                    <span class="material-icons sm-color-check">check</span>
                   }
                 </button>
               }
             </div>
+            <!-- Selected color preview -->
+            <div class="sm-color-preview">
+              <div class="sm-preview-swatch" [style.background]="subjectForm.color"></div>
+              <span class="sm-preview-hex">{{ subjectForm.color }}</span>
+            </div>
           </div>
+
         </div>
 
         <div class="db-modal-footer">
@@ -944,7 +1251,6 @@
         </div>
 
         <div class="db-modal-body">
-          <!-- Week chart -->
           <div class="db-week-chart">
             @for (stat of weekStats(); track stat.date) {
               <div class="db-chart-col">
@@ -957,7 +1263,6 @@
             }
           </div>
 
-          <!-- Subject breakdown -->
           <h4 class="db-breakdown-title">{{ 'MAIN_DASHBOARD.STATS_BREAKDOWN_TITLE' | translate }}</h4>
           <div class="db-breakdown-list">
             @for (subjectTime of dayPlan()?.subjects || []; track $index) {
@@ -1008,7 +1313,6 @@
 
         <div class="db-modal-body">
           <div class="db-settings-grid">
-            <!-- Focus Duration -->
             <div class="db-setting-card db-setting-focus">
               <label class="db-setting-label">
                 <span class="material-icons">target</span>
@@ -1021,7 +1325,6 @@
               <p class="db-setting-desc">{{ 'MAIN_DASHBOARD.TIMER_FOCUS_DESC' | translate }}</p>
             </div>
 
-            <!-- Short Break -->
             <div class="db-setting-card db-setting-break">
               <label class="db-setting-label db-setting-label-green">
                 <span class="material-icons">coffee</span>
@@ -1034,7 +1337,6 @@
               <p class="db-setting-desc">{{ 'MAIN_DASHBOARD.TIMER_SHORT_BREAK_DESC' | translate }}</p>
             </div>
 
-            <!-- Long Break -->
             <div class="db-setting-card">
               <label class="db-setting-label db-setting-label-purple">
                 <span class="material-icons">star</span>
@@ -1047,7 +1349,6 @@
               <p class="db-setting-desc">{{ 'MAIN_DASHBOARD.TIMER_LONG_BREAK_DESC' | translate }}</p>
             </div>
 
-            <!-- Sessions before long break -->
             <div class="db-setting-card">
               <label class="db-setting-label db-setting-label-blue">
                 <span class="material-icons">repeat</span>
@@ -1061,7 +1362,6 @@
             </div>
           </div>
 
-          <!-- Daily Session Goal -->
           <div class="db-setting-card db-setting-goal">
             <label class="db-setting-label">
               <span class="material-icons">emoji_events</span>
@@ -1073,7 +1373,6 @@
             </div>
           </div>
 
-          <!-- Auto start toggles -->
           <div class="db-settings-grid">
             <div class="db-setting-toggle">
               <label class="db-toggle-label">
@@ -1091,7 +1390,6 @@
             </div>
           </div>
 
-          <!-- Relaxation Audio -->
           <div class="db-setting-card db-setting-audio">
             <label class="db-setting-label db-setting-label-purple">
               <span class="material-icons">music_note</span>
@@ -1112,7 +1410,6 @@
             </p>
           </div>
 
-          <!-- Info -->
           <div class="db-alert db-alert-info">
             <span class="material-icons db-alert-icon">lightbulb</span>
             <div class="db-alert-body">
@@ -1196,4 +1493,52 @@
     </div>
   }
 
+  <!-- ── Mobile More Menu (Bottom Sheet Drawer) ── -->
+  @if (showMobileMoreMenu()) {
+    <div class="mobile-more-overlay" (click)="showMobileMoreMenu.set(false)">
+      <div class="mobile-more-sheet" (click)="$event.stopPropagation()">
+        <!-- Handlebar -->
+        <div class="mobile-sheet-handle" (click)="showMobileMoreMenu.set(false)"></div>
+        
+        <div class="mobile-sheet-header">
+          <h3>Plus d'outils d'étude</h3>
+        </div>
+        
+        <div class="mobile-sheet-grid">
+          <!-- AI Coach Option -->
+          <button class="mobile-sheet-btn" 
+                  [class.mobile-sheet-btn-active]="activeTab() === 'ai'"
+                  (click)="selectMobileTab('ai')">
+            <div class="mobile-sheet-btn-icon-wrap icon-ai">
+              <span class="material-icons">psychology</span>
+            </div>
+            <div class="mobile-sheet-btn-text">
+              <span class="mobile-sheet-btn-title">AI Study Coach</span>
+              <span class="mobile-sheet-btn-desc">Conseils & stratégies personnalisées</span>
+            </div>
+            <span class="material-icons mobile-sheet-btn-arrow">chevron_right</span>
+          </button>
+          
+          <!-- Chrono Option -->
+          <button class="mobile-sheet-btn" 
+                  [class.mobile-sheet-btn-active]="activeTab() === 'chrono'"
+                  (click)="selectMobileTab('chrono')">
+            <div class="mobile-sheet-btn-icon-wrap icon-chrono">
+              <span class="material-icons">timelapse</span>
+            </div>
+            <div class="mobile-sheet-btn-text">
+              <span class="mobile-sheet-btn-title">Chronomètre</span>
+              <span class="mobile-sheet-btn-desc">Mesurez vos temps d'étude libres</span>
+            </div>
+            @if (chronoRunning()) {
+              <span class="db-tab-live animate-pulse mr-2"></span>
+            }
+            <span class="material-icons mobile-sheet-btn-arrow">chevron_right</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+
 </div>
+

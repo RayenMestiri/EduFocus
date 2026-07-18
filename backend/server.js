@@ -26,6 +26,13 @@ const corsOptions = {
     if (allowedOrigins.includes('*')) return callback(null, true);
     // Exact match check
     if (allowedOrigins.includes(origin)) return callback(null, true);
+    // Allow any localhost or 127.0.0.1 origin (useful for Flutter Web dynamic ports)
+    if (origin.startsWith('http://localhost:') || 
+        origin.startsWith('https://localhost:') ||
+        origin.startsWith('http://127.0.0.1:') ||
+        origin.startsWith('https://127.0.0.1:')) {
+      return callback(null, true);
+    }
     // Blocked — return null (not an Error) so Express doesn't 500
     return callback(null, false);
   },

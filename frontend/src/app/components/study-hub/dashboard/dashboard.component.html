@@ -119,57 +119,62 @@
       <div class="srs-panel-compact rounded-2xl border border-gray-100/80 dark:border-gray-800/60 bg-white/80 dark:bg-gray-900/70 backdrop-blur-sm shadow-sm overflow-hidden transition-all duration-300">
 
         <!-- ── Always-visible compact header row ── -->
-        <div class="flex items-center gap-3 px-4 py-3 cursor-pointer select-none" (click)="toggleSrsPanel()">
+        <div class="srs-header-row cursor-pointer select-none" (click)="toggleSrsPanel()">
 
           <!-- Icon + title -->
-          <div class="w-7 h-7 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow shadow-indigo-500/25 flex-shrink-0">
-            <span class="material-icons text-white text-sm">psychology</span>
+          <div class="srs-logo-title">
+            <div class="srs-logo-icon">
+              <span class="material-icons">psychology</span>
+            </div>
+            <span class="srs-title-text">SRS · Révisions du Jour</span>
           </div>
-          <span class="text-sm font-black text-gray-800 dark:text-white whitespace-nowrap">SRS · Révisions du Jour</span>
+
+          <!-- Chevron (direct child for grid placement) -->
+          <span class="material-icons srs-chevron"
+            [class.rotate-180]="srsExpanded()">expand_more</span>
 
           <!-- Inline stats pills -->
-          <div class="flex items-center gap-1.5 flex-wrap flex-1 ml-1">
+          <div class="srs-pills-container">
             <!-- Retention -->
-            <span *ngIf="retentionRate() > 0" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200/60 dark:border-emerald-800/30 text-emerald-700 dark:text-emerald-400 text-[10px] font-black">
-              <span class="material-icons text-[9px]">trending_up</span>{{ retentionRate() }}%
+            <span *ngIf="retentionRate() > 0" class="srs-pill srs-pill-emerald">
+              <span class="material-icons">trending_up</span>{{ retentionRate() }}%
             </span>
             <!-- New -->
-            <span *ngIf="newCardsInQueue() > 0" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-blue-50 dark:bg-blue-950/30 border border-blue-200/60 dark:border-blue-800/30 text-blue-700 dark:text-blue-400 text-[10px] font-black">
-              <span class="material-icons text-[9px]">fiber_new</span>{{ newCardsInQueue() }}
+            <span *ngIf="newCardsInQueue() > 0" class="srs-pill srs-pill-blue">
+              <span class="material-icons">fiber_new</span>{{ newCardsInQueue() }}
             </span>
             <!-- Learning -->
-            <span *ngIf="learningCardsInQueue() > 0" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-amber-50 dark:bg-amber-950/30 border border-amber-200/60 dark:border-amber-800/30 text-amber-700 dark:text-amber-400 text-[10px] font-black">
-              <span class="material-icons text-[9px]">school</span>{{ learningCardsInQueue() }}
+            <span *ngIf="learningCardsInQueue() > 0" class="srs-pill srs-pill-amber">
+              <span class="material-icons">school</span>{{ learningCardsInQueue() }}
             </span>
             <!-- Due/Overdue -->
-            <span *ngIf="reviewCardsInQueue() + overdueCardsInQueue() > 0" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-rose-50 dark:bg-rose-950/30 border border-rose-200/60 dark:border-rose-800/30 text-rose-700 dark:text-rose-400 text-[10px] font-black">
-              <span class="material-icons text-[9px]">notifications_active</span>{{ reviewCardsInQueue() + overdueCardsInQueue() }}
+            <span *ngIf="reviewCardsInQueue() + overdueCardsInQueue() > 0" class="srs-pill srs-pill-rose">
+              <span class="material-icons">notifications_active</span>{{ reviewCardsInQueue() + overdueCardsInQueue() }}
             </span>
             <!-- Mastered -->
-            <span *ngIf="totalMasteredCards() > 0" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200/60 dark:border-emerald-800/30 text-emerald-700 dark:text-emerald-400 text-[10px] font-bold">
-              <span class="material-icons text-[9px]">workspace_premium</span>{{ totalMasteredCards() }}
+            <span *ngIf="totalMasteredCards() > 0" class="srs-pill srs-pill-emerald font-bold">
+              <span class="material-icons">workspace_premium</span>{{ totalMasteredCards() }}
             </span>
             <!-- Total pills when all zero -->
-            <span *ngIf="newCardsInQueue() === 0 && learningCardsInQueue() === 0 && reviewCardsInQueue() + overdueCardsInQueue() === 0" class="text-[10px] text-gray-400 dark:text-gray-500 font-semibold">
+            <span *ngIf="newCardsInQueue() === 0 && learningCardsInQueue() === 0 && reviewCardsInQueue() + overdueCardsInQueue() === 0" class="srs-done-text">
               Tout révisé ✨
             </span>
           </div>
 
-          <!-- CTA + Chevron -->
-          <div class="flex items-center gap-2 flex-shrink-0">
+          <!-- CTA Actions -->
+          <div class="srs-actions-container">
             <a *ngIf="firstPackWithDue()" [routerLink]="['/study-hub', firstPackWithDue()!.id, 'flashcards']"
               (click)="$event.stopPropagation()"
-              class="inline-flex items-center gap-1 px-3 py-1.5 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-bold text-[11px] rounded-xl shadow shadow-indigo-500/20 transition-all hover:scale-105">
+              class="srs-btn-primary">
               <span class="material-icons text-sm">play_circle</span>
-              <span class="hidden sm:inline">Réviser</span>
-              <span class="ml-0.5 px-1 py-0.5 rounded bg-white/20 text-[9px] font-black">{{ totalDueCards() }}</span>
+              <span>Réviser</span>
+              <span class="srs-btn-count">{{ totalDueCards() }}</span>
             </a>
             <a routerLink="/study-hub/analytics" (click)="$event.stopPropagation()"
-              class="inline-flex items-center gap-1 px-2.5 py-1.5 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-500 dark:text-gray-400 text-[11px] font-semibold rounded-xl transition-all">
+              class="btn-analytics-premium">
               <span class="material-icons text-sm">analytics</span>
+              <span>Statistiques</span>
             </a>
-            <span class="material-icons text-gray-400 dark:text-gray-500 text-base transition-transform duration-300"
-              [class.rotate-180]="srsExpanded()">expand_more</span>
           </div>
         </div>
 
